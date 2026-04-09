@@ -2,7 +2,7 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import InferenceViewer from './pages/InferenceViewer';
 import RecordsArchive from './pages/RecordsArchive';
-import ClinicalAssistant from './components/ClinicalAssistant';
+
 
 import MedicalHub from './pages/MedicalHub';
 import UniversalUpload from './pages/UniversalUpload';
@@ -22,7 +22,7 @@ function App() {
                     <Route path="/archive" element={<RecordsArchive />} />
                     <Route path="/profile" element={<ClinicalProfile />} />
                 </Routes>
-                <ClinicalAssistant />
+
             </div>
         </Router>
     );
