@@ -16,24 +16,92 @@ st.set_page_config(
 # Premium Clinical Theme
 st.markdown("""
     <style>
-    .main { background-color: #060b26; color: #e0f2fe; }
-    .stButton>button {
-        background: linear-gradient(45deg, #f97316, #dc2626);
-        color: white;
-        border: none;
-        border-radius: 12px;
-        font-weight: bold;
-        padding: 10px 24px;
-        width: 100%;
+    /* Global Styles */
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap');
+    
+    .stApp {
+        background-color: #060b26;
+        background-image: radial-gradient(circle at 20% 20%, rgba(249, 115, 22, 0.05) 0%, transparent 40%),
+                          radial-gradient(circle at 80% 80%, rgba(220, 38, 38, 0.05) 0%, transparent 40%);
+        color: #e0f2fe;
+        font-family: 'Inter', sans-serif;
     }
+    
+    /* Sidebar Styling */
+    section[data-testid="stSidebar"] {
+        background-color: rgba(10, 15, 45, 0.95) !important;
+        border-right: 1px solid rgba(255, 255, 255, 0.05);
+    }
+    
+    /* Header Styling */
+    h1, h2, h3 {
+        text-transform: uppercase;
+        letter-spacing: -0.02em;
+        font-weight: 900 !important;
+    }
+    .orange-text { color: #f97316; }
+    
+    /* Clinical Card Styling */
     .clinical-card {
         background: rgba(30, 58, 138, 0.2);
-        padding: 25px;
-        border-radius: 24px;
+        backdrop-filter: blur(20px);
+        padding: 30px;
+        border-radius: 32px;
         border: 1px solid rgba(255, 255, 255, 0.05);
-        margin-bottom: 20px;
+        margin-bottom: 25px;
+        transition: all 0.3s ease;
     }
-    .metric-val { font-size: 32px; font-weight: 900; color: #f97316; }
+    .clinical-card:hover {
+        border-color: rgba(249, 115, 22, 0.3);
+        transform: translateY(-5px);
+    }
+    
+    .metric-label {
+        font-size: 10px;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.2em;
+        color: #38bdf8;
+        margin-bottom: 8px;
+    }
+    .metric-val {
+        font-size: 42px;
+        font-weight: 900;
+        line-height: 1;
+        margin-bottom: 12px;
+        font-style: italic;
+    }
+    .metric-detail {
+        font-size: 9px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        color: rgba(255, 255, 255, 0.4);
+    }
+
+    /* Buttons */
+    .stButton>button {
+        background: linear-gradient(90deg, #f97316, #dc2626) !important;
+        border: none !important;
+        border-radius: 16px !important;
+        color: white !important;
+        font-weight: 900 !important;
+        text-transform: uppercase !important;
+        letter-spacing: 0.2em !important;
+        padding: 15px 0 !important;
+        box-shadow: 0 10px 25px rgba(249, 115, 22, 0.2) !important;
+    }
+    
+    /* Status Labels */
+    .status-badge {
+        padding: 4px 12px;
+        border-radius: 8px;
+        font-size: 10px;
+        font-weight: 900;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+    }
+    .status-online { background: rgba(16, 185, 129, 0.1); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.2); }
     </style>
     """, unsafe_allow_html=True)
 
@@ -57,31 +125,56 @@ with st.sidebar:
     
     st.markdown("---")
     if check_backend():
-        st.success("Neural Node: ONLINE")
+        st.markdown('<div class="status-badge status-online">Neural Node: ONLINE</div>', unsafe_allow_html=True)
     else:
         st.error("Neural Node: OFFLINE")
 
 # --- Page: Clinical Hub ---
 if page == "Clinical Hub":
-    st.title("🧬 Clinical Synthesis Hub")
-    st.markdown("#### Autonomous Intelligence for Pharmacology & Pathology")
+    st.markdown('<h1>MedFusion <span class="orange-text italic">AI</span></h1>', unsafe_allow_html=True)
+    st.markdown("#### <span style='opacity:0.6'>Autonomous Intelligence for Pharmacology & Pathology</span>", unsafe_allow_html=True)
+    st.markdown("<br>", unsafe_allow_html=True)
     
     col1, col2, col3 = st.columns(3)
     
-    # Fetch real stats from Backend
     try:
         stats = requests.get(f"{API_BASE_URL}/analytics/population").json()
         with col1:
-            st.markdown(f'<div class="clinical-card"><p>Active Prescriptions</p><p class="metric-val">{stats["total_prescriptions"]}</p></div>', unsafe_allow_html=True)
+            st.markdown(f'''
+                <div class="clinical-card">
+                    <p class="metric-label">PHARMACOLOGY</p>
+                    <p class="metric-val">{stats["total_prescriptions"]}</p>
+                    <p class="metric-detail">Active Neural Orders</p>
+                </div>
+            ''', unsafe_allow_html=True)
         with col2:
-            st.markdown(f'<div class="clinical-card"><p>Processed Labs</p><p class="metric-val">{stats["total_pathology"]}</p></div>', unsafe_allow_html=True)
+            st.markdown(f'''
+                <div class="clinical-card">
+                    <p class="metric-label">PATHOLOGY</p>
+                    <p class="metric-val">{stats["total_pathology"]}</p>
+                    <p class="metric-detail">Processed Lab Charts</p>
+                </div>
+            ''', unsafe_allow_html=True)
         with col3:
-            st.markdown(f'<div class="clinical-card"><p>System Precision</p><p class="metric-val">99.8%</p></div>', unsafe_allow_html=True)
+            st.markdown(f'''
+                <div class="clinical-card">
+                    <p class="metric-label">PRECISION</p>
+                    <p class="metric-val">99.8%</p>
+                    <p class="metric-detail">Diagnostic Integrity Rate</p>
+                </div>
+            ''', unsafe_allow_html=True)
     except:
         st.warning("Awaiting population telemetry data...")
 
-    st.markdown("### 📊 Performance Metrics")
-    st.info("System is monitoring autonomous cross-correlation between drug intakes and metabolic outputs.")
+    st.markdown("### 📊 CLINICAL PIPELINE STATUS")
+    st.markdown('''
+        <div class="clinical-card" style="border-left: 4px solid #f97316;">
+            <p style="font-size:12px; font-weight:700; margin:0;">SYSTEM SYNCHRONIZATION ACTIVE</p>
+            <p style="font-size:10px; opacity:0.6; margin-top:5px; text-transform:uppercase; letter-spacing:0.1em;">
+                Monitoring autonomous cross-correlation between pharmacological drug intakes and biometric metabolic outputs.
+            </p>
+        </div>
+    ''', unsafe_allow_html=True)
 
 # --- Page: Universal Upload ---
 elif page == "Universal Upload":
@@ -154,23 +247,31 @@ elif page == "Clinical Vault":
 
 # --- Page: Synthesis Dashboard ---
 elif page == "Synthesis Dashboard":
-    st.title("⚡ Clinical Synthesis Dashboard")
-    st.markdown("Proactive correlation between medications and biometrics.")
+    st.markdown('<h1>⚡ Neural <span class="orange-text italic">Synthesis</span></h1>', unsafe_allow_html=True)
+    st.markdown("#### <span style='opacity:0.6'>Proactive correlation between medications and biometrics.</span>", unsafe_allow_html=True)
+    st.markdown("<br>", unsafe_allow_html=True)
     
     try:
         synthesis = requests.get(f"{API_BASE_URL}/telemetry/synthesis").json()
         
-        st.metric("Aggregate Health Score", f"{synthesis['health_score']}%")
+        st.markdown(f'''
+            <div class="clinical-card" style="text-align:center;">
+                <p class="metric-label">AGGREGATE HEALTH SCORE</p>
+                <p class="metric-val" style="color:#10b981;">{synthesis['health_score']}%</p>
+                <p class="metric-detail">Longitudinal Stability Index</p>
+            </div>
+        ''', unsafe_allow_html=True)
         
         if synthesis['correlations']:
             for corr in synthesis['correlations']:
-                color = "green" if corr['impact'] == "Positive" else "red"
-                st.markdown(f"""
-                    <div style="padding:20px; border-left:10px solid {color}; background:rgba(255,255,255,0.05); border-radius:10px; margin-bottom:15px;">
-                        <h4 style="margin:0;">{corr['title']}</h4>
-                        <p style="margin:5px 0 0 0; font-size:14px; opacity:0.8;">{corr['message']}</p>
+                color = "#10b981" if corr['impact'] == "Positive" else "#dc2626"
+                st.markdown(f'''
+                    <div class="clinical-card" style="border-left: 6px solid {color};">
+                        <h4 style="margin:0; font-size:16px;">{corr['title']}</h4>
+                        <p style="margin:8px 0 0 0; font-size:12px; opacity:0.7; letter-spacing:0.05em;">{corr['message']}</p>
+                        <div style="margin-top:10px; font-size:9px; font-weight:800; color:{color}; text-transform:uppercase;">IMPACT: {corr['impact']}</div>
                     </div>
-                """, unsafe_allow_html=True)
+                ''', unsafe_allow_html=True)
         else:
             st.info("Active Correlation Scan: No immediate risks detected.")
             
@@ -179,18 +280,38 @@ elif page == "Synthesis Dashboard":
 
 # --- Page: Patient Profile ---
 elif page == "Patient Profile":
-    st.title("👤 Patient Clinical Profile")
+    st.markdown('<h1>👤 Clinical <span class="orange-text italic">Profile</span></h1>', unsafe_allow_html=True)
+    st.markdown("<br>", unsafe_allow_html=True)
+    
     try:
         emergency = requests.get(f"{API_BASE_URL}/telemetry/emergency").json()
         
         col1, col2 = st.columns(2)
         with col1:
-            st.markdown(f'<div class="clinical-card"><h3>{emergency["name"]}</h3><p>Vault ID: {emergency["vault_id"]}</p></div>', unsafe_allow_html=True)
+            st.markdown(f'''
+                <div class="clinical-card">
+                    <p class="metric-label">IDENTIFIED PATIENT</p>
+                    <p class="metric-val">{emergency["name"]}</p>
+                    <p class="metric-detail">VAULT ID: {emergency["vault_id"]}</p>
+                </div>
+            ''', unsafe_allow_html=True)
         with col2:
-            st.markdown(f'<div class="clinical-card"><h3>Blood Group: {emergency["blood_group"]}</h3><p>Status: VERIFIED</p></div>', unsafe_allow_html=True)
+            st.markdown(f'''
+                <div class="clinical-card">
+                    <p class="metric-label">BLOOD GROUP</p>
+                    <p class="metric-val" style="color:#dc2626;">{emergency["blood_group"]}</p>
+                    <p class="metric-detail">Clinical Status: VERIFIED</p>
+                </div>
+            ''', unsafe_allow_html=True)
             
-        st.subheader("⚠️ Critical Allergies")
-        st.write(", ".join(emergency['allergies']) if emergency['allergies'] else "No known allergies.")
+        st.markdown("### ⚠️ CRITICAL ALLERGIES")
+        st.markdown(f'''
+            <div class="clinical-card" style="background:rgba(220, 38, 38, 0.1); border-color: rgba(220, 38, 38, 0.2);">
+                <p style="font-size:14px; font-weight:800; color:#ef4444; margin:0;">
+                    {", ".join(emergency['allergies']) if emergency['allergies'] else "NO KNOWN ALLERGIES RECORDED"}
+                </p>
+            </div>
+        ''', unsafe_allow_html=True)
         
     except:
         st.error("Profile Service Offline")
