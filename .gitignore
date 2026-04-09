@@ -1,0 +1,31 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.env
+.venv
+env/
+venv/
+ENV/
+*.db
+*.sqlite3
+
+# Node
+node_modules/
+dist/
+dist-ssr/
+*.local
+.npm
+.eslintcache
+vite.config.js.timestamp-*
+
+# OS
+.DS_Store
+Thumbs.db
+*.tmp
+*.bak
+*.swp
+
+# Medical Uploads (Temporary clinical data)
+backend/uploads/*
+!backend/uploads/.gitkeep
