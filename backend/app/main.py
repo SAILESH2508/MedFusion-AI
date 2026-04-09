@@ -23,6 +23,10 @@ import random
 
 app = FastAPI(title="MedFusion AI API")
 
+# Simple Secure In-Memory/DB Auth Logic
+def get_password_hash(password):
+    return password # Simplified for demo, can use passlib/bcrypt later
+
 # Global Config
 UPLOAD_DIR = "uploads"
 os.makedirs(UPLOAD_DIR, exist_ok=True)
@@ -65,6 +69,58 @@ def read_root():
         "message": "MedFusion AI Clinical Pipeline",
         "status": "Production Ready",
         "version": "5.0.1-PRO"
+    }
+
+# --- Authentication Endpoints ---
+
+@app.post("/auth/signup")
+async def signup(data: dict, db: Session = Depends(database.get_db)):
+    email = data.get("email")
+    password = data.get("password")
+    role = data.get("role", "Patient")
+    full_name = data.get("full_name")
+    
+    if db.query(models.User).filter(models.User.email == email).first():
+        throw_msg = f"User with ID {email} already exists in the neural vault."
+        raise HTTPException(status_code=400, detail=throw_msg)
+    
+    new_user = models.User(
+        email=email,
+        hashed_password=get_password_hash(password),
+        full_name=full_name,
+        role=role
+    )
+    db.add(new_user)
+    db.commit()
+    db.refresh(new_user)
+    
+    # If its a patient, create a linked patient record automatically
+    if role == "Patient":
+        new_patient = models.Patient(
+            first_name=full_name.split()[0] if full_name else "User",
+            last_name=full_name.split()[-1] if full_name and len(full_name.split()) > 1 else "Profile",
+            doctor_id=None
+        )
+        db.add(new_patient)
+        db.commit()
+
+    return {"message": "Neural Identity Initialized", "user_id": new_user.id}
+
+@app.post("/auth/login")
+async def login(data: dict, db: Session = Depends(database.get_db)):
+    email = data.get("email")
+    password = data.get("password")
+    
+    user = db.query(models.User).filter(models.User.email == email).first()
+    if not user or user.hashed_password != password:
+        raise HTTPException(status_code=401, detail="Access Denied: Invalid Credentials")
+    
+    return {
+        "status": "Authenticated",
+        "user_id": user.id,
+        "email": user.email,
+        "role": user.role,
+        "full_name": user.full_name
     }
 
 

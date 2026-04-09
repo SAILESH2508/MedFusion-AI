@@ -43,8 +43,6 @@ Strict document validation protocols that block non-clinical telemetry assets, e
 | **AI Engine** | FastAPI | High-performance neural inference backend. |
 | **Neural Core**| PyTorch | Model inference for entity extraction and risk assessment. |
 | **Database** | SQLAlchemy | Relational persistence with SQLite for clinical records. |
-| **Styling** | Tailwind CSS | (Frontend) Design system for secondary web views. |
-| **Motion** | Framer Motion | (Frontend) Fluid transitions for secondary web views. |
 
 ---
 
@@ -79,13 +77,6 @@ uvicorn app.main:app --reload
 ### 2. Launch Main Interface (Streamlit)
 ```powershell
 streamlit run medfusion_app.py
-```
-
-### 3. Launch Secondary Web UI (Optional)
-```powershell
-cd frontend
-npm install
-npm run dev
 ```
 
 ---

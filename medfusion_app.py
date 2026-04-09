@@ -10,7 +10,7 @@ st.set_page_config(
     page_title="MedFusion AI // Clinical Synthesis Hub",
     page_icon="🧬",
     layout="wide",
-    initial_sidebar_state="expanded"
+    initial_sidebar_state="collapsed"
 )
 
 # Premium Clinical Theme
@@ -79,17 +79,20 @@ st.markdown("""
         color: rgba(255, 255, 255, 0.4);
     }
 
-    /* Buttons */
-    .stButton>button {
-        background: linear-gradient(90deg, #f97316, #dc2626) !important;
-        border: none !important;
-        border-radius: 16px !important;
-        color: white !important;
-        font-weight: 900 !important;
-        text-transform: uppercase !important;
-        letter-spacing: 0.2em !important;
-        padding: 15px 0 !important;
-        box-shadow: 0 10px 25px rgba(249, 115, 22, 0.2) !important;
+    /* Navbar Button Specifics */
+    div[data-testid="stColumn"] > div > div > div > button {
+        background: transparent !important;
+        border: 1px solid rgba(255, 255, 255, 0.05) !important;
+        color: #38bdf8 !important;
+        font-size: 10px !important;
+        letter-spacing: 0.1em !important;
+        box-shadow: none !important;
+        padding: 8px 15px !important;
+        height: auto !important;
+    }
+    div[data-testid="stColumn"] > div > div > div > button:hover {
+        border-color: #f97316 !important;
+        color: #f97316 !important;
     }
     
     /* Status Labels */
@@ -102,6 +105,22 @@ st.markdown("""
         letter-spacing: 0.1em;
     }
     .status-online { background: rgba(16, 185, 129, 0.1); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.2); }
+
+    /* Primary Action Button (Gradients) */
+    .stButton > button[kind="secondary"] {
+        background: linear-gradient(90deg, #f97316, #dc2626) !important;
+        border: none !important;
+        border-radius: 12px !important;
+        color: white !important;
+        font-weight: 900 !important;
+        letter-spacing: 0.1em !important;
+        height: 50px !important;
+    }
+    
+    /* Hide Sidebar and Menu */
+    #MainMenu {visibility: hidden;}
+    header {visibility: hidden;}
+    section[data-testid="stSidebar"] { display: none; }
     </style>
     """, unsafe_allow_html=True)
 
@@ -115,19 +134,125 @@ def check_backend():
     except:
         return False
 
-# --- Sidebar Navigation ---
-with st.sidebar:
-    st.image("https://img.icons8.com/nolan/96/shield.png", width=80)
-    st.title("MedFusion AI")
-    st.markdown("`V5.2 NEURAL CORE`")
-    st.markdown("---")
-    page = st.radio("Navigation", ["Clinical Hub", "Universal Upload", "Clinical Vault", "Synthesis Dashboard", "Patient Profile"])
+# --- Navbar Implementation (RBAC Enabled) ---
+if 'authenticated' not in st.session_state:
+    st.session_state.authenticated = False
+if 'role' not in st.session_state:
+    st.session_state.role = None
+if 'page' not in st.session_state:
+    st.session_state.page = "Clinical Hub"
+
+# --- Login/Signup Logic ---
+def login_page():
+    # Initialize UI state
+    if 'auth_mode' not in st.session_state:
+        st.session_state.auth_mode = "Login"
+
+    st.markdown('<div style="height:5vh;"></div>', unsafe_allow_html=True)
+    col1, col2, col3 = st.columns([1,1.5,1])
     
-    st.markdown("---")
-    if check_backend():
-        st.markdown('<div class="status-badge status-online">Neural Node: ONLINE</div>', unsafe_allow_html=True)
-    else:
-        st.error("Neural Node: OFFLINE")
+    with col2:
+        st.markdown(f'''
+            <div class="clinical-card" style="text-align:center;">
+                <h1 style="font-size:36px; margin-bottom:10px;">MedFusion <span class="orange-text italic">AI</span></h1>
+                <p style="text-transform:uppercase; font-size:10px; letter-spacing:0.4em; opacity:0.6; margin-bottom:40px;">Neural Identity Gateway // {st.session_state.auth_mode}</p>
+        ''', unsafe_allow_html=True)
+        
+        if st.session_state.auth_mode == "Login":
+            email = st.text_input("Neural ID (Email)")
+            password = st.text_input("Access Key (Password)", type="password")
+            
+            if st.button("INITIALIZE SESSION"):
+                if email and password:
+                    try:
+                        res = requests.post(f"{API_BASE_URL}/auth/login", json={"email": email, "password": password})
+                        if res.status_code == 200:
+                            data = res.json()
+                            st.session_state.authenticated = True
+                            st.session_state.role = data['role']
+                            st.session_state.user_info = data
+                            st.success(f"Access Granted: Welcome {data['full_name']}")
+                            st.rerun()
+                        else:
+                            st.error(res.json().get('detail', "Access Denied"))
+                    except Exception as e:
+                        st.error("Connection to Neural Node Failed")
+            
+            if st.button("No ID? Register Clinical Profile"):
+                st.session_state.auth_mode = "Signup"
+                st.rerun()
+        
+        else: # SIGNUP MODE
+            name = st.text_input("Full Name (Legal)")
+            email = st.text_input("Preferred Neural ID (Email)")
+            password = st.text_input("Genesis Access Key (Password)", type="password")
+            role = st.selectbox("Assign Protocol", ["Patient", "Doctor", "Admin"])
+            
+            if st.button("CREATE NEURAL IDENTITY"):
+                if name and email and password:
+                    try:
+                        res = requests.post(f"{API_BASE_URL}/auth/signup", json={
+                            "email": email, "password": password, "role": role, "full_name": name
+                        })
+                        if res.status_code == 200:
+                            st.success("Identity Created. Switching to Login Gateway...")
+                            st.session_state.auth_mode = "Login"
+                            st.rerun()
+                        else:
+                            st.error(res.json().get('detail', "Signup Conflict"))
+                    except:
+                        st.error("Neural Node Connection Error")
+            
+            if st.button("Already Identified? Return to Login"):
+                st.session_state.auth_mode = "Login"
+                st.rerun()
+        
+        st.markdown('</div>', unsafe_allow_html=True)
+
+if not st.session_state.authenticated:
+    login_page()
+    st.stop()
+
+# --- Main Application (Post-Auth) ---
+nav_container = st.container()
+with nav_container:
+    # Adjust navigation based on Role
+    role = st.session_state.role
+    
+    # Navigation Grid
+    col_logo, col_nav1, col_nav2, col_nav3, col_nav4, col_nav5, col_logout = st.columns([2, 1, 1, 1, 1.2, 1, 1.5])
+    
+    with col_logo:
+        st.markdown(f'<h2 style="margin:0; font-size:20px;">MedFusion <span class="orange-text italic">{role.upper()}</span></h2>', unsafe_allow_html=True)
+    
+    with col_nav1:
+        if st.button("HUB"): st.session_state.page = "Clinical Hub"
+        
+    # Restrictions: Only Doctor and Admin can Upload
+    with col_nav2:
+        if role in ["Doctor", "Admin"]:
+            if st.button("UPLOAD"): st.session_state.page = "Universal Upload"
+        else:
+            st.markdown('<p style="font-size:8px; opacity:0.3; margin-top:12px;">READ ONLY</p>', unsafe_allow_html=True)
+            
+    with col_nav3:
+        if st.button("VAULT"): st.session_state.page = "Clinical Vault"
+        
+    with col_nav4:
+        if st.button("SYNTHESIS"): st.session_state.page = "Synthesis Dashboard"
+        
+    with col_nav5:
+        if st.button("PROFILE"): st.session_state.page = "Patient Profile"
+        
+    with col_logout:
+        if st.button("LOGOUT"):
+            st.session_state.authenticated = False
+            st.rerun()
+
+st.markdown("<br><hr style='opacity:0.05; margin:0;'><br>", unsafe_allow_html=True)
+
+# Set page based on session state
+page = st.session_state.page
 
 # --- Page: Clinical Hub ---
 if page == "Clinical Hub":
@@ -135,10 +260,11 @@ if page == "Clinical Hub":
     st.markdown("#### <span style='opacity:0.6'>Autonomous Intelligence for Pharmacology & Pathology</span>", unsafe_allow_html=True)
     st.markdown("<br>", unsafe_allow_html=True)
     
-    col1, col2, col3 = st.columns(3)
-    
     try:
         stats = requests.get(f"{API_BASE_URL}/analytics/population").json()
+        
+        # Row 1: Shared Metrics
+        col1, col2, col3 = st.columns(3)
         with col1:
             st.markdown(f'''
                 <div class="clinical-card">
@@ -155,14 +281,26 @@ if page == "Clinical Hub":
                     <p class="metric-detail">Processed Lab Charts</p>
                 </div>
             ''', unsafe_allow_html=True)
+            
+        # Role-Based Column 3
         with col3:
-            st.markdown(f'''
-                <div class="clinical-card">
-                    <p class="metric-label">PRECISION</p>
-                    <p class="metric-val">99.8%</p>
-                    <p class="metric-detail">Diagnostic Integrity Rate</p>
-                </div>
-            ''', unsafe_allow_html=True)
+            if st.session_state.role == "Admin":
+                st.markdown(f'''
+                    <div class="clinical-card" style="border-color: #f97316;">
+                        <p class="metric-label" style="color:#f97316;">SYSTEM PRECISION</p>
+                        <p class="metric-val">99.8%</p>
+                        <p class="metric-detail">Neural Edge Integrity</p>
+                    </div>
+                ''', unsafe_allow_html=True)
+            else:
+                st.markdown(f'''
+                    <div class="clinical-card">
+                        <p class="metric-label">HEALTH SCORE</p>
+                        <p class="metric-val" style="color:#10b981;">85%</p>
+                        <p class="metric-detail">Your Therapeutic Stability</p>
+                    </div>
+                ''', unsafe_allow_html=True)
+                
     except:
         st.warning("Awaiting population telemetry data...")
 
