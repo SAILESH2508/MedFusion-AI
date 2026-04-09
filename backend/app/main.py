@@ -236,35 +236,6 @@ async def analyze_pathology(
         "type": "pathology"
     }
 
-@app.post("/scans/upload/")
-async def upload_scan(
-    patient_id: int, 
-    scan_type: str, 
-    file: UploadFile = File(...),
-    db: Session = Depends(database.get_db)
-):
-    file_id = str(uuid.uuid4())
-    file_path = f"uploads/scan_{file_id}_{file.filename}"
-    os.makedirs("uploads", exist_ok=True)
-    with open(file_path, "wb") as buffer:
-        shutil.copyfileobj(file.file, buffer)
-    
-    # --- Neural Integrity Gate (Strict Restriction) ---
-    engine = InferenceEngine()
-    validation = engine.predict(file_path, category='scan')
-    if "error" in validation:
-        # Cleanup file if invalid
-        if os.path.exists(file_path):
-            os.remove(file_path)
-        raise HTTPException(status_code=400, detail=validation['error'])
-
-    return {
-        "scan_id": random.randint(1000, 9999),
-        "status": "processing",
-        "message": "Clinical scan ingestion successful. Neural core initialized.",
-        "file_path": file_path,
-        "telemetry_node": "ORTHO-CORE-V2"
-    }
 
 @app.get("/pathology/", response_model=List[dict])
 def list_pathology(db: Session = Depends(database.get_db)):

@@ -9,7 +9,6 @@ const UniversalUpload = () => {
     const [file, setFile] = useState(null);
     const [loading, setLoading] = useState(false);
     const [ingestionType, setIngestionType] = useState('prescription');
-    const [scanType, setScanType] = useState('ortho');
     const [result, setResult] = useState(null);
     const [error, setError] = useState(null);
     const navigate = useNavigate();
@@ -40,10 +39,6 @@ const UniversalUpload = () => {
 
         if (ingestionType === 'prescription') endpoint = '/prescriptions/upload/';
         else if (ingestionType === 'pathology') endpoint = '/pathology/analyze/';
-        else {
-            endpoint = '/scans/upload/';
-            params = { patient_id: 1, scan_type: scanType };
-        }
 
         try {
             const response = await api.post(endpoint, formData, { params });
@@ -56,11 +51,7 @@ const UniversalUpload = () => {
                 return;
             }
 
-            if (ingestionType === 'imaging') {
-                setResult({ type: 'imaging', ...response.data });
-            } else {
-                setResult(response.data);
-            }
+            setResult(response.data);
             setLoading(false);
         } catch (err) {
             setLoading(false);
@@ -95,8 +86,7 @@ const UniversalUpload = () => {
                         <div className="p-1 rounded-2xl bg-indigo-950/40 backdrop-blur-3xl border border-white/5 flex gap-1">
                             {[
                                 { id: 'prescription', label: 'Pharmacological Orders', term: 'Prescriptions', icon: Pill, color: 'bg-orange-600', detail: 'Upload medical charts or prescriptions given by your doctor.' },
-                                { id: 'pathology', label: 'Diagnostic Pathology', term: 'Lab Reports', icon: Droplets, color: 'bg-yellow-500', detail: 'Upload your lab test results or health report values.' },
-                                { id: 'imaging', label: 'Neural Imaging', term: 'Radiology', icon: Microscope, color: 'bg-blue-600', detail: 'Upload DICOM or radiograph assets for neural voxel mapping.' }
+                                { id: 'pathology', label: 'Diagnostic Pathology', term: 'Lab Reports', icon: Droplets, color: 'bg-yellow-500', detail: 'Upload your lab test results or health report values.' }
                             ].map(type => (
                                 <button
                                     key={type.id}
@@ -104,7 +94,7 @@ const UniversalUpload = () => {
                                     className={`flex-1 flex items-center justify-center space-x-2 py-3 rounded-xl transition-all ${ingestionType === type.id ? `${type.color} text-white shadow-lg` : 'text-blue-200 hover:text-orange-500'}`}
                                 >
                                     <type.icon className="w-3.5 h-3.5" />
-                                    <span className="font-bold text-[10px] uppercase tracking-widest">{type.id === 'prescription' ? 'Pharmacology' : type.id === 'pathology' ? 'Pathology' : 'Radiology'}</span>
+                                    <span className="font-bold text-[10px] uppercase tracking-widest">{type.id === 'prescription' ? 'Pharmacology' : 'Pathology'}</span>
                                 </button>
                             ))}
                         </div>
@@ -113,25 +103,11 @@ const UniversalUpload = () => {
                             <p className="text-[11px] text-blue-100 font-medium leading-relaxed">
                                 {[
                                     { id: 'prescription', detail: 'Upload medical charts or prescriptions given by your doctor.' },
-                                    { id: 'pathology', detail: 'Upload your lab test results or health report values.' },
-                                    { id: 'imaging', detail: 'Ingest radiographic DICOM imagery (X-Ray, CT, MRI) for clinical voxel assessment.' }
+                                    { id: 'pathology', detail: 'Upload your lab test results or health report values.' }
                                 ].find(t => t.id === ingestionType).detail}
                             </p>
                         </div>
 
-                        {ingestionType === 'imaging' && (
-                            <div className="grid grid-cols-3 gap-2">
-                                {['ortho', 'dental', 'spine'].map(type => (
-                                    <button
-                                        key={type}
-                                        onClick={() => setScanType(type)}
-                                        className={`py-3 rounded-xl border text-[9px] font-black uppercase tracking-widest transition-all ${scanType === type ? 'bg-blue-600 border-blue-400 text-white shadow-lg' : 'bg-white/5 border-white/10 text-blue-300'}`}
-                                    >
-                                        {type}
-                                    </button>
-                                ))}
-                            </div>
-                        )}
 
 
 
@@ -143,9 +119,7 @@ const UniversalUpload = () => {
                                     className="hidden"
                                     onChange={handleFileChange}
                                     accept={
-                                    ingestionType === 'prescription' ? '.pdf,.jpg,.jpeg,.png,.tiff' :
-                                    ingestionType === 'pathology' ? '.pdf,.json,.csv' :
-                                                '.dcm,.dicom,.jpg,.png,.jpeg'
+                                    ingestionType === 'prescription' ? '.pdf,.jpg,.jpeg,.png,.tiff' : '.pdf,.json,.csv'
                                     }
                                 />
                                 {file ? (
@@ -286,41 +260,6 @@ const UniversalUpload = () => {
                                                 </div>
                                             ))}
                                         </div>
-                                    </div>
-                                ) : ingestionType === 'imaging' ? (
-                                    <div className="bg-indigo-950/40 backdrop-blur-3xl p-8 rounded-3xl border border-white/5 shadow-xl h-full flex flex-col">
-                                        <div className="mb-10 text-center">
-                                            <div className="inline-flex px-3 py-1 bg-blue-600/20 text-blue-400 rounded-full text-[9px] font-black uppercase tracking-[0.2em] mb-6 border border-blue-500/30">Neural Core Analysis</div>
-                                            <h2 className="text-4xl font-black text-white uppercase tracking-tighter italic">RADIOLOGY <span className="text-orange-500">VOXEL</span></h2>
-                                        </div>
-
-                                        <div className="grid grid-cols-2 gap-6 mb-8">
-                                            <div className="bg-white/5 border border-white/10 p-8 rounded-[40px] text-center">
-                                                <p className="text-[50px] font-black text-white leading-none">{Math.round(result.confidence * 100)}%</p>
-                                                <p className="text-[9px] font-bold text-blue-300 uppercase tracking-widest mt-2">Neural Confidence</p>
-                                            </div>
-                                            <div className="bg-white/5 border border-white/10 p-8 rounded-[40px] text-center">
-                                                <p className="text-[50px] font-black text-orange-500 leading-none">{result.segments_mapped}</p>
-                                                <p className="text-[9px] font-bold text-blue-300 uppercase tracking-widest mt-2">Nodes Mapped</p>
-                                            </div>
-                                        </div>
-
-                                        <div className="p-10 bg-indigo-900/40 border border-white/5 rounded-[40px] flex-1 mb-8">
-                                            <div className="flex items-center space-x-4 mb-6">
-                                                <Zap className="w-6 h-6 text-orange-500" />
-                                                <span className="text-sm font-black text-white uppercase tracking-widest">{result.inference_type}</span>
-                                            </div>
-                                            <p className="text-xl text-white font-bold leading-relaxed italic border-l-4 border-blue-500 pl-8">
-                                                "{result.findings}"
-                                            </p>
-                                        </div>
-
-                                        <button 
-                                            onClick={() => navigate('/telemetry')}
-                                            className="w-full py-4 bg-white/5 border border-white/10 rounded-2xl text-[10px] font-black text-white uppercase tracking-[0.3em] hover:bg-white/10 transition-all"
-                                        >
-                                            View Full Neural Mapping
-                                        </button>
                                     </div>
                                 ) : (
                                     <div className="bg-indigo-950/40 backdrop-blur-3xl p-8 rounded-3xl border border-white/5 shadow-xl h-full flex flex-col">

@@ -4,10 +4,9 @@ MedFusion AI is a next-generation diagnostic suite designed for ortho-dental int
 
 ## 🚀 Actual Core Features
 - **Neural Ingestion Core**: Unified processing center for pharmacological orders and lab-tested pathology reports.
-- **Radiology Voxel Mapping**: Intelligent processing of radiographic imagery (X-Ray, CT, MRI) with confidence-weighted diagnostic findings.
 - **Clinical Telemetry Hub**: Longitudinal tracking of metabolic trajectories (e.g., LDL-C) with autonomous health score synthesis.
 - **Autonomous Correlation**: AI-powered cross-referencing of prescriptions against biometric telemetry to identify metabolic risks.
-- **Neural Integrity Gates**: Strict modality validation that blocks non-clinical data, ensuring a secure diagnostic environment.
+- **Neural Integrity Gates**: Strict document validation that blocks non-clinical files, ensuring a secure diagnostic environment.
 - **Emergency Clinical Vault**: Instant-access identity module for responders featuring verified blood types and allergy alerts.
 - **Interactive Clinical Assistant**: Neural-GPT interface for real-time protocol consultation and clinical inquiries.
 

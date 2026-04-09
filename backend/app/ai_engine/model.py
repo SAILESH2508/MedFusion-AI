@@ -172,10 +172,7 @@ class InferenceEngine:
         
         if isinstance(input_data, str):
             # Strict Extension Mapping for Medical Assets
-            if any(input_data.lower().endswith(ext) for ext in ['.dcm', '.dicom', '.nii', '.mha']):
-                return 'scan'
             if any(input_data.lower().endswith(ext) for ext in ['.jpg', '.png', '.jpeg']):
-                if 'scan' in input_data.lower(): return 'scan'
                 if 'rx' in input_data.lower(): return 'prescription'
                 return 'document'
             
@@ -190,7 +187,7 @@ class InferenceEngine:
         
         # --- Strict Security Protocol: Block Unknown Modalities ---
         if modality == 'unknown' or modality == 'document':
-             return {"error": "Security Breach/Invalid Modality: The neural core has rejected this asset. Only verified clinical imagery (DICOM/Radiographed JPG) or structured lab data are permitted."}
+             return {"error": "Security Breach/Invalid Modality: The neural core has rejected this asset. Only verified clinical documents (Prescriptions/Lab Reports) or structured data are permitted."}
 
         if modality in ['clinical_text', 'prescription']:
             # If it's a file path but we expect text, we mock the OCR transition
@@ -215,14 +212,4 @@ class InferenceEngine:
         if modality in ['pathology_data', 'pathology']:
             return self.lab_analyzer.assess_risk(input_data)
         
-        if modality == 'scan':
-            # Simulated Computer Vision Inference
-            return {
-                "status": "success",
-                "inference_type": "Computer Vision (Radiology)",
-                "findings": "Neural voxel mapping complete. Minor osteal density variance detected in L4-L5 region.",
-                "confidence": 0.9842,
-                "segments_mapped": 14
-            }
-            
         return {"error": f"Modality '{modality}' not supported for autonomous analysis."}
