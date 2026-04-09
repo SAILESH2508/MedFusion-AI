@@ -1,66 +1,89 @@
-# MedFusion AI — Intelligent Clinical Platform
+# MedFusion AI // Clinical Telemetry & Diagnostic Core
 
-MedFusion AI is a next-generation diagnostic suite designed for ortho-dental intelligence. It provides a sleek, clinical-grade interface for image ingestion, neural inference, and medical record management.
+MedFusion AI is a high-fidelity clinical telemetry platform designed to bridge the gap between pharmacological prescriptions and longitudinal biometric pathology. By leveraging a neural inference core, it provides automated diagnostic insights, cross-modal correlation, and a secure clinical vault for patient safety.
 
-## 🚀 Actual Core Features
-- **Neural Ingestion Core**: Unified processing center for pharmacological orders and lab-tested pathology reports.
-- **Clinical Telemetry Hub**: Longitudinal tracking of metabolic trajectories (e.g., LDL-C) with autonomous health score synthesis.
-- **Autonomous Correlation**: AI-powered cross-referencing of prescriptions against biometric telemetry to identify metabolic risks.
-- **Neural Integrity Gates**: Strict document validation that blocks non-clinical files, ensuring a secure diagnostic environment.
-- **Emergency Clinical Vault**: Instant-access identity module for responders featuring verified blood types and allergy alerts.
+## 🚀 Core Capabilities
 
-## 🛠️ Technology Stack
-- **Backend**: FastAPI, SQLAlchemy (SQLite), PyTorch Neural Core.
-- **Frontend**: React (Vite), Framer Motion, Lucide-React, Tailwind CSS.
-- **Security**: AES-256 Metadata Vaulting & Modality-Gated Inference.
+### 1. Neural Ingestion Pipeline
+A unified ingestion gateway for clinical documentation:
+- **Pharmacological Orders**: Automated OCR-simulated extraction of drug dosages, frequencies, and clinical instructions from handwritten or digital prescriptions.
+- **Diagnostic Pathology**: Intelligent synthesis of lab report biomarkers (Glucose, HbA1c, LDL-C, etc.) into structured metabolic data.
 
-## 📦 Project Structure
+### 2. Autonomous Correlation Engine
+Real-time cross-referencing between pharmacological intakes and biometric telemetry:
+- Identifies **Untreated Metabolic Risks** (e.g., high LDL-C without statin therapy).
+- Verifies **Therapeutic Alignment** (e.g., confirming statin efficacy against lipid panels).
+- Proactive safety alerts for pharmacological contraindications.
+
+### 3. Clinical Telemetry Hub
+Visualize longitudinal health trajectories:
+- **Metabolic Trajectories**: Interactive tracking of vital biomarkers over time.
+- **Normalcy Index**: A proprietary neural score (0-100%) aggregating total physiological stability based on processed pathology reports.
+
+### 4. Emergency Clinical Vault
+A mission-critical identity module for rapid response:
+- Instant access to verified **Blood Groups**, **Critical Allergies**, and **Active Medications**.
+- Provisioned "Next-of-Kin" contact synchronization.
+
+### 5. Neural Integrity Gates
+Strict document validation protocols that block non-clinical telemetry assets, ensuring the diagnostic core only processes verified medical documentation.
+
+---
+
+## 🛠️ Performance-Driven Tech Stack
+
+| Layer | Technology | Purpose |
+| :--- | :--- | :--- |
+| **Backend** | FastAPI | High-performance asynchronous API gateway. |
+| **Neural Core**| PyTorch | Model inference for entity extraction and risk assessment. |
+| **Database** | SQLAlchemy | Relational persistence with SQLite for clinical records. |
+| **Frontend** | React + Vite | Ultralight, responsive UI architecture. |
+| **Styling** | Tailwind CSS | Utility-first design system with Glassmorphism. |
+| **Motion** | Framer Motion | Fluid, high-fidelity clinical transitions. |
+
+---
+
+## 📦 Project Architecture
+
 ```text
 medfusion-ai/
-├── backend/                # FastAPI Application
+├── backend/
 │   ├── app/
-│   │   ├── ai_engine/      # Neural Inference Models
-│   │   ├── models/         # DB Models (SQLAlchemy)
-│   │   ├── services/       # AI Orchestrate Logic
-│   │   └── main.py         # Entry point
-│   └── medfusion.db        # SQLite Local Database
-├── frontend/               # React Application
-│   ├── src/
-│   │   ├── components/     # UI Components (Navbar, AI Assistant)
-│   │   ├── pages/          # Hub, Upload, Archive, Viewer
-│   │   └── index.css       # Design System & Design Tokens
-└── docker-compose.yml      # Orchestration
+│   │   ├── ai_engine/      # Neural Inference & Biomarker logic
+│   │   ├── models/         # Database schemas (SQLAlchemy)
+│   │   └── main.py         # Primary API Gateway
+│   └── uploads/            # Secure document landing zone
+└── frontend/
+    ├── src/
+    │   ├── pages/          # Hub, Upload, Telemetry, Archive
+    │   └── components/     # UI Design System
+    └── tailwind.config.js  # Premium color tokens
 ```
 
-## 🛠️ Getting Started
+---
 
-### 1. Manual Setup (Recommended for Local Dev)
-**Backend:**
-```bash
+## ⚡ Quick Start
+
+### 1. Initialize Backend
+```powershell
 cd backend
 pip install -r requirements.txt
 uvicorn app.main:app --reload
 ```
-**Frontend:**
-```bash
+
+### 2. Initialize Frontend
+```powershell
 cd frontend
 npm install
 npm run dev
 ```
 
-### 2. Docker Setup
-```bash
-docker-compose up --build
-```
+---
 
-## 🧪 Testing
-Run the automated diagnostic suite:
-```bash
-cd backend
-python test_api.py
-```
+## 🛡️ Clinical Security
+- **Asset Gating**: Strict modality-based file filtering.
+- **Neural Verification**: Checksums for prescription integrity.
+- **Privacy First**: Local-first SQLite persistence for sensitive clinical telemetry.
 
-## 🔐 Security & Protocols
-- **AES-256 Vaulting**: All clinical assets are stored with industry-standard encryption mappings.
-- **Neural Integrity**: Modality-gated inference ensures specific diagnostic nodes only process relevant imagery.
-- **Clinical Handshake**: Verified link between front-end telemetry and neural core processing.
+---
+**MedFusion AI** — *Synchronizing Pharmacology with Physiological Truth.*
