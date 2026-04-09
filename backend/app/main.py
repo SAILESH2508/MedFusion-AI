@@ -268,51 +268,6 @@ def get_pathology(report_id: int, db: Session = Depends(database.get_db)):
     }
 
 
-@app.post("/chat/")
-async def chat_interaction(data: dict, db: Session = Depends(database.get_db)):
-    user_message = data.get("message", "").lower()
-    
-    # Real-world Patient Context
-    patient = db.query(models.Patient).filter(models.Patient.id == 1).first()
-    patient_profile = {
-        "allergies": patient.allergies if patient else [],
-        "name": f"{patient.first_name if patient else 'User'}"
-    }
-
-    # Advanced NLP Synthesis (Expert Clinical Gateway)
-    engine = InferenceEngine()
-    nlp_analysis = engine.predict(user_message, patient_profile=patient_profile)
-
-    # Safety Gate Transparency
-    if "error" in nlp_analysis and not nlp_analysis.get("medicines"):
-         return {"reply": f"⚠️ **Clinical Boundary Alert**: {nlp_analysis['error']}"}
-    
-    # Clinical Decision Logic (Weighted Response Synthesis)
-    if nlp_analysis.get("medicines") and any(m['name'] != 'Unclassified Rx' for m in nlp_analysis['medicines']):
-        # Prioritize classified medicines
-        meds = [m for m in nlp_analysis['medicines'] if m['name'] != 'Unclassified Rx']
-        med = meds[0]
-        reply = f"I've identified **{med['name']}** ({med['type']}) in your query. "
-        reply += f"Standard protocol: **{med['dosage']} {med['frequency']}**. "
-        
-        if nlp_analysis.get("recommendations"):
-            joined_recs = " ".join(nlp_analysis["recommendations"][:2]) # Top 2 clinical notes
-            reply += f"\n\n**Clinical Protocol:** {joined_recs}"
-            
-        if nlp_analysis.get("urgency") == "High":
-             reply += "\n\n⚠️ **URGENCY ALERT**: This medication combination requires immediate clinical correlation."
-             
-    elif "interactions" in user_message or "check" in user_message:
-         reply = "Drug-Drug Interaction Analysis: Initializing safety scan. Please provide at least two medications (e.g., 'Check Amoxicillin and Metoprolol') for a contraindication review."
-    elif "labs" in user_message or "report" in user_message or "summary" in user_message:
-         reply = "Clinical Telemetry Summary: I am currently cross-referencing your biometric trajectory with pharmacological intakes. You can view the full correlation on the Synthesis Dashboard."
-    elif "status" in user_message or "hello" in user_message or "hi" in user_message:
-         reply = "Clinical Gateway Online // Version 4.6.2. I am ready to analyze prescriptions for OCR extraction or lab reports for biomarker analysis. How can I assist with your clinical telemetry?"
-    else:
-        reply = "Clinical Assistant ready. You can ask about pharmacological dosages (e.g., 'What is the dose for Amoxicillin?') or provide blood work for metabolic analysis."
-    
-    return {"reply": reply}
-
 
 @app.get("/analytics/population")
 def get_population_analytics(db: Session = Depends(database.get_db)):

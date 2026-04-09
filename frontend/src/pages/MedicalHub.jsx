@@ -138,47 +138,64 @@ const MedicalHub = () => {
                     ))}
                 </div>
 
-                {/* Clinical Assistant Section */}
+                {/* Clinical Performance Metrics Dashboard - ENHANCEMENT */}
                 <motion.div
                     initial={{ opacity: 0, y: 40 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.8 }}
-                    className="max-w-5xl mx-auto mt-20 p-1 bg-gradient-to-r from-orange-600/20 via-blue-600/20 to-emerald-600/20 rounded-[40px]"
+                    className="max-w-5xl mx-auto mt-20"
                 >
-                    <div className="bg-[#060b26]/80 backdrop-blur-3xl rounded-[39px] p-12 flex flex-col lg:flex-row items-center justify-between gap-12 border border-white/5">
-                        <div className="flex-1 text-center lg:text-left">
-                            <div className="inline-flex items-center space-x-3 px-4 py-1.5 rounded-full bg-blue-500/10 border border-blue-500/20 mb-6 font-black text-[9px] text-blue-400 uppercase tracking-[0.4em]">
-                                Feature Node / Live Chat
-                            </div>
-                            <h2 className="text-4xl font-black text-white uppercase tracking-tighter mb-4">Clinical <span className="text-blue-500">Assistant</span><span className="text-orange-600">.</span></h2>
-                            <p className="text-sky-300/60 font-bold uppercase tracking-widest text-[10px] max-w-md leading-relaxed">
-                                Neural-linguistic interface for instant medical queries, titration logic, and diagnostic verification.
-                            </p>
+                    <div className="flex items-center justify-between mb-10">
+                        <div>
+                            <h2 className="text-3xl font-black text-white uppercase tracking-tighter">Clinical <span className="text-orange-600">Performance</span>.</h2>
+                            <p className="text-[10px] text-blue-400 font-bold uppercase tracking-[0.4em] mt-2">Real-time throughput of neural diagnostic pipeline</p>
                         </div>
-                        <div className="w-full lg:w-[400px]">
-                            <div className="relative group">
-                                <div className="absolute inset-0 bg-blue-600 blur-[80px] opacity-10 group-hover:opacity-20 transition-opacity" />
-                                <div className="relative bg-indigo-950/40 border border-white/5 p-8 rounded-[32px] shadow-2xl">
-                                    <div className="flex items-center space-x-4 mb-6">
-                                        <div className="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center shadow-lg shadow-blue-600/30">
-                                            <Zap className="w-5 h-5 text-white" />
-                                        </div>
-                                        <div>
-                                            <p className="text-[10px] font-black text-white uppercase tracking-widest">System Online</p>
-                                            <p className="text-[8px] font-black text-emerald-400 uppercase tracking-widest">Active Listening...</p>
-                                        </div>
+                        <div className="flex items-center space-x-4 bg-white/5 border border-white/10 px-6 py-2 rounded-2xl">
+                             <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse shadow-[0_0_10px_rgba(16,185,129,0.5)]" />
+                             <span className="text-[10px] font-black uppercase tracking-widest text-emerald-400">Node Sync Active</span>
+                        </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        {[
+                            { label: 'Neural Precision', val: '99.8%', detail: 'Inference Accuracy', icon: Cpu, color: 'text-blue-400' },
+                            { label: 'Network Latency', val: '14ms', detail: 'Edge-to-Core Sync', icon: Globe, color: 'text-orange-500' },
+                            { label: 'Data Integrity', val: 'Verified', detail: 'Modality Gating', icon: Shield, color: 'text-emerald-400' }
+                        ].map((metric, i) => (
+                            <div key={i} className="bg-indigo-950/40 backdrop-blur-3xl border border-white/5 p-8 rounded-[32px] group hover:border-orange-500/30 transition-all">
+                                <div className="flex items-center justify-between mb-8">
+                                    <div className={`p-3 bg-white/5 rounded-2xl ${metric.color}`}>
+                                        <metric.icon className="w-5 h-5" />
                                     </div>
-                                    <input
-                                        type="text"
-                                        placeholder="Ask about medications or scans..."
-                                        className="w-full bg-white/5 border border-white/10 p-5 rounded-2xl text-[11px] font-bold text-white placeholder:text-blue-400/40 uppercase tracking-widest focus:outline-none focus:border-blue-500/50 transition-all mb-4"
-                                    />
-                                    <button className="w-full py-4 bg-blue-600 text-white rounded-xl font-black text-[10px] uppercase tracking-[0.3em] hover:bg-orange-600 transition-all shadow-xl shadow-blue-600/20 active:scale-95">
-                                        Query Neural Hub
-                                    </button>
+                                    <div className="h-1 w-12 bg-white/10 rounded-full" />
+                                </div>
+                                <p className="text-[10px] font-black text-blue-200/40 uppercase tracking-widest mb-1">{metric.label}</p>
+                                <p className="text-3xl font-black text-white mb-4 italic leading-none">{metric.val}</p>
+                                <div className="flex items-center space-x-2 text-[8px] font-bold text-blue-400 uppercase tracking-widest">
+                                    <Zap className="w-3 h-3" />
+                                    <span>{metric.detail}</span>
                                 </div>
                             </div>
+                        ))}
+                    </div>
+
+                    {/* Quick Access Enhancement */}
+                    <div className="mt-8 p-10 bg-gradient-to-br from-indigo-900/60 to-blue-900/60 backdrop-blur-3xl border border-white/10 rounded-[40px] flex items-center justify-between shadow-2xl overflow-hidden relative group">
+                        <div className="absolute -right-10 -bottom-10 opacity-5 group-hover:opacity-10 transition-opacity">
+                             <Activity className="w-64 h-64 text-white" />
                         </div>
+                        <div className="relative z-10 max-w-xl">
+                            <h4 className="text-xl font-black text-white uppercase tracking-tight mb-4 italic">Autonomous Health Synchronization</h4>
+                            <p className="text-[11px] text-blue-100/60 font-medium leading-relaxed uppercase tracking-wider">
+                                MedFusion AI now proactively cross-references pharmacological changes with biometric telemetry without manual intervention.
+                            </p>
+                        </div>
+                        <button 
+                            onClick={() => navigate('/telemetry')}
+                            className="relative z-10 px-8 py-4 bg-orange-600 text-white text-[10px] font-black uppercase tracking-[0.3em] rounded-2xl hover:bg-white hover:text-orange-600 transition-all shadow-xl active:scale-95"
+                        >
+                            Sync Telemetry
+                        </button>
                     </div>
                 </motion.div>
             </main >

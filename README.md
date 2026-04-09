@@ -8,7 +8,6 @@ MedFusion AI is a next-generation diagnostic suite designed for ortho-dental int
 - **Autonomous Correlation**: AI-powered cross-referencing of prescriptions against biometric telemetry to identify metabolic risks.
 - **Neural Integrity Gates**: Strict document validation that blocks non-clinical files, ensuring a secure diagnostic environment.
 - **Emergency Clinical Vault**: Instant-access identity module for responders featuring verified blood types and allergy alerts.
-- **Interactive Clinical Assistant**: Neural-GPT interface for real-time protocol consultation and clinical inquiries.
 
 ## 🛠️ Technology Stack
 - **Backend**: FastAPI, SQLAlchemy (SQLite), PyTorch Neural Core.
