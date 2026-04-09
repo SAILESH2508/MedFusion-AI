@@ -20,7 +20,12 @@ Visualize longitudinal health trajectories:
 - **Metabolic Trajectories**: Interactive tracking of vital biomarkers over time.
 - **Normalcy Index**: A proprietary neural score (0-100%) aggregating total physiological stability based on processed pathology reports.
 
-### 4. Emergency Clinical Vault
+### 4. Diagnostic Analytics Node (Streamlit)
+A specialized administrative interface for population-level oversight:
+- **Trend Visualization**: Real-time graphing of pharmacological and pathology ingestion rates.
+- **Vault Auditing**: Direct oversight of clinical database entries and system health metrics.
+
+### 5. Emergency Clinical Vault
 A mission-critical identity module for rapid response:
 - Instant access to verified **Blood Groups**, **Critical Allergies**, and **Active Medications**.
 - Provisioned "Next-of-Kin" contact synchronization.
@@ -34,12 +39,12 @@ Strict document validation protocols that block non-clinical telemetry assets, e
 
 | Layer | Technology | Purpose |
 | :--- | :--- | :--- |
-| **Backend** | FastAPI | High-performance asynchronous API gateway. |
+| **Main UI** | Streamlit | Primary patient and diagnostic interface. |
+| **AI Engine** | FastAPI | High-performance neural inference backend. |
 | **Neural Core**| PyTorch | Model inference for entity extraction and risk assessment. |
 | **Database** | SQLAlchemy | Relational persistence with SQLite for clinical records. |
-| **Frontend** | React + Vite | Ultralight, responsive UI architecture. |
-| **Styling** | Tailwind CSS | Utility-first design system with Glassmorphism. |
-| **Motion** | Framer Motion | Fluid, high-fidelity clinical transitions. |
+| **Styling** | Tailwind CSS | (Frontend) Design system for secondary web views. |
+| **Motion** | Framer Motion | (Frontend) Fluid transitions for secondary web views. |
 
 ---
 
@@ -64,14 +69,19 @@ medfusion-ai/
 
 ## ⚡ Quick Start
 
-### 1. Initialize Backend
+### 1. Launch AI Engine (FastAPI)
 ```powershell
 cd backend
 pip install -r requirements.txt
 uvicorn app.main:app --reload
 ```
 
-### 2. Initialize Frontend
+### 2. Launch Main Interface (Streamlit)
+```powershell
+streamlit run medfusion_app.py
+```
+
+### 3. Launch Secondary Web UI (Optional)
 ```powershell
 cd frontend
 npm install
