@@ -2,16 +2,19 @@
 
 MedFusion AI is a next-generation diagnostic suite designed for ortho-dental intelligence. It provides a sleek, clinical-grade interface for image ingestion, neural inference, and medical record management.
 
-## 🚀 Key Features
-- **Neural Ingestion Core**: Unified upload center for radiographs, pathology reports, and prescriptions.
-- **Inference Bridge**: Real-time diagnostic overlays with pathological voxel mapping.
-- **Neural Vault**: Secure, searchable repository of historical clinical telemetry.
-- **Clinical AI Assistant**: Terminal-integrated agent for real-time protocol consultation.
+## 🚀 Actual Core Features
+- **Neural Ingestion Core**: Unified processing center for pharmacological orders and lab-tested pathology reports.
+- **Radiology Voxel Mapping**: Intelligent processing of radiographic imagery (X-Ray, CT, MRI) with confidence-weighted diagnostic findings.
+- **Clinical Telemetry Hub**: Longitudinal tracking of metabolic trajectories (e.g., LDL-C) with autonomous health score synthesis.
+- **Autonomous Correlation**: AI-powered cross-referencing of prescriptions against biometric telemetry to identify metabolic risks.
+- **Neural Integrity Gates**: Strict modality validation that blocks non-clinical data, ensuring a secure diagnostic environment.
+- **Emergency Clinical Vault**: Instant-access identity module for responders featuring verified blood types and allergy alerts.
+- **Interactive Clinical Assistant**: Neural-GPT interface for real-time protocol consultation and clinical inquiries.
 
 ## 🛠️ Technology Stack
-- **Backend**: FastAPI, SQLAlchemy (SQLite/PostgreSQL), PyTorch.
-- **Frontend**: React (Vite), Tailwind CSS, Framer Motion, Lucide Icons.
-- **DevOps**: Docker, Docker Compose.
+- **Backend**: FastAPI, SQLAlchemy (SQLite), PyTorch Neural Core.
+- **Frontend**: React (Vite), Framer Motion, Lucide-React, Tailwind CSS.
+- **Security**: AES-256 Metadata Vaulting & Modality-Gated Inference.
 
 ## 📦 Project Structure
 ```text
