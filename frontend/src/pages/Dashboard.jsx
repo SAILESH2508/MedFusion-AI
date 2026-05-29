@@ -48,7 +48,7 @@ function Dashboard({ user }) {
   const [exerciseAngina, setExerciseAngina] = useState('no');
   const [fastingSugar, setFastingSugar] = useState('no');
   const [heartSymptoms, setHeartSymptoms] = useState({
-    no_symptoms: false,
+    no_symptoms: true,
     shortness_of_breath: false,
     left_arm_pain: false,
     jaw_neck_pain: false,
@@ -64,7 +64,7 @@ function Dashboard({ user }) {
   const [hypertension, setHypertension] = useState('no');
   const [heartDiseaseHistory, setHeartDiseaseHistory] = useState('no');
   const [diabetesSymptoms, setDiabetesSymptoms] = useState({
-    no_symptoms: false,
+    no_symptoms: true,
     excessive_thirst: false,
     frequent_urination: false,
     unexplained_weight_loss: false,
@@ -77,7 +77,7 @@ function Dashboard({ user }) {
   const [alcohol, setAlcohol] = useState('no');
   const [toxinExposure, setToxinExposure] = useState('no');
   const [cancerSymptoms, setCancerSymptoms] = useState({
-    no_symptoms: false,
+    no_symptoms: true,
     unexplained_weight_loss: false,
     persistent_cough: false,
     persistent_fatigue: false,
@@ -131,102 +131,63 @@ function Dashboard({ user }) {
   const handleHeartSymptomToggle = (key) => {
     setHasChanges(true);
     if (key === 'no_symptoms') {
-      setHeartSymptoms(prev => {
-        const wasChecked = prev.no_symptoms;
-        if (wasChecked) {
-          return {
-            no_symptoms: false,
-            shortness_of_breath: false,
-            left_arm_pain: false,
-            jaw_neck_pain: false,
-            cold_sweats_nausea: false,
-            dizziness: false
-          };
-        } else {
-          return {
-            no_symptoms: true,
-            shortness_of_breath: false,
-            left_arm_pain: false,
-            jaw_neck_pain: false,
-            cold_sweats_nausea: false,
-            dizziness: false
-          };
-        }
+      setHeartSymptoms({
+        no_symptoms: true,
+        shortness_of_breath: false,
+        left_arm_pain: false,
+        jaw_neck_pain: false,
+        cold_sweats_nausea: false,
+        dizziness: false
       });
     } else {
-      setHeartSymptoms(prev => ({
-        ...prev,
-        [key]: !prev[key],
-        no_symptoms: false
-      }));
+      setHeartSymptoms(prev => {
+        const next = { ...prev, [key]: !prev[key] };
+        const hasRealSymptom = Object.keys(next).some(k => k !== 'no_symptoms' && next[k]);
+        next.no_symptoms = !hasRealSymptom;
+        return next;
+      });
     }
   };
 
   const handleDiabetesSymptomToggle = (key) => {
     setHasChanges(true);
     if (key === 'no_symptoms') {
-      setDiabetesSymptoms(prev => {
-        const wasChecked = prev.no_symptoms;
-        if (wasChecked) {
-          return {
-            no_symptoms: false,
-            excessive_thirst: false,
-            frequent_urination: false,
-            unexplained_weight_loss: false,
-            blurry_vision: false,
-            slow_healing_sores: false
-          };
-        } else {
-          return {
-            no_symptoms: true,
-            excessive_thirst: false,
-            frequent_urination: false,
-            unexplained_weight_loss: false,
-            blurry_vision: false,
-            slow_healing_sores: false
-          };
-        }
+      setDiabetesSymptoms({
+        no_symptoms: true,
+        excessive_thirst: false,
+        frequent_urination: false,
+        unexplained_weight_loss: false,
+        blurry_vision: false,
+        slow_healing_sores: false
       });
     } else {
-      setDiabetesSymptoms(prev => ({
-        ...prev,
-        [key]: !prev[key],
-        no_symptoms: false
-      }));
+      setDiabetesSymptoms(prev => {
+        const next = { ...prev, [key]: !prev[key] };
+        const hasRealSymptom = Object.keys(next).some(k => k !== 'no_symptoms' && next[k]);
+        next.no_symptoms = !hasRealSymptom;
+        return next;
+      });
     }
   };
 
   const handleCancerSymptomToggle = (key) => {
     setHasChanges(true);
     if (key === 'no_symptoms') {
-      setCancerSymptoms(prev => {
-        const wasChecked = prev.no_symptoms;
-        if (wasChecked) {
-          return {
-            no_symptoms: false,
-            unexplained_weight_loss: false,
-            persistent_cough: false,
-            persistent_fatigue: false,
-            skin_mole_changes: false,
-            unusual_lumps: false
-          };
-        } else {
-          return {
-            no_symptoms: true,
-            unexplained_weight_loss: false,
-            persistent_cough: false,
-            persistent_fatigue: false,
-            skin_mole_changes: false,
-            unusual_lumps: false
-          };
-        }
+      setCancerSymptoms({
+        no_symptoms: true,
+        unexplained_weight_loss: false,
+        persistent_cough: false,
+        persistent_fatigue: false,
+        skin_mole_changes: false,
+        unusual_lumps: false
       });
     } else {
-      setCancerSymptoms(prev => ({
-        ...prev,
-        [key]: !prev[key],
-        no_symptoms: false
-      }));
+      setCancerSymptoms(prev => {
+        const next = { ...prev, [key]: !prev[key] };
+        const hasRealSymptom = Object.keys(next).some(k => k !== 'no_symptoms' && next[k]);
+        next.no_symptoms = !hasRealSymptom;
+        return next;
+      });
     }
   };
 
