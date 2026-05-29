@@ -658,236 +658,228 @@ function Dashboard({ user }) {
               </div>
             </div>
             
-            <div className="d-flex flex-column gap-4">
-              {/* Group 1: Hemodynamics & Vitals */}
-              <div className="p-3 rounded" style={{ background: 'rgba(255,255,255,0.015)', border: '1px solid rgba(255,255,255,0.04)', borderLeft: '3px solid var(--theme-accent)' }}>
-                <span className="small text-secondary fw-bold d-block mb-3 text-uppercase font-monospace" style={{ letterSpacing: '0.08em', color: 'var(--theme-accent)' }}>
-                  [HEMODYNAMIC_&_VITALS]
-                </span>
-                <div className="row g-3">
-                  <div className="col-md-6">
-                    <label className="small text-secondary fw-semibold mb-2 font-monospace">SYSTOLIC PRESSURE</label>
-                    <div className="d-flex align-items-center gap-3">
-                      <input 
-                        type="range" 
-                        value={systolicBp} 
-                        onChange={(e) => setSystolicBp(Number(e.target.value))} 
-                        min="80" max="220" 
-                        className="flex-grow-1 m-0"
-                      />
-                      <div className="d-flex align-items-center gap-1 flex-shrink-0 font-monospace fw-bold" style={{ color: 'var(--theme-accent)' }}>
-                        <input 
-                          type="number" 
-                          value={systolicBp} 
-                          onChange={(e) => setSystolicBp(e.target.value === '' ? '' : Number(e.target.value))}
-                          onBlur={() => {
-                            if (systolicBp === '' || systolicBp < 80) setSystolicBp(125);
-                            else if (systolicBp > 220) setSystolicBp(220);
-                          }}
-                          min="80" max="220"
-                          className="typeable-number-input"
-                          style={{
-                            width: '65px',
-                            background: 'rgba(255,255,255,0.07)',
-                            border: '1px solid rgba(255,255,255,0.15)',
-                            borderRadius: '4px',
-                            color: 'var(--theme-accent)',
-                            textAlign: 'center',
-                            padding: '3px 6px',
-                            fontSize: '0.82rem',
-                            fontWeight: 'bold',
-                            outline: 'none'
-                          }}
-                        />
-                        <span>mmHg</span>
-                      </div>
-                    </div>
-                    <small className="text-secondary d-block mt-2" style={{ fontSize: '0.74rem' }}>Normal range: 90 - 120 mmHg</small>
-                  </div>
-                  <div className="col-md-6">
-                    <label className="small text-secondary fw-semibold mb-2 font-monospace">DIASTOLIC PRESSURE</label>
-                    <div className="d-flex align-items-center gap-3">
-                      <input 
-                        type="range" 
-                        value={diastolicBp} 
-                        onChange={(e) => setDiastolicBp(Number(e.target.value))} 
-                        min="40" max="130" 
-                        className="flex-grow-1 m-0"
-                      />
-                      <div className="d-flex align-items-center gap-1 flex-shrink-0 font-monospace fw-bold" style={{ color: 'var(--theme-accent)' }}>
-                        <input 
-                          type="number" 
-                          value={diastolicBp} 
-                          onChange={(e) => setDiastolicBp(e.target.value === '' ? '' : Number(e.target.value))}
-                          onBlur={() => {
-                            if (diastolicBp === '' || diastolicBp < 40) setDiastolicBp(82);
-                            else if (diastolicBp > 130) setDiastolicBp(130);
-                          }}
-                          min="40" max="130"
-                          className="typeable-number-input"
-                          style={{
-                            width: '65px',
-                            background: 'rgba(255,255,255,0.07)',
-                            border: '1px solid rgba(255,255,255,0.15)',
-                            borderRadius: '4px',
-                            color: 'var(--theme-accent)',
-                            textAlign: 'center',
-                            padding: '3px 6px',
-                            fontSize: '0.82rem',
-                            fontWeight: 'bold',
-                            outline: 'none'
-                      }}
+            <div className="row g-3">
+              <div className="col-md-6">
+                <div className="predictor-card">
+                  <label className="small text-secondary fw-semibold mb-2 font-monospace">SYSTOLIC PRESSURE</label>
+                  <div className="d-flex align-items-center gap-3">
+                    <input 
+                      type="range" 
+                      value={systolicBp} 
+                      onChange={(e) => setSystolicBp(Number(e.target.value))} 
+                      min="80" max="220" 
+                      className="flex-grow-1 m-0"
                     />
-                        <span>mmHg</span>
-                      </div>
-                    </div>
-                    <small className="text-secondary d-block mt-2" style={{ fontSize: '0.74rem' }}>Normal range: 60 - 80 mmHg</small>
-                  </div>
-                  <div className="col-md-6">
-                    <label className="small text-secondary fw-semibold mb-2 font-monospace">MAX HEART RATE</label>
-                    <div className="d-flex align-items-center gap-3">
+                    <div className="d-flex align-items-center gap-1 flex-shrink-0 font-monospace fw-bold" style={{ color: 'var(--theme-accent)' }}>
                       <input 
-                        type="range" 
-                        value={maxHeartRate} 
-                        onChange={(e) => setMaxHeartRate(Number(e.target.value))} 
-                        min="60" max="220" 
-                        className="flex-grow-1 m-0"
+                        type="number" 
+                        value={systolicBp} 
+                        onChange={(e) => setSystolicBp(e.target.value === '' ? '' : Number(e.target.value))}
+                        onBlur={() => {
+                          if (systolicBp === '' || systolicBp < 80) setSystolicBp(125);
+                          else if (systolicBp > 220) setSystolicBp(220);
+                        }}
+                        min="80" max="220"
+                        className="typeable-number-input"
+                        style={{
+                          width: '65px',
+                          background: 'rgba(255,255,255,0.07)',
+                          border: '1px solid rgba(255,255,255,0.15)',
+                          borderRadius: '4px',
+                          color: 'var(--theme-accent)',
+                          textAlign: 'center',
+                          padding: '3px 6px',
+                          fontSize: '0.82rem',
+                          fontWeight: 'bold',
+                          outline: 'none'
+                        }}
                       />
-                      <div className="d-flex align-items-center gap-1 flex-shrink-0 font-monospace fw-bold" style={{ color: 'var(--theme-accent)' }}>
-                        <input 
-                          type="number" 
-                          value={maxHeartRate} 
-                          onChange={(e) => setMaxHeartRate(e.target.value === '' ? '' : Number(e.target.value))}
-                          onBlur={() => {
-                            if (maxHeartRate === '' || maxHeartRate < 60) setMaxHeartRate(165);
-                            else if (maxHeartRate > 220) setMaxHeartRate(220);
-                          }}
-                          min="60" max="220"
-                          className="typeable-number-input"
-                          style={{
-                            width: '65px',
-                            background: 'rgba(255,255,255,0.07)',
-                            border: '1px solid rgba(255,255,255,0.15)',
-                            borderRadius: '4px',
-                            color: 'var(--theme-accent)',
-                            textAlign: 'center',
-                            padding: '3px 6px',
-                            fontSize: '0.82rem',
-                            fontWeight: 'bold',
-                            outline: 'none'
-                          }}
-                        />
-                        <span>BPM</span>
-                      </div>
+                      <span>mmHg</span>
                     </div>
-                    <small className="text-secondary d-block mt-2" style={{ fontSize: '0.74rem' }}>Normal range: 60 - 100 BPM</small>
                   </div>
+                  <small className="text-secondary d-block mt-2" style={{ fontSize: '0.74rem' }}>Normal range: 90 - 120 mmHg</small>
+                </div>
+              </div>
+              <div className="col-md-6">
+                <div className="predictor-card">
+                  <label className="small text-secondary fw-semibold mb-2 font-monospace">DIASTOLIC PRESSURE</label>
+                  <div className="d-flex align-items-center gap-3">
+                    <input 
+                      type="range" 
+                      value={diastolicBp} 
+                      onChange={(e) => setDiastolicBp(Number(e.target.value))} 
+                      min="40" max="130" 
+                      className="flex-grow-1 m-0"
+                    />
+                    <div className="d-flex align-items-center gap-1 flex-shrink-0 font-monospace fw-bold" style={{ color: 'var(--theme-accent)' }}>
+                      <input 
+                        type="number" 
+                        value={diastolicBp} 
+                        onChange={(e) => setDiastolicBp(e.target.value === '' ? '' : Number(e.target.value))}
+                        onBlur={() => {
+                          if (diastolicBp === '' || diastolicBp < 40) setDiastolicBp(82);
+                          else if (diastolicBp > 130) setDiastolicBp(130);
+                        }}
+                        min="40" max="130"
+                        className="typeable-number-input"
+                        style={{
+                          width: '65px',
+                          background: 'rgba(255,255,255,0.07)',
+                          border: '1px solid rgba(255,255,255,0.15)',
+                          borderRadius: '4px',
+                          color: 'var(--theme-accent)',
+                          textAlign: 'center',
+                          padding: '3px 6px',
+                          fontSize: '0.82rem',
+                          fontWeight: 'bold',
+                          outline: 'none'
+                        }}
+                      />
+                      <span>mmHg</span>
+                    </div>
+                  </div>
+                  <small className="text-secondary d-block mt-2" style={{ fontSize: '0.74rem' }}>Normal range: 60 - 80 mmHg</small>
                 </div>
               </div>
 
-              {/* Group 2: Metabolic & Lipids */}
-              <div className="p-3 rounded" style={{ background: 'rgba(255,255,255,0.015)', border: '1px solid rgba(255,255,255,0.04)', borderLeft: '3px solid var(--theme-accent)' }}>
-                <span className="small text-secondary fw-bold d-block mb-3 text-uppercase font-monospace" style={{ letterSpacing: '0.08em', color: 'var(--theme-accent)' }}>
-                  [METABOLIC_&_LIPID_MARKERS]
-                </span>
-                <div className="row g-3">
-                  <div className="col-md-6">
-                    <label className="small text-secondary fw-semibold mb-2 font-monospace">SERUM CHOLESTEROL</label>
-                    <div className="d-flex align-items-center gap-3">
+              <div className="col-md-6">
+                <div className="predictor-card">
+                  <label className="small text-secondary fw-semibold mb-2 font-monospace">SERUM CHOLESTEROL</label>
+                  <div className="d-flex align-items-center gap-3">
+                    <input 
+                      type="range" 
+                      value={cholesterol} 
+                      onChange={(e) => setCholesterol(Number(e.target.value))} 
+                      min="100" max="400" 
+                      className="flex-grow-1 m-0"
+                    />
+                    <div className="d-flex align-items-center gap-1 flex-shrink-0 font-monospace fw-bold" style={{ color: 'var(--theme-accent)' }}>
                       <input 
-                        type="range" 
+                        type="number" 
                         value={cholesterol} 
-                        onChange={(e) => setCholesterol(Number(e.target.value))} 
-                        min="100" max="400" 
-                        className="flex-grow-1 m-0"
+                        onChange={(e) => setCholesterol(e.target.value === '' ? '' : Number(e.target.value))}
+                        onBlur={() => {
+                          if (cholesterol === '' || cholesterol < 100) setCholesterol(195);
+                          else if (cholesterol > 400) setCholesterol(400);
+                        }}
+                        min="100" max="400"
+                        className="typeable-number-input"
+                        style={{
+                          width: '65px',
+                          background: 'rgba(255,255,255,0.07)',
+                          border: '1px solid rgba(255,255,255,0.15)',
+                          borderRadius: '4px',
+                          color: 'var(--theme-accent)',
+                          textAlign: 'center',
+                          padding: '3px 6px',
+                          fontSize: '0.82rem',
+                          fontWeight: 'bold',
+                          outline: 'none'
+                        }}
                       />
-                      <div className="d-flex align-items-center gap-1 flex-shrink-0 font-monospace fw-bold" style={{ color: 'var(--theme-accent)' }}>
-                        <input 
-                          type="number" 
-                          value={cholesterol} 
-                          onChange={(e) => setCholesterol(e.target.value === '' ? '' : Number(e.target.value))}
-                          onBlur={() => {
-                            if (cholesterol === '' || cholesterol < 100) setCholesterol(195);
-                            else if (cholesterol > 400) setCholesterol(400);
-                          }}
-                          min="100" max="400"
-                          className="typeable-number-input"
-                          style={{
-                            width: '65px',
-                            background: 'rgba(255,255,255,0.07)',
-                            border: '1px solid rgba(255,255,255,0.15)',
-                            borderRadius: '4px',
-                            color: 'var(--theme-accent)',
-                            textAlign: 'center',
-                            padding: '3px 6px',
-                            fontSize: '0.82rem',
-                            fontWeight: 'bold',
-                            outline: 'none'
-                          }}
-                        />
-                        <span>mg/dL</span>
-                      </div>
+                      <span>mg/dL</span>
                     </div>
-                    <small className="text-secondary d-block mt-2" style={{ fontSize: '0.74rem' }}>Normal range: &lt; 200 mg/dL</small>
                   </div>
-                  <div className="col-md-6">
-                    <label className="small text-secondary fw-semibold mb-2 font-monospace">ELEVATED FASTING BLOOD GLUCOSE (&gt; 120 mg/dL)</label>
-                    <div className="d-flex flex-wrap gap-2">
-                      {[
-                        { val: 'no', label: 'Normal' },
-                        { val: 'mild', label: 'Borderline' },
-                        { val: 'yes', label: 'Elevated' }
-                      ].map(opt => (
-                        <div 
-                          key={opt.val} onClick={() => setFastingSugar(opt.val)}
-                          className={`px-3 py-2 rounded border cursor-pointer font-monospace text-center flex-grow-1 ${fastingSugar === opt.val ? 'border-theme-accent bg-theme-accent bg-opacity-10 text-white fw-bold' : 'border-white-10 bg-white-5 text-secondary hover-white'}`}
-                          style={{ fontSize: '0.8rem', transition: 'all 0.2s' }}
-                        >{opt.label}</div>
-                      ))}
+                  <small className="text-secondary d-block mt-2" style={{ fontSize: '0.74rem' }}>Normal range: &lt; 200 mg/dL</small>
+                </div>
+              </div>
+              <div className="col-md-6">
+                <div className="predictor-card">
+                  <label className="small text-secondary fw-semibold mb-2 font-monospace">MAX HEART RATE</label>
+                  <div className="d-flex align-items-center gap-3">
+                    <input 
+                      type="range" 
+                      value={maxHeartRate} 
+                      onChange={(e) => setMaxHeartRate(Number(e.target.value))} 
+                      min="60" max="220" 
+                      className="flex-grow-1 m-0"
+                    />
+                    <div className="d-flex align-items-center gap-1 flex-shrink-0 font-monospace fw-bold" style={{ color: 'var(--theme-accent)' }}>
+                      <input 
+                        type="number" 
+                        value={maxHeartRate} 
+                        onChange={(e) => setMaxHeartRate(e.target.value === '' ? '' : Number(e.target.value))}
+                        onBlur={() => {
+                          if (maxHeartRate === '' || maxHeartRate < 60) setMaxHeartRate(165);
+                          else if (maxHeartRate > 220) setMaxHeartRate(220);
+                        }}
+                        min="60" max="220"
+                        className="typeable-number-input"
+                        style={{
+                          width: '65px',
+                          background: 'rgba(255,255,255,0.07)',
+                          border: '1px solid rgba(255,255,255,0.15)',
+                          borderRadius: '4px',
+                          color: 'var(--theme-accent)',
+                          textAlign: 'center',
+                          padding: '3px 6px',
+                          fontSize: '0.82rem',
+                          fontWeight: 'bold',
+                          outline: 'none'
+                        }}
+                      />
+                      <span>BPM</span>
                     </div>
+                  </div>
+                  <small className="text-secondary d-block mt-2" style={{ fontSize: '0.74rem' }}>Normal range: 60 - 100 BPM</small>
+                </div>
+              </div>
+
+              <div className="col-md-6">
+                <div className="predictor-card">
+                  <label className="small text-secondary fw-semibold mb-2 font-monospace">CHEST PAIN PROFILE</label>
+                  <div className="d-flex flex-wrap gap-2">
+                    {[
+                      { val: 'none', label: 'Asymptomatic' },
+                      { val: 'mild', label: 'Mild Discomfort' },
+                      { val: 'typical_angina', label: 'Typical Angina' },
+                      { val: 'atypical_angina', label: 'Atypical Angina' },
+                      { val: 'non_anginal', label: 'Non-Anginal' }
+                    ].map(opt => (
+                      <div 
+                        key={opt.val} onClick={() => setChestPain(opt.val)}
+                        className={`px-2 py-2 rounded border cursor-pointer font-monospace text-center flex-grow-1 ${chestPain === opt.val ? 'border-theme-accent bg-theme-accent bg-opacity-10 text-white fw-bold' : 'border-white-10 bg-white-5 text-secondary hover-white'}`}
+                        style={{ fontSize: '0.75rem', transition: 'all 0.2s' }}
+                      >{opt.label}</div>
+                    ))}
                   </div>
                 </div>
               </div>
 
-              {/* Group 3: Clinical Chest Pain & Stress Angina */}
-              <div className="p-3 rounded" style={{ background: 'rgba(255,255,255,0.015)', border: '1px solid rgba(255,255,255,0.04)', borderLeft: '3px solid var(--theme-accent)' }}>
-                <span className="small text-secondary fw-bold d-block mb-3 text-uppercase font-monospace" style={{ letterSpacing: '0.08em', color: 'var(--theme-accent)' }}>
-                  [CLINICAL_SYMPTOM_&_ANGINA_PROFILE]
-                </span>
-                <div className="row g-3">
-                  <div className="col-md-6">
-                    <label className="small text-secondary fw-semibold mb-2 font-monospace">CHEST PAIN PROFILE</label>
-                    <div className="d-flex flex-wrap gap-2">
-                      {[
-                        { val: 'none', label: 'Asymptomatic' },
-                        { val: 'mild', label: 'Mild Discomfort' },
-                        { val: 'typical_angina', label: 'Typical Angina' },
-                        { val: 'atypical_angina', label: 'Atypical Angina' },
-                        { val: 'non_anginal', label: 'Non-Anginal' }
-                      ].map(opt => (
-                        <div 
-                          key={opt.val} onClick={() => setChestPain(opt.val)}
-                          className={`px-2 py-2 rounded border cursor-pointer font-monospace text-center flex-grow-1 ${chestPain === opt.val ? 'border-theme-accent bg-theme-accent bg-opacity-10 text-white fw-bold' : 'border-white-10 bg-white-5 text-secondary hover-white'}`}
-                          style={{ fontSize: '0.75rem', transition: 'all 0.2s' }}
-                        >{opt.label}</div>
-                      ))}
-                    </div>
+              <div className="col-md-6">
+                <div className="predictor-card">
+                  <label className="small text-secondary fw-semibold mb-2 font-monospace">EXERCISE ANGINA</label>
+                  <div className="d-flex flex-wrap gap-2">
+                    {[
+                      { val: 'no', label: 'No induced pain' },
+                      { val: 'mild', label: 'Mild discomfort' },
+                      { val: 'yes', label: 'Pain induced' }
+                    ].map(opt => (
+                      <div 
+                        key={opt.val} onClick={() => setExerciseAngina(opt.val)}
+                        className={`px-2 py-2 rounded border cursor-pointer font-monospace text-center flex-grow-1 ${exerciseAngina === opt.val ? 'border-theme-accent bg-theme-accent bg-opacity-10 text-white fw-bold' : 'border-white-10 bg-white-5 text-secondary hover-white'}`}
+                        style={{ fontSize: '0.75rem', transition: 'all 0.2s' }}
+                      >{opt.label}</div>
+                    ))}
                   </div>
-                  <div className="col-md-6">
-                    <label className="small text-secondary fw-semibold mb-2 font-monospace">EXERCISE ANGINA</label>
-                    <div className="d-flex flex-wrap gap-2">
-                      {[
-                        { val: 'no', label: 'No induced pain' },
-                        { val: 'mild', label: 'Mild discomfort' },
-                        { val: 'yes', label: 'Pain induced' }
-                      ].map(opt => (
-                        <div 
-                          key={opt.val} onClick={() => setExerciseAngina(opt.val)}
-                          className={`px-2 py-2 rounded border cursor-pointer font-monospace text-center flex-grow-1 ${exerciseAngina === opt.val ? 'border-theme-accent bg-theme-accent bg-opacity-10 text-white fw-bold' : 'border-white-10 bg-white-5 text-secondary hover-white'}`}
-                          style={{ fontSize: '0.75rem', transition: 'all 0.2s' }}
-                        >{opt.label}</div>
-                      ))}
-                    </div>
+                </div>
+              </div>
+              
+              <div className="col-12">
+                <div className="predictor-card">
+                  <label className="small text-secondary fw-semibold mb-2 font-monospace">ELEVATED FASTING BLOOD GLUCOSE (&gt; 120 mg/dL)</label>
+                  <div className="d-flex flex-wrap gap-2">
+                    {[
+                      { val: 'no', label: 'Normal' },
+                      { val: 'mild', label: 'Borderline' },
+                      { val: 'yes', label: 'Elevated' }
+                    ].map(opt => (
+                      <div 
+                        key={opt.val} onClick={() => setFastingSugar(opt.val)}
+                        className={`px-3 py-2 rounded border cursor-pointer font-monospace text-center flex-grow-1 ${fastingSugar === opt.val ? 'border-theme-accent bg-theme-accent bg-opacity-10 text-white fw-bold' : 'border-white-10 bg-white-5 text-secondary hover-white'}`}
+                        style={{ fontSize: '0.8rem', transition: 'all 0.2s' }}
+                      >{opt.label}</div>
+                    ))}
                   </div>
                 </div>
               </div>
@@ -923,225 +915,215 @@ function Dashboard({ user }) {
               </div>
             </div>
             
-            <div className="d-flex flex-column gap-4">
-              {/* Group 1: Glycemic Indicators */}
-              <div className="p-3 rounded" style={{ background: 'rgba(255,255,255,0.015)', border: '1px solid rgba(255,255,255,0.04)', borderLeft: '3px solid var(--theme-accent)' }}>
-                <span className="small text-secondary fw-bold d-block mb-3 text-uppercase font-monospace" style={{ letterSpacing: '0.08em', color: 'var(--theme-accent)' }}>
-                  [GLYCEMIC_INDICATORS]
-                </span>
-                <div className="row g-3">
-                  <div className="col-md-6">
-                    <label className="small text-secondary fw-semibold mb-2 font-monospace">FASTING GLUCOSE</label>
-                    <div className="d-flex align-items-center gap-3">
+            <div className="row g-3">
+              <div className="col-md-6">
+                <div className="predictor-card">
+                  <label className="small text-secondary fw-semibold mb-2 font-monospace">FASTING GLUCOSE</label>
+                  <div className="d-flex align-items-center gap-3">
+                    <input 
+                      type="range" 
+                      value={glucose} 
+                      onChange={(e) => setGlucose(Number(e.target.value))} 
+                      min="50" max="400" 
+                      className="flex-grow-1 m-0"
+                    />
+                    <div className="d-flex align-items-center gap-1 flex-shrink-0 font-monospace fw-bold" style={{ color: 'var(--theme-accent)' }}>
                       <input 
-                        type="range" 
+                        type="number" 
                         value={glucose} 
-                        onChange={(e) => setGlucose(Number(e.target.value))} 
-                        min="50" max="400" 
-                        className="flex-grow-1 m-0"
+                        onChange={(e) => setGlucose(e.target.value === '' ? '' : Number(e.target.value))}
+                        onBlur={() => {
+                          if (glucose === '' || glucose < 50) setGlucose(96);
+                          else if (glucose > 400) setGlucose(400);
+                        }}
+                        min="50" max="400"
+                        className="typeable-number-input"
+                        style={{
+                          width: '65px',
+                          background: 'rgba(255,255,255,0.07)',
+                          border: '1px solid rgba(255,255,255,0.15)',
+                          borderRadius: '4px',
+                          color: 'var(--theme-accent)',
+                          textAlign: 'center',
+                          padding: '3px 6px',
+                          fontSize: '0.82rem',
+                          fontWeight: 'bold',
+                          outline: 'none'
+                        }}
                       />
-                      <div className="d-flex align-items-center gap-1 flex-shrink-0 font-monospace fw-bold" style={{ color: 'var(--theme-accent)' }}>
-                        <input 
-                          type="number" 
-                          value={glucose} 
-                          onChange={(e) => setGlucose(e.target.value === '' ? '' : Number(e.target.value))}
-                          onBlur={() => {
-                            if (glucose === '' || glucose < 50) setGlucose(96);
-                            else if (glucose > 400) setGlucose(400);
-                          }}
-                          min="50" max="400"
-                          className="typeable-number-input"
-                          style={{
-                            width: '65px',
-                            background: 'rgba(255,255,255,0.07)',
-                            border: '1px solid rgba(255,255,255,0.15)',
-                            borderRadius: '4px',
-                            color: 'var(--theme-accent)',
-                            textAlign: 'center',
-                            padding: '3px 6px',
-                            fontSize: '0.82rem',
-                            fontWeight: 'bold',
-                            outline: 'none'
-                          }}
-                        />
-                        <span>mg/dL</span>
-                      </div>
+                      <span>mg/dL</span>
                     </div>
-                    <small className="text-secondary d-block mt-2" style={{ fontSize: '0.74rem' }}>Normal range: 70 - 100 mg/dL</small>
                   </div>
-                  <div className="col-md-6">
-                    <label className="small text-secondary fw-semibold mb-2 font-monospace">HbA1c LEVEL</label>
-                    <div className="d-flex align-items-center gap-3">
+                  <small className="text-secondary d-block mt-2" style={{ fontSize: '0.74rem' }}>Normal range: 70 - 100 mg/dL</small>
+                </div>
+              </div>
+              <div className="col-md-6">
+                <div className="predictor-card">
+                  <label className="small text-secondary fw-semibold mb-2 font-monospace">HbA1c LEVEL</label>
+                  <div className="d-flex align-items-center gap-3">
+                    <input 
+                      type="range" 
+                      step="0.1"
+                      value={hba1c} 
+                      onChange={(e) => setHba1c(Number(e.target.value))} 
+                      min="3.0" max="16.0" 
+                      className="flex-grow-1 m-0"
+                    />
+                    <div className="d-flex align-items-center gap-1 flex-shrink-0 font-monospace fw-bold" style={{ color: 'var(--theme-accent)' }}>
                       <input 
-                        type="range" 
+                        type="number" 
                         step="0.1"
                         value={hba1c} 
-                        onChange={(e) => setHba1c(Number(e.target.value))} 
-                        min="3.0" max="16.0" 
-                        className="flex-grow-1 m-0"
+                        onChange={(e) => setHba1c(e.target.value === '' ? '' : Number(e.target.value))}
+                        onBlur={() => {
+                          if (hba1c === '' || hba1c < 3.0) setHba1c(5.2);
+                          else if (hba1c > 16.0) setHba1c(16.0);
+                        }}
+                        min="3.0" max="16.0"
+                        className="typeable-number-input"
+                        style={{
+                          width: '65px',
+                          background: 'rgba(255,255,255,0.07)',
+                          border: '1px solid rgba(255,255,255,0.15)',
+                          borderRadius: '4px',
+                          color: 'var(--theme-accent)',
+                          textAlign: 'center',
+                          padding: '3px 6px',
+                          fontSize: '0.82rem',
+                          fontWeight: 'bold',
+                          outline: 'none'
+                        }}
                       />
-                      <div className="d-flex align-items-center gap-1 flex-shrink-0 font-monospace fw-bold" style={{ color: 'var(--theme-accent)' }}>
-                        <input 
-                          type="number" 
-                          step="0.1"
-                          value={hba1c} 
-                          onChange={(e) => setHba1c(e.target.value === '' ? '' : Number(e.target.value))}
-                          onBlur={() => {
-                            if (hba1c === '' || hba1c < 3.0) setHba1c(5.2);
-                            else if (hba1c > 16.0) setHba1c(16.0);
-                          }}
-                          min="3.0" max="16.0"
-                          className="typeable-number-input"
-                          style={{
-                            width: '65px',
-                            background: 'rgba(255,255,255,0.07)',
-                            border: '1px solid rgba(255,255,255,0.15)',
-                            borderRadius: '4px',
-                            color: 'var(--theme-accent)',
-                            textAlign: 'center',
-                            padding: '3px 6px',
-                            fontSize: '0.82rem',
-                            fontWeight: 'bold',
-                            outline: 'none'
-                          }}
-                        />
-                        <span>%</span>
-                      </div>
+                      <span>%</span>
                     </div>
-                    <small className="text-secondary d-block mt-2" style={{ fontSize: '0.74rem' }}>Normal range: &lt; 5.7%</small>
                   </div>
+                  <small className="text-secondary d-block mt-2" style={{ fontSize: '0.74rem' }}>Normal range: &lt; 5.7%</small>
                 </div>
               </div>
 
-              {/* Group 2: Biometrics & BMI */}
-              <div className="p-3 rounded" style={{ background: 'rgba(255,255,255,0.015)', border: '1px solid rgba(255,255,255,0.04)', borderLeft: '3px solid var(--theme-accent)' }}>
-                <span className="small text-secondary fw-bold d-block mb-3 text-uppercase font-monospace" style={{ letterSpacing: '0.08em', color: 'var(--theme-accent)' }}>
-                  [BIOMETRICS_&_BODY_COMPOSITION]
-                </span>
-                <div className="row g-3">
-                  <div className="col-md-6">
-                    <label className="small text-secondary fw-semibold mb-2 font-monospace">WEIGHT</label>
-                    <div className="d-flex align-items-center gap-3">
+              <div className="col-md-6">
+                <div className="predictor-card">
+                  <label className="small text-secondary fw-semibold mb-2 font-monospace">WEIGHT</label>
+                  <div className="d-flex align-items-center gap-3">
+                    <input 
+                      type="range" 
+                      value={weight} 
+                      onChange={(e) => setWeight(Number(e.target.value))} 
+                      min="30" max="250" 
+                      className="flex-grow-1 m-0"
+                    />
+                    <div className="d-flex align-items-center gap-1 flex-shrink-0 font-monospace fw-bold" style={{ color: 'var(--theme-accent)' }}>
                       <input 
-                        type="range" 
+                        type="number" 
                         value={weight} 
-                        onChange={(e) => setWeight(Number(e.target.value))} 
-                        min="30" max="250" 
-                        className="flex-grow-1 m-0"
+                        onChange={(e) => setWeight(e.target.value === '' ? '' : Number(e.target.value))}
+                        onBlur={() => {
+                          if (weight === '' || weight < 30) setWeight(72);
+                          else if (weight > 250) setWeight(250);
+                        }}
+                        min="30" max="250"
+                        className="typeable-number-input"
+                        style={{
+                          width: '65px',
+                          background: 'rgba(255,255,255,0.07)',
+                          border: '1px solid rgba(255,255,255,0.15)',
+                          borderRadius: '4px',
+                          color: 'var(--theme-accent)',
+                          textAlign: 'center',
+                          padding: '3px 6px',
+                          fontSize: '0.82rem',
+                          fontWeight: 'bold',
+                          outline: 'none'
+                        }}
                       />
-                      <div className="d-flex align-items-center gap-1 flex-shrink-0 font-monospace fw-bold" style={{ color: 'var(--theme-accent)' }}>
-                        <input 
-                          type="number" 
-                          value={weight} 
-                          onChange={(e) => setWeight(e.target.value === '' ? '' : Number(e.target.value))}
-                          onBlur={() => {
-                            if (weight === '' || weight < 30) setWeight(72);
-                            else if (weight > 250) setWeight(250);
-                          }}
-                          min="30" max="250"
-                          className="typeable-number-input"
-                          style={{
-                            width: '65px',
-                            background: 'rgba(255,255,255,0.07)',
-                            border: '1px solid rgba(255,255,255,0.15)',
-                            borderRadius: '4px',
-                            color: 'var(--theme-accent)',
-                            textAlign: 'center',
-                            padding: '3px 6px',
-                            fontSize: '0.82rem',
-                            fontWeight: 'bold',
-                            outline: 'none'
-                          }}
-                        />
-                        <span>kg</span>
-                      </div>
+                      <span>kg</span>
                     </div>
                   </div>
-                  <div className="col-md-6">
-                    <label className="small text-secondary fw-semibold mb-2 font-monospace">HEIGHT</label>
-                    <div className="d-flex align-items-center gap-3">
+                </div>
+              </div>
+              <div className="col-md-6">
+                <div className="predictor-card">
+                  <label className="small text-secondary fw-semibold mb-2 font-monospace">HEIGHT</label>
+                  <div className="d-flex align-items-center gap-3">
+                    <input 
+                      type="range" 
+                      value={height} 
+                      onChange={(e) => setHeight(Number(e.target.value))} 
+                      min="100" max="250" 
+                      className="flex-grow-1 m-0"
+                    />
+                    <div className="d-flex align-items-center gap-1 flex-shrink-0 font-monospace fw-bold" style={{ color: 'var(--theme-accent)' }}>
                       <input 
-                        type="range" 
+                        type="number" 
                         value={height} 
-                        onChange={(e) => setHeight(Number(e.target.value))} 
-                        min="100" max="250" 
-                        className="flex-grow-1 m-0"
+                        onChange={(e) => setHeight(e.target.value === '' ? '' : Number(e.target.value))}
+                        onBlur={() => {
+                          if (height === '' || height < 100) setHeight(175);
+                          else if (height > 250) setHeight(250);
+                        }}
+                        min="100" max="250"
+                        className="typeable-number-input"
+                        style={{
+                          width: '65px',
+                          background: 'rgba(255,255,255,0.07)',
+                          border: '1px solid rgba(255,255,255,0.15)',
+                          borderRadius: '4px',
+                          color: 'var(--theme-accent)',
+                          textAlign: 'center',
+                          padding: '3px 6px',
+                          fontSize: '0.82rem',
+                          fontWeight: 'bold',
+                          outline: 'none'
+                        }}
                       />
-                      <div className="d-flex align-items-center gap-1 flex-shrink-0 font-monospace fw-bold" style={{ color: 'var(--theme-accent)' }}>
-                        <input 
-                          type="number" 
-                          value={height} 
-                          onChange={(e) => setHeight(e.target.value === '' ? '' : Number(e.target.value))}
-                          onBlur={() => {
-                            if (height === '' || height < 100) setHeight(175);
-                            else if (height > 250) setHeight(250);
-                          }}
-                          min="100" max="250"
-                          className="typeable-number-input"
-                          style={{
-                            width: '65px',
-                            background: 'rgba(255,255,255,0.07)',
-                            border: '1px solid rgba(255,255,255,0.15)',
-                            borderRadius: '4px',
-                            color: 'var(--theme-accent)',
-                            textAlign: 'center',
-                            padding: '3px 6px',
-                            fontSize: '0.82rem',
-                            fontWeight: 'bold',
-                            outline: 'none'
-                          }}
-                        />
-                        <span>cm</span>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="col-12">
-                    <div className="p-3 rounded bg-white-10 border border-white-10 d-flex justify-content-between align-items-center font-monospace">
-                      <span className="small text-secondary">CALCULATING BODY MASS INDEX (BMI)</span>
-                      <span className="fw-bold" style={{ textShadow: '0 0 10px var(--theme-accent-glow)', color: 'var(--theme-accent)' }}>{bmi} kg/m²</span>
+                      <span>cm</span>
                     </div>
                   </div>
                 </div>
               </div>
 
-              {/* Group 3: Co-morbidities & History */}
-              <div className="p-3 rounded" style={{ background: 'rgba(255,255,255,0.015)', border: '1px solid rgba(255,255,255,0.04)', borderLeft: '3px solid var(--theme-accent)' }}>
-                <span className="small text-secondary fw-bold d-block mb-3 text-uppercase font-monospace" style={{ letterSpacing: '0.08em', color: 'var(--theme-accent)' }}>
-                  [CARDIOVASCULAR_RISK_HISTORY]
-                </span>
-                <div className="row g-3">
-                  <div className="col-md-6">
-                    <label className="small text-secondary fw-semibold mb-2 font-monospace">HYPERTENSION</label>
-                    <div className="d-flex flex-wrap gap-2">
-                      {[
-                        { val: 'no', label: 'None' },
-                        { val: 'mild', label: 'Prehypertension' },
-                        { val: 'yes', label: 'Diagnosed' }
-                      ].map(opt => (
-                        <div 
-                          key={opt.val} onClick={() => setHypertension(opt.val)}
-                          className={`px-2 py-2 rounded border cursor-pointer font-monospace text-center flex-grow-1 ${hypertension === opt.val ? 'border-theme-accent bg-theme-accent bg-opacity-10 text-white fw-bold' : 'border-white-10 bg-white-5 text-secondary hover-white'}`}
-                          style={{ fontSize: '0.75rem', transition: 'all 0.2s' }}
-                        >{opt.label}</div>
-                      ))}
-                    </div>
+              <div className="col-md-6">
+                <div className="predictor-card">
+                  <label className="small text-secondary fw-semibold mb-2 font-monospace">HYPERTENSION</label>
+                  <div className="d-flex flex-wrap gap-2">
+                    {[
+                      { val: 'no', label: 'None' },
+                      { val: 'mild', label: 'Prehypertension' },
+                      { val: 'yes', label: 'Diagnosed' }
+                    ].map(opt => (
+                      <div 
+                        key={opt.val} onClick={() => setHypertension(opt.val)}
+                        className={`px-2 py-2 rounded border cursor-pointer font-monospace text-center flex-grow-1 ${hypertension === opt.val ? 'border-theme-accent bg-theme-accent bg-opacity-10 text-white fw-bold' : 'border-white-10 bg-white-5 text-secondary hover-white'}`}
+                        style={{ fontSize: '0.75rem', transition: 'all 0.2s' }}
+                      >{opt.label}</div>
+                    ))}
                   </div>
-                  <div className="col-md-6">
-                    <label className="small text-secondary fw-semibold mb-2 font-monospace">PREVIOUS HEART DISEASE</label>
-                    <div className="d-flex flex-wrap gap-2">
-                      {[
-                        { val: 'no', label: 'None' },
-                        { val: 'mild', label: 'Mild / Stable' },
-                        { val: 'yes', label: 'Present' }
-                      ].map(opt => (
-                        <div 
-                          key={opt.val} onClick={() => setHeartDiseaseHistory(opt.val)}
-                          className={`px-2 py-2 rounded border cursor-pointer font-monospace text-center flex-grow-1 ${heartDiseaseHistory === opt.val ? 'border-theme-accent bg-theme-accent bg-opacity-10 text-white fw-bold' : 'border-white-10 bg-white-5 text-secondary hover-white'}`}
-                          style={{ fontSize: '0.75rem', transition: 'all 0.2s' }}
-                        >{opt.label}</div>
-                      ))}
-                    </div>
+                </div>
+              </div>
+
+              <div className="col-md-6">
+                <div className="predictor-card">
+                  <label className="small text-secondary fw-semibold mb-2 font-monospace">PREVIOUS HEART DISEASE</label>
+                  <div className="d-flex flex-wrap gap-2">
+                    {[
+                      { val: 'no', label: 'None' },
+                      { val: 'mild', label: 'Mild / Stable' },
+                      { val: 'yes', label: 'Present' }
+                    ].map(opt => (
+                      <div 
+                        key={opt.val} onClick={() => setHeartDiseaseHistory(opt.val)}
+                        className={`px-2 py-2 rounded border cursor-pointer font-monospace text-center flex-grow-1 ${heartDiseaseHistory === opt.val ? 'border-theme-accent bg-theme-accent bg-opacity-10 text-white fw-bold' : 'border-white-10 bg-white-5 text-secondary hover-white'}`}
+                        style={{ fontSize: '0.75rem', transition: 'all 0.2s' }}
+                      >{opt.label}</div>
+                    ))}
                   </div>
+                </div>
+              </div>
+
+              <div className="col-12">
+                <div className="predictor-card d-flex flex-row justify-content-between align-items-center font-monospace" style={{ padding: '20px' }}>
+                  <span className="small text-secondary" style={{ marginBottom: 0 }}>CALCULATING BODY MASS INDEX (BMI)</span>
+                  <span className="fw-bold" style={{ textShadow: '0 0 10px var(--theme-accent-glow)', color: 'var(--theme-accent)' }}>{bmi} kg/m²</span>
                 </div>
               </div>
             </div>
@@ -1176,72 +1158,63 @@ function Dashboard({ user }) {
               </div>
             </div>
             
-            <div className="d-flex flex-column gap-4">
-              {/* Group 1: Target Organ Surveillance */}
-              <div className="p-3 rounded" style={{ background: 'rgba(255,255,255,0.015)', border: '1px solid rgba(255,255,255,0.04)', borderLeft: '3px solid var(--theme-accent)' }}>
-                <span className="small text-secondary fw-bold d-block mb-3 text-uppercase font-monospace" style={{ letterSpacing: '0.08em', color: 'var(--theme-accent)' }}>
-                  [TARGET_ORGAN_SURVEILLANCE]
-                </span>
-                <div className="row g-3">
-                  <div className="col-md-12">
-                    <label className="small text-secondary fw-semibold mb-2 font-monospace">TARGET CANCER SCREENING CATEGORY</label>
-                    <div className="d-flex flex-wrap gap-2">
-                      {[
-                        { val: 'General Screening', label: 'General / Multi-Organ' },
-                        { val: 'Lung Cancer', label: 'Lung (Pulmonary)' },
-                        { val: 'Breast Cancer', label: 'Breast (Mammographic)' },
-                        { val: 'Prostate Cancer', label: 'Prostate (Urological)' },
-                        { val: 'Colorectal Cancer', label: 'Colorectal (GI)' },
-                        { val: 'Skin Cancer', label: 'Skin (Melanoma)' }
-                      ].map(opt => (
-                        <div 
-                          key={opt.val} onClick={() => setCancerCategory(opt.val)}
-                          className={`px-3 py-2 rounded border cursor-pointer font-monospace text-center flex-grow-1 ${cancerCategory === opt.val ? 'border-theme-accent bg-theme-accent bg-opacity-10 text-white fw-bold' : 'border-white-10 bg-white-5 text-secondary hover-white'}`}
-                          style={{ fontSize: '0.8rem', transition: 'all 0.2s' }}
-                        >{opt.label}</div>
-                      ))}
-                    </div>
+            <div className="row g-3">
+              <div className="col-md-12">
+                <div className="predictor-card">
+                  <label className="small text-secondary fw-semibold mb-2 font-monospace">TARGET CANCER SCREENING CATEGORY</label>
+                  <div className="d-flex flex-wrap gap-2">
+                    {[
+                      { val: 'General Screening', label: 'General / Multi-Organ' },
+                      { val: 'Lung Cancer', label: 'Lung (Pulmonary)' },
+                      { val: 'Breast Cancer', label: 'Breast (Mammographic)' },
+                      { val: 'Prostate Cancer', label: 'Prostate (Urological)' },
+                      { val: 'Colorectal Cancer', label: 'Colorectal (GI)' },
+                      { val: 'Skin Cancer', label: 'Skin (Melanoma)' }
+                    ].map(opt => (
+                      <div 
+                        key={opt.val} onClick={() => setCancerCategory(opt.val)}
+                        className={`px-3 py-2 rounded border cursor-pointer font-monospace text-center flex-grow-1 ${cancerCategory === opt.val ? 'border-theme-accent bg-theme-accent bg-opacity-10 text-white fw-bold' : 'border-white-10 bg-white-5 text-secondary hover-white'}`}
+                        style={{ fontSize: '0.8rem', transition: 'all 0.2s' }}
+                      >{opt.label}</div>
+                    ))}
                   </div>
                 </div>
               </div>
 
-              {/* Group 2: Behavioral & Environmental Risk Factors */}
-              <div className="p-3 rounded" style={{ background: 'rgba(255,255,255,0.015)', border: '1px solid rgba(255,255,255,0.04)', borderLeft: '3px solid var(--theme-accent)' }}>
-                <span className="small text-secondary fw-bold d-block mb-3 text-uppercase font-monospace" style={{ letterSpacing: '0.08em', color: 'var(--theme-accent)' }}>
-                  [BEHAVIORAL_&_ENVIRONMENTAL_EXPOSURES]
-                </span>
-                <div className="row g-3">
-                  <div className="col-md-6">
-                    <label className="small text-secondary fw-semibold mb-2 font-monospace">ALCOHOL CONSUMPTION RANGE</label>
-                    <div className="d-flex flex-wrap gap-2">
-                      {[
-                        { val: 'no', label: 'None / Rare' },
-                        { val: 'mild', label: 'Occasional' },
-                        { val: 'yes', label: 'Moderate / Heavy' }
-                      ].map(opt => (
-                        <div 
-                          key={opt.val} onClick={() => setAlcohol(opt.val)}
-                          className={`px-2 py-2 rounded border cursor-pointer font-monospace text-center flex-grow-1 ${alcohol === opt.val ? 'border-theme-accent bg-theme-accent bg-opacity-10 text-white fw-bold' : 'border-white-10 bg-white-5 text-secondary hover-white'}`}
-                          style={{ fontSize: '0.75rem', transition: 'all 0.2s' }}
-                        >{opt.label}</div>
-                      ))}
-                    </div>
+              <div className="col-md-6">
+                <div className="predictor-card">
+                  <label className="small text-secondary fw-semibold mb-2 font-monospace">ALCOHOL CONSUMPTION RANGE</label>
+                  <div className="d-flex flex-wrap gap-2">
+                    {[
+                      { val: 'no', label: 'None / Rare' },
+                      { val: 'mild', label: 'Occasional' },
+                      { val: 'yes', label: 'Moderate / Heavy' }
+                    ].map(opt => (
+                      <div 
+                        key={opt.val} onClick={() => setAlcohol(opt.val)}
+                        className={`px-2 py-2 rounded border cursor-pointer font-monospace text-center flex-grow-1 ${alcohol === opt.val ? 'border-theme-accent bg-theme-accent bg-opacity-10 text-white fw-bold' : 'border-white-10 bg-white-5 text-secondary hover-white'}`}
+                        style={{ fontSize: '0.75rem', transition: 'all 0.2s' }}
+                      >{opt.label}</div>
+                    ))}
                   </div>
-                  <div className="col-md-6">
-                    <label className="small text-secondary fw-semibold mb-2 font-monospace">OCCUPATIONAL HAZARD/TOXIN EXPOSURE</label>
-                    <div className="d-flex flex-wrap gap-2">
-                      {[
-                        { val: 'no', label: 'None' },
-                        { val: 'mild', label: 'Intermittent' },
-                        { val: 'yes', label: 'High Exposure' }
-                      ].map(opt => (
-                        <div 
-                          key={opt.val} onClick={() => setToxinExposure(opt.val)}
-                          className={`px-2 py-2 rounded border cursor-pointer font-monospace text-center flex-grow-1 ${toxinExposure === opt.val ? 'border-theme-accent bg-theme-accent bg-opacity-10 text-white fw-bold' : 'border-white-10 bg-white-5 text-secondary hover-white'}`}
-                          style={{ fontSize: '0.75rem', transition: 'all 0.2s' }}
-                        >{opt.label}</div>
-                      ))}
-                    </div>
+                </div>
+              </div>
+
+              <div className="col-md-6">
+                <div className="predictor-card">
+                  <label className="small text-secondary fw-semibold mb-2 font-monospace">OCCUPATIONAL HAZARD/TOXIN EXPOSURE</label>
+                  <div className="d-flex flex-wrap gap-2">
+                    {[
+                      { val: 'no', label: 'None' },
+                      { val: 'mild', label: 'Intermittent' },
+                      { val: 'yes', label: 'High Exposure' }
+                    ].map(opt => (
+                      <div 
+                        key={opt.val} onClick={() => setToxinExposure(opt.val)}
+                        className={`px-2 py-2 rounded border cursor-pointer font-monospace text-center flex-grow-1 ${toxinExposure === opt.val ? 'border-theme-accent bg-theme-accent bg-opacity-10 text-white fw-bold' : 'border-white-10 bg-white-5 text-secondary hover-white'}`}
+                        style={{ fontSize: '0.75rem', transition: 'all 0.2s' }}
+                      >{opt.label}</div>
+                    ))}
                   </div>
                 </div>
               </div>
@@ -1960,94 +1933,102 @@ function Dashboard({ user }) {
                     </h4>
                     <div className="row g-3 mt-1">
                       <div className="col-md-6">
-                        <label className="small text-secondary fw-semibold mb-2 font-monospace d-block">Age (Years)</label>
-                        <div className="d-flex align-items-center gap-3">
-                          <input 
-                            type="range" 
-                            min="1" max="110" 
-                            value={age} 
-                            onChange={(e) => setAge(Number(e.target.value))}
-                            className="flex-grow-1"
-                            style={{ margin: 0 }}
-                          />
-                          <div className="d-flex align-items-center gap-1 flex-shrink-0 font-monospace fw-bold" style={{ color: 'var(--theme-accent)' }}>
+                        <div className="predictor-card">
+                          <label className="small text-secondary fw-semibold mb-2 font-monospace d-block">Age (Years)</label>
+                          <div className="d-flex align-items-center gap-3">
                             <input 
-                              type="number" 
+                              type="range" 
+                              min="1" max="110" 
                               value={age} 
-                              onChange={(e) => setAge(e.target.value === '' ? '' : Number(e.target.value))}
-                              onBlur={() => {
-                                if (age === '' || age < 1) setAge(38);
-                                else if (age > 110) setAge(110);
-                              }}
-                              min="1" max="110"
-                              className="typeable-number-input"
-                              style={{
-                                width: '65px',
-                                background: 'rgba(255,255,255,0.07)',
-                                border: '1px solid rgba(255,255,255,0.15)',
-                                borderRadius: '4px',
-                                color: 'var(--theme-accent)',
-                                textAlign: 'center',
-                                padding: '3px 6px',
-                                fontSize: '0.82rem',
-                                fontWeight: 'bold',
-                                outline: 'none'
-                              }}
+                              onChange={(e) => setAge(Number(e.target.value))}
+                              className="flex-grow-1"
+                              style={{ margin: 0 }}
                             />
-                            <span>Yrs</span>
+                            <div className="d-flex align-items-center gap-1 flex-shrink-0 font-monospace fw-bold" style={{ color: 'var(--theme-accent)' }}>
+                              <input 
+                                type="number" 
+                                value={age} 
+                                onChange={(e) => setAge(e.target.value === '' ? '' : Number(e.target.value))}
+                                onBlur={() => {
+                                  if (age === '' || age < 1) setAge(38);
+                                  else if (age > 110) setAge(110);
+                                }}
+                                min="1" max="110"
+                                className="typeable-number-input"
+                                style={{
+                                  width: '65px',
+                                  background: 'rgba(255,255,255,0.07)',
+                                  border: '1px solid rgba(255,255,255,0.15)',
+                                  borderRadius: '4px',
+                                  color: 'var(--theme-accent)',
+                                  textAlign: 'center',
+                                  padding: '3px 6px',
+                                  fontSize: '0.82rem',
+                                  fontWeight: 'bold',
+                                  outline: 'none'
+                                }}
+                              />
+                              <span>Yrs</span>
+                            </div>
                           </div>
                         </div>
                       </div>
 
                       <div className="col-md-6">
-                        <label className="small text-secondary fw-semibold mb-2 font-monospace">Biological Gender</label>
-                        <div className="d-flex flex-wrap gap-2">
-                          {[
-                            { val: 'M', label: 'Male (XY)' },
-                            { val: 'F', label: 'Female (XX)' }
-                          ].map(opt => (
-                            <div 
-                              key={opt.val} onClick={() => setGender(opt.val)}
-                              className={`px-3 py-2 rounded border cursor-pointer font-monospace text-center flex-grow-1 ${gender === opt.val ? 'border-theme-accent bg-theme-accent bg-opacity-10 text-white fw-bold' : 'border-white-10 bg-white-5 text-secondary hover-white'}`}
-                              style={{ fontSize: '0.82rem', transition: 'all 0.2s' }}
-                            >{opt.label}</div>
-                          ))}
+                        <div className="predictor-card">
+                          <label className="small text-secondary fw-semibold mb-2 font-monospace">Biological Gender</label>
+                          <div className="d-flex flex-wrap gap-2">
+                            {[
+                              { val: 'M', label: 'Male (XY)' },
+                              { val: 'F', label: 'Female (XX)' }
+                            ].map(opt => (
+                              <div 
+                                key={opt.val} onClick={() => setGender(opt.val)}
+                                className={`px-3 py-2 rounded border cursor-pointer font-monospace text-center flex-grow-1 ${gender === opt.val ? 'border-theme-accent bg-theme-accent bg-opacity-10 text-white fw-bold' : 'border-white-10 bg-white-5 text-secondary hover-white'}`}
+                                style={{ fontSize: '0.82rem', transition: 'all 0.2s' }}
+                              >{opt.label}</div>
+                            ))}
+                          </div>
                         </div>
                       </div>
 
                       <div className="col-md-6">
-                        <label className="small text-secondary fw-semibold mb-2 font-monospace">Family Medical History</label>
-                        <div className="d-flex flex-wrap gap-2">
-                          {[
-                            { val: 'no', label: 'None' },
-                            { val: 'mild', label: 'Extended Only' },
-                            { val: 'yes', label: 'Immediate Relative' },
-                            { val: 'severe', label: 'Multiple Relatives' },
-                            { val: 'unknown', label: 'Unknown' }
-                          ].map(opt => (
-                            <div 
-                              key={opt.val} onClick={() => setFamilyHistory(opt.val)}
-                              className={`px-2 py-2 rounded border cursor-pointer font-monospace text-center flex-grow-1 ${familyHistory === opt.val ? 'border-theme-accent bg-theme-accent bg-opacity-10 text-white fw-bold' : 'border-white-10 bg-white-5 text-secondary hover-white'}`}
-                              style={{ fontSize: '0.75rem', transition: 'all 0.2s' }}
-                            >{opt.label}</div>
-                          ))}
+                        <div className="predictor-card">
+                          <label className="small text-secondary fw-semibold mb-2 font-monospace">Family Medical History</label>
+                          <div className="d-flex flex-wrap gap-2">
+                            {[
+                              { val: 'no', label: 'None' },
+                              { val: 'mild', label: 'Extended Only' },
+                              { val: 'yes', label: 'Immediate Relative' },
+                              { val: 'severe', label: 'Multiple Relatives' },
+                              { val: 'unknown', label: 'Unknown' }
+                            ].map(opt => (
+                              <div 
+                                key={opt.val} onClick={() => setFamilyHistory(opt.val)}
+                                className={`px-2 py-2 rounded border cursor-pointer font-monospace text-center flex-grow-1 ${familyHistory === opt.val ? 'border-theme-accent bg-theme-accent bg-opacity-10 text-white fw-bold' : 'border-white-10 bg-white-5 text-secondary hover-white'}`}
+                                style={{ fontSize: '0.75rem', transition: 'all 0.2s' }}
+                              >{opt.label}</div>
+                            ))}
+                          </div>
                         </div>
                       </div>
 
                       <div className="col-md-6">
-                        <label className="small text-secondary fw-semibold mb-2 font-monospace">Smoking Status</label>
-                        <div className="d-flex flex-wrap gap-2">
-                          {[
-                            { val: 'no', label: 'Never / Non-Smoker' },
-                            { val: 'former', label: 'Former Smoker' },
-                            { val: 'yes', label: 'Active Smoker' }
-                          ].map(opt => (
-                            <div 
-                              key={opt.val} onClick={() => setSmoking(opt.val)}
-                              className={`px-2 py-2 rounded border cursor-pointer font-monospace text-center flex-grow-1 ${smoking === opt.val ? 'border-theme-accent bg-theme-accent bg-opacity-10 text-white fw-bold' : 'border-white-10 bg-white-5 text-secondary hover-white'}`}
-                              style={{ fontSize: '0.75rem', transition: 'all 0.2s' }}
-                            >{opt.label}</div>
-                          ))}
+                        <div className="predictor-card">
+                          <label className="small text-secondary fw-semibold mb-2 font-monospace">Smoking Status</label>
+                          <div className="d-flex flex-wrap gap-2">
+                            {[
+                              { val: 'no', label: 'Never / Non-Smoker' },
+                              { val: 'former', label: 'Former Smoker' },
+                              { val: 'yes', label: 'Active Smoker' }
+                            ].map(opt => (
+                              <div 
+                                key={opt.val} onClick={() => setSmoking(opt.val)}
+                                className={`px-2 py-2 rounded border cursor-pointer font-monospace text-center flex-grow-1 ${smoking === opt.val ? 'border-theme-accent bg-theme-accent bg-opacity-10 text-white fw-bold' : 'border-white-10 bg-white-5 text-secondary hover-white'}`}
+                                style={{ fontSize: '0.75rem', transition: 'all 0.2s' }}
+                              >{opt.label}</div>
+                            ))}
+                          </div>
                         </div>
                       </div>
                     </div>

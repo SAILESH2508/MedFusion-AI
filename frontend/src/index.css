@@ -970,3 +970,29 @@ input.typeable-number-input:focus {
   box-shadow: 0 0 10px var(--theme-accent-glow, rgba(0, 245, 212, 0.3)) !important;
 }
 
+/* Individual predictor parameter container box */
+.predictor-card {
+  background: rgba(0, 4, 30, 0.45) !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  border-radius: 12px !important;
+  padding: 18px !important;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  gap: 8px;
+  transition: border-color 0.25s ease, background-color 0.25s ease, box-shadow 0.25s ease;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+}
+
+.predictor-card:hover {
+  border-color: var(--theme-accent, rgba(0, 245, 212, 0.3)) !important;
+  background: rgba(0, 4, 30, 0.6) !important;
+  box-shadow: 0 8px 30px rgba(0, 245, 212, 0.05);
+}
+
+.predictor-card label {
+  margin-bottom: 4px !important;
+}
+
+
