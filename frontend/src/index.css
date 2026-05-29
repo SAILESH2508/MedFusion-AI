@@ -964,10 +964,12 @@ nav.bg-glass .text-secondary:hover {
 input.typeable-number-input[type="number"]::-webkit-outer-spin-button,
 input.typeable-number-input[type="number"]::-webkit-inner-spin-button {
   -webkit-appearance: none;
+  appearance: none;
   margin: 0;
 }
 input.typeable-number-input[type="number"] {
   -moz-appearance: textfield;
+  appearance: textfield;
 }
 input.typeable-number-input:focus {
   border-color: var(--theme-accent, var(--accent-teal)) !important;
