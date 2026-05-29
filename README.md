@@ -1,28 +1,43 @@
 # MedFusion AI // Clinical Telemetry & Diagnostic Core
 
-MedFusion AI is a high-fidelity clinical telemetry platform designed to bridge the gap between pharmacological prescriptions and longitudinal biometric pathology. By leveraging a neural inference core (Gemini AI), it provides automated diagnostic insights, cross-modal correlation, and a secure clinical vault for patient safety.
+MedFusion AI is a high-fidelity clinical telemetry platform designed to bridge the gap between pharmacological prescriptions and longitudinal biometric pathology. By leveraging a neural inference core (Gemini AI) and local Machine Learning backup nodes, it provides automated diagnostic insights, cross-modal correlation, and a secure clinical vault for patient safety.
 
-## 🚀 Core Capabilities
+---
 
-### 1. Neural Ingestion Pipeline
-A unified ingestion gateway for clinical documentation using **Gemini 1.5 Flash**:
-- **Pharmacological Orders**: Automated extraction of drug dosages, frequencies, and clinical instructions from digital prescriptions.
-- **Diagnostic Pathology**: Intelligent synthesis of lab report biomarkers (Glucose, HbA1c, LDL-C, etc.) into structured metabolic data.
+## 🚀 Core Features
 
-### 2. Autonomous Correlation Engine
-Real-time cross-referencing between pharmacological intakes and biometric telemetry:
-- Identifies **Untreated Metabolic Risks**.
-- Verifies **Therapeutic Alignment**.
-- Proactive safety alerts for pharmacological contraindications.
+### 1. AI Health Diagnostics & Risk Engine (Patient Portal)
+An interactive screening workspace offering detailed health prediction and clinical modeling:
+- **Cardiovascular Vitals Engine**: Models Heart Attack probability based on blood pressure, cholesterol, max heart rate, chest pain profiles, and exercise angina.
+- **Metabolic & Glycemic Engine**: Screenings for Type 2 Diabetes risk utilizing fasting glucose, HbA1c, weight, height, BMI calculations, and hypertension history.
+- **Oncological Surveillance Engine**: General and category-specific (Lung, Breast, Prostate, Colorectal, Skin) cancer screening based on lifestyle factors, toxins, and active warning flags.
+- **Predictive Risk Coefficients**: Instant probability calculation styled as LOW, MODERATE, HIGH, or CRITICAL with high-fidelity visual radial gauge.
+- **Preventative Remedy Matrix**: Dynamic remedy planning categorized into:
+  - *Dietary Plans* (e.g. low GI, Mediterranean)
+  - *Lifestyle Changes* (exercise, behavioral habits)
+  - *Clinical Recommendations & OTC suggestions* (supplements, lab panels to order)
+  - *Urgent warning red flags* for immediate emergency department evaluation.
+- **Dynamic Predictor Safety Lock**: Gated buttons requiring user parameter changes and confirmation checkbox verification before executing predictions.
+- **Reactive Symptom Checklists**: Features a "No Symptoms" option in checklists which clears all active symptoms on selection, and automatically checks itself if all other symptoms are unchecked.
 
-### 3. Clinical Telemetry Hub (React)
-Visualize longitudinal health trajectories:
-- **Metabolic Trajectories**: Interactive tracking of vital biomarkers over time.
-- **Normalcy Index**: A proprietary neural score aggregating total physiological stability.
+### 2. Clinical Examiner Dashboard (Doctor Portal)
+A secure workspace built for medical practitioners:
+- **Patient Directory Console**: Interactive directory synchronizing registered patient profiles, pathology count, and historical AI disease runs.
+- **EHR Navigation Map**: Visual maps to scroll instantly to Patient Profile, Prescription logs, Pathology panels, AI Disease risks, and Regimen Formulators.
+- **Regimen Builder**: Manual prescription formulator allowing physicians to construct drug regimens (dosage, frequencies) and log clinical guidance directly to patient databases.
+- **Daily Planner Widget**: Tasks planner for medical professionals to coordinate clinical diagnostics and pathology reviews.
+- **Diagnostic Calculator Widget**: Calculators for BMI classifications and Target Heart Rate (THR) aerobic zone thresholds (60-85%).
 
-### 4. Emergency Clinical Vault
-A mission-critical identity module for rapid response:
-- Instant access to verified **Blood Groups**, **Critical Allergies**, and **Active Medications**.
+### 3. Neural Ingestion Pipeline
+A unified ingestion gateway using **Gemini 2.5 Flash** for clinical documentation:
+- **Prescription Ingestion**: Upload prescription images to extract medicines (dosage, frequency, timing, timing, details), safety recommendations, and physician metadata.
+- **Pathology Lab Processing**: Intelligent ingestion of lab report biomarkers (Glucose, Cholesterol, WBC count, etc.) into structured metabolic data.
+
+### 4. Hybrid Machine Learning Fallback
+- **Local RF Inference Node**: If the GenAI API quota is exceeded or offline, MedFusion AI automatically runs predictive calculations locally via trained **Random Forest models** (`heart_attack_rf.pkl`, `diabetes_rf.pkl`, `cancer_rf.pkl`) utilizing numpy/pickle.
+
+### 5. Emergency Clinical Vault
+- A mission-critical identity card summarizing crucial biometric parameters (Allergies, Blood Groups, Active Meds, Emergency Contacts) for quick clinical triage.
 
 ---
 
@@ -30,10 +45,10 @@ A mission-critical identity module for rapid response:
 
 | Layer | Technology | Purpose |
 | :--- | :--- | :--- |
-| **Frontend** | React (Vite) | Premium patient and diagnostic interface. |
-| **Backend** | Django REST | High-performance API gateway. |
-| **AI Engine** | Gemini AI | Neural inference for entity extraction and risk assessment. |
-| **Database** | SQLite | Relational persistence for clinical records. |
+| **Frontend** | React (Vite), Tailwind CSS/Vanilla CSS, Lucide | Premium, dark-mode, high-fidelity patient and doctor dashboard. |
+| **Backend** | Django REST Framework, SQLite | High-performance API gateway and patient database persistence. |
+| **AI Engine** | Gemini AI (GenAI SDK) | Vision-to-text extraction, clinical reasoning, and remedy formulation. |
+| **ML Engine** | Scikit-learn (Random Forest) | Local fallback inference models. |
 
 ---
 
@@ -42,14 +57,17 @@ A mission-critical identity module for rapid response:
 ```text
 medfusion-ai/
 ├── backend/                # Django REST API
-│   ├── medical/            # Core clinical models and views
-│   ├── ai/                 # AI Service layer (Google GenAI)
-│   ├── media/              # Secure document landing zone
-│   └── manage.py           # Administrative entry point
+│   ├── medical/            # Core clinical models, views, and urls
+│   │   ├── services/       # AI service layers (AI & local ML fallback)
+│   │   ├── ml_models/      # Pre-trained Random Forest models (.pkl)
+│   │   └── migrations/     # Django ORM migrations
+│   └── manage.py           
 └── frontend/               # React Application
     ├── src/
-    │   ├── pages/          # Hub, Upload, Profile, Vault
-    │   └── services/       # Centralized API configuration
+    │   ├── pages/          # Auth, Landing, Profile, Upload, Dashboard
+    │   ├── services/       # Axios API layer
+    │   ├── context/        # Sidebar and UI context providers
+    │   └── index.css       # Glassmorphism, dynamic grids, and theme styling
     └── package.json        
 ```
 
@@ -58,12 +76,14 @@ medfusion-ai/
 ## ⚡ Quick Start
 
 ### 1. Launch Backend (Django)
+Ensure you have dependencies installed from `backend/requirements.txt`.
 ```powershell
 cd backend
 python manage.py runserver
 ```
 
 ### 2. Launch Frontend (React)
+Ensure you have packages installed via `npm install`.
 ```powershell
 cd frontend
 npm run dev
@@ -71,10 +91,7 @@ npm run dev
 
 ---
 
-## 🛡️ Clinical Security
-- **Asset Gating**: Strict modality-based file filtering.
-- **Neural Verification**: Gemini-powered validation.
-- **Privacy First**: Structured clinical telemetry management via Django ORM.
-
----
-**MedFusion AI** — *Synchronizing Pharmacology with Physiological Truth.*
+## 🛡️ Clinical Security & Privacy
+- **Asset Gating**: Strict limits on document sizing (16MB maximum).
+- **Relational Integrity**: Complete trace audit logs connecting Patient, Prescriptions, Pathology, and AI predictions.
+- **Privacy Gated**: Offline diagnostic fallbacks to maintain system continuity when cloud networks are inaccessible.
