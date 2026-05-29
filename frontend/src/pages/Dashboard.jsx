@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useContext } from 'react';
+import React, { useState, useEffect, useCallback, useContext, useRef } from 'react';
 import { 
   Heart, 
   Activity, 
@@ -32,6 +32,7 @@ function Dashboard({ user }) {
   const [selectedDisease, setSelectedDisease] = useState('heart_attack'); // 'heart_attack' | 'diabetes' | 'cancer'
   
   // Vitals & Symptoms Forms State
+  const [hasChanges, setHasChanges] = useState(false);
   const [age, setAge] = useState(38);
   const [gender, setGender] = useState('M');
   const [familyHistory, setFamilyHistory] = useState('no');
@@ -46,6 +47,7 @@ function Dashboard({ user }) {
   const [exerciseAngina, setExerciseAngina] = useState('no');
   const [fastingSugar, setFastingSugar] = useState('no');
   const [heartSymptoms, setHeartSymptoms] = useState({
+    no_symptoms: true,
     shortness_of_breath: false,
     left_arm_pain: false,
     jaw_neck_pain: false,
@@ -61,6 +63,7 @@ function Dashboard({ user }) {
   const [hypertension, setHypertension] = useState('no');
   const [heartDiseaseHistory, setHeartDiseaseHistory] = useState('no');
   const [diabetesSymptoms, setDiabetesSymptoms] = useState({
+    no_symptoms: true,
     excessive_thirst: false,
     frequent_urination: false,
     unexplained_weight_loss: false,
@@ -73,6 +76,7 @@ function Dashboard({ user }) {
   const [alcohol, setAlcohol] = useState('no');
   const [toxinExposure, setToxinExposure] = useState('no');
   const [cancerSymptoms, setCancerSymptoms] = useState({
+    no_symptoms: true,
     unexplained_weight_loss: false,
     persistent_cough: false,
     persistent_fatigue: false,
@@ -89,6 +93,21 @@ function Dashboard({ user }) {
 
   // Remedy Tab state inside results
   const [remedyTab, setRemedyTab] = useState('diet'); // 'diet' | 'lifestyle' | 'clinical'
+
+  // Track manual changes in vitals/symptoms/demographics
+  const isInitialMount = useRef(true);
+  useEffect(() => {
+    if (isInitialMount.current) {
+      isInitialMount.current = false;
+    } else {
+      setHasChanges(true);
+    }
+  }, [
+    age, gender, familyHistory, smoking,
+    systolicBp, diastolicBp, cholesterol, maxHeartRate, chestPain, exerciseAngina, fastingSugar, heartSymptoms,
+    glucose, hba1c, weight, height, hypertension, heartDiseaseHistory, diabetesSymptoms,
+    cancerCategory, alcohol, toxinExposure, cancerSymptoms
+  ]);
 
   // Compute BMI helper — parseFloat ensures it's a number, not a string
   const bmi = (weight && height) ? parseFloat((Number(weight) / ((Number(height) / 100) * (Number(height) / 100))).toFixed(1)) : 0;
@@ -109,15 +128,66 @@ function Dashboard({ user }) {
 
 
   const handleHeartSymptomToggle = (key) => {
-    setHeartSymptoms(prev => ({ ...prev, [key]: !prev[key] }));
+    setHasChanges(true);
+    if (key === 'no_symptoms') {
+      setHeartSymptoms({
+        no_symptoms: true,
+        shortness_of_breath: false,
+        left_arm_pain: false,
+        jaw_neck_pain: false,
+        cold_sweats_nausea: false,
+        dizziness: false
+      });
+    } else {
+      setHeartSymptoms(prev => {
+        const next = { ...prev, [key]: !prev[key] };
+        const hasRealSymptom = Object.keys(next).some(k => k !== 'no_symptoms' && next[k]);
+        next.no_symptoms = !hasRealSymptom;
+        return next;
+      });
+    }
   };
 
   const handleDiabetesSymptomToggle = (key) => {
-    setDiabetesSymptoms(prev => ({ ...prev, [key]: !prev[key] }));
+    setHasChanges(true);
+    if (key === 'no_symptoms') {
+      setDiabetesSymptoms({
+        no_symptoms: true,
+        excessive_thirst: false,
+        frequent_urination: false,
+        unexplained_weight_loss: false,
+        blurry_vision: false,
+        slow_healing_sores: false
+      });
+    } else {
+      setDiabetesSymptoms(prev => {
+        const next = { ...prev, [key]: !prev[key] };
+        const hasRealSymptom = Object.keys(next).some(k => k !== 'no_symptoms' && next[k]);
+        next.no_symptoms = !hasRealSymptom;
+        return next;
+      });
+    }
   };
 
   const handleCancerSymptomToggle = (key) => {
-    setCancerSymptoms(prev => ({ ...prev, [key]: !prev[key] }));
+    setHasChanges(true);
+    if (key === 'no_symptoms') {
+      setCancerSymptoms({
+        no_symptoms: true,
+        unexplained_weight_loss: false,
+        persistent_cough: false,
+        persistent_fatigue: false,
+        skin_mole_changes: false,
+        unusual_lumps: false
+      });
+    } else {
+      setCancerSymptoms(prev => {
+        const next = { ...prev, [key]: !prev[key] };
+        const hasRealSymptom = Object.keys(next).some(k => k !== 'no_symptoms' && next[k]);
+        next.no_symptoms = !hasRealSymptom;
+        return next;
+      });
+    }
   };
 
   // Doctor-Specific State Variables
@@ -276,6 +346,7 @@ function Dashboard({ user }) {
   }, [selectedPatient, fetchPatientDetails]);
 
   const applyHeartPreset = (type) => {
+    setHasChanges(true);
     if (type === 'healthy') {
       setSystolicBp(120);
       setDiastolicBp(80);
@@ -285,6 +356,7 @@ function Dashboard({ user }) {
       setExerciseAngina('no');
       setFastingSugar('no');
       setHeartSymptoms({
+        no_symptoms: true,
         shortness_of_breath: false,
         left_arm_pain: false,
         jaw_neck_pain: false,
@@ -300,6 +372,7 @@ function Dashboard({ user }) {
       setExerciseAngina('yes');
       setFastingSugar('yes');
       setHeartSymptoms({
+        no_symptoms: false,
         shortness_of_breath: true,
         left_arm_pain: true,
         jaw_neck_pain: true,
@@ -310,6 +383,7 @@ function Dashboard({ user }) {
   };
 
   const applyDiabetesPreset = (type) => {
+    setHasChanges(true);
     if (type === 'healthy') {
       setGlucose(90);
       setHba1c(5.0);
@@ -318,6 +392,7 @@ function Dashboard({ user }) {
       setHypertension('no');
       setHeartDiseaseHistory('no');
       setDiabetesSymptoms({
+        no_symptoms: true,
         excessive_thirst: false,
         frequent_urination: false,
         unexplained_weight_loss: false,
@@ -332,6 +407,7 @@ function Dashboard({ user }) {
       setHypertension('yes');
       setHeartDiseaseHistory('yes');
       setDiabetesSymptoms({
+        no_symptoms: false,
         excessive_thirst: true,
         frequent_urination: true,
         unexplained_weight_loss: false,
@@ -342,11 +418,13 @@ function Dashboard({ user }) {
   };
 
   const applyCancerPreset = (type) => {
+    setHasChanges(true);
     if (type === 'healthy') {
       setCancerCategory('General Screening');
       setAlcohol('no');
       setToxinExposure('no');
       setCancerSymptoms({
+        no_symptoms: true,
         unexplained_weight_loss: false,
         persistent_cough: false,
         persistent_fatigue: false,
@@ -358,6 +436,7 @@ function Dashboard({ user }) {
       setAlcohol('yes');
       setToxinExposure('yes');
       setCancerSymptoms({
+        no_symptoms: false,
         unexplained_weight_loss: true,
         persistent_cough: true,
         persistent_fatigue: true,
@@ -373,6 +452,7 @@ function Dashboard({ user }) {
     setSelectedDisease(id);
     setResult(null);
     setError('');
+    setHasChanges(false);
   }, [isAnalyzing]);
 
   useEffect(() => {
@@ -1243,7 +1323,7 @@ function Dashboard({ user }) {
                     onClick={() => handleHeartSymptomToggle(sym)}
                     className={`p-3 rounded border cursor-pointer transition-all d-flex align-items-center gap-3 ${
                       heartSymptoms[sym] 
-                        ? 'border-heart active-symptom' 
+                        ? (sym === 'no_symptoms' ? 'active-no-symptoms' : 'border-heart active-symptom') 
                         : 'border-white-5 hover-border-white-10 text-secondary bg-white-10 bg-opacity-30'
                     }`}
                   >
@@ -1278,7 +1358,7 @@ function Dashboard({ user }) {
                     onClick={() => handleDiabetesSymptomToggle(sym)}
                     className={`p-3 rounded border cursor-pointer transition-all d-flex align-items-center gap-3 ${
                       diabetesSymptoms[sym] 
-                        ? 'border-diabetes active-symptom' 
+                        ? (sym === 'no_symptoms' ? 'active-no-symptoms' : 'border-diabetes active-symptom') 
                         : 'border-white-5 hover-border-white-10 text-secondary bg-white-10 bg-opacity-30'
                     }`}
                   >
@@ -1313,7 +1393,7 @@ function Dashboard({ user }) {
                     onClick={() => handleCancerSymptomToggle(sym)}
                     className={`p-3 rounded border cursor-pointer transition-all d-flex align-items-center gap-3 ${
                       cancerSymptoms[sym] 
-                        ? 'border-cancer active-symptom' 
+                        ? (sym === 'no_symptoms' ? 'active-no-symptoms' : 'border-cancer active-symptom') 
                         : 'border-white-5 hover-border-white-10 text-secondary bg-white-10 bg-opacity-30'
                     }`}
                   >
@@ -2048,10 +2128,17 @@ function Dashboard({ user }) {
                     <button 
                       className="btn-clinical primary py-3 d-flex align-items-center justify-content-center gap-2 font-monospace text-uppercase w-100" 
                       onClick={runPredictionAnalysis} 
-                      style={{ letterSpacing: '0.08em', margin: 0 }}
+                      disabled={!hasChanges}
+                      style={{ 
+                        letterSpacing: '0.08em', 
+                        margin: 0,
+                        opacity: hasChanges ? 1 : 0.45,
+                        cursor: hasChanges ? 'pointer' : 'not-allowed',
+                        borderColor: hasChanges ? 'var(--theme-accent)' : 'rgba(255, 255, 255, 0.1)'
+                      }}
                     >
                       <Activity size={18} />
-                      Run AI Health Analysis
+                      {hasChanges ? "Run AI Health Analysis" : "Modify Parameters to Unlock Analysis"}
                     </button>
                   </div>
                 </motion.div>
