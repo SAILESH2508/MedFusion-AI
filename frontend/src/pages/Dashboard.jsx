@@ -660,9 +660,16 @@ function Dashboard({ user }) {
             
             <div className="row g-3">
               <div className="col-md-6">
-                <label className="small text-secondary fw-semibold mb-2 font-monospace d-flex justify-content-between align-items-center">
-                  <span>SYSTOLIC PRESSURE</span>
-                  <div className="d-flex align-items-center gap-1">
+                <label className="small text-secondary fw-semibold mb-2 font-monospace">SYSTOLIC PRESSURE</label>
+                <div className="d-flex align-items-center gap-3">
+                  <input 
+                    type="range" 
+                    value={systolicBp} 
+                    onChange={(e) => setSystolicBp(Number(e.target.value))} 
+                    min="80" max="220" 
+                    className="flex-grow-1 m-0"
+                  />
+                  <div className="d-flex align-items-center gap-1 flex-shrink-0 font-monospace fw-bold" style={{ color: 'var(--theme-accent)' }}>
                     <input 
                       type="number" 
                       value={systolicBp} 
@@ -674,34 +681,34 @@ function Dashboard({ user }) {
                       min="80" max="220"
                       className="typeable-number-input"
                       style={{
-                        width: '55px',
+                        width: '65px',
                         background: 'rgba(255,255,255,0.07)',
                         border: '1px solid rgba(255,255,255,0.15)',
                         borderRadius: '4px',
                         color: 'var(--theme-accent)',
                         textAlign: 'center',
-                        padding: '1px 3px',
+                        padding: '3px 6px',
                         fontSize: '0.82rem',
                         fontWeight: 'bold',
                         outline: 'none'
                       }}
                     />
-                    <span style={{ color: 'var(--theme-accent)' }}>mmHg</span>
+                    <span>mmHg</span>
                   </div>
-                </label>
-                <input 
-                  type="range" 
-                  value={systolicBp} 
-                  onChange={(e) => setSystolicBp(Number(e.target.value))} 
-                  min="80" max="220" 
-                  className="w-100 m-0"
-                />
+                </div>
                 <small className="text-secondary d-block mt-2" style={{ fontSize: '0.74rem' }}>Normal range: 90 - 120 mmHg</small>
               </div>
               <div className="col-md-6">
-                <label className="small text-secondary fw-semibold mb-2 font-monospace d-flex justify-content-between align-items-center">
-                  <span>DIASTOLIC PRESSURE</span>
-                  <div className="d-flex align-items-center gap-1">
+                <label className="small text-secondary fw-semibold mb-2 font-monospace">DIASTOLIC PRESSURE</label>
+                <div className="d-flex align-items-center gap-3">
+                  <input 
+                    type="range" 
+                    value={diastolicBp} 
+                    onChange={(e) => setDiastolicBp(Number(e.target.value))} 
+                    min="40" max="130" 
+                    className="flex-grow-1 m-0"
+                  />
+                  <div className="d-flex align-items-center gap-1 flex-shrink-0 font-monospace fw-bold" style={{ color: 'var(--theme-accent)' }}>
                     <input 
                       type="number" 
                       value={diastolicBp} 
@@ -713,35 +720,35 @@ function Dashboard({ user }) {
                       min="40" max="130"
                       className="typeable-number-input"
                       style={{
-                        width: '55px',
+                        width: '65px',
                         background: 'rgba(255,255,255,0.07)',
                         border: '1px solid rgba(255,255,255,0.15)',
                         borderRadius: '4px',
                         color: 'var(--theme-accent)',
                         textAlign: 'center',
-                        padding: '1px 3px',
+                        padding: '3px 6px',
                         fontSize: '0.82rem',
                         fontWeight: 'bold',
                         outline: 'none'
                       }}
                     />
-                    <span style={{ color: 'var(--theme-accent)' }}>mmHg</span>
+                    <span>mmHg</span>
                   </div>
-                </label>
-                <input 
-                  type="range" 
-                  value={diastolicBp} 
-                  onChange={(e) => setDiastolicBp(Number(e.target.value))} 
-                  min="40" max="130" 
-                  className="w-100 m-0"
-                />
+                </div>
                 <small className="text-secondary d-block mt-2" style={{ fontSize: '0.74rem' }}>Normal range: 60 - 80 mmHg</small>
               </div>
 
               <div className="col-md-6">
-                <label className="small text-secondary fw-semibold mb-2 font-monospace d-flex justify-content-between align-items-center">
-                  <span>SERUM CHOLESTEROL</span>
-                  <div className="d-flex align-items-center gap-1">
+                <label className="small text-secondary fw-semibold mb-2 font-monospace">SERUM CHOLESTEROL</label>
+                <div className="d-flex align-items-center gap-3">
+                  <input 
+                    type="range" 
+                    value={cholesterol} 
+                    onChange={(e) => setCholesterol(Number(e.target.value))} 
+                    min="100" max="400" 
+                    className="flex-grow-1 m-0"
+                  />
+                  <div className="d-flex align-items-center gap-1 flex-shrink-0 font-monospace fw-bold" style={{ color: 'var(--theme-accent)' }}>
                     <input 
                       type="number" 
                       value={cholesterol} 
@@ -753,34 +760,34 @@ function Dashboard({ user }) {
                       min="100" max="400"
                       className="typeable-number-input"
                       style={{
-                        width: '55px',
+                        width: '65px',
                         background: 'rgba(255,255,255,0.07)',
                         border: '1px solid rgba(255,255,255,0.15)',
                         borderRadius: '4px',
                         color: 'var(--theme-accent)',
                         textAlign: 'center',
-                        padding: '1px 3px',
+                        padding: '3px 6px',
                         fontSize: '0.82rem',
                         fontWeight: 'bold',
                         outline: 'none'
                       }}
                     />
-                    <span style={{ color: 'var(--theme-accent)' }}>mg/dL</span>
+                    <span>mg/dL</span>
                   </div>
-                </label>
-                <input 
-                  type="range" 
-                  value={cholesterol} 
-                  onChange={(e) => setCholesterol(Number(e.target.value))} 
-                  min="100" max="400" 
-                  className="w-100 m-0"
-                />
+                </div>
                 <small className="text-secondary d-block mt-2" style={{ fontSize: '0.74rem' }}>Normal range: &lt; 200 mg/dL</small>
               </div>
               <div className="col-md-6">
-                <label className="small text-secondary fw-semibold mb-2 font-monospace d-flex justify-content-between align-items-center">
-                  <span>MAX HEART RATE</span>
-                  <div className="d-flex align-items-center gap-1">
+                <label className="small text-secondary fw-semibold mb-2 font-monospace">MAX HEART RATE</label>
+                <div className="d-flex align-items-center gap-3">
+                  <input 
+                    type="range" 
+                    value={maxHeartRate} 
+                    onChange={(e) => setMaxHeartRate(Number(e.target.value))} 
+                    min="60" max="220" 
+                    className="flex-grow-1 m-0"
+                  />
+                  <div className="d-flex align-items-center gap-1 flex-shrink-0 font-monospace fw-bold" style={{ color: 'var(--theme-accent)' }}>
                     <input 
                       type="number" 
                       value={maxHeartRate} 
@@ -792,28 +799,21 @@ function Dashboard({ user }) {
                       min="60" max="220"
                       className="typeable-number-input"
                       style={{
-                        width: '55px',
+                        width: '65px',
                         background: 'rgba(255,255,255,0.07)',
                         border: '1px solid rgba(255,255,255,0.15)',
                         borderRadius: '4px',
                         color: 'var(--theme-accent)',
                         textAlign: 'center',
-                        padding: '1px 3px',
+                        padding: '3px 6px',
                         fontSize: '0.82rem',
                         fontWeight: 'bold',
                         outline: 'none'
                       }}
                     />
-                    <span style={{ color: 'var(--theme-accent)' }}>BPM</span>
+                    <span>BPM</span>
                   </div>
-                </label>
-                <input 
-                  type="range" 
-                  value={maxHeartRate} 
-                  onChange={(e) => setMaxHeartRate(Number(e.target.value))} 
-                  min="60" max="220" 
-                  className="w-100 m-0"
-                />
+                </div>
                 <small className="text-secondary d-block mt-2" style={{ fontSize: '0.74rem' }}>Normal range: 60 - 100 BPM</small>
               </div>
 
@@ -903,9 +903,16 @@ function Dashboard({ user }) {
             
             <div className="row g-3">
               <div className="col-md-6">
-                <label className="small text-secondary fw-semibold mb-2 font-monospace d-flex justify-content-between align-items-center">
-                  <span>FASTING GLUCOSE</span>
-                  <div className="d-flex align-items-center gap-1">
+                <label className="small text-secondary fw-semibold mb-2 font-monospace">FASTING GLUCOSE</label>
+                <div className="d-flex align-items-center gap-3">
+                  <input 
+                    type="range" 
+                    value={glucose} 
+                    onChange={(e) => setGlucose(Number(e.target.value))} 
+                    min="50" max="400" 
+                    className="flex-grow-1 m-0"
+                  />
+                  <div className="d-flex align-items-center gap-1 flex-shrink-0 font-monospace fw-bold" style={{ color: 'var(--theme-accent)' }}>
                     <input 
                       type="number" 
                       value={glucose} 
@@ -917,34 +924,35 @@ function Dashboard({ user }) {
                       min="50" max="400"
                       className="typeable-number-input"
                       style={{
-                        width: '55px',
+                        width: '65px',
                         background: 'rgba(255,255,255,0.07)',
                         border: '1px solid rgba(255,255,255,0.15)',
                         borderRadius: '4px',
                         color: 'var(--theme-accent)',
                         textAlign: 'center',
-                        padding: '1px 3px',
+                        padding: '3px 6px',
                         fontSize: '0.82rem',
                         fontWeight: 'bold',
                         outline: 'none'
                       }}
                     />
-                    <span style={{ color: 'var(--theme-accent)' }}>mg/dL</span>
+                    <span>mg/dL</span>
                   </div>
-                </label>
-                <input 
-                  type="range" 
-                  value={glucose} 
-                  onChange={(e) => setGlucose(Number(e.target.value))} 
-                  min="50" max="400" 
-                  className="w-100 m-0"
-                />
+                </div>
                 <small className="text-secondary d-block mt-2" style={{ fontSize: '0.74rem' }}>Normal range: 70 - 100 mg/dL</small>
               </div>
               <div className="col-md-6">
-                <label className="small text-secondary fw-semibold mb-2 font-monospace d-flex justify-content-between align-items-center">
-                  <span>HbA1c LEVEL</span>
-                  <div className="d-flex align-items-center gap-1">
+                <label className="small text-secondary fw-semibold mb-2 font-monospace">HbA1c LEVEL</label>
+                <div className="d-flex align-items-center gap-3">
+                  <input 
+                    type="range" 
+                    step="0.1"
+                    value={hba1c} 
+                    onChange={(e) => setHba1c(Number(e.target.value))} 
+                    min="3.0" max="16.0" 
+                    className="flex-grow-1 m-0"
+                  />
+                  <div className="d-flex align-items-center gap-1 flex-shrink-0 font-monospace fw-bold" style={{ color: 'var(--theme-accent)' }}>
                     <input 
                       type="number" 
                       step="0.1"
@@ -957,36 +965,35 @@ function Dashboard({ user }) {
                       min="3.0" max="16.0"
                       className="typeable-number-input"
                       style={{
-                        width: '55px',
+                        width: '65px',
                         background: 'rgba(255,255,255,0.07)',
                         border: '1px solid rgba(255,255,255,0.15)',
                         borderRadius: '4px',
                         color: 'var(--theme-accent)',
                         textAlign: 'center',
-                        padding: '1px 3px',
+                        padding: '3px 6px',
                         fontSize: '0.82rem',
                         fontWeight: 'bold',
                         outline: 'none'
                       }}
                     />
-                    <span style={{ color: 'var(--theme-accent)' }}>%</span>
+                    <span>%</span>
                   </div>
-                </label>
-                <input 
-                  type="range" 
-                  step="0.1"
-                  value={hba1c} 
-                  onChange={(e) => setHba1c(Number(e.target.value))} 
-                  min="3.0" max="16.0" 
-                  className="w-100 m-0"
-                />
+                </div>
                 <small className="text-secondary d-block mt-2" style={{ fontSize: '0.74rem' }}>Normal range: &lt; 5.7%</small>
               </div>
 
               <div className="col-md-6">
-                <label className="small text-secondary fw-semibold mb-2 font-monospace d-flex justify-content-between align-items-center">
-                  <span>WEIGHT</span>
-                  <div className="d-flex align-items-center gap-1">
+                <label className="small text-secondary fw-semibold mb-2 font-monospace">WEIGHT</label>
+                <div className="d-flex align-items-center gap-3">
+                  <input 
+                    type="range" 
+                    value={weight} 
+                    onChange={(e) => setWeight(Number(e.target.value))} 
+                    min="30" max="250" 
+                    className="flex-grow-1 m-0"
+                  />
+                  <div className="d-flex align-items-center gap-1 flex-shrink-0 font-monospace fw-bold" style={{ color: 'var(--theme-accent)' }}>
                     <input 
                       type="number" 
                       value={weight} 
@@ -998,33 +1005,33 @@ function Dashboard({ user }) {
                       min="30" max="250"
                       className="typeable-number-input"
                       style={{
-                        width: '55px',
+                        width: '65px',
                         background: 'rgba(255,255,255,0.07)',
                         border: '1px solid rgba(255,255,255,0.15)',
                         borderRadius: '4px',
                         color: 'var(--theme-accent)',
                         textAlign: 'center',
-                        padding: '1px 3px',
+                        padding: '3px 6px',
                         fontSize: '0.82rem',
                         fontWeight: 'bold',
                         outline: 'none'
                       }}
                     />
-                    <span style={{ color: 'var(--theme-accent)' }}>kg</span>
+                    <span>kg</span>
                   </div>
-                </label>
-                <input 
-                  type="range" 
-                  value={weight} 
-                  onChange={(e) => setWeight(Number(e.target.value))} 
-                  min="30" max="250" 
-                  className="w-100 m-0"
-                />
+                </div>
               </div>
               <div className="col-md-6">
-                <label className="small text-secondary fw-semibold mb-2 font-monospace d-flex justify-content-between align-items-center">
-                  <span>HEIGHT</span>
-                  <div className="d-flex align-items-center gap-1">
+                <label className="small text-secondary fw-semibold mb-2 font-monospace">HEIGHT</label>
+                <div className="d-flex align-items-center gap-3">
+                  <input 
+                    type="range" 
+                    value={height} 
+                    onChange={(e) => setHeight(Number(e.target.value))} 
+                    min="100" max="250" 
+                    className="flex-grow-1 m-0"
+                  />
+                  <div className="d-flex align-items-center gap-1 flex-shrink-0 font-monospace fw-bold" style={{ color: 'var(--theme-accent)' }}>
                     <input 
                       type="number" 
                       value={height} 
@@ -1036,28 +1043,21 @@ function Dashboard({ user }) {
                       min="100" max="250"
                       className="typeable-number-input"
                       style={{
-                        width: '55px',
+                        width: '65px',
                         background: 'rgba(255,255,255,0.07)',
                         border: '1px solid rgba(255,255,255,0.15)',
                         borderRadius: '4px',
                         color: 'var(--theme-accent)',
                         textAlign: 'center',
-                        padding: '1px 3px',
+                        padding: '3px 6px',
                         fontSize: '0.82rem',
                         fontWeight: 'bold',
                         outline: 'none'
                       }}
                     />
-                    <span style={{ color: 'var(--theme-accent)' }}>cm</span>
+                    <span>cm</span>
                   </div>
-                </label>
-                <input 
-                  type="range" 
-                  value={height} 
-                  onChange={(e) => setHeight(Number(e.target.value))} 
-                  min="100" max="250" 
-                  className="w-100 m-0"
-                />
+                </div>
               </div>
 
               <div className="col-md-6">
@@ -1923,13 +1923,13 @@ function Dashboard({ user }) {
                               min="1" max="110"
                               className="typeable-number-input"
                               style={{
-                                width: '55px',
+                                width: '65px',
                                 background: 'rgba(255,255,255,0.07)',
                                 border: '1px solid rgba(255,255,255,0.15)',
                                 borderRadius: '4px',
                                 color: 'var(--theme-accent)',
                                 textAlign: 'center',
-                                padding: '1px 3px',
+                                padding: '3px 6px',
                                 fontSize: '0.82rem',
                                 fontWeight: 'bold',
                                 outline: 'none'
