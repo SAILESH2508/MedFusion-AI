@@ -24,13 +24,13 @@ An interactive screening workspace offering detailed health prediction and clini
 A secure workspace built for medical practitioners:
 - **Patient Directory Console**: Interactive directory synchronizing registered patient profiles, pathology count, and historical AI disease runs.
 - **EHR Navigation Map**: Visual maps to scroll instantly to Patient Profile, Prescription logs, Pathology panels, AI Disease risks, and Regimen Formulators.
-- **Regimen Builder**: Manual prescription formulator allowing physicians to construct drug regimens (dosage, frequencies) and log clinical guidance directly to patient databases.
+- **Regimen Builder**: Manual prescription formulator allowing physicians to construct drug regimens (dosage, frequencies) and log clinical guidance directly to patient EHRs.
 - **Daily Planner Widget**: Tasks planner for medical professionals to coordinate clinical diagnostics and pathology reviews.
 - **Diagnostic Calculator Widget**: Calculators for BMI classifications and Target Heart Rate (THR) aerobic zone thresholds (60-85%).
 
 ### 3. Neural Ingestion Pipeline
 A unified ingestion gateway using **Gemini 2.5 Flash** for clinical documentation:
-- **Prescription Ingestion**: Upload prescription images to extract medicines (dosage, frequency, timing, timing, details), safety recommendations, and physician metadata.
+- **Prescription Ingestion**: Upload prescription images to extract medicines (dosage, frequency, timing, details), safety recommendations, and physician metadata.
 - **Pathology Lab Processing**: Intelligent ingestion of lab report biomarkers (Glucose, Cholesterol, WBC count, etc.) into structured metabolic data.
 
 ### 4. Hybrid Machine Learning Fallback
@@ -73,6 +73,25 @@ medfusion-ai/
 
 ---
 
+## ⚙️ Configuration & Environment Setup
+
+### Backend Environment Variables
+Create a file named `.env` in the `backend/` directory with the following variables:
+```env
+GEMINI_API_KEY=your_gemini_api_key_here
+GOOGLE_API_KEY=your_gemini_api_key_here
+DEFAULT_LLM_MODEL=gemini-2.5-flash
+```
+
+### Local Machine Learning Models Training
+Pre-trained Random Forest model binaries are stored under `backend/medical/ml_models/`. To retrain or synthesize new training datasets, run:
+```bash
+cd backend
+python medical/train_models.py
+```
+
+---
+
 ## ⚡ Quick Start
 
 ### 1. Launch Backend (Django)
@@ -95,3 +114,8 @@ npm run dev
 - **Asset Gating**: Strict limits on document sizing (16MB maximum).
 - **Relational Integrity**: Complete trace audit logs connecting Patient, Prescriptions, Pathology, and AI predictions.
 - **Privacy Gated**: Offline diagnostic fallbacks to maintain system continuity when cloud networks are inaccessible.
+
+---
+
+## 📄 License
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
