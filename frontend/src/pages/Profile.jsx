@@ -23,6 +23,19 @@ import { SidebarContext } from '../context/SidebarContext';
 
 function Profile({ user, onUserUpdate }) {
   const { setSidebarContent } = useContext(SidebarContext);
+  
+  const [currentYear] = useState(() => new Date().getFullYear());
+  
+  const getAge = (dobString) => {
+    try {
+      const birth = new Date(dobString);
+      const birthYear = birth.getFullYear();
+      if (isNaN(birthYear)) return 'N/A';
+      return currentYear - birthYear;
+    } catch (e) {
+      return 'N/A';
+    }
+  };
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
   const [isEditing, setIsEditing] = useState(false);
@@ -62,7 +75,11 @@ function Profile({ user, onUserUpdate }) {
         last_name: res.data.last_name || '',
         blood_group: res.data.blood_group || '',
         emergency_contact: res.data.emergency_contact || '',
-        allergies: res.data.allergies?.join(', ') || ''
+        allergies: res.data.allergies?.join(', ') || '',
+        dob: res.data.dob || '',
+        gender: res.data.gender || '',
+        weight: res.data.weight || '',
+        height: res.data.height || ''
       });
     } catch (err) {
       console.error("Profile sync error", err);
@@ -71,7 +88,11 @@ function Profile({ user, onUserUpdate }) {
         vault_id: 'N/A',
         blood_group: '',
         allergies: [],
-        emergency_contact: ''
+        emergency_contact: '',
+        dob: '',
+        gender: '',
+        weight: '',
+        height: ''
       });
     }
   }, [user]);
@@ -542,6 +563,74 @@ function Profile({ user, onUserUpdate }) {
                   )}
                 </div>
                 
+                <div className="mb-4 mt-2">
+                  <label className="small text-theme-accent fw-bold mb-3 d-block font-monospace text-uppercase">Patient Biometrics & Demographics</label>
+                  <div className="row g-3 font-monospace mb-2" style={{ fontSize: '0.9rem' }}>
+                    <div className="col-md-6">
+                      <span className="text-secondary d-block">DATE OF BIRTH</span>
+                      {!isEditing ? (
+                        <span className="text-white fw-bold">{profile.dob || 'N/A'} {profile.dob && `(${getAge(profile.dob)} Yrs)`}</span>
+                      ) : (
+                        <input 
+                          type="date" 
+                          value={editData.dob || ''} 
+                          onChange={(e) => setEditData({...editData, dob: e.target.value})}
+                          style={{ marginBottom: 0, padding: '8px 12px', fontSize: '0.85rem' }}
+                        />
+                      )}
+                    </div>
+                    <div className="col-md-6">
+                      <span className="text-secondary d-block">BIOLOGICAL GENDER</span>
+                      {!isEditing ? (
+                        <span className="text-white fw-bold">
+                          {profile.gender === 'M' ? 'Male (XY)' : profile.gender === 'F' ? 'Female (XX)' : profile.gender === 'O' ? 'Other' : 'N/A'}
+                        </span>
+                      ) : (
+                        <select 
+                          value={editData.gender || ''} 
+                          onChange={(e) => setEditData({...editData, gender: e.target.value})}
+                          style={{ marginBottom: 0, padding: '8px 12px', fontSize: '0.85rem' }}
+                        >
+                          <option value="">Select Gender</option>
+                          <option value="M">Male</option>
+                          <option value="F">Female</option>
+                          <option value="O">Other</option>
+                        </select>
+                      )}
+                    </div>
+                    <div className="col-md-6">
+                      <span className="text-secondary d-block">WEIGHT (KG)</span>
+                      {!isEditing ? (
+                        <span className="text-white fw-bold">{profile.weight ? `${profile.weight} kg` : 'N/A'}</span>
+                      ) : (
+                        <input 
+                          type="number" 
+                          placeholder="Weight (kg)"
+                          value={editData.weight || ''} 
+                          onChange={(e) => setEditData({...editData, weight: e.target.value})}
+                          style={{ marginBottom: 0, padding: '8px 12px', fontSize: '0.85rem' }}
+                        />
+                      )}
+                    </div>
+                    <div className="col-md-6">
+                      <span className="text-secondary d-block">HEIGHT (CM)</span>
+                      {!isEditing ? (
+                        <span className="text-white fw-bold">{profile.height ? `${profile.height} cm` : 'N/A'}</span>
+                      ) : (
+                        <input 
+                          type="number" 
+                          placeholder="Height (cm)"
+                          value={editData.height || ''} 
+                          onChange={(e) => setEditData({...editData, height: e.target.value})}
+                          style={{ marginBottom: 0, padding: '8px 12px', fontSize: '0.85rem' }}
+                        />
+                      )}
+                    </div>
+                  </div>
+                </div>
+
+                <hr className="border-white-10 my-4" style={{ opacity: 0.15 }} />
+
                 <div className="mb-4 mt-2">
                   <label className="small text-secondary fw-bold mb-3 d-block">Recorded Clinical Allergies</label>
                   {!isEditing ? (

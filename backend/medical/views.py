@@ -286,7 +286,11 @@ def get_emergency_snapshot(request):
             "blood_group": patient.blood_group,
             "allergies": json.loads(patient.allergies or '[]'),
             "active_meds": active_meds,
-            "emergency_contact": patient.emergency_contact
+            "emergency_contact": patient.emergency_contact,
+            "dob": patient.dob.isoformat() if patient.dob else "",
+            "gender": patient.gender,
+            "weight": patient.weight_kg,
+            "height": patient.height_cm
         }, status=200)
     except Patient.DoesNotExist:
         # Return empty profile for doctors or users without a patient record
@@ -298,7 +302,11 @@ def get_emergency_snapshot(request):
             "blood_group": "",
             "allergies": [],
             "active_meds": [],
-            "emergency_contact": ""
+            "emergency_contact": "",
+            "dob": "",
+            "gender": "",
+            "weight": None,
+            "height": None
         }, status=200)
 
 
@@ -345,6 +353,14 @@ def update_profile(request):
             allergies_str = data['allergies']
             allergies_list = [a.strip() for a in allergies_str.split(',') if a.strip()]
             patient.allergies = json.dumps(allergies_list)
+        if 'dob' in data:
+            patient.dob = data['dob'] if data['dob'] else None
+        if 'gender' in data:
+            patient.gender = data['gender']
+        if 'weight' in data:
+            patient.weight_kg = float(data['weight']) if data['weight'] else None
+        if 'height' in data:
+            patient.height_cm = float(data['height']) if data['height'] else None
 
         patient.save()
         
