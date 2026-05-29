@@ -1,0 +1,972 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap');
+
+:root {
+  /* Elegant Clinical Colors - Vibrant, high-contrast, multi-color palette */
+  --bg-deep: #000326;       /* Deep dark navy-black mixture (Clearly blue-tinted) */
+  --bg-glow: #000854;       /* Saturated dark cobalt blue glow */
+  
+  --accent: #ffffff;        /* Pure Clinical White */
+  --accent-teal: #00f5d4;   /* Clinical Neon Mint/Cyan */
+  --accent-teal-glow: rgba(0, 245, 212, 0.2);
+  
+  /* HIGH-CONTRAST DISTINCT FUNCTIONAL ACCENTS */
+
+  --accent-red: #ff3366;       /* Vibrant Cardiac Red */
+  --accent-orange: #ff8f00;    /* Vibrant Metabolic Orange/Gold */
+  --accent-purple: #df40ff;    /* Vibrant Oncological Purple */
+  --accent-green: #00ffaa;     /* Vibrant Success Emerald Green */
+  --accent-yellow: #ffd600;    /* Bright Calibration Yellow */
+  
+  --text-primary: #ffffff;
+  --text-secondary: #cff6ff;   /* Clean ice-blue slate */
+  
+  /* PURE, MINIMALIST COBALT GLASS SHEETS */
+  --glass: rgba(0, 4, 45, 0.42);    /* Beautiful transparent black-blue glass */
+  --border: rgba(0, 245, 212, 0.35);   /* Thin clinical mint border */
+  
+  --font-main: 'Outfit', sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* Faint, Minimal Medical ECG Grid (Clean, distraction-free lines) */
+body {
+  background-color: var(--bg-deep);
+  background-image: 
+      /* LAYER 1: Major Grid lines (100px) - Soft White */
+      linear-gradient(rgba(255, 255, 255, 0.12) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255, 255, 255, 0.12) 1px, transparent 1px),
+      
+      /* LAYER 2: Minor Grid lines (20px) - Faint Cyan */
+      linear-gradient(rgba(0, 245, 212, 0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0, 245, 212, 0.03) 1px, transparent 1px),
+      
+      /* LAYER 3: Saturated Base Gradient */
+      radial-gradient(circle at 50% 50%, var(--bg-glow) 0%, var(--bg-deep) 100%);
+      
+  background-size: 
+      100px 100px, 
+      100px 100px, 
+      20px 20px,   
+      20px 20px,   
+      100% 100%;   
+      
+  background-attachment: fixed;
+  background-position: center;
+  color: var(--text-primary);
+  font-family: var(--font-main);
+  overflow-x: hidden;
+  min-height: 100vh;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar { width: 5px; }
+::-webkit-scrollbar-track { background: var(--bg-deep); }
+::-webkit-scrollbar-thumb { background: var(--bg-glow); border-radius: 10px; }
+::-webkit-scrollbar-thumb:hover { background: var(--accent-teal); }
+
+/* Dynamic Theme Binding Classes (Breaks single-color monotony!) */
+.theme-heart {
+  --theme-accent: var(--accent-red);
+  --theme-accent-glow: rgba(255, 51, 102, 0.2);
+}
+.theme-diabetes {
+  --theme-accent: var(--accent-orange);
+  --theme-accent-glow: rgba(255, 143, 0, 0.2);
+}
+.theme-cancer {
+  --theme-accent: #e838ff; /* Vibrant magenta/purple */
+  --theme-accent-glow: rgba(232, 56, 255, 0.35);
+}
+.theme-general {
+  --theme-accent: var(--accent-teal);
+  --theme-accent-glow: rgba(0, 245, 212, 0.2);
+}
+
+/* Dynamic Utility Classes */
+.text-theme-accent { color: var(--theme-accent) !important; }
+.border-theme-accent { border-color: var(--theme-accent) !important; }
+.bg-theme-accent { background-color: var(--theme-accent) !important; }
+
+/* Opacity fallbacks for dynamic theme */
+.bg-theme-accent[class*="bg-opacity-"] { background-color: var(--theme-accent-glow) !important; }
+.border-theme-accent[class*="border-opacity-"] { border-color: var(--theme-accent-glow) !important; }
+
+/* Dynamic Colorful Card Panels with subtle breathing glow */
+.glass-card {
+  background: var(--glass);
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+  border: 1.5px solid var(--theme-accent, var(--border));
+  border-radius: 8px;
+  padding: 30px;
+  box-shadow: 
+      0 15px 35px rgba(0, 3, 40, 0.5),
+      inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.glass-card:hover {
+  border-color: #ffffff;
+  box-shadow: 
+      0 20px 45px rgba(0, 3, 40, 0.6),
+      0 0 15px var(--theme-accent-glow, rgba(0, 245, 212, 0.2));
+}
+
+/* Typography Overhaul & Stunning Accent Gradients */
+h1, h2, h3, h4, h5, h6 {
+  letter-spacing: -0.015em;
+  font-weight: 700;
+  color: #fff;
+}
+
+span.text-info, h1 .text-info, h2 .text-info, h3 .text-info, .accent {
+  background: linear-gradient(135deg, #ffffff 0%, #ffffff 45%, var(--theme-accent, var(--accent-teal)) 100%) !important;
+  -webkit-background-clip: text !important;
+  background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  display: inline-block !important;
+  font-weight: 800 !important;
+  filter: drop-shadow(0 2px 12px var(--theme-accent-glow, rgba(0, 245, 212, 0.25))) !important;
+}
+
+.text-secondary {
+  color: var(--text-secondary) !important;
+}
+
+/* Multi-Color Input Field focuses */
+input, select, textarea {
+  background: rgba(0, 4, 30, 0.85) !important;
+  border: 1.5px solid rgba(255, 255, 255, 0.15) !important;
+  color: #fff !important;
+  border-radius: 8px !important;
+  padding: 14px 20px !important;
+  font-family: var(--font-main);
+  width: 100%;
+  margin-bottom: 16px;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1) !important;
+  font-size: 1.05rem;
+}
+
+option {
+  background: var(--bg-deep);
+  color: #fff;
+}
+
+input:focus, select:focus, textarea:focus {
+  outline: none !important;
+  border-color: var(--theme-accent, var(--accent-teal)) !important;
+  background: var(--theme-accent-glow, rgba(0, 245, 212, 0.04)) !important;
+  box-shadow: 0 0 12px var(--theme-accent-glow, rgba(0, 245, 212, 0.2)) !important;
+  transform: translateY(-1px);
+}
+
+/* Force dark theme, white text, and perfect padding on browser autofilled inputs */
+input:-webkit-autofill,
+input:-webkit-autofill:hover, 
+input:-webkit-autofill:focus, 
+input:-webkit-autofill:active {
+  -webkit-box-shadow: 0 0 0 1000px #000424 inset !important;
+  -webkit-text-fill-color: #ffffff !important;
+  caret-color: #ffffff !important;
+  border-color: var(--accent-teal) !important;
+  transition: background-color 5000s ease-in-out 0s;
+  padding: 12px 16px !important;
+  font-family: 'Outfit', sans-serif !important;
+  font-size: 0.9rem !important;
+  border-radius: 6px !important;
+}
+
+/* Range input track gradient color styling */
+input[type="range"] {
+  -webkit-appearance: none;
+  appearance: none;
+  background: rgba(255, 255, 255, 0.08) !important;
+  border: 1px solid rgba(255, 255, 255, 0.05) !important;
+  height: 8px;
+  border-radius: 4px;
+  cursor: pointer;
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.5);
+  position: relative;
+}
+
+input[type="range"]::-webkit-slider-runnable-track {
+  background: linear-gradient(90deg, var(--accent-green) 0%, var(--accent-yellow) 50%, var(--accent-red) 100%);
+  height: 8px;
+  border-radius: 4px;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #ffffff;
+  border: 3px solid var(--accent-yellow);
+  box-shadow: 
+      0 0 10px rgba(0, 0, 0, 0.5),
+      0 0 8px var(--accent-yellow);
+  cursor: pointer;
+  margin-top: -6px;
+  transition: transform 0.1s ease, background-color 0.2s ease;
+}
+
+input[type="range"]::-webkit-slider-thumb:hover {
+  transform: scale(1.25);
+  background: var(--accent-yellow);
+}
+
+/* Colorful Label Indicators */
+.label-age { color: var(--accent-yellow) !important; }
+.label-gender { color: var(--accent-green) !important; }
+.label-lineage { color: var(--accent-red) !important; }
+.label-smoking { color: var(--accent-purple) !important; }
+
+/* Dynamic Colorful Disease Selection Buttons */
+.disease-select-tile {
+  padding: 16px !important;
+  border-radius: 8px !important;
+  cursor: pointer;
+  text-align: center;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1) !important;
+  font-family: var(--font-main);
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 0.76rem;
+}
+
+.disease-select-tile:hover {
+  transform: translateY(-2px) scale(1.02) !important;
+}
+
+.disease-select-tile.active {
+  backdrop-filter: blur(10px) !important;
+  -webkit-backdrop-filter: blur(10px) !important;
+}
+
+.disease-select-tile.active.heart {
+  background: rgba(255, 51, 102, 0.12) !important;
+  border: 1.5px solid var(--accent-red) !important;
+  color: var(--accent-red) !important;
+  animation: pulseGlowRed 3s infinite alternate !important;
+}
+
+.disease-select-tile.active.heart * {
+  color: var(--accent-red) !important;
+}
+
+.disease-select-tile.active.diabetes {
+  background: rgba(255, 143, 0, 0.12) !important;
+  border: 1.5px solid var(--accent-orange) !important;
+  color: var(--accent-orange) !important;
+  animation: pulseGlowOrange 3s infinite alternate !important;
+}
+
+.disease-select-tile.active.diabetes * {
+  color: var(--accent-orange) !important;
+}
+
+.disease-select-tile.active.cancer {
+  background: rgba(223, 64, 255, 0.12) !important;
+  border: 1.5px solid var(--accent-purple) !important;
+  color: var(--accent-purple) !important;
+  animation: pulseGlowPurple 3s infinite alternate !important;
+}
+
+.disease-select-tile.active.cancer * {
+  color: var(--accent-purple) !important;
+}
+
+.disease-select-tile.active.prescription {
+  background: rgba(0, 245, 212, 0.12) !important;
+  border: 1.5px solid var(--accent-teal) !important;
+  color: var(--accent-teal) !important;
+  animation: pulseGlowTeal 3s infinite alternate !important;
+}
+
+.disease-select-tile.active.prescription * {
+  color: var(--accent-teal) !important;
+}
+
+.disease-select-tile.active.lab {
+  background: rgba(0, 255, 170, 0.12) !important;
+  border: 1.5px solid var(--accent-green) !important;
+  color: var(--accent-green) !important;
+  animation: pulseGlowGreen 3s infinite alternate !important;
+}
+
+.disease-select-tile.active.lab * {
+  color: var(--accent-green) !important;
+}
+
+.disease-select-tile.inactive {
+  background: rgba(0, 4, 30, 0.4) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  color: var(--text-secondary) !important;
+}
+
+.disease-select-tile.inactive:hover {
+  border-color: var(--accent-teal) !important;
+  color: #fff !important;
+  background: rgba(0, 8, 80, 0.5) !important;
+}
+
+@keyframes pulseGlowRed {
+  0% { box-shadow: 0 4px 15px rgba(255, 51, 102, 0.15); }
+  50% { box-shadow: 0 8px 25px rgba(255, 51, 102, 0.35), 0 0 10px rgba(255, 51, 102, 0.2); }
+  100% { box-shadow: 0 4px 15px rgba(255, 51, 102, 0.15); }
+}
+
+@keyframes pulseGlowOrange {
+  0% { box-shadow: 0 4px 15px rgba(255, 143, 0, 0.15); }
+  50% { box-shadow: 0 8px 25px rgba(255, 143, 0, 0.35), 0 0 10px rgba(255, 143, 0, 0.2); }
+  100% { box-shadow: 0 4px 15px rgba(255, 143, 0, 0.15); }
+}
+
+@keyframes pulseGlowPurple {
+  0% { box-shadow: 0 4px 15px rgba(223, 64, 255, 0.15); }
+  50% { box-shadow: 0 8px 25px rgba(223, 64, 255, 0.35), 0 0 10px rgba(223, 64, 255, 0.2); }
+  100% { box-shadow: 0 4px 15px rgba(223, 64, 255, 0.15); }
+}
+
+@keyframes pulseGlowTeal {
+  0% { box-shadow: 0 4px 15px rgba(0, 245, 212, 0.15); }
+  50% { box-shadow: 0 8px 25px rgba(0, 245, 212, 0.35), 0 0 10px rgba(0, 245, 212, 0.2); }
+  100% { box-shadow: 0 4px 15px rgba(0, 245, 212, 0.15); }
+}
+
+@keyframes pulseGlowGreen {
+  0% { box-shadow: 0 4px 15px rgba(0, 255, 170, 0.15); }
+  50% { box-shadow: 0 8px 25px rgba(0, 255, 170, 0.35), 0 0 10px rgba(0, 255, 170, 0.2); }
+  100% { box-shadow: 0 4px 15px rgba(0, 255, 170, 0.15); }
+}
+
+/* Beautiful dynamic symptom toggles */
+.border-heart.active-symptom {
+  border-color: var(--accent-red) !important;
+  background: rgba(255, 51, 102, 0.15) !important;
+  color: #ffffff !important;
+}
+.border-diabetes.active-symptom {
+  border-color: var(--accent-orange) !important;
+  background: rgba(255, 143, 0, 0.15) !important;
+  color: #ffffff !important;
+}
+.border-cancer.active-symptom {
+  border-color: var(--accent-purple) !important;
+  background: rgba(223, 64, 255, 0.15) !important;
+  color: #ffffff !important;
+}
+
+/* Clean Dynamic Buttons */
+.btn-clinical {
+  cursor: pointer;
+  background: rgba(255, 255, 255, 0.03) !important;
+  border: 1.5px solid var(--theme-accent, var(--border)) !important;
+  color: #ffffff !important;
+  border-radius: 8px !important;
+  padding: 15px 32px !important;
+  font-weight: 600 !important;
+  text-transform: uppercase !important;
+  font-size: 0.98rem !important;
+  font-family: var(--font-mono) !important;
+  letter-spacing: 0.05em !important;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1) !important;
+  width: 100% !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  text-decoration: none !important;
+}
+
+.btn-clinical:hover:not(:disabled) {
+  background: var(--theme-accent-glow, rgba(0, 245, 212, 0.1)) !important;
+  border-color: #ffffff !important;
+  transform: translateY(-1.5px);
+}
+
+.btn-clinical:disabled {
+  opacity: 0.4 !important;
+  cursor: not-allowed !important;
+}
+
+/* Clinical Primary Dynamic Accent Button */
+.btn-clinical.primary {
+  background: linear-gradient(135deg, #001090 0%, var(--theme-accent, #00bfa5) 100%) !important;
+  border: 1.5px solid #ffffff !important;
+  color: #fff !important;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+  box-shadow: 
+      0 4px 15px rgba(0, 0, 0, 0.35),
+      inset 0 1px 0 rgba(255, 255, 255, 0.25) !important;
+}
+
+.btn-clinical.primary:hover:not(:disabled) {
+  background: linear-gradient(135deg, #000880 0%, var(--theme-accent, #00e5c9) 100%) !important;
+  box-shadow: 
+      0 8px 25px var(--theme-accent-glow, rgba(0, 245, 212, 0.4)),
+      0 0 10px #ffffff !important;
+}
+
+/* Standard Borderless Tab Buttons */
+button:not(.btn-clinical) {
+  background: transparent;
+  border: none;
+  color: var(--text-secondary);
+  font-family: var(--font-main);
+  font-size: 0.92rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  padding: 10px 24px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  width: auto;
+  border-radius: 8px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+button:not(.btn-clinical):hover {
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.06);
+}
+
+button:not(.btn-clinical).primary {
+  background: var(--theme-accent-glow, rgba(0, 245, 212, 0.12)) !important;
+  border: 1.5px solid var(--theme-accent, var(--accent-teal)) !important;
+  color: var(--theme-accent, var(--accent-teal)) !important; /* Clean glowing active color */
+  font-weight: 700 !important;
+  box-shadow: 
+      0 4px 15px var(--theme-accent-glow, rgba(0, 245, 212, 0.25)),
+      inset 0 1px 0 rgba(255, 255, 255, 0.1) !important;
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
+  transform: translateY(-0.5px);
+}
+
+/* Individual Active Tab Custom Colors (Vividly Multi-Colored!) */
+.btn-tab-scanner.active-tab {
+  background: rgba(0, 255, 170, 0.12) !important;
+  border: 1.5px solid var(--accent-green) !important;
+  color: var(--accent-green) !important;
+  box-shadow: 0 4px 15px rgba(0, 255, 170, 0.25) !important;
+}
+.btn-tab-scanner.active-tab * {
+  color: var(--accent-green) !important;
+}
+
+.btn-tab-archive.active-tab {
+  background: rgba(223, 64, 255, 0.12) !important;
+  border: 1.5px solid var(--accent-purple) !important;
+  color: var(--accent-purple) !important;
+  box-shadow: 0 4px 15px rgba(223, 64, 255, 0.25) !important;
+}
+.btn-tab-archive.active-tab * {
+  color: var(--accent-purple) !important;
+}
+
+.btn-tab-prescription.active-tab {
+  background: rgba(0, 245, 212, 0.12) !important;
+  border: 1.5px solid var(--accent-teal) !important;
+  color: var(--accent-teal) !important;
+  box-shadow: 0 4px 15px rgba(0, 245, 212, 0.25) !important;
+}
+.btn-tab-prescription.active-tab * {
+  color: var(--accent-teal) !important;
+}
+
+.btn-tab-lab.active-tab {
+  background: rgba(255, 214, 0, 0.12) !important;
+  border: 1.5px solid var(--accent-yellow) !important;
+  color: var(--accent-yellow) !important;
+  box-shadow: 0 4px 15px rgba(255, 214, 0, 0.25) !important;
+}
+.btn-tab-lab.active-tab * {
+  color: var(--accent-yellow) !important;
+}
+
+/* Custom Unified Segmented Tab Wrapper */
+.tab-selector-container {
+  display: flex !important;
+  background: rgba(0, 2, 25, 0.8) !important;
+  border: 1.5px solid var(--theme-accent, rgba(0, 245, 212, 0.25)) !important;
+  border-radius: 8px !important;
+  padding: 4px !important;
+  gap: 6px !important;
+  box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.6);
+}
+
+button.btn-icon {
+  width: auto;
+  padding: 10px;
+  background: transparent;
+  border: none;
+  box-shadow: none;
+}
+
+button.btn-icon:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 6px;
+}
+
+/* Custom Navigation Pill styles */
+.bg-white-5 {
+  background: rgba(0, 4, 30, 0.9) !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  border-radius: 6px !important;
+}
+
+/* Clinical Loading progress bar animation */
+.progress {
+  background: rgba(0, 4, 40, 0.8) !important;
+  border: 1px solid var(--theme-accent-glow, rgba(0, 245, 212, 0.15));
+}
+
+.progress-bar {
+  background-image: linear-gradient(45deg, rgba(255,255,255,.1) 25%, transparent 25%, transparent 50%, rgba(255,255,255,.1) 50%, rgba(255,255,255,.1) 75%, transparent 75%, transparent);
+  background-size: 1rem 1rem;
+  animation: progress-bar-stripes 1.2s linear infinite;
+}
+
+@keyframes progress-bar-stripes {
+  from { background-position: 1rem 0; }
+  to { background-position: 0 0; }
+}
+
+/* Layout Utilities */
+.container {
+  max-width: 1300px !important;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+.mx-auto {
+  margin-left: auto !important;
+  margin-right: auto !important;
+}
+
+.d-flex { display: flex !important; }
+.flex-column { flex-direction: column !important; }
+.justify-content-between { justify-content: space-between !important; }
+.justify-content-center { justify-content: center !important; }
+.align-items-center { align-items: center !important; }
+.gap-2 { gap: 0.5rem !important; }
+.gap-3 { gap: 1rem !important; }
+.gap-4 { gap: 1.5rem !important; }
+
+/* Force equal column heights inside split layouts */
+.row.align-items-stretch > [class*='col-'] {
+  display: flex !important;
+  flex-direction: column !important;
+}
+.row.align-items-stretch > [class*='col-'] > .glass-card {
+  flex: 1 !important;
+}
+
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  margin-right: -12px;
+  margin-left: -12px;
+}
+
+.col-md-3, .col-md-4, .col-lg-5, .col-lg-6, .col-lg-7, .col-lg-8, .col-12, .col-6 {
+  padding-right: 12px;
+  padding-left: 12px;
+  position: relative;
+  width: 100%;
+}
+
+@media (min-width: 768px) {
+  .col-md-3 { flex: 0 0 25%; max-width: 25%; }
+  .col-md-4 { flex: 0 0 33.333333%; max-width: 33.333333%; }
+}
+
+@media (min-width: 992px) {
+  .col-lg-4 { flex: 0 0 33.333333%; max-width: 33.333333%; }
+  .col-lg-5 { flex: 0 0 41.666667%; max-width: 41.666667%; }
+  .col-lg-6 { flex: 0 0 50%; max-width: 50%; }
+  .col-lg-7 { flex: 0 0 58.333333%; max-width: 58.333333%; }
+  .col-lg-8 { flex: 0 0 66.666667%; max-width: 66.666667%; }
+}
+
+.col-6 { flex: 0 0 50%; max-width: 50%; }
+
+/* Responsive Display Utilities */
+.d-none { display: none !important; }
+.d-block { display: block !important; }
+
+@media (min-width: 768px) {
+  .d-md-none { display: none !important; }
+  .d-md-flex { display: flex !important; }
+  .d-md-block { display: block !important; }
+}
+
+.m-0 { margin: 0 !important; }
+.mt-1 { margin-top: 0.25rem !important; }
+.mt-2 { margin-top: 0.5rem !important; }
+.mt-3 { margin-top: 1rem !important; }
+.mt-4 { margin-top: 1.5rem !important; }
+.mt-5 { margin-top: 3rem !important; }
+.mb-1 { margin-bottom: 0.25rem !important; }
+.mb-2 { margin-bottom: 0.5rem !important; }
+.mb-3 { margin-bottom: 1rem !important; }
+.mb-4 { margin-bottom: 1.5rem !important; }
+.mb-5 { margin-bottom: 3rem !important; }
+
+.p-0 { padding: 0 !important; }
+.p-2 { padding: 0.5rem !important; }
+.p-3 { padding: 1rem !important; }
+.p-4 { padding: 1.5rem !important; }
+.p-5 { padding: 3rem !important; }
+.py-2 { padding-top: 0.5rem !important; padding-bottom: 0.5rem !important; }
+.py-4 { padding-top: 1.5rem !important; padding-bottom: 1.5rem !important; }
+.py-5 { padding-top: 3rem !important; padding-bottom: 3rem !important; }
+.px-3 { padding-left: 1rem !important; padding-right: 1rem !important; }
+.px-4 { padding-left: 1.5rem !important; padding-right: 1.5rem !important; }
+
+.fw-bold { font-weight: 700 !important; }
+.fw-bolder { font-weight: 800 !important; }
+.fs-1 { font-size: 2.6rem !important; }
+.fs-2 { font-size: 2.1rem !important; }
+.fs-3 { font-size: 1.7rem !important; }
+.fs-5 { font-size: 1.3rem !important; }
+.small { font-size: 0.98rem !important; }
+.text-uppercase { text-transform: uppercase !important; }
+.text-center { text-align: center !important; }
+.text-decoration-none { text-decoration: none !important; }
+.text-white { color: #fff !important; }
+.text-success { color: var(--accent-green) !important; }
+.text-warning { color: var(--accent-yellow) !important; }
+.text-danger { color: var(--accent-red) !important; }
+.bg-deep { background: var(--bg-deep) !important; }
+.rounded-circle { border-radius: 50% !important; }
+.rounded-3 { border-radius: 6px !important; }
+.rounded-4 { border-radius: 8px !important; }
+.rounded-pill { border-radius: 50rem !important; }
+.border-top { border-top: 1px solid var(--border) !important; }
+.border-bottom { border-bottom: 1px solid var(--border) !important; }
+.border-white-5 { border: 1px solid rgba(255, 255, 255, 0.1) !important; }
+.border-dashed { border-style: dashed !important; }
+.cursor-pointer { cursor: pointer !important; }
+.overflow-hidden { overflow: hidden !important; }
+.h-100 { height: 100% !important; }
+.w-100 { width: 100% !important; }
+
+.text-info {
+  color: var(--theme-accent, var(--accent-teal)) !important;
+}
+
+.bg-info {
+  background: var(--theme-accent, var(--accent-teal)) !important;
+}
+
+/* Animations */
+.reveal {
+  animation: fadeIn 0.4s ease-out forwards;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: none; }
+}
+
+/* Topmost Full-Width Navigation Console */
+nav.bg-glass {
+  background: rgba(0, 4, 30, 0.8) !important;
+  backdrop-filter: blur(20px) !important;
+  -webkit-backdrop-filter: blur(20px) !important;
+  border-bottom: 1.5px solid rgba(255, 255, 255, 0.08) !important;
+  border-top: none !important;
+  border-left: none !important;
+  border-right: none !important;
+  border-radius: 0px !important;
+  margin: 0 !important;
+  max-width: 100% !important;
+  width: 100% !important;
+  padding: 14px 0 !important;
+  box-shadow: 
+      0 10px 30px rgba(0, 0, 0, 0.4),
+      inset 0 -1px 0 rgba(255, 255, 255, 0.02) !important;
+  position: sticky !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  z-index: 1000;
+  transition: all 0.3s ease;
+}
+
+nav.bg-glass h1, nav.bg-glass a {
+  color: #fff !important;
+}
+
+nav.bg-glass .text-secondary {
+  color: var(--text-secondary) !important;
+  padding: 6px 12px;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+}
+
+nav.bg-glass .text-secondary:hover {
+  color: #fff !important;
+  background: rgba(255, 255, 255, 0.05);
+}
+
+/* Highly premium persistent clinical control sidebar */
+.clinical-sidebar {
+  position: sticky !important;
+  top: 110px !important;
+  height: calc(100vh - 150px) !important;
+  overflow-y: auto !important;
+  padding-right: 8px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 24px !important;
+}
+
+.clinical-sidebar::-webkit-scrollbar {
+  width: 4px !important;
+}
+.clinical-sidebar::-webkit-scrollbar-track {
+  background: transparent !important;
+}
+.clinical-sidebar::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1) !important;
+  border-radius: 4px !important;
+}
+.clinical-sidebar::-webkit-scrollbar-thumb:hover {
+  background: var(--accent-teal) !important;
+}
+
+/* App-level vertical left navigation sidebar */
+.app-sidebar {
+  width: 320px;
+  height: calc(100vh - 69px);
+  position: sticky;
+  top: 69px;
+  background: rgba(0, 3, 25, 0.85) !important;
+  backdrop-filter: blur(25px) !important;
+  -webkit-backdrop-filter: blur(25px) !important;
+  border-right: 1px solid rgba(255, 255, 255, 0.08) !important;
+  z-index: 950;
+  display: flex;
+  flex-direction: column;
+  padding: 40px 24px 24px;
+  flex-shrink: 0;
+}
+
+.main-content-wrapper {
+  flex-grow: 1;
+  min-height: calc(100vh - 69px);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@media (max-width: 767.98px) {
+  .main-content-wrapper {
+    width: 100% !important;
+  }
+  .app-sidebar {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0;
+    width: 300px !important;
+    height: 100vh !important;
+    z-index: 1050;
+    transform: translateX(-100%);
+    transition: transform 0.3s ease-in-out;
+    border-right: 1px solid rgba(255, 255, 255, 0.08) !important;
+    border-bottom: none !important;
+    padding: 20px !important;
+  }
+  .app-sidebar.open {
+    transform: translateX(0);
+  }
+}
+
+/* Sidebar brand header */
+.sidebar-brand h1 {
+  font-size: 1.4rem !important;
+  font-weight: 800 !important;
+  letter-spacing: -0.02em !important;
+  color: #fff !important;
+  margin-bottom: 48px !important;
+}
+
+/* Sidebar navigation menu */
+.sidebar-menu {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.sidebar-link {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 14px 20px;
+  color: var(--text-secondary) !important;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 0.88rem;
+  border-radius: 12px;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  border: 1px solid transparent;
+}
+
+.sidebar-link svg {
+  opacity: 0.7;
+  transition: opacity 0.2s ease;
+}
+
+.sidebar-link:hover {
+  color: #fff !important;
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.05);
+}
+
+.sidebar-link:hover svg {
+  opacity: 1;
+}
+
+.sidebar-link.active {
+  color: #fff !important;
+  background: rgba(0, 245, 212, 0.1) !important;
+  border-color: rgba(0, 245, 212, 0.25) !important;
+  box-shadow: inset 0 0 12px rgba(0, 245, 212, 0.05);
+}
+
+.sidebar-link.active svg {
+  opacity: 1;
+  color: var(--accent-teal) !important;
+}
+
+/* Sidebar bottom user session */
+.sidebar-footer {
+  margin-top: auto;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  padding-top: 24px;
+}
+
+.avatar-circle {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: rgba(0, 245, 212, 0.15);
+  border: 1px solid rgba(0, 245, 212, 0.3);
+  color: var(--accent-teal);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 1.05rem;
+  letter-spacing: 0.05em;
+  user-select: none;
+}
+
+.hover-border-info-glow:hover {
+  border-color: var(--accent-teal) !important;
+  box-shadow: 0 0 20px rgba(0, 245, 212, 0.18) !important;
+  background: rgba(0, 245, 212, 0.04) !important;
+}
+
+.hover-border-success-glow:hover {
+  border-color: var(--accent-green) !important;
+  box-shadow: 0 0 20px rgba(0, 255, 170, 0.18) !important;
+  background: rgba(0, 255, 170, 0.04) !important;
+}
+
+@keyframes scanSweep {
+  0% { top: 5%; opacity: 0.2; }
+  20% { opacity: 1; }
+  50% { top: 95%; opacity: 1; }
+  80% { opacity: 1; }
+  100% { top: 5%; opacity: 0.2; }
+}
+
+
+
+/* Patient list button override */
+.btn-clinical.w-auto-override {
+  width: auto !important;
+}
+@media print {
+  /* Hide UI elements */
+  nav.bg-glass, 
+  .app-sidebar, 
+  .clinical-sidebar,
+  button,
+  .btn-icon,
+  .btn-clinical,
+  .tab-selector-container {
+    display: none !important;
+  }
+
+  /* Reset main content background and text colors for clean printing */
+  body, .main-content-wrapper {
+    background: white !important;
+    color: black !important;
+    background-image: none !important;
+  }
+
+  /* Reset glass card styles */
+  .glass-card {
+    background: transparent !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    border: 1px solid #ccc !important;
+    box-shadow: none !important;
+    color: black !important;
+    page-break-inside: avoid !important;
+    margin-bottom: 20px !important;
+  }
+
+  /* Ensure all text is visible on white background */
+  h1, h2, h3, h4, h5, h6, p, span, div, label {
+    color: black !important;
+    text-shadow: none !important;
+    -webkit-text-fill-color: black !important;
+  }
+
+  /* Ensure backgrounds on borders and progress elements are visible or removed */
+  .border, .border-bottom, .border-top, .border-white-10, .border-white-5 {
+    border-color: #ccc !important;
+  }
+
+  /* Expand main content to full width */
+  .main-content-wrapper {
+    margin: 0 !important;
+    padding: 0 !important;
+    width: 100% !important;
+  }
+
+  /* Additional specific elements to hide or adjust */
+  input[type="range"] {
+    display: none !important; /* Hide sliders during print */
+  }
+
+  .text-secondary {
+    color: #333 !important;
+  }
+}
+
+/* Custom number input styling to hide browser default spin buttons and integrate with theme */
+input.typeable-number-input[type="number"]::-webkit-outer-spin-button,
+input.typeable-number-input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+input.typeable-number-input[type="number"] {
+  -moz-appearance: textfield;
+}
+input.typeable-number-input:focus {
+  border-color: var(--theme-accent, var(--accent-teal)) !important;
+  background: rgba(255, 255, 255, 0.1) !important;
+  box-shadow: 0 0 10px var(--theme-accent-glow, rgba(0, 245, 212, 0.3)) !important;
+}
+

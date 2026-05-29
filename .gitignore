@@ -29,3 +29,5 @@ Thumbs.db
 # Medical Uploads (Temporary clinical data)
 backend/uploads/*
 !backend/uploads/.gitkeep
+backend/media/uploads/*
+!backend/media/uploads/.gitkeep
