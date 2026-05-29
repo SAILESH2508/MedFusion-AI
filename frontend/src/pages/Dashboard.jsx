@@ -33,6 +33,7 @@ function Dashboard({ user }) {
   
   // Vitals & Symptoms Forms State
   const [hasChanges, setHasChanges] = useState(false);
+  const [consentChecked, setConsentChecked] = useState(false);
   const [age, setAge] = useState(38);
   const [gender, setGender] = useState('M');
   const [familyHistory, setFamilyHistory] = useState('no');
@@ -47,7 +48,7 @@ function Dashboard({ user }) {
   const [exerciseAngina, setExerciseAngina] = useState('no');
   const [fastingSugar, setFastingSugar] = useState('no');
   const [heartSymptoms, setHeartSymptoms] = useState({
-    no_symptoms: true,
+    no_symptoms: false,
     shortness_of_breath: false,
     left_arm_pain: false,
     jaw_neck_pain: false,
@@ -63,7 +64,7 @@ function Dashboard({ user }) {
   const [hypertension, setHypertension] = useState('no');
   const [heartDiseaseHistory, setHeartDiseaseHistory] = useState('no');
   const [diabetesSymptoms, setDiabetesSymptoms] = useState({
-    no_symptoms: true,
+    no_symptoms: false,
     excessive_thirst: false,
     frequent_urination: false,
     unexplained_weight_loss: false,
@@ -76,7 +77,7 @@ function Dashboard({ user }) {
   const [alcohol, setAlcohol] = useState('no');
   const [toxinExposure, setToxinExposure] = useState('no');
   const [cancerSymptoms, setCancerSymptoms] = useState({
-    no_symptoms: true,
+    no_symptoms: false,
     unexplained_weight_loss: false,
     persistent_cough: false,
     persistent_fatigue: false,
@@ -130,63 +131,102 @@ function Dashboard({ user }) {
   const handleHeartSymptomToggle = (key) => {
     setHasChanges(true);
     if (key === 'no_symptoms') {
-      setHeartSymptoms({
-        no_symptoms: true,
-        shortness_of_breath: false,
-        left_arm_pain: false,
-        jaw_neck_pain: false,
-        cold_sweats_nausea: false,
-        dizziness: false
+      setHeartSymptoms(prev => {
+        const wasChecked = prev.no_symptoms;
+        if (wasChecked) {
+          return {
+            no_symptoms: false,
+            shortness_of_breath: false,
+            left_arm_pain: false,
+            jaw_neck_pain: false,
+            cold_sweats_nausea: false,
+            dizziness: false
+          };
+        } else {
+          return {
+            no_symptoms: true,
+            shortness_of_breath: false,
+            left_arm_pain: false,
+            jaw_neck_pain: false,
+            cold_sweats_nausea: false,
+            dizziness: false
+          };
+        }
       });
     } else {
-      setHeartSymptoms(prev => {
-        const next = { ...prev, [key]: !prev[key] };
-        const hasRealSymptom = Object.keys(next).some(k => k !== 'no_symptoms' && next[k]);
-        next.no_symptoms = !hasRealSymptom;
-        return next;
-      });
+      setHeartSymptoms(prev => ({
+        ...prev,
+        [key]: !prev[key],
+        no_symptoms: false
+      }));
     }
   };
 
   const handleDiabetesSymptomToggle = (key) => {
     setHasChanges(true);
     if (key === 'no_symptoms') {
-      setDiabetesSymptoms({
-        no_symptoms: true,
-        excessive_thirst: false,
-        frequent_urination: false,
-        unexplained_weight_loss: false,
-        blurry_vision: false,
-        slow_healing_sores: false
+      setDiabetesSymptoms(prev => {
+        const wasChecked = prev.no_symptoms;
+        if (wasChecked) {
+          return {
+            no_symptoms: false,
+            excessive_thirst: false,
+            frequent_urination: false,
+            unexplained_weight_loss: false,
+            blurry_vision: false,
+            slow_healing_sores: false
+          };
+        } else {
+          return {
+            no_symptoms: true,
+            excessive_thirst: false,
+            frequent_urination: false,
+            unexplained_weight_loss: false,
+            blurry_vision: false,
+            slow_healing_sores: false
+          };
+        }
       });
     } else {
-      setDiabetesSymptoms(prev => {
-        const next = { ...prev, [key]: !prev[key] };
-        const hasRealSymptom = Object.keys(next).some(k => k !== 'no_symptoms' && next[k]);
-        next.no_symptoms = !hasRealSymptom;
-        return next;
-      });
+      setDiabetesSymptoms(prev => ({
+        ...prev,
+        [key]: !prev[key],
+        no_symptoms: false
+      }));
     }
   };
 
   const handleCancerSymptomToggle = (key) => {
     setHasChanges(true);
     if (key === 'no_symptoms') {
-      setCancerSymptoms({
-        no_symptoms: true,
-        unexplained_weight_loss: false,
-        persistent_cough: false,
-        persistent_fatigue: false,
-        skin_mole_changes: false,
-        unusual_lumps: false
+      setCancerSymptoms(prev => {
+        const wasChecked = prev.no_symptoms;
+        if (wasChecked) {
+          return {
+            no_symptoms: false,
+            unexplained_weight_loss: false,
+            persistent_cough: false,
+            persistent_fatigue: false,
+            skin_mole_changes: false,
+            unusual_lumps: false
+          };
+        } else {
+          return {
+            no_symptoms: true,
+            unexplained_weight_loss: false,
+            persistent_cough: false,
+            persistent_fatigue: false,
+            skin_mole_changes: false,
+            unusual_lumps: false
+          };
+        }
       });
     } else {
-      setCancerSymptoms(prev => {
-        const next = { ...prev, [key]: !prev[key] };
-        const hasRealSymptom = Object.keys(next).some(k => k !== 'no_symptoms' && next[k]);
-        next.no_symptoms = !hasRealSymptom;
-        return next;
-      });
+      setCancerSymptoms(prev => ({
+        ...prev,
+        [key]: !prev[key],
+        no_symptoms: false
+      }));
     }
   };
 
@@ -453,6 +493,7 @@ function Dashboard({ user }) {
     setResult(null);
     setError('');
     setHasChanges(false);
+    setConsentChecked(false);
   }, [isAnalyzing]);
 
   useEffect(() => {
@@ -2124,21 +2165,40 @@ function Dashboard({ user }) {
                   </div>
 
                   {/* Container 4: Action Dispatch Gate */}
-                  <div className="glass-card p-4">
+                  <div className="glass-card p-4 d-flex flex-column gap-3">
+                    <label 
+                      className="d-flex align-items-start gap-3 cursor-pointer text-secondary font-monospace" 
+                      style={{ fontSize: '0.88rem', userSelect: 'none', lineHeight: '1.4', marginBottom: 0 }}
+                    >
+                      <input 
+                        type="checkbox" 
+                        checked={consentChecked} 
+                        onChange={(e) => setConsentChecked(e.target.checked)}
+                        className="m-0 cursor-pointer flex-shrink-0"
+                        style={{ width: '18px', height: '18px', marginBottom: 0 }}
+                      />
+                      <span>I confirm that the entered vitals and symptoms are accurate and consent to run this AI clinical analysis.</span>
+                    </label>
+
                     <button 
                       className="btn-clinical primary py-3 d-flex align-items-center justify-content-center gap-2 font-monospace text-uppercase w-100" 
                       onClick={runPredictionAnalysis} 
-                      disabled={!hasChanges}
+                      disabled={!hasChanges || !consentChecked}
                       style={{ 
                         letterSpacing: '0.08em', 
                         margin: 0,
-                        opacity: hasChanges ? 1 : 0.45,
-                        cursor: hasChanges ? 'pointer' : 'not-allowed',
-                        borderColor: hasChanges ? 'var(--theme-accent)' : 'rgba(255, 255, 255, 0.1)'
+                        opacity: (hasChanges && consentChecked) ? 1 : 0.45,
+                        cursor: (hasChanges && consentChecked) ? 'pointer' : 'not-allowed',
+                        borderColor: (hasChanges && consentChecked) ? 'var(--theme-accent)' : 'rgba(255, 255, 255, 0.1)'
                       }}
                     >
                       <Activity size={18} />
-                      {hasChanges ? "Run AI Health Analysis" : "Modify Parameters to Unlock Analysis"}
+                      {!hasChanges 
+                        ? "Modify Parameters to Unlock Analysis" 
+                        : !consentChecked 
+                        ? "Please Confirm Information Accuracy" 
+                        : "Run AI Health Analysis"
+                      }
                     </button>
                   </div>
                 </motion.div>
