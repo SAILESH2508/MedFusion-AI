@@ -135,6 +135,26 @@ span.text-info, h1 .text-info, h2 .text-info, h3 .text-info, .accent {
   filter: drop-shadow(0 2px 12px var(--theme-accent-glow, rgba(0, 245, 212, 0.25))) !important;
 }
 
+.brand-logo-blue {
+  background: linear-gradient(135deg, #00f5d4 0%, #00bfff 100%) !important;
+  -webkit-background-clip: text !important;
+  background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  display: inline-block !important;
+  font-weight: 900 !important;
+  filter: drop-shadow(0 0 15px rgba(0, 191, 255, 0.35)) !important;
+}
+
+.brand-logo-orange {
+  background: linear-gradient(135deg, #ffd600 0%, #ff8f00 100%) !important;
+  -webkit-background-clip: text !important;
+  background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  display: inline-block !important;
+  font-weight: 900 !important;
+  filter: drop-shadow(0 0 15px rgba(255, 143, 0, 0.35)) !important;
+}
+
 .text-secondary {
   color: var(--text-secondary) !important;
 }

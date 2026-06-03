@@ -164,8 +164,8 @@ function Navbar({ user, logout, toggleSidebar, isSidebarPage }) {
             </button>
           )}
           <Link to="/" className="text-decoration-none">
-            <h1 className="m-0 fs-3 fw-bolder letter-spacing-tight text-white">
-              MEDFUSION<span className="accent">AI</span>
+            <h1 className="m-0 fs-3 fw-bolder letter-spacing-tight">
+              <span className="brand-logo-blue">MEDFUSION</span><span className="brand-logo-orange">AI</span>
             </h1>
           </Link>
         </div>
