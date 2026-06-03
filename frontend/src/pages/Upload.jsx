@@ -330,15 +330,14 @@ function Upload({ user }) {
 
 
   return (
-    <div className={`reveal p-0 flex-grow-1 d-flex flex-column h-100 overflow-hidden ${user && user.role === 'Doctor' ? 'theme-cancer' : 'theme-general'}`} style={{ maxHeight: 'calc(100vh - 120px)' }}>
-      <div className="row g-3 align-items-stretch flex-grow-1 m-0" style={{ minHeight: 0 }}>
+    <div className={`reveal px-1 py-1 ${user && user.role === 'Doctor' ? 'theme-cancer' : 'theme-general'}`}>
+      <div className="row g-4 mt-2 flex-grow-1">
         {/* ============================================================== */}
         {/* LEFT SIDEBAR PANEL: Scanner Ingestion Input Control */}
         {/* ============================================================== */}
-        <div className="col-lg-4 col-md-5 reveal d-flex flex-column" style={{ minHeight: 0 }}>
-          
-          <div className="glass-card p-3 d-flex flex-column gap-2 flex-grow-1 justify-content-between overflow-auto" style={{ borderRadius: '16px', minHeight: 0 }}>
-            <div className="d-flex flex-column gap-2 flex-grow-1" style={{ minHeight: 0 }}>
+        <div className="col-lg-5 col-md-5 reveal d-flex">
+          <div className="glass-card p-4 d-flex flex-column gap-4 w-100 justify-content-between" style={{ borderRadius: '16px' }}>
+            <div className="d-flex flex-column gap-3 w-100">
               <h4 className="fw-bold text-white font-monospace d-flex align-items-center gap-3 mb-2" style={{ fontSize: '1.25rem' }}>
                 <Database size={24} className="text-theme-accent animate-pulse" />
                 {user && user.role === 'Doctor' ? 'Clinical Ingestion suite' : 'Ingestion Controls'}
@@ -405,9 +404,9 @@ function Upload({ user }) {
               )}
 
               <div 
-                className={`border border-2 border-dashed rounded p-4 text-center mt-3 mb-2 flex-grow-1 ${docType.includes('Rx') ? 'border-theme-accent hover-border-theme-accent-glow' : 'border-success hover-border-success-glow'} transition-all cursor-pointer position-relative overflow-hidden flex-shrink-1`}
+                className={`border border-2 border-dashed rounded p-4 text-center mt-3 mb-2 ${docType.includes('Rx') ? 'border-theme-accent hover-border-theme-accent-glow' : 'border-success hover-border-success-glow'} transition-all cursor-pointer position-relative overflow-hidden`}
                 onClick={() => document.getElementById('fileInput').click()}
-                style={{ minHeight: '250px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: 'rgba(255,255,255,0.02)' }}
+                style={{ minHeight: '280px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: 'rgba(255,255,255,0.02)' }}
               >
                 <div 
                   className="position-absolute w-100" 
@@ -440,7 +439,7 @@ function Upload({ user }) {
               <button 
                 onClick={handleUpload} 
                 disabled={!file || loading}
-                className="font-monospace text-uppercase fw-bold w-100 d-flex align-items-center justify-content-center gap-2 mt-2 flex-shrink-0"
+                className="font-monospace text-uppercase fw-bold w-100 d-flex align-items-center justify-content-center gap-2 mt-2"
                 style={{
                   background: docType.includes('Rx') ? 'rgba(0, 245, 212, 0.1)' : 'rgba(0, 255, 170, 0.1)',
                   border: `2px solid ${docType.includes('Rx') ? 'rgba(0, 245, 212, 0.5)' : 'rgba(0, 255, 170, 0.5)'}`,
@@ -491,9 +490,9 @@ function Upload({ user }) {
         {/* ============================================================== */}
         {/* RIGHT STAGE: Telemetry Extractor */}
         {/* ============================================================== */}
-        <div className="col-lg-8 col-md-7 reveal d-flex flex-column" style={{ minHeight: 0 }}>
+        <div className="col-lg-7 col-md-7 reveal d-flex">
           {!result && !loading && (
-            <div className="glass-card text-center p-4 d-flex flex-column align-items-center justify-content-center h-100 flex-grow-1 overflow-auto" style={{ borderRadius: '16px', minHeight: 0 }}>
+            <div className="glass-card text-center p-5 d-flex flex-column align-items-center justify-content-center w-100" style={{ borderRadius: '16px' }}>
               <div 
                 className="mb-4 rounded-circle d-flex align-items-center justify-content-center" 
                 style={{ 
@@ -524,7 +523,7 @@ function Upload({ user }) {
           )}
 
           {loading && (
-            <div className="glass-card text-center py-5 d-flex flex-column align-items-center justify-content-center h-100 flex-grow-1" style={{ borderRadius: '16px' }}>
+            <div className="glass-card text-center p-5 d-flex flex-column align-items-center justify-content-center w-100" style={{ borderRadius: '16px' }}>
               <div className="mb-5 position-relative d-flex align-items-center justify-content-center" style={{ width: '160px', height: '160px' }}>
                 <div className={`spinner-border ${docType.includes('Rx') ? 'text-theme-accent' : 'text-success'} position-absolute`} style={{ width: '100px', height: '100px', borderWidth: '4.5px' }} role="status"></div>
                 <Cpu size={42} className={`${docType.includes('Rx') ? 'text-theme-accent' : 'text-success'} position-absolute animate-pulse`} />
@@ -535,7 +534,7 @@ function Upload({ user }) {
           )}
 
           {error && (
-            <div className="glass-card text-center py-5 d-flex flex-column align-items-center justify-content-center h-100 flex-grow-1 border-danger" style={{ borderRadius: '16px' }}>
+            <div className="glass-card text-center p-5 d-flex flex-column align-items-center justify-content-center w-100 border-danger" style={{ borderRadius: '16px' }}>
               <h4 className="fw-bold text-danger mb-3" style={{ fontSize: '1.6rem' }}>Scan Failed</h4>
               <p className="text-secondary" style={{ fontSize: '1.1rem' }}>{error}</p>
               <button onClick={resetScanner} className="px-4 py-2 border border-white-10 bg-transparent text-secondary rounded mt-4" style={{ fontSize: '1rem' }}>Reset Scanner</button>
@@ -543,7 +542,7 @@ function Upload({ user }) {
           )}
 
           {result && !loading && (
-            <div className="glass-card h-100 p-4 d-flex flex-column" style={{ borderColor: 'var(--accent-teal)', overflow: 'hidden', borderRadius: '16px' }}>
+            <div className="glass-card w-100 p-5 d-flex flex-column" style={{ borderColor: 'var(--accent-teal)', borderRadius: '16px' }}>
               <div className="d-flex align-items-center justify-content-between mb-4 border-bottom border-white-10 pb-3 flex-wrap gap-2">
                 <div className="font-monospace">
                   <h3 className="fw-bold m-0 text-white text-uppercase d-flex align-items-center gap-2" style={{ fontSize: '1.35rem' }}>
@@ -562,7 +561,7 @@ function Upload({ user }) {
                 </button>
               </div>
               
-              <div className="flex-grow-1 overflow-auto" style={{ minHeight: 0 }}>
+              <div className="w-100">
                 {result.type.includes('Rx') ? (
                 <div className="font-monospace">
                   <h5 className="text-theme-accent fw-bold mb-3" style={{ fontSize: '1.05rem' }}>Extracted Pharmacological Agents</h5>
