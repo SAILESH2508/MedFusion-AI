@@ -303,25 +303,25 @@ input[type="range"]::-webkit-slider-thumb:hover {
 }
 
 .disease-select-tile.active.prescription {
-  background: rgba(0, 245, 212, 0.12) !important;
-  border: 1.5px solid var(--accent-teal) !important;
-  color: var(--accent-teal) !important;
-  animation: pulseGlowTeal 3s infinite alternate !important;
+  background: rgba(0, 210, 255, 0.12) !important;
+  border: 1.5px solid #00d2ff !important;
+  color: #00d2ff !important;
+  animation: pulseGlowBlue 3s infinite alternate !important;
 }
 
 .disease-select-tile.active.prescription * {
-  color: var(--accent-teal) !important;
+  color: #00d2ff !important;
 }
 
 .disease-select-tile.active.lab {
-  background: rgba(0, 255, 170, 0.12) !important;
-  border: 1.5px solid var(--accent-green) !important;
-  color: var(--accent-green) !important;
-  animation: pulseGlowGreen 3s infinite alternate !important;
+  background: rgba(255, 143, 0, 0.12) !important;
+  border: 1.5px solid #ff8f00 !important;
+  color: #ff8f00 !important;
+  animation: pulseGlowOrange 3s infinite alternate !important;
 }
 
 .disease-select-tile.active.lab * {
-  color: var(--accent-green) !important;
+  color: #ff8f00 !important;
 }
 
 .disease-select-tile.inactive {
@@ -1103,6 +1103,64 @@ input.typeable-number-input:focus {
 .card-medicine-premium:hover {
   border-color: rgba(0, 210, 255, 0.3) !important;
   box-shadow: 0 6px 20px rgba(0, 210, 255, 0.1) !important;
+}
+
+/* pulseGlowBlue Animation */
+@keyframes pulseGlowBlue {
+  0% { box-shadow: 0 4px 15px rgba(0, 210, 255, 0.15); }
+  50% { box-shadow: 0 8px 25px rgba(0, 210, 255, 0.35), 0 0 10px rgba(0, 210, 255, 0.2); }
+  100% { box-shadow: 0 4px 15px rgba(0, 210, 255, 0.15); }
+}
+
+/* Category Switcher Inactive Hover Styles */
+.disease-select-tile.inactive.prescription:hover {
+  border-color: #00d2ff !important;
+  color: #fff !important;
+  background: rgba(0, 210, 255, 0.08) !important;
+  box-shadow: 0 0 15px rgba(0, 210, 255, 0.2) !important;
+}
+.disease-select-tile.inactive.prescription:hover * {
+  color: #00d2ff !important;
+}
+
+.disease-select-tile.inactive.lab:hover {
+  border-color: #ff8f00 !important;
+  color: #fff !important;
+  background: rgba(255, 143, 0, 0.08) !important;
+  box-shadow: 0 0 15px rgba(255, 143, 0, 0.2) !important;
+}
+.disease-select-tile.inactive.lab:hover * {
+  color: #ff8f00 !important;
+}
+
+/* Scanner Dropzone Borders and Hovers */
+.border-brand-blue {
+  border-color: rgba(0, 210, 255, 0.3) !important;
+}
+.border-brand-orange {
+  border-color: rgba(255, 143, 0, 0.3) !important;
+}
+.hover-border-brand-blue-glow {
+  transition: all 0.3s ease !important;
+}
+.hover-border-brand-blue-glow:hover {
+  border-color: #00d2ff !important;
+  box-shadow: 0 0 25px rgba(0, 210, 255, 0.3) !important;
+  background: rgba(0, 210, 255, 0.04) !important;
+}
+.hover-border-brand-orange-glow {
+  transition: all 0.3s ease !important;
+}
+.hover-border-brand-orange-glow:hover {
+  border-color: #ff8f00 !important;
+  box-shadow: 0 0 25px rgba(255, 143, 0, 0.3) !important;
+  background: rgba(255, 143, 0, 0.04) !important;
+}
+
+/* Hover-White Utility Style */
+.hover-white:hover {
+  color: #ffffff !important;
+  border-color: rgba(255, 255, 255, 0.4) !important;
 }
 
 

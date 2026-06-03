@@ -266,8 +266,8 @@ function Upload({ user }) {
                 <div 
                   key={category.id}
                   onClick={() => setDocType(category.id)}
-                  className={`disease-select-tile cursor-pointer ${
-                    docType === category.id ? `active ${category.key}` : 'inactive'
+                  className={`disease-select-tile cursor-pointer ${category.key} ${
+                    docType === category.id ? 'active' : 'inactive'
                   } ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
                   style={{ padding: '16px 20px' }}
                 >
@@ -308,8 +308,8 @@ function Upload({ user }) {
                 <div 
                   key={category.id}
                   onClick={() => setDocType(category.id)}
-                  className={`disease-select-tile cursor-pointer ${
-                    docType === category.id ? `active ${category.key}` : 'inactive'
+                  className={`disease-select-tile cursor-pointer ${category.key} ${
+                    docType === category.id ? 'active' : 'inactive'
                   } ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
                   style={{ padding: '16px 20px' }}
                 >
@@ -404,7 +404,7 @@ function Upload({ user }) {
               )}
 
               <div 
-                className={`border border-2 border-dashed rounded p-4 text-center mt-3 mb-2 ${docType.includes('Rx') ? 'border-theme-accent hover-border-theme-accent-glow' : 'border-success hover-border-success-glow'} transition-all cursor-pointer position-relative overflow-hidden`}
+                className={`border border-2 border-dashed rounded p-4 text-center mt-3 mb-2 ${docType.includes('Rx') ? 'border-brand-blue hover-border-brand-blue-glow' : 'border-brand-orange hover-border-brand-orange-glow'} transition-all cursor-pointer position-relative overflow-hidden`}
                 onClick={() => document.getElementById('fileInput').click()}
                 style={{ minHeight: '280px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: 'rgba(255,255,255,0.02)' }}
               >
@@ -412,14 +412,14 @@ function Upload({ user }) {
                   className="position-absolute w-100" 
                   style={{ 
                     height: '3px', 
-                    background: docType.includes('Rx') ? 'rgba(0, 245, 212, 0.4)' : 'rgba(0, 255, 170, 0.4)', 
+                    background: docType.includes('Rx') ? 'rgba(0, 210, 255, 0.4)' : 'rgba(255, 143, 0, 0.4)', 
                     top: 0, 
                     left: 0, 
                     animation: 'scanSweep 4s linear infinite',
-                    boxShadow: docType.includes('Rx') ? '0 0 15px rgba(0, 245, 212, 0.8)' : '0 0 15px rgba(0, 255, 170, 0.8)'
+                    boxShadow: docType.includes('Rx') ? '0 0 15px rgba(0, 210, 255, 0.8)' : '0 0 15px rgba(255, 143, 0, 0.8)'
                   }}
                 ></div>
-                <UploadIcon size={56} className={`${docType.includes('Rx') ? 'text-theme-accent' : 'text-success'} mb-3 animate-pulse`} />
+                <UploadIcon size={56} className="mb-3 animate-pulse" style={{ color: docType.includes('Rx') ? '#00d2ff' : '#ff8f00' }} />
                 <span className="text-white fw-bold font-monospace d-block text-uppercase" style={{ fontSize: '1.25rem', letterSpacing: '0.04em' }}>
                   {file ? `Ingested: ${file.name.toUpperCase()}` : user && user.role === 'Doctor' ? (docType.includes('Rx') ? 'UPLOAD PATIENT Rx RECORD' : 'UPLOAD PATIENT PATHOLOGY REPORT') : (docType.includes('Rx') ? 'DROP RX PRESCRIPTION HERE' : 'DROP PATHOLOGY LAB REPORT HERE')}
                 </span>
@@ -441,20 +441,20 @@ function Upload({ user }) {
                 disabled={!file || loading}
                 className="font-monospace text-uppercase fw-bold w-100 d-flex align-items-center justify-content-center gap-2 mt-2"
                 style={{
-                  background: docType.includes('Rx') ? 'rgba(0, 245, 212, 0.1)' : 'rgba(0, 255, 170, 0.1)',
-                  border: `2px solid ${docType.includes('Rx') ? 'rgba(0, 245, 212, 0.5)' : 'rgba(0, 255, 170, 0.5)'}`,
+                  background: docType.includes('Rx') ? 'rgba(0, 210, 255, 0.1)' : 'rgba(255, 143, 0, 0.1)',
+                  border: `2px solid ${docType.includes('Rx') ? 'rgba(0, 210, 255, 0.5)' : 'rgba(255, 143, 0, 0.5)'}`,
                   borderRadius: '12px',
                   padding: '14px 20px',
                   fontSize: '1rem',
                   letterSpacing: '0.08em',
-                  color: docType.includes('Rx') ? '#00f5d4' : '#00ffaa',
+                  color: docType.includes('Rx') ? '#00d2ff' : '#ff8f00',
                   cursor: !file || loading ? 'not-allowed' : 'pointer',
                   opacity: !file || loading ? 0.45 : 1,
-                  boxShadow: `0 4px 15px ${docType.includes('Rx') ? 'rgba(0, 245, 212, 0.15)' : 'rgba(0, 255, 170, 0.15)'}`,
+                  boxShadow: `0 4px 15px ${docType.includes('Rx') ? 'rgba(0, 210, 255, 0.15)' : 'rgba(255, 143, 0, 0.15)'}`,
                   transition: 'all 0.3s ease',
                 }}
-                onMouseEnter={e => { if (file && !loading) { e.currentTarget.style.boxShadow = `0 8px 25px ${docType.includes('Rx') ? 'rgba(0, 245, 212, 0.4)' : 'rgba(0, 255, 170, 0.4)'}`; e.currentTarget.style.background = docType.includes('Rx') ? 'rgba(0, 245, 212, 0.2)' : 'rgba(0, 255, 170, 0.2)'; e.currentTarget.style.transform = 'translateY(-2px)'; }}}
-                onMouseLeave={e => { e.currentTarget.style.boxShadow = `0 4px 15px ${docType.includes('Rx') ? 'rgba(0, 245, 212, 0.15)' : 'rgba(0, 255, 170, 0.15)'}`; e.currentTarget.style.background = docType.includes('Rx') ? 'rgba(0, 245, 212, 0.1)' : 'rgba(0, 255, 170, 0.1)'; e.currentTarget.style.transform = 'translateY(0)'; }}
+                onMouseEnter={e => { if (file && !loading) { e.currentTarget.style.boxShadow = `0 8px 25px ${docType.includes('Rx') ? 'rgba(0, 210, 255, 0.4)' : 'rgba(255, 143, 0, 0.4)'}`; e.currentTarget.style.background = docType.includes('Rx') ? 'rgba(0, 210, 255, 0.2)' : 'rgba(255, 143, 0, 0.2)'; e.currentTarget.style.transform = 'translateY(-2px)'; }}}
+                onMouseLeave={e => { e.currentTarget.style.boxShadow = `0 4px 15px ${docType.includes('Rx') ? 'rgba(0, 210, 255, 0.15)' : 'rgba(255, 143, 0, 0.15)'}`; e.currentTarget.style.background = docType.includes('Rx') ? 'rgba(0, 210, 255, 0.1)' : 'rgba(255, 143, 0, 0.1)'; e.currentTarget.style.transform = 'translateY(0)'; }}
               >
                 <Sparkles size={20} style={{ opacity: 0.95 }} />
                 {loading
@@ -470,16 +470,16 @@ function Upload({ user }) {
             {loading && (
               <div className="border-top border-white-10 pt-4 mt-auto reveal">
                 <h4 className="fw-bold mb-2 text-white font-monospace d-flex align-items-center gap-2" style={{ fontSize: '1.05rem' }}>
-                  <Cpu className={`${docType.includes('Rx') ? 'text-theme-accent' : 'text-success'} animate-pulse`} size={20} />
+                  <Cpu className="animate-pulse" size={20} style={{ color: docType.includes('Rx') ? '#00d2ff' : '#ff8f00' }} />
                   Scanner Sensor Feed
                 </h4>
-                <p className="text-theme-accent font-monospace bg-white-10 px-3 py-2 border border-white-5 rounded" style={{ fontSize: '0.85rem', minHeight: '52px' }}>
+                <p className="font-monospace bg-white-10 px-3 py-2 border border-white-5 rounded" style={{ fontSize: '0.85rem', minHeight: '52px', color: docType.includes('Rx') ? '#00d2ff' : '#ff8f00' }}>
                   {scanLog}
                 </p>
                 <div className="progress rounded overflow-hidden mt-3" style={{ height: '5px' }}>
                   <div 
-                    className={`progress-bar ${docType.includes('Rx') ? 'bg-theme-accent' : 'bg-success'}`} 
-                    style={{ width: `${scanProgress}%` }}
+                    className="progress-bar" 
+                    style={{ width: `${scanProgress}%`, backgroundColor: docType.includes('Rx') ? '#00d2ff' : '#ff8f00' }}
                   ></div>
                 </div>
               </div>
