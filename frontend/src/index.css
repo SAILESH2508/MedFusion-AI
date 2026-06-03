@@ -900,6 +900,12 @@ nav.bg-glass .text-secondary:hover {
   background: rgba(0, 245, 212, 0.04) !important;
 }
 
+.hover-border-theme-accent-glow:hover {
+  border-color: var(--theme-accent, var(--accent-teal)) !important;
+  box-shadow: 0 0 20px var(--theme-accent-glow, rgba(0, 245, 212, 0.2)) !important;
+  background: var(--theme-accent-glow, rgba(0, 245, 212, 0.04)) !important;
+}
+
 .hover-border-success-glow:hover {
   border-color: var(--accent-green) !important;
   box-shadow: 0 0 20px rgba(0, 255, 170, 0.18) !important;
