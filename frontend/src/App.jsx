@@ -178,9 +178,11 @@ function Navbar({ user, logout, toggleSidebar, isSidebarPage }) {
               <NavLink to="/dashboard" icon={<Activity size={18} />} label={isDoctor ? "Patient Registry" : "AI Health Check"} />
               <NavLink to="/upload" icon={<FileUp size={18} />} label={isDoctor ? "Clinical Ingestion" : "AI Report Scanner"} />
               <NavLink to="/profile" icon={<User size={18} />} label={isDoctor ? "Credentials Vault" : "My Profile"} />
-              <button onClick={logout} className="btn-icon p-2 border-0 bg-transparent text-white opacity-70 hover-opacity-100">
-                <LogOut size={20} />
-              </button>
+              {!isSidebarPage && (
+                <button onClick={logout} className="btn-icon p-2 border-0 bg-transparent text-white opacity-70 hover-opacity-100">
+                  <LogOut size={20} />
+                </button>
+              )}
             </>
           ) : (
             <>
