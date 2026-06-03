@@ -126,9 +126,17 @@ function Upload({ user }) {
       setScanProgress(100);
       setScanLog("Medical record ingested successfully!");
       
-      // Normalize backend data to match frontend's expected schema for Lab Reports
+      // Normalize backend data to match frontend's expected schema
       let normalizedData = res.data;
-      if (!docType.includes('Rx')) {
+      if (docType.includes('Rx')) {
+        const ext = res.data.extracted_data || {};
+        normalizedData = {
+          ...res.data,
+          medicines: ext.medicines || [],
+          recommendations: ext.recommendations || [],
+          next_steps: ext.next_steps || []
+        };
+      } else {
         const rawBiomarkersList = res.data.report_data || [];
         const biomarkersObj = {};
         rawBiomarkersList.forEach(bio => {

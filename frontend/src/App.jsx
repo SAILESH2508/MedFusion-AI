@@ -62,7 +62,7 @@ function AppContent({ user, login, logout }) {
 
   return (
     <SidebarContext.Provider value={{ sidebarContent, setSidebarContent }}>
-      <div className={`${location.pathname === '/upload' ? 'vh-100 overflow-hidden' : 'min-vh-100'} d-flex flex-column`}>
+      <div className="min-vh-100 d-flex flex-column">
         {/* Top Navbar visible on all pages - covers 100% width! */}
         <Navbar user={user} logout={logout} toggleSidebar={toggleSidebar} isSidebarPage={isSidebarPage} />
         
