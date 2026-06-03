@@ -1028,4 +1028,81 @@ input.typeable-number-input:focus {
   margin-bottom: 4px !important;
 }
 
+/* Premium Blue-Orange Gradient Border Panels */
+.panel-brand-gradient {
+  background: linear-gradient(135deg, rgba(0, 210, 255, 0.04) 0%, rgba(255, 143, 0, 0.04) 100%) !important;
+  border: 1.5px solid transparent !important;
+  background-image: 
+    linear-gradient(rgba(0, 3, 38, 0.85), rgba(0, 3, 38, 0.85)), 
+    linear-gradient(135deg, #00d2ff 0%, #ff8f00 100%) !important;
+  background-origin: border-box !important;
+  background-clip: padding-box, border-box !important;
+  box-shadow: 0 10px 35px rgba(0, 0, 0, 0.5) !important;
+}
+
+/* Premium Ingestion Vector Complete header */
+.text-brand-gradient-blue {
+  background: linear-gradient(135deg, #00f5d4 0%, #00bfff 100%) !important;
+  -webkit-background-clip: text !important;
+  background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  display: inline-block !important;
+}
+
+.text-brand-gradient-orange {
+  background: linear-gradient(135deg, #ffd600 0%, #ff8f00 100%) !important;
+  -webkit-background-clip: text !important;
+  background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  display: inline-block !important;
+}
+
+/* Custom premium card badges for Medicine/Biomarker frequency & normal status */
+.badge-brand-blue {
+  background: rgba(0, 210, 255, 0.12) !important;
+  border: 1px solid rgba(0, 210, 255, 0.35) !important;
+  color: #00d2ff !important;
+}
+
+.badge-brand-orange {
+  background: rgba(255, 143, 0, 0.12) !important;
+  border: 1px solid rgba(255, 143, 0, 0.35) !important;
+  color: #ff8f00 !important;
+}
+
+/* Custom premium cards for Normal/Abnormal Biomarkers */
+.card-biomarker-normal {
+  background: rgba(0, 210, 255, 0.04) !important;
+  border: 1px solid rgba(0, 210, 255, 0.18) !important;
+  box-shadow: 0 4px 15px rgba(0, 210, 255, 0.02) !important;
+  transition: all 0.25s ease !important;
+}
+.card-biomarker-normal:hover {
+  border-color: #00d2ff !important;
+  box-shadow: 0 4px 20px rgba(0, 210, 255, 0.15) !important;
+}
+
+.card-biomarker-abnormal {
+  background: rgba(255, 143, 0, 0.05) !important;
+  border: 1px solid rgba(255, 143, 0, 0.3) !important;
+  box-shadow: 0 4px 15px rgba(255, 143, 0, 0.02) !important;
+  transition: all 0.25s ease !important;
+}
+.card-biomarker-abnormal:hover {
+  border-color: #ff8f00 !important;
+  box-shadow: 0 4px 20px rgba(255, 143, 0, 0.2) !important;
+}
+
+/* Custom premium card for Medicines */
+.card-medicine-premium {
+  background: linear-gradient(135deg, rgba(0, 210, 255, 0.03) 0%, rgba(255, 143, 0, 0.03) 100%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15) !important;
+  transition: all 0.25s ease !important;
+}
+.card-medicine-premium:hover {
+  border-color: rgba(0, 210, 255, 0.3) !important;
+  box-shadow: 0 6px 20px rgba(0, 210, 255, 0.1) !important;
+}
+
 

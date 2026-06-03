@@ -525,11 +525,11 @@ function Upload({ user }) {
           {loading && (
             <div className="glass-card text-center p-5 d-flex flex-column align-items-center justify-content-center w-100" style={{ borderRadius: '16px' }}>
               <div className="mb-5 position-relative d-flex align-items-center justify-content-center" style={{ width: '160px', height: '160px' }}>
-                <div className={`spinner-border ${docType.includes('Rx') ? 'text-theme-accent' : 'text-success'} position-absolute`} style={{ width: '100px', height: '100px', borderWidth: '4.5px' }} role="status"></div>
-                <Cpu size={42} className={`${docType.includes('Rx') ? 'text-theme-accent' : 'text-success'} position-absolute animate-pulse`} />
+                <div className="spinner-border position-absolute" style={{ width: '100px', height: '100px', borderWidth: '4.5px', borderColor: '#00d2ff transparent #ff8f00 transparent' }} role="status"></div>
+                <Cpu size={42} className="position-absolute animate-pulse brand-logo-orange" style={{ filter: 'drop-shadow(0 0 10px rgba(255, 143, 0, 0.4))' }} />
               </div>
-              <h3 className="fw-bold mb-2 font-monospace text-white" style={{ fontSize: '1.8rem' }}>Extracting Clinical Vectors</h3>
-              <p className="text-secondary font-monospace" style={{ fontSize: '1.1rem' }}>Re-mapping handwritten characters onto OCR models...</p>
+              <h3 className="fw-bold mb-2 font-monospace text-brand-gradient-blue" style={{ fontSize: '1.8rem' }}>Extracting Clinical Vectors</h3>
+              <p className="text-brand-gradient-orange font-monospace fw-bold" style={{ fontSize: '1.1rem' }}>Re-mapping handwritten characters onto OCR models...</p>
             </div>
           )}
 
@@ -542,12 +542,12 @@ function Upload({ user }) {
           )}
 
           {result && !loading && (
-            <div className="glass-card w-100 p-5 d-flex flex-column" style={{ borderColor: 'var(--accent-teal)', borderRadius: '16px' }}>
+            <div className="w-100 p-5 d-flex flex-column panel-brand-gradient" style={{ borderRadius: '16px' }}>
               <div className="d-flex align-items-center justify-content-between mb-4 border-bottom border-white-10 pb-3 flex-wrap gap-2">
                 <div className="font-monospace">
-                  <h3 className="fw-bold m-0 text-white text-uppercase d-flex align-items-center gap-2" style={{ fontSize: '1.35rem' }}>
-                    <CheckCircle className="text-theme-accent animate-pulse" size={24} />
-                    Ingestion Vector Complete
+                  <h3 className="fw-bold m-0 text-uppercase d-flex align-items-center gap-2" style={{ fontSize: '1.35rem' }}>
+                    <CheckCircle className="text-brand-gradient-blue animate-pulse" size={24} />
+                    <span className="text-brand-gradient-blue">Ingestion</span> <span className="text-brand-gradient-orange">Vector Complete</span>
                   </h3>
                   <span className="text-secondary small font-monospace">Extracted: {result.timestamp}</span>
                 </div>
@@ -564,31 +564,31 @@ function Upload({ user }) {
               <div className="w-100">
                 {result.type.includes('Rx') ? (
                 <div className="font-monospace">
-                  <h5 className="text-theme-accent fw-bold mb-3" style={{ fontSize: '1.05rem' }}>Extracted Pharmacological Agents</h5>
+                  <h5 className="text-brand-gradient-blue fw-bold mb-3" style={{ fontSize: '1.05rem' }}>Extracted Pharmacological Agents</h5>
                   <div className="row g-3 mb-4">
                     {result.data.medicines?.map((m, i) => (
                       <div className="col-md-6" key={i}>
-                        <div className="p-3.5 bg-white-10 bg-opacity-20 border border-white-5 rounded d-flex align-items-center justify-content-between">
+                        <div className="p-3.5 card-medicine-premium rounded d-flex align-items-center justify-content-between">
                           <div>
-                            <span className="text-white fw-bold d-block" style={{ fontSize: '0.98rem' }}>💊 {m.name}</span>
+                            <span className="text-white fw-bold d-block" style={{ fontSize: '0.98rem' }}><span className="text-brand-gradient-orange">💊</span> {m.name}</span>
                             <span className="text-secondary" style={{ fontSize: '0.82rem' }}>Dosage: {m.dosage}</span>
                           </div>
-                          <span className="badge bg-white-5 border border-white-10 text-theme-accent p-2" style={{ fontSize: '0.8rem' }}>{m.frequency}</span>
+                          <span className="badge badge-brand-blue p-2" style={{ fontSize: '0.8rem' }}>{m.frequency}</span>
                         </div>
                       </div>
                     ))}
                   </div>
                   
-                  <h5 className="text-white fw-bold mb-3" style={{ fontSize: '1.05rem' }}>Physiological Intent & Recommendations</h5>
-                  <div className="p-4 bg-white-10 rounded border border-white-5 mb-4" style={{ fontSize: '0.92rem' }}>
+                  <h5 className="text-brand-gradient-orange fw-bold mb-3" style={{ fontSize: '1.05rem' }}>Physiological Intent & Recommendations</h5>
+                  <div className="p-4 bg-white-5 rounded border border-white-10 mb-4" style={{ fontSize: '0.92rem', boxShadow: 'inset 0 1px 1px rgba(255,255,255,0.05)' }}>
                     <ul className="text-secondary ps-3 mb-0">
                       {result.data.recommendations?.map((r, i) => <li key={i} className="mb-2">{r}</li>)}
                     </ul>
                   </div>
                   
                   {result.data.next_steps && (
-                    <div className="mt-4 p-4 bg-white-10 rounded border border-theme-accent border-opacity-30 bg-opacity-10" style={{ fontSize: '0.92rem' }}>
-                      <h6 className="text-theme-accent fw-bold mb-2" style={{ fontSize: '0.98rem' }}>Suggested Follow-up Runs</h6>
+                    <div className="mt-4 p-4 bg-white-5 rounded border border-white-10" style={{ fontSize: '0.92rem', borderLeft: '3px solid #ff8f00 !important' }}>
+                      <h6 className="text-brand-gradient-orange fw-bold mb-2" style={{ fontSize: '0.98rem' }}>Suggested Follow-up Runs</h6>
                       <ul className="text-secondary mb-0 ps-3">
                         {result.data.next_steps.map((step, i) => <li key={i} className="mb-1">{step}</li>)}
                       </ul>
@@ -597,18 +597,18 @@ function Upload({ user }) {
                 </div>
               ) : (
                 <div className="font-monospace">
-                  <h5 className="text-theme-accent fw-bold mb-3" style={{ fontSize: '1.05rem' }}>Extracted Physiological Biomarkers</h5>
+                  <h5 className="text-brand-gradient-blue fw-bold mb-3" style={{ fontSize: '1.05rem' }}>Extracted Physiological Biomarkers</h5>
                   <div className="row g-3 mb-4">
                     {result.data.biomarkers && Object.keys(result.data.biomarkers).map((k, i) => {
                       const bio = result.data.biomarkers[k];
                       const isAbnormal = bio.status?.toUpperCase() !== 'NORMAL';
                       return (
                         <div className="col-md-6" key={i}>
-                          <div className={`p-4 rounded border h-100 ${isAbnormal ? 'border-danger border-opacity-40 bg-danger bg-opacity-5' : 'border-white-5 bg-white-10 bg-opacity-20'}`}>
+                          <div className={`p-4 rounded h-100 ${isAbnormal ? 'card-biomarker-abnormal' : 'card-biomarker-normal'}`}>
                             <span className="text-secondary d-block text-capitalize" style={{ fontSize: '0.85rem' }}>{k.replace(/_/g, ' ')}</span>
                             <div className="d-flex justify-content-between align-items-baseline mt-2">
                               <span className="text-white fw-bold" style={{ fontSize: '1.15rem' }}>{bio.value} {bio.unit}</span>
-                              <span className={`badge ${isAbnormal ? 'bg-danger bg-opacity-20 text-danger border-danger' : 'bg-theme-accent bg-opacity-20 text-theme-accent border-theme-accent'} border p-1.5 px-2.5`} style={{ fontSize: '0.78rem' }}>
+                              <span className={`badge ${isAbnormal ? 'badge-brand-orange' : 'badge-brand-blue'} p-1.5 px-2.5`} style={{ fontSize: '0.78rem' }}>
                                 {bio.status}
                               </span>
                             </div>
@@ -619,8 +619,8 @@ function Upload({ user }) {
                     })}
                   </div>
                   
-                  <h5 className="text-white fw-bold mb-3" style={{ fontSize: '1.05rem' }}>Pathological Interpretation Digest</h5>
-                  <div className="p-4 bg-white-10 rounded border border-white-5 mb-4" style={{ fontSize: '0.92rem' }}>
+                  <h5 className="text-brand-gradient-orange fw-bold mb-3" style={{ fontSize: '1.05rem' }}>Pathological Interpretation Digest</h5>
+                  <div className="p-4 bg-white-5 rounded border border-white-10 mb-4" style={{ fontSize: '0.92rem', boxShadow: 'inset 0 1px 1px rgba(255,255,255,0.05)' }}>
                     <p className="text-secondary small m-0" style={{ lineHeight: 1.6 }}>{result.data.clinical_interpretation}</p>
                   </div>
                 </div>
