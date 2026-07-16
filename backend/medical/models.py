@@ -61,7 +61,7 @@ class Patient(models.Model):
             "id": self.id,
             "first_name": self.first_name,
             "last_name": self.last_name,
-            "dob": self.dob.isoformat() if self.dob else None,
+            "dob": self.dob.isoformat() if self.dob is not None else None,
             "gender": self.gender,
             "blood_group": self.blood_group,
             "weight": self.weight_kg,
@@ -78,14 +78,16 @@ class Prescription(models.Model):
         ('failed', 'Failed'),
     ]
     
-    patient = models.ForeignKey(Patient, on_delete=models.CASCADE, related_name='prescriptions')
+    patient = models.ForeignKey(Patient, on_delete=models.CASCADE, null=True, blank=True, related_name='prescriptions')
+    guest_email = models.EmailField(blank=True, null=True)
+    guest_name = models.CharField(max_length=255, blank=True, null=True)
     image_url = models.CharField(max_length=255, blank=True)
     extracted_data = models.TextField(blank=True)  # JSON string
     status = models.CharField(max_length=50, choices=STATUS_CHOICES, default='completed')
     created_at = models.DateTimeField(auto_now_add=True)
     
     def __str__(self):
-        return f"Prescription for {self.patient} - {self.status}"
+        return f"Prescription for {self.patient or self.guest_email} - {self.status}"
 
     def to_dict(self):
         return {
@@ -95,34 +97,42 @@ class Prescription(models.Model):
             "image_url": self.image_url,
             "extracted_data": json.loads(self.extracted_data or "{}"),
             "status": self.status,
+            "guest_email": self.guest_email,
+            "guest_name": self.guest_name,
             "created_at": self.created_at.isoformat(),
         }
 
 
 class PathologyReport(models.Model):
     patient = models.ForeignKey(
-        Patient, on_delete=models.CASCADE, related_name="pathology_reports"
+        Patient, on_delete=models.CASCADE, null=True, blank=True, related_name="pathology_reports"
     )
+    guest_email = models.EmailField(blank=True, null=True)
+    guest_name = models.CharField(max_length=255, blank=True, null=True)
     report_data = models.TextField(blank=True)  # JSON string (Input biomarkers)
     clinical_insight = models.TextField(blank=True)  # JSON string (AI Result)
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"Pathology Report for {self.patient} - {self.created_at.strftime('%Y-%m-%d')}"
+        return f"Pathology Report for {self.patient or self.guest_email} - {self.created_at.strftime('%Y-%m-%d')}"
 
     def to_dict(self):
         return {
             "id": self.id,
             "type": "pathology",
             "label": "Pathology Analysis",
-            "report_data": json.loads(self.report_data or "{}"),
+            "report_data": json.loads(self.report_data or "[]"),
             "analysis": json.loads(self.clinical_insight or "{}"),
+            "guest_email": self.guest_email,
+            "guest_name": self.guest_name,
             "created_at": self.created_at.isoformat(),
         }
 
 
 class PredictionRecord(models.Model):
-    patient = models.ForeignKey(Patient, on_delete=models.CASCADE, related_name='predictions')
+    patient = models.ForeignKey(Patient, on_delete=models.CASCADE, null=True, blank=True, related_name='predictions')
+    guest_email = models.EmailField(blank=True, null=True)
+    guest_name = models.CharField(max_length=255, blank=True, null=True)
     disease_type = models.CharField(max_length=50)  # 'Heart Attack', 'Cancer', 'Diabetes'
     input_parameters = models.TextField(blank=True)  # JSON string of inputs
     risk_score = models.FloatField(default=0.0)  # Percentage (0-100)
@@ -132,7 +142,7 @@ class PredictionRecord(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"{self.disease_type} Prediction for {self.patient} - {self.risk_level} ({self.risk_score}%)"
+        return f"{self.disease_type} Prediction for {self.patient or self.guest_email} - {self.risk_level} ({self.risk_score}%)"
 
     def to_dict(self):
         return {
@@ -144,6 +154,8 @@ class PredictionRecord(models.Model):
             "risk_level": self.risk_level,
             "clinical_reasoning": self.clinical_reasoning,
             "remedies": json.loads(self.remedies or "{}"),
+            "guest_email": self.guest_email,
+            "guest_name": self.guest_name,
             "created_at": self.created_at.isoformat(),
         }
 

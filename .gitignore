@@ -31,3 +31,8 @@ backend/uploads/*
 !backend/uploads/.gitkeep
 backend/media/uploads/*
 !backend/media/uploads/.gitkeep
+
+# Temporary / Debug files
+*debug.json
+*diff*.txt
+pyrightconfig.json

@@ -107,7 +107,7 @@ class LLMProvider:
         prompt: Union[str, List[Any]],
         model_name: Optional[str] = None,
         system_prompt: Optional[str] = None,
-        tried_models: List[str] = None,
+        tried_models: Optional[List[str]] = None,
         timeout: float = 30.0,
         **kwargs,
     ) -> str:
@@ -150,18 +150,19 @@ class LLMProvider:
                 contents = (
                     prompt
                     if isinstance(prompt, list)
-                    else [{"role": "user", "parts": [{"text": str(prompt)}]}]
+                    else [{"role": "user", "parts": [{"text": prompt}]}]
                 )
-                # Handle images if passed as Part
-                res = await asyncio.wait_for(
-                    client.aio.models.generate_content(
+                def sync_generate():
+                    return client.models.generate_content(
                         model=target_model,
                         contents=contents,
                         config=types.GenerateContentConfig(
                             temperature=kwargs.get("temperature", 0.7),
                             system_instruction=system_prompt,
                         ),
-                    ),
+                    )
+                res = await asyncio.wait_for(
+                    asyncio.to_thread(sync_generate),
                     timeout=timeout,
                 )
                 return res.text
@@ -179,6 +180,8 @@ class LLMProvider:
                     timeout=timeout,
                 )
                 return res.text
+            else:
+                raise Exception(f"Unhandled provider: {provider}")
 
         except Exception as e:
             error_str = str(e).lower()

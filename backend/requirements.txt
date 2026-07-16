@@ -10,3 +10,5 @@ cohere
 requests
 pillow
 bcrypt==4.0.1
+numpy
+scikit-learn

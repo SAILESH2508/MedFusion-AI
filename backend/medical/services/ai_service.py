@@ -72,27 +72,76 @@ class AIService:
             logger.error(f"Pathology Analysis failed: {e}")
             return self._get_fallback_vitals("Biomarker analysis node offline.")
 
-    def _parse_json(self, text: str) -> Dict[str, Any]:
-        try:
-            # Check if this is an error message from LLM provider
-            if "AI system failure" in text or "All fallbacks exhausted" in text:
-                return self._get_fallback_vitals("AI API keys not configured")
-            
-            # Handle possible markdown backticks
-            clean_text = text.strip()
-            if clean_text.startswith("```json"):
-                clean_text = clean_text[7:-3].strip()
-            elif clean_text.startswith("```"):
-                clean_text = clean_text[3:-3].strip()
+    async def extract_biomarkers_from_image(
+        self, image_data: bytes, mime_type: str = "image/jpeg"
+    ) -> List[Dict[str, Any]]:
+        """
+        Extract structured biomarker data from a lab/pathology report image.
+        """
+        prompt = """
+        Analyze this laboratory pathology report image. Extract all the clinical biomarkers/vitals listed.
+        For each biomarker, extract:
+        - name: string (e.g. Glucose, Cholesterol, Hemoglobin, WBC Count, etc.)
+        - value: float or integer
+        - unit: string (e.g. mg/dL, g/dL, cells/mcL, etc.)
+        
+        Return ONLY a JSON list of objects, each containing 'name', 'value', and 'unit'.
+        Example format:
+        [
+            {"name": "Glucose", "value": 95, "unit": "mg/dL"},
+            {"name": "Cholesterol", "value": 185, "unit": "mg/dL"}
+        ]
+        No Markdown backticks, no markdown code block formatting, and no explanation. Output raw JSON list only.
+        """
 
-            start = clean_text.find("{")
-            end = clean_text.rfind("}") + 1
+        try:
+            image_part = types.Part.from_bytes(data=image_data, mime_type=mime_type)
+            content = [image_part, prompt]
+
+            response_text = await llm_provider.generate_response(
+                prompt=content,
+                model_name=os.getenv("DEFAULT_LLM_MODEL", "gemini-2.5-flash"),
+                system_prompt="You are a Laboratory Information System Specialist. You extract precision biometric data from report scans in JSON list format.",
+            )
+
+            # Parse JSON list
+            return self._clean_and_parse_json(response_text, default=[], start_char="[", end_char="]")
+        except Exception as e:
+            logger.error(f"Pathology biomarker extraction failed: {e}")
+            return []
+
+    def _clean_and_parse_json(self, text: str, default: Any, start_char: str = "{", end_char: str = "}") -> Any:
+        try:
+            if "AI system failure" in text or "All fallbacks exhausted" in text:
+                return default
+            
+            clean_text = text.strip()
+            if clean_text.startswith("```"):
+                newline_idx = clean_text.find("\n")
+                if newline_idx != -1:
+                    clean_text = clean_text[newline_idx:].strip()
+                else:
+                    clean_text = clean_text[3:].strip()
+            if clean_text.endswith("```"):
+                clean_text = clean_text[:-3].strip()
+
+            start = clean_text.find(start_char)
+            end = clean_text.rfind(end_char) + 1
             if start != -1 and end != -1:
                 return json.loads(clean_text[start:end])
             return json.loads(clean_text)
         except Exception as e:
-            logger.error(f"JSON Parsing Error: {e}. Raw: {text[:100]}...")
+            logger.error(f"JSON Clean & Parse Error: {e}. Raw: {text[:100]}...")
+            return default
+
+    def _parse_json(self, text: str) -> Dict[str, Any]:
+        if "AI system failure" in text or "All fallbacks exhausted" in text:
+            return self._get_fallback_vitals("AI API keys not configured")
+        
+        res = self._clean_and_parse_json(text, default=None, start_char="{", end_char="}")
+        if res is None:
             return self._get_fallback_vitals("JSON parsing failed")
+        return res
 
     def _get_fallback_vitals(self, error_msg: str) -> Dict[str, Any]:
         # Create enhanced demo responses when AI API is unavailable
@@ -206,6 +255,7 @@ class AIService:
         2. risk_level: One of "LOW", "MODERATE", "HIGH", "CRITICAL".
         3. clinical_reasoning: A detailed clinical explanation (1-2 paragraphs) outlining why the risk is at this level, detailing physiological interactions of the biomarkers, age, family history, and symptoms.
         4. remedies: A structured set of precise remedies to help mitigate this risk:
+           - stage: A string description of the clinical stage or severity classification of this risk based on their parameters (e.g., "Stage 0 (Normal)", "Stage I (Pre-Clinical)", "Stage II (Mild / Early Symptom)", "Stage III (Moderate Risk)", "Stage IV (Severe / Critical)").
            - dietary_guidelines: Specific evidence-based dietary guidelines (e.g. DASH diet for cardiovascular risk, low-glycemic foods for diabetes risk).
            - lifestyle_modifications: Targeted habits, exercise regimens, and behavioral adjustments.
            - home_remedies: Safe, supportive home-based care or general wellness practices.
@@ -222,7 +272,13 @@ class AIService:
                 model_name=os.getenv("DEFAULT_LLM_MODEL", "gemini-2.5-flash"),
                 system_prompt=f"You are a Senior Clinical Diagnostic Lead and Preventive Medicine Specialist. You analyze patient vitals and symptoms to compute high-precision risk indexes and actionable remedy strategies for {disease_type} in JSON format.",
             )
-            return self._parse_json(response_text)
+            if "AI system failure" in response_text or "All fallbacks exhausted" in response_text:
+                return self._get_fallback_prediction(disease_type, parameters, response_text)
+            
+            res = self._parse_json(response_text)
+            if not isinstance(res, dict) or "risk_score" not in res:
+                return self._get_fallback_prediction(disease_type, parameters, "Invalid prediction response format")
+            return res
         except Exception as e:
             logger.error(f"Health Risk Prediction failed for {disease_type}: {e}")
             return self._get_fallback_prediction(disease_type, parameters, str(e))
@@ -246,7 +302,16 @@ class AIService:
         family_history = family_history_val in ["yes", "severe", "mild"]
         smoking = parameters.get("smoking", "no") == "yes"
         
+        stage_val = "Stage 0 (Normal / Low Risk)"
+        if risk_score > 80:
+            stage_val = "Stage III (Severe / Critical Risk)"
+        elif risk_score > 55:
+            stage_val = "Stage II (High Risk / Intervention Needed)"
+        elif risk_score > 30:
+            stage_val = "Stage I (Moderate Risk / Monitoring Recommended)"
+            
         remedies = {
+            "stage": stage_val,
             "dietary_guidelines": [],
             "lifestyle_modifications": [],
             "home_remedies": [],
@@ -461,7 +526,100 @@ class AIService:
                 "Acute, unexplained shortness of breath, sudden cold sweats, and overwhelming dizziness or syncope",
                 "Chest discomfort that does not subside after 5 minutes of complete physical rest"
             ]
+        elif "neuro" in disease or "stroke" in disease or "cognitive" in disease or "dementia" in disease:
+            # Neurological & Stroke Screening risk
+            systolic_bp = float(parameters.get("systolic_bp", 120) or 120)
+            glucose = float(parameters.get("glucose", 90) or 90)
+            sleep_quality = float(parameters.get("sleep_quality", 7) or 7)
+            physical_activity = float(parameters.get("physical_activity", 4) or 4)
+            symptoms = parameters.get("symptoms", [])
             
+            risk_score = 10.0
+            reasons = []
+            
+            if systolic_bp > 130:
+                risk_score += 15
+                reasons.append(f"Systolic hypertension ({systolic_bp} mmHg) is a primary risk driver for cerebrovascular stroke")
+            if systolic_bp > 150:
+                risk_score += 20
+                reasons.append("Severe systolic blood pressure puts significant hemodynamic pressure on cerebral arteries")
+                
+            if glucose > 125:
+                risk_score += 15
+                reasons.append(f"Chronic hyperglycemic trends ({glucose} mg/dL) damage cerebral microvasculature")
+                
+            if sleep_quality < 6:
+                risk_score += 12
+                reasons.append(f"Deficient sleep duration ({sleep_quality} hrs) impairs glymphatic waste clearance and elevates neuro-inflammation")
+                
+            if physical_activity < 3:
+                risk_score += 10
+                reasons.append(f"Sedentary lifestyle ({physical_activity} hrs/wk physical activity) reduces cerebral perfusion and plasticity")
+                
+            if age > 55:
+                risk_score += 15
+                reasons.append(f"Age factor ({age} years) is associated with normal vascular senescence and cognitive decay")
+            if age > 70:
+                risk_score += 20
+                
+            if family_history:
+                risk_score += 15
+                reasons.append("Family history of early cardiovascular accidents or Alzheimer's raises neurological risk")
+                
+            if smoking:
+                risk_score += 20
+                reasons.append("Nicotine and toxic inhalants promote vascular plaque and carotid artery stenosis")
+                
+            if symptoms:
+                active_symptoms = [s for s, val in symptoms.items() if val is True] if isinstance(symptoms, dict) else symptoms
+                risk_score += min(30, len(active_symptoms) * 8)
+                if active_symptoms:
+                    reasons.append(f"Reported cognitive and sensory symptoms: {', '.join(active_symptoms[:3])}")
+                    
+            risk_score = min(96.0, max(5.0, risk_score))
+            
+            reasons_str = "; ".join(reasons) if reasons else "no major neurological risk factors reported."
+            clinical_reasoning = (
+                f"Neurological health screening calculates a Stroke and Cognitive Decline risk index of {risk_score:.1f}%. "
+                f"Critical vectors: {reasons_str}. Adequate arterial supply and glymphatic clearance are vital to "
+                f"protect cortical structures and prevent ischemic cerebral incidents."
+            )
+            
+            remedies["dietary_guidelines"] = [
+                "Implement a brain-supporting MIND diet (combination of Mediterranean and DASH diets)",
+                "Increase intake of flavonoid-rich foods such as blueberries and strawberries (shown to delay cognitive aging)",
+                "Consume wild-caught cold-water fish (salmon, sardines) twice weekly for high DHA/EPA omega-3 content",
+                "Reduce saturated fats, simple carbohydrates, and refined sodium to protect blood-brain barrier integrity"
+            ]
+            remedies["lifestyle_modifications"] = [
+                "Engage in 30 minutes of aerobic exercise 4-5 times a week to promote brain-derived neurotrophic factor (BDNF)",
+                "Incorporate daily cognitive challenges (puzzles, learning a new language, reading complex material)",
+                "Establish a strict sleep hygiene regimen targeting 7-8 hours of sound sleep for glymphatic clearance",
+                "Ensure social engagement and interactive conversations to build cognitive reserve"
+            ]
+            remedies["home_remedies"] = [
+                "Drink 1-2 cups of green tea daily (rich in L-theanine and EGCG to promote cognitive focus)",
+                "Integrate cognitive meditation or mindfulness breathing for 15 minutes daily to regulate stress and blood pressure",
+                "Engage in physical coordination exercises (like yoga or tai chi) to support balance and motor neural pathways"
+            ]
+            remedies["otc_suggestions"] = [
+                "Omega-3 DHA Supplement (500-1000mg DHA daily) to support neuronal membrane health",
+                "Ginkgo Biloba Extract (120-240mg daily) to support microvascular cerebral blood flow",
+                "Alpha-GPC or Phosphatidylserine (100-300mg daily) to support acetylcholine levels and memory",
+                "Melatonin (1-3mg before bed) if needed to regulate sleep cycles and provide neuroprotection"
+            ]
+            remedies["clinical_recommendations"] = [
+                "Schedule a detailed carotid artery ultrasound scan to check for stenosis or plaque build-up",
+                "Obtain a comprehensive cognitive evaluation panel (such as MoCA or MMSE) if forgetfulness is persistent",
+                "Request a metabolic blood panel including Fasting Glucose, HbA1c, hs-CRP (inflammation indicator), and Lipid Fractionation",
+                "Seek referral to a neurologist if numbness, speech issues, or balance loss are reported or suspected"
+            ]
+            remedies["urgent_warning_signs"] = [
+                "F.A.S.T. symptoms: Sudden facial drooping, arm weakness, speech difficulty or slurring",
+                "Sudden, severe headache with no known cause ('thunderclap' headache)",
+                "Acute confusion, sudden loss of vision in one or both eyes, or sudden difficulty walking and loss of balance"
+            ]
+
         else:
             # Cancer risk (screening focus)
             symptoms = parameters.get("symptoms", [])

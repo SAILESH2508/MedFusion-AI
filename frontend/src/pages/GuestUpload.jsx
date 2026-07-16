@@ -11,6 +11,7 @@ import {
 import { api } from '../services/api';
 import { motion } from 'framer-motion';
 import { SidebarContext } from '../context/SidebarContext';
+import { getHasShownGuestPopup, setHasShownGuestPopup } from '../services/utils';
 
 const getAge = (dobString) => {
   try {
@@ -22,7 +23,7 @@ const getAge = (dobString) => {
   }
 };
 
-function Upload({ user }) {
+function GuestUpload({ openAuth }) {
   const { setSidebarContent } = useContext(SidebarContext);
   const [file, setFile] = useState(null);
   const [docType, setDocType] = useState('Prescription (Rx)');
@@ -31,6 +32,10 @@ function Upload({ user }) {
   const [scanLog, setScanLog] = useState('');
   const [result, setResult] = useState(null);
   const [error, setError] = useState('');
+  
+  // Guest Credentials State
+  const [guestName, setGuestName] = useState('');
+  const [guestEmail, setGuestEmail] = useState('');
 
   const getInitials = (name) => {
     if (!name) return 'US';
@@ -40,28 +45,16 @@ function Upload({ user }) {
       : name.substring(0, 2).toUpperCase();
   };
 
-  // Patient Selection States
-  const [patients, setPatients] = useState([]);
-  const [selectedPatientId, setSelectedPatientId] = useState(() => {
-    return (user && user.role === 'Patient') ? (user.patient_id || '') : '';
-  });
+  // Guest Ingestion (Anonymous Mode)
+  const [selectedPatientId, setSelectedPatientId] = useState('');
 
-  const activePatient = patients.find(p => String(p.id) === String(selectedPatientId));
-
+  // Notify guest mode context on mount if guest and popup not yet shown in this session
   useEffect(() => {
-    if (user && user.role === 'Doctor') {
-      api.get('/patients')
-        .then(res => {
-          const list = res.data.patients || [];
-          setPatients(list);
-          if (list.length > 0) {
-            setSelectedPatientId(list[0].id);
-          }
-        })
-        .catch(err => console.error("Error fetching patients list:", err));
+    if (openAuth && !getHasShownGuestPopup()) {
+      openAuth('patient', 'You are currently in guest mode. Login or create an account to unlock your digital medical vault, consult with specialists, track medication adherence, and view patient EHR registries.');
+      setHasShownGuestPopup(true);
     }
-  }, [user]);
-
+  }, [openAuth]);
 
   const downloadJsonExport = () => {
     if (!result || !result.data) return;
@@ -184,13 +177,11 @@ function Upload({ user }) {
     try {
       const formData = new FormData();
       formData.append('file', file);
-      // Send selected patient ID if provided (works for both Doctor and Guest)
-      if (selectedPatientId) {
-        formData.append('patient_id', selectedPatientId);
-      } else if (user && user.role === 'Doctor') {
-        setError("Please select a registered patient to assign this medical record to.");
-        setLoading(false);
-        return;
+      if (guestEmail) {
+        formData.append('guest_email', guestEmail);
+      }
+      if (guestName) {
+        formData.append('guest_name', guestName);
       }
       
       const endpoint = docType.includes('Rx') ? '/prescriptions/upload/' : '/pathology/analyze/';
@@ -312,123 +303,53 @@ function Upload({ user }) {
   };
 
   useEffect(() => {
-    if (user && user.role === 'Doctor') {
-      setSidebarContent(
-        <div className="d-flex flex-column gap-4 pt-2">
-          <div className="glass-card p-4 mb-2 reveal border-theme-accent border-opacity-15 bg-white-5" style={{ borderRadius: '12px' }}>
-            <h2 className="fw-bolder fs-6 m-0 text-white" style={{ letterSpacing: '-0.02em', fontSize: '1.25rem' }}>
-              Clinical <span className="text-theme-accent" style={{ textShadow: '0 0 20px var(--theme-accent-glow)' }}>Scanner</span>
-            </h2>
-            <p className="text-secondary m-0 mt-2" style={{ fontSize: '0.88rem', lineHeight: '1.4' }}>
-              Upload lab reports or prescriptions to extract clinical values directly into patient records.
-            </p>
-          </div>
+    setSidebarContent(
+      <div className="d-flex flex-column gap-4 pt-2">
+        {/* Sleek Medical Header Console inside Sidebar */}
+        <div className="glass-card p-4 mb-2 reveal border-theme-accent border-opacity-15 bg-white-5" style={{ borderRadius: '12px' }}>
+          <h2 className="fw-bolder fs-6 m-0 text-white" style={{ letterSpacing: '-0.02em', fontSize: '1.25rem' }}>
+            AI Report <span className="text-theme-accent" style={{ textShadow: '0 0 20px var(--theme-accent-glow)' }}>Scanner</span>
+          </h2>
+          <p className="text-secondary m-0 mt-2" style={{ fontSize: '0.88rem', lineHeight: '1.4' }}>
+            Select your report category and ingest documents to extract medical parameters.
+          </p>
+        </div>
 
-          <div className="mt-2">
-            <h4 className="fw-bold mb-3 text-white" style={{ fontSize: '1.05rem', letterSpacing: '0.05em' }}>
-              <span className="text-theme-accent font-monospace text-uppercase" style={{ letterSpacing: '0.06em' }}>Target Patient Entity</span>
-            </h4>
-            <select 
-              value={selectedPatientId} 
-              onChange={(e) => setSelectedPatientId(e.target.value)}
-              style={{ 
-                background: 'rgba(255,255,255,0.03)', 
-                color: 'white', 
-                border: '1px solid rgba(255,255,255,0.08)',
-                borderRadius: '8px',
-                padding: '12px',
-                fontSize: '0.85rem',
-                fontFamily: 'monospace',
-                width: '100%',
-                outline: 'none',
-                marginBottom: '10px'
-              }}
-            >
-              <option value="" disabled>-- Select Registered Patient --</option>
-              {patients.map(p => (
-                <option key={p.id} value={p.id} style={{ background: '#000' }}>{p.name.toUpperCase()} (ID: MF-P-{p.id})</option>
-              ))}
-            </select>
-          </div>
-
-          <div className="mt-2">
-            <h4 className="fw-bold mb-3 text-white" style={{ fontSize: '1.05rem', letterSpacing: '0.05em' }}>
-              <span className="text-theme-accent font-monospace text-uppercase" style={{ letterSpacing: '0.06em' }}>Document Category</span>
-            </h4>
-            <div className="d-flex flex-column gap-3 mt-3">
-              {[
-                { id: 'Prescription (Rx)', label: 'Prescription (Rx)', icon: <FileText size={20} />, key: 'prescription' },
-                { id: 'Lab Report (Pathology)', label: 'Lab Report (Pathology)', icon: <Database size={20} />, key: 'lab' },
-              ].map((category) => (
-                <div 
-                  key={category.id}
-                  onClick={() => setDocType(category.id)}
-                  className={`disease-select-tile cursor-pointer ${category.key} ${
-                    docType === category.id ? 'active' : 'inactive'
-                  } ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
-                  style={{ padding: '16px 20px' }}
-                >
-                  <div className="d-flex align-items-center justify-content-start gap-3 font-monospace fw-bold text-uppercase" style={{ fontSize: '0.9rem' }}>
-                    {category.icon}
-                    <span>{category.label}</span>
-                  </div>
+        {/* Ingest category selection switcher */}
+        <div className="mt-2">
+          <h4 className="fw-bold mb-3 text-white" style={{ fontSize: '1.05rem', letterSpacing: '0.05em' }}>
+            <span className="text-theme-accent font-monospace text-uppercase" style={{ letterSpacing: '0.06em' }}>Document Category</span>
+          </h4>
+          <div className="d-flex flex-column gap-3 mt-3">
+            {[
+              { id: 'Prescription (Rx)', label: 'Prescription (Rx)', icon: <FileText size={20} />, key: 'prescription' },
+              { id: 'Lab Report (Pathology)', label: 'Lab Report (Pathology)', icon: <Database size={20} />, key: 'lab' },
+            ].map((category) => (
+              <div 
+                key={category.id}
+                onClick={() => setDocType(category.id)}
+                className={`disease-select-tile cursor-pointer ${category.key} ${
+                  docType === category.id ? 'active' : 'inactive'
+                } ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
+                style={{ padding: '16px 20px' }}
+              >
+                <div className="d-flex align-items-center justify-content-start gap-3 font-monospace fw-bold text-uppercase" style={{ fontSize: '0.9rem' }}>
+                  {category.icon}
+                  <span>{category.label}</span>
                 </div>
-              ))}
-            </div>
+              </div>
+            ))}
           </div>
         </div>
-      );
-      return () => setSidebarContent(null);
-    } else {
-      setSidebarContent(
-        <div className="d-flex flex-column gap-4 pt-2">
-          {/* Sleek Medical Header Console inside Sidebar */}
-          <div className="glass-card p-4 mb-2 reveal border-theme-accent border-opacity-15 bg-white-5" style={{ borderRadius: '12px' }}>
-            <h2 className="fw-bolder fs-6 m-0 text-white" style={{ letterSpacing: '-0.02em', fontSize: '1.25rem' }}>
-              AI Report <span className="text-theme-accent" style={{ textShadow: '0 0 20px var(--theme-accent-glow)' }}>Scanner</span>
-            </h2>
-            <p className="text-secondary m-0 mt-2" style={{ fontSize: '0.88rem', lineHeight: '1.4' }}>
-              Select your report category and ingest documents to extract medical parameters.
-            </p>
-          </div>
-
-
-          {/* Ingest category selection switcher */}
-          <div className="mt-2">
-            <h4 className="fw-bold mb-3 text-white" style={{ fontSize: '1.05rem', letterSpacing: '0.05em' }}>
-              <span className="text-theme-accent font-monospace text-uppercase" style={{ letterSpacing: '0.06em' }}>Document Category</span>
-            </h4>
-            <div className="d-flex flex-column gap-3 mt-3">
-              {[
-                { id: 'Prescription (Rx)', label: 'Prescription (Rx)', icon: <FileText size={20} />, key: 'prescription' },
-                { id: 'Lab Report (Pathology)', label: 'Lab Report (Pathology)', icon: <Database size={20} />, key: 'lab' },
-              ].map((category) => (
-                <div 
-                  key={category.id}
-                  onClick={() => setDocType(category.id)}
-                  className={`disease-select-tile cursor-pointer ${category.key} ${
-                    docType === category.id ? 'active' : 'inactive'
-                  } ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
-                  style={{ padding: '16px 20px' }}
-                >
-                  <div className="d-flex align-items-center justify-content-start gap-3 font-monospace fw-bold text-uppercase" style={{ fontSize: '0.9rem' }}>
-                    {category.icon}
-                    <span>{category.label}</span>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      );
-      return () => setSidebarContent(null);
-    }
-  }, [docType, setSidebarContent, loading, user, patients, selectedPatientId]);
+      </div>
+    );
+    return () => setSidebarContent(null);
+  }, [docType, setSidebarContent, loading]);
 
 
 
   return (
-    <div className={`reveal px-1 py-1 ${user && user.role === 'Doctor' ? 'theme-cancer' : 'theme-general'}`}>
+    <div className="reveal px-1 py-1 theme-general">
       <div className="row g-4 mt-2 flex-grow-1">
         {/* ============================================================== */}
         {/* LEFT SIDEBAR PANEL: Scanner Ingestion Input Control */}
@@ -438,68 +359,56 @@ function Upload({ user }) {
             <div className="d-flex flex-column gap-3 w-100">
               <h4 className="fw-bold text-white font-monospace d-flex align-items-center gap-3 mb-2" style={{ fontSize: '1.25rem' }}>
                 <Database size={24} className="text-theme-accent animate-pulse" />
-                {user && user.role === 'Doctor' ? 'Clinical Ingestion suite' : 'Ingestion Controls'}
+                Ingestion Controls
               </h4>
 
-              {/* Active Patient Bio Card Widget */}
-              {user && user.role === 'Doctor' && activePatient && (
-                <div className="reveal mt-0 p-2 border border-white-10 rounded bg-white-5" style={{ animation: 'fadeIn 0.4s ease' }}>
-                  <div className="d-flex justify-content-between align-items-center mb-1 pb-1 border-bottom border-white-5">
-                    <span className="fw-bold text-theme-accent font-monospace text-uppercase" style={{ fontSize: '0.7rem' }}>Active Bio Profile</span>
-                    <span className="badge bg-white-5 border border-white-10 text-theme-accent font-monospace px-1 py-0.5" style={{ fontSize: '0.65rem' }}>
-                      ID: MF-P-{activePatient.id}
-                    </span>
+              {/* Guest Profile Identification Card */}
+              <div className="glass-card p-3 mb-1 bg-white-5" style={{ borderRadius: '10px', border: '1px solid rgba(255, 255, 255, 0.08)' }}>
+                <h5 className="fw-bold mb-2 text-white d-flex align-items-center gap-2" style={{ fontSize: '0.85rem' }}>
+                  <Sparkles className="animate-pulse" size={14} style={{ color: 'var(--theme-accent)' }} />
+                  <span style={{ color: 'var(--theme-accent)' }}>Guest Identification Info</span>
+                </h5>
+                <div className="row g-2 mt-2 font-monospace">
+                  <div className="col-6">
+                    <label className="text-secondary mb-1" style={{ fontSize: '0.72rem' }}>Full Name</label>
+                    <input 
+                      type="text" 
+                      placeholder="e.g. John Doe"
+                      value={guestName}
+                      onChange={(e) => setGuestName(e.target.value)}
+                      style={{
+                        width: '100%',
+                        background: 'rgba(255, 255, 255, 0.04)',
+                        border: '1px solid rgba(255, 255, 255, 0.1)',
+                        borderRadius: '6px',
+                        color: 'white',
+                        padding: '6px 10px',
+                        fontSize: '0.82rem',
+                        outline: 'none'
+                      }}
+                    />
                   </div>
-                  
-                  <div className="d-flex align-items-center gap-2 mb-2">
-                    <div className="avatar-circle-sm" style={{ width: "28px", height: "28px", borderRadius: "50%", backgroundColor: "rgba(223, 64, 255, 0.1)", border: "1px solid rgba(223, 64, 255, 0.3)", display: "flex", alignItems: "center", justifyContent: "center", color: "var(--theme-accent)", fontWeight: "bold", fontSize: "0.75rem" }}>
-                      {getInitials(activePatient.name)}
-                    </div>
-                    <div>
-                      <h5 className="text-white fw-bold m-0" style={{ fontSize: "0.85rem" }}>{activePatient.name}</h5>
-                      <span className="text-secondary small font-monospace" style={{ fontSize: "0.75rem" }}>{activePatient.email}</span>
-                    </div>
+                  <div className="col-6">
+                    <label className="text-secondary mb-1" style={{ fontSize: '0.72rem' }}>Email Address (Key)</label>
+                    <input 
+                      type="email" 
+                      placeholder="e.g. john.doe@example.com"
+                      value={guestEmail}
+                      onChange={(e) => setGuestEmail(e.target.value)}
+                      style={{
+                        width: '100%',
+                        background: 'rgba(255, 255, 255, 0.04)',
+                        border: '1px solid rgba(255, 255, 255, 0.1)',
+                        borderRadius: '6px',
+                        color: 'white',
+                        padding: '6px 10px',
+                        fontSize: '0.82rem',
+                        outline: 'none'
+                      }}
+                    />
                   </div>
-
-                  <div className="row g-1 text-center font-monospace mb-1" style={{ fontSize: '0.7rem' }}>
-                    <div className="col-4">
-                      <div className="p-1 bg-white-5 rounded border border-white-5">
-                        <span className="text-secondary d-block" style={{ fontSize: '0.55rem', opacity: 0.8 }}>SEX / AGE</span>
-                        <span className="text-white fw-semibold">{activePatient.gender} / {getAge(activePatient.dob)} Y</span>
-                      </div>
-                    </div>
-                    <div className="col-4">
-                      <div className="p-1 bg-white-5 rounded border border-white-5">
-                        <span className="text-secondary d-block" style={{ fontSize: '0.55rem', opacity: 0.8 }}>BLOOD GP</span>
-                        <span className="text-white fw-semibold">{activePatient.blood_group}</span>
-                      </div>
-                    </div>
-                    <div className="col-4">
-                      <div className="p-1 bg-white-5 rounded border border-white-5">
-                        <span className="text-secondary d-block" style={{ fontSize: '0.55rem', opacity: 0.8 }}>WT / HT</span>
-                        <span className="text-white fw-semibold">{activePatient.weight}k / {activePatient.height}c</span>
-                      </div>
-                    </div>
-                  </div>
-
-                  {activePatient.allergies && activePatient.allergies.length > 0 ? (
-                    <div className="mt-1 font-monospace" style={{ fontSize: '0.65rem' }}>
-                      <span className="text-danger d-block fw-bold mb-1" style={{ fontSize: '0.55rem' }}>⚠️ KNOWN ALLERGIES:</span>
-                      <div className="d-flex flex-wrap gap-1">
-                        {activePatient.allergies.map((allergy, index) => (
-                          <span key={index} className="badge bg-danger bg-opacity-10 text-danger border border-danger border-opacity-20" style={{ fontSize: '0.6rem' }}>
-                            {allergy.toUpperCase()}
-                          </span>
-                        ))}
-                      </div>
-                    </div>
-                  ) : (
-                    <div className="mt-1 font-monospace" style={{ fontSize: '0.65rem' }}>
-                      <span className="text-success d-block fw-bold" style={{ fontSize: '0.55rem' }}>✅ ALLERGIES: NONE LOGGED</span>
-                    </div>
-                  )}
                 </div>
-              )}
+              </div>
 
               <div 
                 className={`border border-2 border-dashed rounded p-4 text-center mt-3 mb-2 ${docType.includes('Rx') ? 'border-brand-blue hover-border-brand-blue-glow' : 'border-brand-orange hover-border-brand-orange-glow'} transition-all cursor-pointer position-relative overflow-hidden`}
@@ -519,10 +428,10 @@ function Upload({ user }) {
                 ></div>
                 <UploadIcon size={56} className="mb-3 animate-pulse" style={{ color: docType.includes('Rx') ? '#00d2ff' : '#ff8f00' }} />
                 <span className="text-white fw-bold font-monospace d-block text-uppercase" style={{ fontSize: '1.25rem', letterSpacing: '0.04em' }}>
-                  {file ? `Ingested: ${file.name.toUpperCase()}` : user && user.role === 'Doctor' ? (docType.includes('Rx') ? 'UPLOAD PATIENT Rx RECORD' : 'UPLOAD PATIENT PATHOLOGY REPORT') : (docType.includes('Rx') ? 'DROP RX PRESCRIPTION HERE' : 'DROP PATHOLOGY LAB REPORT HERE')}
+                  {file ? `Ingested: ${file.name.toUpperCase()}` : (docType.includes('Rx') ? 'DROP RX PRESCRIPTION HERE' : 'DROP PATHOLOGY LAB REPORT HERE')}
                 </span>
                 <span className="text-secondary d-block font-monospace mt-2" style={{ fontSize: '0.9rem', opacity: 0.85 }}>
-                  {user && user.role === 'Doctor' ? (docType.includes('Rx') ? 'Supports physician Rx sheets or image logs' : 'Supports standard blood chemistry panel metrics') : (docType.includes('Rx') ? 'Supports scanned prescription images or PDFs' : 'Supports blood chemistry or pathology sheets')}
+                  {docType.includes('Rx') ? 'Supports scanned prescription images or PDFs' : 'Supports blood chemistry or pathology sheets'}
                 </span>
                 
                 <input 
@@ -557,9 +466,7 @@ function Upload({ user }) {
                 <Sparkles size={20} style={{ opacity: 0.95 }} />
                 {loading
                   ? 'INGESTING...'
-                  : user && user.role === 'Doctor'
-                    ? (docType.includes('Rx') ? 'INGEST RX TO PATIENT RECORD' : 'ANALYZE PATHOLOGY TO EHR')
-                    : (docType.includes('Rx') ? 'INGEST RX TO PATIENT RECORD' : 'EXTRACT CLINICAL BIOMARKERS')
+                  : (docType.includes('Rx') ? 'INGEST RX TO PATIENT RECORD' : 'EXTRACT CLINICAL BIOMARKERS')
                 }
               </button>
             </div>
@@ -744,4 +651,4 @@ function Upload({ user }) {
   );
 }
 
-export default Upload;
+export default GuestUpload;
