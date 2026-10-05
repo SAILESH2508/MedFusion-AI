@@ -1,0 +1,33 @@
+{
+  "id": "FEAT-003",
+  "type": "feat",
+  "description": "Frontend: Feature 1 (Biomarker Trend Timeline in MedicalVault.jsx) + Feature 4 (Emergency QR in ProfileIdentity.jsx + new EmergencyCard page + App.jsx route). Both live in the Profile section and neither depends on dashboard changes from FEAT-002. Independent of FEAT-002.",
+  "status": "pending",
+  "steps": [
+    "STEP 1 — MedicalVault.jsx: Add Biomarker Trend Timeline section. Add props: the component currently receives {archive, loadingArchive, expandedId, setExpandedId}. Since MedicalVault doesn't directly fetch, it needs pathology data. The archive prop already contains pathology records (type='pathology'). Use archive client-side to build trends: filter archive for type='pathology', parse each record's report_data, group by biomarker name.\n  Add state inside MedicalVault:\n  const [selectedBiomarker, setSelectedBiomarker] = useState(null);\n  const [showTrends, setShowTrends] = useState(false);\n  Compute trendData from archive:\n  const trendData = useMemo(() => { ... group pathology records by biomarker name ... }, [archive]);\n  const biomarkerNames = Object.keys(trendData).sort();\n  Build trend grouping: for each pathology record in archive where type==='pathology', parse report_data (list of {name, value, unit}), for each biomarker create/append to trendData[normalizedName].data = [{date: record.created_at.split('T')[0], value: parseFloat(b.value), source_id: record.id, unit: b.unit}].",
+    "STEP 2 — MedicalVault.jsx: Below the existing vault-list-container div, add a 'Biomarker Trend Timeline' section:\n  - Toggle button: 'Biomarker Trend Timeline' (shows/hides section)\n  - If no pathology records exist: empty state div with text 'No biomarker history available yet. Upload a lab report to start tracking trends.'\n  - If data exists: biomarker dropdown <select> with one <option> per biomarker name\n  - When selectedBiomarker is set, show trend panel:\n    - Latest value, previous value, absolute change, percentage change, unit\n    - Status label: compute direction. Use a safe-direction map: {glucose: 'lower=better', hba1c: 'lower=better', cholesterol: 'lower=better', ldl: 'lower=better', hdl: 'higher=better', hemoglobin: 'target-range'}. For glucose/hba1c/cholesterol/ldl: if latest < previous → 'Improving'; if latest > previous → 'Worsening'. For hdl: opposite. For all others or when direction ambiguous: 'Changed'. If only 1 data point → 'Stable'.\n    - Pure SVG line chart: width 100%, height ~120px. Compute x positions as evenly spaced across width. Compute y positions scaled between min/max value. Draw a polyline connecting the points. Add dots at each data point. Add date labels at bottom (rotated if needed). No external library.\n    - Medical disclaimer: 'Recorded values shown in chronological order. Direction labels reflect typical clinical conventions and do not constitute a diagnosis.'\n    - Table of all data points: date, value, unit columns",
+    "STEP 3 — Create frontend/src/pages/EmergencyCard.jsx: Public page, no auth required. Uses useParams to get token from URL. On mount, fetch GET /api/emergency/{token}/ using plain axios (not the api instance with JWT). Show: MedFusion AI branding, Patient Name, Vault ID, Blood Group, Allergies (as badges), Emergency Contact, Active Medications (from active_meds list, show name+dosage), Last Updated date. Style with existing glass-card / font-monospace classes, plain dark background. Add clear red EMERGENCY header. Add disclaimer: 'This card is for emergency reference only. Always consult a qualified healthcare provider.' Handle 404 gracefully with a friendly error state.",
+    "STEP 4 — App.jsx: Import EmergencyCard from ./pages/EmergencyCard. Add route: <Route path='/emergency/:token' element={<EmergencyCard />} /> in the Routes section. This route needs no authentication wrapper.",
+    "STEP 5 — ProfileIdentity.jsx: Add Emergency QR section below the existing smartcard content (after the allergies section, before the bottom border). Add state managed from Profile.jsx: Since ProfileIdentity is a pure display component and Profile.jsx manages all state, add to Profile.jsx: emergencyToken state, handleGenerateToken, handleRevokeToken functions. Pass emergencyToken, onGenerateToken, onRevokeToken as props to ProfileIdentity.\n  In Profile.jsx fetchProfile: also fetch /api/emergency/generate/ status — actually, add a separate fetchEmergencyToken() call on mount: GET is not available (no GET endpoint for current token). Instead, use a stored state: load from localStorage key 'medfusion_emergency_token_{userId}' as initial state. After generate/revoke update localStorage.\n  Profile.jsx handleGenerateToken: POST /api/emergency/generate/ → store returned token in state and localStorage. Profile.jsx handleRevokeToken: DELETE /api/emergency/revoke/ → clear state and localStorage.\n  In ProfileIdentity.jsx, add Emergency QR Card section:\n  - If no emergencyToken: show 'Generate Emergency QR' button\n  - If token: show QR code image via <img src={`https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodeURIComponent(window.location.origin + '/emergency/' + emergencyToken)}`} />, 'Regenerate' button, 'Revoke' button, 'Download' button (opens QR URL in new tab)\n  - Section label: 'Emergency QR Card'\n  - Subtext: 'Scan to access emergency medical information without login required.'\n  - Security note: 'Revoke at any time to invalidate the QR code.'",
+    "STEP 6 — Verify Vite build succeeds."
+  ],
+  "acceptance_criteria": [
+    "MedicalVault.jsx shows 'Biomarker Trend Timeline' section below existing vault list",
+    "Dropdown populated with biomarker names from patient's pathology records",
+    "SVG line chart renders when a biomarker is selected and there are ≥2 data points",
+    "Status labels (Improving/Worsening/Stable/Changed) are medically conservative",
+    "Empty state text shown when no pathology records exist",
+    "EmergencyCard.jsx created as a public route at /emergency/:token",
+    "EmergencyCard fetches and displays patient emergency data without JWT",
+    "/emergency/:token route added to App.jsx",
+    "ProfileIdentity.jsx shows Emergency QR section with Generate/Regenerate/Revoke buttons",
+    "QR code image displayed using api.qrserver.com when token exists",
+    "Vite build succeeds with 0 errors"
+  ],
+  "verification": [
+    "cd d:\\MEDICAL_PROJECT\\medfusion-ai\\frontend && node_modules\\.bin\\vite build 2>&1 (expect: built in X.Xs with no errors)",
+    "cd d:\\MEDICAL_PROJECT\\medfusion-ai\\backend && .venv\\Scripts\\python.exe manage.py check 2>&1 (expect: 0 issues)"
+  ],
+  "blocked_reason": null,
+  "findings": ""
+}

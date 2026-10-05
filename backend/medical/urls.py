@@ -2,6 +2,10 @@ from django.urls import path, re_path
 from . import views
 
 urlpatterns = [
+    # Chat endpoint
+    path('chat/', views.chat, name='chat'),
+    path('chat', views.chat, name='chat_no_slash'),
+
     # Health check
     re_path(r'^health/?$', views.health, name='health'),
     
@@ -14,6 +18,7 @@ urlpatterns = [
     re_path(r'^prescriptions/?$', views.list_prescriptions, name='list_prescriptions'),
     
     # Pathology routes
+    re_path(r'^pathology/trends/?$', views.get_pathology_trends, name='pathology_trends'),
     re_path(r'^pathology/analyze/?$', views.analyze_pathology, name='analyze_pathology'),
     re_path(r'^pathology/?$', views.list_pathology_reports, name='list_pathology_reports'),
     
@@ -23,6 +28,7 @@ urlpatterns = [
     re_path(r'^profile/update/?$', views.update_profile, name='update_profile'),
     
     # Prediction routes
+    re_path(r'^predictions/simulate/?$', views.simulate_prediction, name='simulate_prediction'),
     re_path(r'^predictions/predict/?$', views.run_prediction, name='run_prediction'),
     re_path(r'^predictions/history/?$', views.list_predictions, name='list_predictions_history'),
     re_path(r'^predictions/?$', views.list_predictions, name='list_predictions'),
@@ -34,4 +40,12 @@ urlpatterns = [
     re_path(r'^patients/(?P<patient_id>\d+)/prescribe/?$', views.add_manual_prescription, name='add_manual_prescription'),
     re_path(r'^telemetry/chat/?$', views.patient_chat, name='patient_chat'),
     re_path(r'^telemetry/drug-safety/?$', views.check_drug_safety, name='check_drug_safety'),
+
+    # Emergency QR token routes
+    re_path(r'^emergency/generate/?$', views.generate_emergency_token, name='generate_emergency_token'),
+    re_path(r'^emergency/revoke/?$', views.revoke_emergency_token, name='revoke_emergency_token'),
+    re_path(r'^emergency/(?P<token>[A-Za-z0-9_-]+)/?$', views.get_emergency_card, name='get_emergency_card'),
+
+    # AI explain/translate route
+    re_path(r'^ai/explain/?$', views.explain_result, name='explain_result'),
 ]

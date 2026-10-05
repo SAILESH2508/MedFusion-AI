@@ -1,20 +1,21 @@
 from django.shortcuts import get_object_or_404
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
-from django.contrib.auth import authenticate
+from django.contrib.auth import authenticate, get_user_model
+from django.conf import settings
+from django.core.files.storage import default_storage
+from django.core.files.base import ContentFile
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework_simplejwt.tokens import RefreshToken
-from django.contrib.auth import get_user_model
-from django.core.files.storage import default_storage
-from django.core.files.base import ContentFile
 import json
 import os
 import logging
+import secrets
 from datetime import datetime
 import asyncio
-from .models import User, Patient, Prescription, PathologyReport, PredictionRecord
-from .services.ai_service import ai_service
+from .models import Patient, Prescription, PathologyReport, PredictionRecord, EmergencyToken
+from .services.ai_service import ai_service, llm_chat
 
 User = get_user_model()
 logger = logging.getLogger(__name__)
@@ -31,25 +32,28 @@ def run_async(coro):
             loop.close()
 
 
-from django.conf import settings
-
 @api_view(['POST'])
 @permission_classes([])
 @csrf_exempt
 def signup(request):
     # Parse request data depending on Content-Type to support file uploads
-    if request.content_type and request.content_type.startswith('multipart/form-data'):
-        data = request.POST
-        files = request.FILES
-    else:
+    if request.content_type and 'application/json' in request.content_type:
         try:
-            data = json.loads(request.body)
+            data = json.loads(request.body or '{}')
             files = {}
         except json.JSONDecodeError:
-            return JsonResponse({"error": "Invalid JSON"}, status=400)
+            return JsonResponse({"error": "Invalid JSON payload"}, status=400)
+    else:
+        data = request.POST
+        files = request.FILES
 
     if not data or 'email' not in data or 'password' not in data:
-        return JsonResponse({"error": "Missing fields"}, status=400)
+        return JsonResponse({"error": "Missing email or password fields"}, status=400)
+
+    email = str(data.get('email', '')).strip().lower()
+    password = data.get('password', '')
+    if not email or not password:
+        return JsonResponse({"error": "Email and password cannot be empty"}, status=400)
 
     role = data.get('role', 'Patient')
 
@@ -60,34 +64,35 @@ def signup(request):
         if 'medical_proof_file' not in files:
             return JsonResponse({"error": "Doctor registration requires a proof of certification file (PDF/JPG/PNG)."}, status=400)
 
-    if User.objects.filter(email=data['email']).exists():
-        return JsonResponse({"error": "User already exists"}, status=400)
+    if User.objects.filter(email=email).exists():
+        return JsonResponse({"error": "An account with this email already exists."}, status=400)
 
     try:
         # Save Doctor certificate file if uploaded
         saved_file_url = ""
         if role == 'Doctor' and 'medical_proof_file' in files:
             proof_file = files['medical_proof_file']
-            file_name = f"doctor_proofs/{data['email'].replace('@', '_').replace('.', '_')}_{proof_file.name}"
+            file_name = f"doctor_proofs/{email.replace('@', '_').replace('.', '_')}_{proof_file.name}"
             # Ensure folder exists
             os.makedirs(os.path.join(settings.MEDIA_ROOT or '', 'doctor_proofs'), exist_ok=True)
             path = default_storage.save(file_name, ContentFile(proof_file.read()))
             saved_file_url = default_storage.url(path)
 
         user = User.objects.create_user(
-            username=data['email'],
-            email=data['email'],
-            password=data['password'],
-            full_name=data.get('full_name', ''),
+            username=email,
+            email=email,
+            password=password,
+            full_name=data.get('full_name', '').strip(),
             role=role,
-            license_number=data.get('license_number', '') if role == 'Doctor' else '',
+            license_number=str(data.get('license_number', '')).strip() if role == 'Doctor' else '',
             medical_proof_file=saved_file_url if role == 'Doctor' else ''
         )
 
         # Create profile automatically for patients
         patient_id = None
         if user.role == 'Patient':
-            first_name = data.get('full_name', 'Patient').split()[0] if data.get('full_name') else 'Patient'
+            full_name = data.get('full_name', '').strip()
+            first_name = full_name.split()[0] if full_name else 'Patient'
             patient = Patient.objects.create(
                 user=user,
                 first_name=first_name
@@ -120,9 +125,18 @@ def login_view(request):
     except json.JSONDecodeError:
         return JsonResponse({"error": "Invalid JSON"}, status=400)
 
-    user = authenticate(request, username=data.get('email'), password=data.get('password'))
+    if not data or 'email' not in data or 'password' not in data:
+        return JsonResponse({"error": "Email and password are required."}, status=400)
+
+    email = str(data.get('email', '')).strip().lower()
+    password = data.get('password', '')
+
+    user = authenticate(request, username=email, password=password)
 
     if user:
+        if not user.is_active:
+            return JsonResponse({"error": "User account is disabled."}, status=403)
+
         refresh = RefreshToken.for_user(user)
         patient_id = None
         if user.role == 'Patient':
@@ -149,16 +163,13 @@ def login_view(request):
             }
         }, status=200)
 
-    return JsonResponse({"error": "Invalid credentials"}, status=401)
+    return JsonResponse({"error": "Invalid email or password. Please check your credentials."}, status=401)
 
 
 @api_view(['POST'])
 @permission_classes([])
 @csrf_exempt
 def upload_prescription(request):
-    from dotenv import load_dotenv
-    load_dotenv()
-
     user = request.user
     if 'file' not in request.FILES:
         return JsonResponse({"error": "No file uploaded"}, status=400)
@@ -221,13 +232,22 @@ def upload_prescription(request):
 def list_prescriptions(request):
     user = request.user
     guest_email = request.GET.get('email')
+    patient_id = request.GET.get('patient_id')
+
     if user and user.is_authenticated:
-        try:
-            patient = Patient.objects.get(user=user)
-            prescriptions = [p.to_dict() for p in patient.prescriptions.all().order_by('-created_at')]
-            return JsonResponse(prescriptions, safe=False, status=200)
-        except Patient.DoesNotExist:
-            return JsonResponse([], safe=False, status=200)
+        if user.role == 'Doctor':
+            if patient_id:
+                prescriptions = Prescription.objects.filter(patient_id=patient_id).order_by('-created_at')
+            else:
+                prescriptions = Prescription.objects.filter(patient__doctor=user).order_by('-created_at')
+            return JsonResponse([p.to_dict() for p in prescriptions], safe=False, status=200)
+        else:
+            try:
+                patient = Patient.objects.get(user=user)
+                prescriptions = [p.to_dict() for p in patient.prescriptions.all().order_by('-created_at')]
+                return JsonResponse(prescriptions, safe=False, status=200)
+            except Patient.DoesNotExist:
+                return JsonResponse([], safe=False, status=200)
     elif guest_email:
         prescriptions = [p.to_dict() for p in Prescription.objects.filter(guest_email=guest_email).order_by('-created_at')]
         return JsonResponse(prescriptions, safe=False, status=200)
@@ -324,13 +344,22 @@ def analyze_pathology(request):
 def list_pathology_reports(request):
     user = request.user
     guest_email = request.GET.get('email')
+    patient_id = request.GET.get('patient_id')
+
     if user and user.is_authenticated:
-        try:
-            patient = Patient.objects.get(user=user)
-            reports = [r.to_dict() for r in patient.pathology_reports.all().order_by('-created_at')]
-            return JsonResponse(reports, safe=False, status=200)
-        except Patient.DoesNotExist:
-            return JsonResponse([], safe=False, status=200)
+        if user.role == 'Doctor':
+            if patient_id:
+                reports = PathologyReport.objects.filter(patient_id=patient_id).order_by('-created_at')
+            else:
+                reports = PathologyReport.objects.filter(patient__doctor=user).order_by('-created_at')
+            return JsonResponse([r.to_dict() for r in reports], safe=False, status=200)
+        else:
+            try:
+                patient = Patient.objects.get(user=user)
+                reports = [r.to_dict() for r in patient.pathology_reports.all().order_by('-created_at')]
+                return JsonResponse(reports, safe=False, status=200)
+            except Patient.DoesNotExist:
+                return JsonResponse([], safe=False, status=200)
     elif guest_email:
         reports = [r.to_dict() for r in PathologyReport.objects.filter(guest_email=guest_email).order_by('-created_at')]
         return JsonResponse(reports, safe=False, status=200)
@@ -487,6 +516,81 @@ def health_monitoring(request):
         }, status=200)
 
 
+@api_view(['POST'])
+@permission_classes([])
+@csrf_exempt
+def chat(request):
+    """
+    General-purpose AI chat endpoint.
+    Accepts a message + optional conversation history.
+    Works for both guests and authenticated patients.
+    """
+    try:
+        data = json.loads(request.body)
+    except json.JSONDecodeError:
+        return JsonResponse({"error": "Invalid JSON"}, status=400)
+
+    message = data.get('message', '').strip()
+    if not message:
+        return JsonResponse({"error": "No message provided"}, status=400)
+
+    history = data.get('history', [])  # list of {role, content}
+    is_patient = data.get('is_patient', False)
+    patient_name = data.get('patient_name', None)
+
+    if is_patient and patient_name:
+        system_prompt = (
+            f"You are MedFusion AI, a senior clinical health assistant for a patient named {patient_name}. "
+            "Provide personalized, accurate, empathetic medical guidance. "
+            "Keep responses concise (3-5 sentences) and clinically accurate. "
+            "Use bullet points for lists. "
+            "Always remind the user to consult a healthcare professional for diagnosis and treatment. "
+            "Never provide a definitive diagnosis. Never suggest stopping prescribed medications."
+        )
+    else:
+        system_prompt = (
+            "You are MedFusion AI, a helpful general health information assistant. "
+            "Provide accurate general medical information and health education. "
+            "Keep responses concise and clear. Use bullet points for lists. "
+            "Always recommend consulting a doctor for personal medical advice. "
+            "Never diagnose conditions. Never suggest specific medications."
+        )
+
+    # Build prompt with conversation history
+    history_text = ""
+    for turn in history[-6:]:  # last 6 turns for context
+        role = "User" if turn.get('role') == 'user' else "Assistant"
+        history_text += f"{role}: {turn.get('content', '')}\n"
+
+    full_prompt = f"{history_text}User: {message}"
+
+    # Ask AI to also generate 3 short follow-up questions
+    if data.get('include_followups'):
+        full_prompt += "\n\n[After your answer, on a new line write exactly: FOLLOWUPS: q1 | q2 | q3 — three short follow-up questions the user might want to ask next, separated by |. Keep each under 8 words.]"
+
+    try:
+        try:
+            reply_raw = asyncio.run(llm_chat(full_prompt, system_prompt))
+        except RuntimeError:
+            loop = asyncio.new_event_loop()
+            reply_raw = loop.run_until_complete(llm_chat(full_prompt, system_prompt))
+            loop.close()
+    except Exception as e:
+        logger.error(f"Chat failed: {e}")
+        reply_raw = "I'm having trouble connecting right now. For emergencies, call your local emergency number. Please try again shortly."
+
+    # Split reply from follow-ups
+    follow_ups = []
+    reply = reply_raw
+    if 'FOLLOWUPS:' in reply_raw:
+        parts = reply_raw.split('FOLLOWUPS:', 1)
+        reply = parts[0].strip()
+        raw_followups = parts[1].strip()
+        follow_ups = [f.strip() for f in raw_followups.split('|') if f.strip()][:3]
+
+    return JsonResponse({"reply": reply, "follow_ups": follow_ups}, status=200)
+
+
 @api_view(['GET'])
 @permission_classes([])
 def health(request):
@@ -569,6 +673,7 @@ def run_prediction(request):
     risk_level = analysis.get('risk_level', 'LOW')
     clinical_reasoning = analysis.get('clinical_reasoning', '')
     remedies = analysis.get('remedies', {})
+    factors = analysis.get('factors', [])
 
     if patient:
         record = PredictionRecord.objects.create(
@@ -580,7 +685,9 @@ def run_prediction(request):
             clinical_reasoning=clinical_reasoning,
             remedies=json.dumps(remedies)
         )
-        return JsonResponse(record.to_dict(), status=201)
+        result = record.to_dict()
+        result['factors'] = factors
+        return JsonResponse(result, status=201)
     elif guest_email:
         record = PredictionRecord.objects.create(
             patient=None,
@@ -593,7 +700,9 @@ def run_prediction(request):
             clinical_reasoning=clinical_reasoning,
             remedies=json.dumps(remedies)
         )
-        return JsonResponse(record.to_dict(), status=201)
+        result = record.to_dict()
+        result['factors'] = factors
+        return JsonResponse(result, status=201)
     else:
         return JsonResponse({
             "id": 999,
@@ -604,6 +713,7 @@ def run_prediction(request):
             "risk_level": risk_level,
             "clinical_reasoning": clinical_reasoning,
             "remedies": remedies,
+            "factors": factors,
             "created_at": datetime.now().isoformat(),
         }, status=200)
 
@@ -666,12 +776,12 @@ def list_patients(request):
             "id": p.id,
             "name": f"{p.first_name} {p.last_name}".strip() or p.user.full_name or "Patient",
             "email": p.user.email,
-            "dob": p.dob.isoformat() if p.dob else "1995-08-12",
-            "gender": p.gender or "M",
-            "blood_group": p.blood_group or "O+",
-            "weight": p.weight_kg or 72,
-            "height": p.height_cm or 175,
-            "emergency_contact": p.emergency_contact or "+91 9876543210",
+            "dob": p.dob.isoformat() if p.dob else None,
+            "gender": p.gender or "",
+            "blood_group": p.blood_group or "",
+            "weight": p.weight_kg,
+            "height": p.height_cm,
+            "emergency_contact": p.emergency_contact or "",
             "active_meds": list(set(active_meds)),
             "pathology_count": pathology_count,
             "prediction_count": prediction_count,
@@ -722,7 +832,7 @@ def add_manual_prescription(request, patient_id):
     recommendations = data.get('recommendations', [])
     
     prescription_data = {
-        "physician": user.full_name or "Dr. James Smith",
+        "physician": user.full_name or "Doctor",
         "medicines": medicines,
         "recommendations": recommendations,
         "next_steps": ["Continue daily monitoring", "Follow up with physician in 2 weeks"]
@@ -838,24 +948,10 @@ def check_drug_safety(request):
     except Exception as e:
         return JsonResponse({"error": f"Failed to connect to AI model: {str(e)}"}, status=500)
 
-    try:
-        # Clean response_text of any markdown wrappers if LLM still included them
-        cleaned_text = response_text.strip()
-        if cleaned_text.startswith("```"):
-            # strip off ```json if present
-            first_line_end = cleaned_text.find("\n")
-            if first_line_end != -1:
-                cleaned_text = cleaned_text[first_line_end:]
-            else:
-                cleaned_text = cleaned_text[3:]
-        if cleaned_text.endswith("```"):
-            cleaned_text = cleaned_text[:-3]
-        cleaned_text = cleaned_text.strip()
-
-        parsed_response = json.loads(cleaned_text)
+    parsed_response = ai_service._clean_and_parse_json(response_text, default=None)
+    if parsed_response and isinstance(parsed_response, dict):
         return JsonResponse(parsed_response, status=200)
-    except Exception as e:
-        # Fallback if parsing fails
+    else:
         return JsonResponse({
             "has_interactions": True,
             "critical_warnings": ["Could not parse structured warnings. Please read the summary."],
@@ -865,3 +961,267 @@ def check_drug_safety(request):
         }, status=200)
 
 
+
+
+# ------------------------------------------------------------------------------
+# FEAT-001: New endpoints
+# ------------------------------------------------------------------------------
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_pathology_trends(request):
+    """
+    Return biomarker trend data grouped by name from all pathology reports
+    for the authenticated patient.
+    Response: { trends: { BiomarkerName: { unit: str, data: [{date, value, source_id}] } } }
+    """
+    user = request.user
+    try:
+        patient = Patient.objects.get(user=user)
+    except Patient.DoesNotExist:
+        return JsonResponse({"trends": {}}, status=200)
+
+    reports = patient.pathology_reports.all().order_by('created_at')
+    trends = {}
+
+    for report in reports:
+        try:
+            biomarkers = json.loads(report.report_data or '[]')
+        except (json.JSONDecodeError, TypeError):
+            continue
+
+        date_str = report.created_at.strftime('%Y-%m-%d')
+
+        for item in biomarkers:
+            if not isinstance(item, dict):
+                continue
+            raw_name = item.get('name', '').strip()
+            if not raw_name:
+                continue
+            key = raw_name.title()
+            try:
+                value = float(item.get('value', 0))
+            except (TypeError, ValueError):
+                continue
+            unit = item.get('unit', '')
+
+            if key not in trends:
+                trends[key] = {'unit': unit, 'data': []}
+
+            trends[key]['data'].append({
+                'date': date_str,
+                'value': value,
+                'source_id': report.id,
+            })
+
+    return JsonResponse({'trends': trends}, status=200)
+
+
+@api_view(['POST'])
+@permission_classes([])
+@csrf_exempt
+def simulate_prediction(request):
+    """
+    Run the ML model with caller-supplied parameters and return the simulated
+    risk score without creating a PredictionRecord.
+    Body: { disease_type: str, parameters: {} }
+    Response: { simulated_score, simulated_level, factors }
+    """
+    try:
+        data = json.loads(request.body)
+    except json.JSONDecodeError:
+        return JsonResponse({"error": "Invalid JSON"}, status=400)
+
+    disease_type = data.get('disease_type')
+    parameters = data.get('parameters', {})
+
+    if not disease_type or not parameters:
+        return JsonResponse({"error": "Missing disease_type or parameters"}, status=400)
+
+    ml_result = ai_service._predict_using_ml(disease_type, parameters)
+
+    if ml_result is not None:
+        score = ml_result['score']
+        factors = ml_result['factors']
+    else:
+        score = 15.0
+        disease = disease_type.lower()
+        age = int(parameters.get('age', 35) or 35)
+        family_history = parameters.get('family_history', 'no') in ['yes', 'severe', 'mild']
+        smoking = parameters.get('smoking', 'no') == 'yes'
+
+        if 'diabetes' in disease:
+            glucose = float(parameters.get('glucose', 90) or 90)
+            hba1c = float(parameters.get('hba1c', 5.0) or 5.0)
+            bmi = float(parameters.get('bmi', 22.0) or 22.0)
+            if glucose > 140: score += 20
+            elif glucose > 100: score += 10
+            if hba1c > 6.5: score += 25
+            elif hba1c > 5.7: score += 15
+            if bmi > 30: score += 20
+            elif bmi > 25: score += 10
+            if family_history: score += 15
+            if age > 45: score += 10
+        elif 'heart' in disease:
+            cholesterol = float(parameters.get('cholesterol', 180) or 180)
+            systolic_bp = float(parameters.get('systolic_bp', 120) or 120)
+            if cholesterol > 240: score += 20
+            elif cholesterol > 200: score += 10
+            if systolic_bp > 145: score += 20
+            elif systolic_bp > 130: score += 10
+            if smoking: score += 25
+            if family_history: score += 15
+            if age > 50: score += 10
+        elif 'cancer' in disease:
+            if smoking: score += 30
+            if family_history: score += 20
+            if age > 50: score += 12
+        factors = []
+
+    score = round(min(99.0, max(1.0, score)), 1)
+    if score > 80:
+        level = 'CRITICAL'
+    elif score > 55:
+        level = 'HIGH'
+    elif score > 30:
+        level = 'MODERATE'
+    else:
+        level = 'LOW'
+
+    return JsonResponse({
+        'simulated_score': score,
+        'simulated_level': level,
+        'factors': factors,
+    }, status=200)
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+@csrf_exempt
+def generate_emergency_token(request):
+    """
+    Generate (or regenerate) an emergency token for the authenticated patient.
+    Response: { token: str, url: str }
+    """
+    user = request.user
+    try:
+        patient = Patient.objects.get(user=user)
+    except Patient.DoesNotExist:
+        return JsonResponse({"error": "Patient profile not found"}, status=404)
+
+    EmergencyToken.objects.filter(patient=patient).update(is_active=False)
+
+    token_value = secrets.token_urlsafe(32)
+    EmergencyToken.objects.create(patient=patient, token=token_value, is_active=True)
+
+    return JsonResponse({
+        "token": token_value,
+        "url": f"/emergency/{token_value}",
+    }, status=201)
+
+
+@api_view(['DELETE'])
+@permission_classes([IsAuthenticated])
+@csrf_exempt
+def revoke_emergency_token(request):
+    """
+    Revoke the active emergency token for the authenticated patient.
+    Response: 204 No Content
+    """
+    user = request.user
+    try:
+        patient = Patient.objects.get(user=user)
+    except Patient.DoesNotExist:
+        return JsonResponse({"error": "Patient profile not found"}, status=404)
+
+    EmergencyToken.objects.filter(patient=patient, is_active=True).update(is_active=False)
+    return JsonResponse({}, status=204)
+
+
+@api_view(['GET'])
+@permission_classes([])
+def get_emergency_card(request, token):
+    """
+    Public endpoint - returns patient emergency card data for a valid active token.
+    No authentication required (designed for emergency responders scanning a QR code).
+    """
+    try:
+        et = EmergencyToken.objects.get(token=token, is_active=True)
+    except EmergencyToken.DoesNotExist:
+        return JsonResponse({"error": "Invalid or expired emergency token"}, status=404)
+
+    patient = et.patient
+
+    active_meds = []
+    latest_rx = patient.prescriptions.order_by('-created_at').first()
+    if latest_rx:
+        try:
+            rx_data = json.loads(latest_rx.extracted_data or '{}')
+            active_meds = rx_data.get('medicines', [])
+        except (json.JSONDecodeError, TypeError):
+            active_meds = []
+
+    return JsonResponse({
+        "name": f"{patient.first_name} {patient.last_name}".strip() or patient.user.full_name or "Patient",
+        "vault_id": f"MF-{str(patient.id).zfill(6)}",
+        "blood_group": patient.blood_group or "",
+        "allergies": json.loads(patient.allergies or '[]'),
+        "active_meds": active_meds,
+        "emergency_contact": patient.emergency_contact or "",
+        "last_updated": et.created_at.strftime('%Y-%m-%d'),
+    }, status=200)
+
+
+@api_view(['POST'])
+@permission_classes([])
+@csrf_exempt
+def explain_result(request):
+    """
+    Translate or pass-through a text explanation.
+    Body: { text: str, language: str }
+    For 'en' returns immediately. For others, calls Gemini for translation.
+    Response: { explanation: str }
+    """
+    try:
+        data = json.loads(request.body)
+    except json.JSONDecodeError:
+        return JsonResponse({"error": "Invalid JSON"}, status=400)
+
+    text = data.get('text', '').strip()
+    language = data.get('language', 'en').strip().lower()
+
+    if not text:
+        return JsonResponse({"error": "No text provided"}, status=400)
+
+    if language == 'en':
+        return JsonResponse({"explanation": text}, status=200)
+
+    lang_names = {
+        'ta': 'Tamil',
+        'hi': 'Hindi',
+        'es': 'Spanish',
+        'fr': 'French',
+        'de': 'German',
+        'ar': 'Arabic',
+        'zh': 'Chinese (Simplified)',
+        'pt': 'Portuguese',
+    }
+    lang_name = lang_names.get(language, language.upper())
+
+    prompt = (
+        f"Translate the following medical explanation into {lang_name}. "
+        f"Preserve all medical terms accurately. Return only the translated text, no explanations.\n\n"
+        f"{text}"
+    )
+
+    try:
+        from .services.llm_provider import llm_provider
+        translated = run_async(llm_provider.generate_response(
+            prompt=prompt,
+            model_name=os.getenv("DEFAULT_LLM_MODEL", "gemini-2.5-flash"),
+            system_prompt=f"You are a professional medical translator. Translate medical content accurately into {lang_name}.",
+        ))
+        return JsonResponse({"explanation": translated}, status=200)
+    except Exception as e:
+        logger.error(f"explain_result translation failed: {e}")
+        return JsonResponse({"explanation": text, "warning": "Translation unavailable, returning original."}, status=200)

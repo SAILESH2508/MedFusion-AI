@@ -81,17 +81,43 @@ function Auth({ login, initialPortal: propInitialPortal = 'patient', onClose, me
           formData.append('medical_proof_file', proofFile);
         }
 
-        await api.post('/auth/signup/', formData, {
-          headers: {
-            'Content-Type': 'multipart/form-data'
-          }
-        });
+        const res = await api.post('/auth/signup/', formData);
         
-        setIsLogin(true);
-        setError('Signup successful. Please login.');
+        // Auto-login user on successful signup
+        if (res.data && res.data.token) {
+          setAuthToken(res.data.token);
+          login(res.data);
+          const newUser = res.data.user || res.data;
+          if (onClose) {
+            onClose();
+          }
+          if (newUser.role === 'Doctor') {
+            navigate('/dashboard');
+          } else {
+            navigate('/profile');
+          }
+        } else {
+          setIsLogin(true);
+          setError('Signup successful. Please login with your credentials.');
+        }
       }
     } catch (err) {
-      setError(err.response?.data?.error || err.response?.data?.detail || 'Authentication failed. Verify backend server status.');
+      const respData = err.response?.data;
+      let errorMsg = 'Authentication failed. Please verify your credentials and try again.';
+      if (typeof respData === 'string') {
+        errorMsg = respData;
+      } else if (respData?.error) {
+        errorMsg = respData.error;
+      } else if (respData?.detail) {
+        errorMsg = respData.detail;
+      } else if (respData && typeof respData === 'object') {
+        const firstKey = Object.keys(respData)[0];
+        if (firstKey) {
+          const val = respData[firstKey];
+          errorMsg = Array.isArray(val) ? `${firstKey}: ${val.join(', ')}` : `${firstKey}: ${val}`;
+        }
+      }
+      setError(errorMsg);
     } finally {
       setLoading(false);
     }

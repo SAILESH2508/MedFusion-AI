@@ -646,8 +646,6 @@ function Profile({ user, onUserUpdate }) {
           </motion.div>
         )}
 
-        {activeTab === 'diary' && null}
-
         {activeTab === 'vault' && (
           <motion.div
             key="vault"

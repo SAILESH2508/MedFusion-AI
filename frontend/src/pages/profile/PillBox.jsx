@@ -24,9 +24,14 @@ function PillBox({
   const rxMeds = [];
   archive.forEach(record => {
     if (record.type === 'prescription') {
-      const parsed = typeof record.extracted_data === 'string' 
-        ? JSON.parse(record.extracted_data || '{}') 
-        : (record.extracted_data || {});
+      let parsed = {};
+      try {
+        parsed = typeof record.extracted_data === 'string'
+          ? JSON.parse(record.extracted_data || '{}')
+          : (record.extracted_data || {});
+      } catch (e) {
+        return; // skip malformed record
+      }
       if (parsed.medicines && Array.isArray(parsed.medicines)) {
         parsed.medicines.forEach(m => {
           if (m.name && !rxMeds.some(exist => exist.name.toLowerCase() === m.name.toLowerCase())) {

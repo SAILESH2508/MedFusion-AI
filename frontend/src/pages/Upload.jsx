@@ -31,6 +31,19 @@ function Upload({ user }) {
   const [scanLog, setScanLog] = useState('');
   const [result, setResult] = useState(null);
   const [error, setError] = useState('');
+  const [isDragging, setIsDragging] = useState(false);
+
+  const handleDragOver = (e) => { e.preventDefault(); e.stopPropagation(); setIsDragging(true); };
+  const handleDragLeave = (e) => { e.preventDefault(); e.stopPropagation(); setIsDragging(false); };
+  const handleDrop = (e) => {
+    e.preventDefault(); e.stopPropagation(); setIsDragging(false);
+    const dropped = e.dataTransfer?.files?.[0];
+    if (!dropped) return;
+    const allowed = ['image/jpeg', 'image/png', 'image/jpg', 'application/pdf'];
+    if (!allowed.includes(dropped.type)) { setError('Unsupported file type. Please upload a JPG, PNG, or PDF.'); return; }
+    if (dropped.size > 16 * 1024 * 1024) { setError('File too large. Maximum size is 16MB.'); return; }
+    setError(''); setFile(dropped);
+  };
 
   const getInitials = (name) => {
     if (!name) return 'US';
@@ -185,12 +198,15 @@ function Upload({ user }) {
       const formData = new FormData();
       formData.append('file', file);
       // Send selected patient ID if provided (works for both Doctor and Guest)
+      // Only block if user is a Doctor AND hasn't selected a patient
+      if (user && user.role === 'Doctor' && !selectedPatientId) {
+        clearInterval(interval);
+        setLoading(false);
+        setError("Please select a registered patient to assign this medical record to.");
+        return;
+      }
       if (selectedPatientId) {
         formData.append('patient_id', selectedPatientId);
-      } else if (user && user.role === 'Doctor') {
-        setError("Please select a registered patient to assign this medical record to.");
-        setLoading(false);
-        return;
       }
       
       const endpoint = docType.includes('Rx') ? '/prescriptions/upload/' : '/pathology/analyze/';
@@ -277,7 +293,8 @@ function Upload({ user }) {
       
     } catch (err) {
       clearInterval(interval);
-      setError(err.response?.data?.error || "Clinical OCR ingestion failed. Please try a cleaner PNG/JPG file.");
+      const msg = err.response?.data?.error || err.response?.data?.detail || err.message || "Clinical OCR ingestion failed. Please try a cleaner PNG/JPG file.";
+      setError(msg);
       setLoading(false);
     }
   };
@@ -346,7 +363,7 @@ function Upload({ user }) {
             >
               <option value="" disabled>-- Select Registered Patient --</option>
               {patients.map(p => (
-                <option key={p.id} value={p.id} style={{ background: '#000' }}>{p.name.toUpperCase()} (ID: MF-P-{p.id})</option>
+                <option key={p.id} value={p.id} style={{ background: '#000' }}>{(p.name || 'UNKNOWN PATIENT').toUpperCase()} (ID: MF-P-{p.id})</option>
               ))}
             </select>
           </div>
@@ -428,8 +445,8 @@ function Upload({ user }) {
 
 
   return (
-    <div className={`reveal px-1 py-1 ${user && user.role === 'Doctor' ? 'theme-cancer' : 'theme-general'}`}>
-      <div className="row g-4 mt-2 flex-grow-1">
+    <div className={`reveal px-1 ${user && user.role === 'Doctor' ? 'theme-cancer' : 'theme-general'}`}>
+      <div className="row g-4 flex-grow-1">
         {/* ============================================================== */}
         {/* LEFT SIDEBAR PANEL: Scanner Ingestion Input Control */}
         {/* ============================================================== */}
@@ -504,7 +521,22 @@ function Upload({ user }) {
               <div 
                 className={`border border-2 border-dashed rounded p-4 text-center mt-3 mb-2 ${docType.includes('Rx') ? 'border-brand-blue hover-border-brand-blue-glow' : 'border-brand-orange hover-border-brand-orange-glow'} transition-all cursor-pointer position-relative overflow-hidden`}
                 onClick={() => document.getElementById('fileInput').click()}
-                style={{ minHeight: '280px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: 'rgba(255,255,255,0.02)' }}
+                onDragOver={handleDragOver}
+                onDragLeave={handleDragLeave}
+                onDrop={handleDrop}
+                style={{
+                  minHeight: '280px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+                  background: isDragging
+                    ? (docType.includes('Rx') ? 'rgba(0,210,255,0.08)' : 'rgba(255,143,0,0.08)')
+                    : 'rgba(255,255,255,0.02)',
+                  boxShadow: isDragging
+                    ? (docType.includes('Rx') ? '0 0 30px rgba(0,210,255,0.25)' : '0 0 30px rgba(255,143,0,0.25)')
+                    : 'none',
+                  borderColor: isDragging
+                    ? (docType.includes('Rx') ? 'rgba(0,210,255,0.8)' : 'rgba(255,143,0,0.8)')
+                    : undefined,
+                  transition: 'all 0.2s ease',
+                }}
               >
                 <div 
                   className="position-absolute w-100" 
@@ -522,7 +554,7 @@ function Upload({ user }) {
                   {file ? `Ingested: ${file.name.toUpperCase()}` : user && user.role === 'Doctor' ? (docType.includes('Rx') ? 'UPLOAD PATIENT Rx RECORD' : 'UPLOAD PATIENT PATHOLOGY REPORT') : (docType.includes('Rx') ? 'DROP RX PRESCRIPTION HERE' : 'DROP PATHOLOGY LAB REPORT HERE')}
                 </span>
                 <span className="text-secondary d-block font-monospace mt-2" style={{ fontSize: '0.9rem', opacity: 0.85 }}>
-                  {user && user.role === 'Doctor' ? (docType.includes('Rx') ? 'Supports physician Rx sheets or image logs' : 'Supports standard blood chemistry panel metrics') : (docType.includes('Rx') ? 'Supports scanned prescription images or PDFs' : 'Supports blood chemistry or pathology sheets')}
+                  {isDragging ? 'Drop it here!' : (user && user.role === 'Doctor' ? (docType.includes('Rx') ? 'Supports physician Rx sheets or image logs' : 'Supports standard blood chemistry panel metrics') : (docType.includes('Rx') ? 'Supports scanned prescription images or PDFs' : 'Supports blood chemistry or pathology sheets'))}
                 </span>
                 
                 <input 
@@ -589,7 +621,7 @@ function Upload({ user }) {
         {/* RIGHT STAGE: Telemetry Extractor */}
         {/* ============================================================== */}
         <div className="col-lg-7 col-md-7 reveal d-flex">
-          {!result && !loading && (
+          {!result && !loading && !error && (
             <div className="glass-card text-center p-5 d-flex flex-column align-items-center justify-content-center w-100" style={{ borderRadius: '16px' }}>
               <div 
                 className="mb-4 rounded-circle d-flex align-items-center justify-content-center" 
@@ -672,18 +704,61 @@ function Upload({ user }) {
                 {result.type.includes('Rx') ? (
                 <div className="font-monospace">
                   <h5 className="text-brand-gradient-blue fw-bold mb-3" style={{ fontSize: '1.05rem' }}>Extracted Pharmacological Agents</h5>
-                  <div className="row g-3 mb-4">
-                    {result.data.medicines?.map((m, i) => (
-                      <div className="col-md-6" key={i}>
-                        <div className="p-3.5 card-medicine-premium rounded d-flex align-items-center justify-content-between">
-                          <div>
-                            <span className="text-white fw-bold d-block" style={{ fontSize: '0.98rem' }}><span className="text-brand-gradient-orange">💊</span> {m.name}</span>
-                            <span className="text-secondary" style={{ fontSize: '0.82rem' }}>Dosage: {m.dosage}</span>
+                  <div className="d-flex flex-column gap-3 mb-4">
+                    {result.data.medicines?.map((m, i) => {
+                      // Map times_of_day labels to icons
+                      const timeIcons = { morning: '🌅', afternoon: '☀️', evening: '🌇', night: '🌙' };
+                      const timesOfDay = Array.isArray(m.times_of_day) ? m.times_of_day : [];
+                      return (
+                        <div key={i} className="p-3 rounded border border-white-10 bg-white-5" style={{ borderLeft: '3px solid rgba(0,245,212,0.5)' }}>
+                          {/* Top row: name + frequency badge */}
+                          <div className="d-flex align-items-center justify-content-between mb-2">
+                            <span className="text-white fw-bold" style={{ fontSize: '1rem' }}>💊 {m.name}</span>
+                            <span className="badge badge-brand-blue px-2 py-1 font-monospace" style={{ fontSize: '0.72rem', letterSpacing: '0.08em' }}>{m.frequency || m.frequency_number ? `${m.frequency_number || ''}x / day` : '—'}</span>
                           </div>
-                          <span className="badge badge-brand-blue p-2" style={{ fontSize: '0.8rem' }}>{m.frequency}</span>
+
+                          {/* Dosage + timing row */}
+                          <div className="d-flex flex-wrap gap-2 mb-2">
+                            <span className="badge bg-white-5 border border-white-10 text-secondary px-2 py-1" style={{ fontSize: '0.72rem' }}>
+                              💉 {m.dosage}
+                            </span>
+                            {m.timing && (
+                              <span className="badge px-2 py-1 fw-bold" style={{
+                                fontSize: '0.72rem',
+                                background: m.timing.toLowerCase().includes('before') ? 'rgba(255,143,0,0.15)' : 'rgba(0,245,212,0.12)',
+                                border: m.timing.toLowerCase().includes('before') ? '1px solid rgba(255,143,0,0.4)' : '1px solid rgba(0,245,212,0.35)',
+                                color: m.timing.toLowerCase().includes('before') ? 'var(--accent-orange)' : 'var(--accent-teal)',
+                              }}>
+                                {m.timing.toLowerCase().includes('before') ? '⏮ ' : m.timing.toLowerCase().includes('after') ? '⏭ ' : '🍽 '}
+                                {m.timing}
+                              </span>
+                            )}
+                          </div>
+
+                          {/* Times of day pills */}
+                          {timesOfDay.length > 0 && (
+                            <div className="d-flex flex-wrap gap-2 mt-1">
+                              {timesOfDay.map((t, ti) => (
+                                <span key={ti} className="badge px-2 py-1 text-capitalize" style={{
+                                  fontSize: '0.72rem',
+                                  background: 'rgba(255,255,255,0.05)',
+                                  border: '1px solid rgba(255,255,255,0.12)',
+                                  color: '#fff',
+                                  letterSpacing: '0.05em'
+                                }}>
+                                  {timeIcons[t.toLowerCase()] || '🕐'} {t}
+                                </span>
+                              ))}
+                            </div>
+                          )}
+
+                          {/* Description */}
+                          {m.description && (
+                            <p className="text-secondary mt-2 mb-0" style={{ fontSize: '0.75rem', opacity: 0.75, lineHeight: 1.4 }}>{m.description}</p>
+                          )}
                         </div>
-                      </div>
-                    ))}
+                      );
+                    })}
                   </div>
                   
                   <h5 className="text-brand-gradient-orange fw-bold mb-3" style={{ fontSize: '1.05rem' }}>Physiological Intent & Recommendations</h5>

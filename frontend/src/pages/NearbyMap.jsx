@@ -1,0 +1,771 @@
+import React, { useState, useEffect, useContext, useCallback, useRef } from 'react';
+import {
+  MapPin, Search, Navigation, Phone, Clock, Filter, RefreshCw,
+  AlertCircle, Download, ExternalLink, Share2, ChevronDown, ChevronUp
+} from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { SidebarContext } from '../context/SidebarContext';
+import InteractiveMap from '../components/InteractiveMap';
+
+// ── Haversine distance ─────────────────────────────────────────────────────
+function haversineKm(lat1, lon1, lat2, lon2) {
+  const R = 6371;
+  const dLat = ((lat2 - lat1) * Math.PI) / 180;
+  const dLon = ((lon2 - lon1) * Math.PI) / 180;
+  const a =
+    Math.sin(dLat / 2) ** 2 +
+    Math.cos((lat1 * Math.PI) / 180) *
+    Math.cos((lat2 * Math.PI) / 180) *
+    Math.sin(dLon / 2) ** 2;
+  return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+}
+
+// ── Is facility open now? ──────────────────────────────────────────────────
+function isOpenNow(opening_hours) {
+  if (!opening_hours) return null;
+  const oh = opening_hours.toLowerCase();
+  if (oh.includes('24/7') || oh === '24 hours' || oh.includes('mo-su 00:00-24:00')) return true;
+  const now = new Date();
+  const day = ['su', 'mo', 'tu', 'we', 'th', 'fr', 'sa'][now.getDay()];
+  const hour = now.getHours() + now.getMinutes() / 60;
+  // Very basic: if "mo-fr" present and today is weekday and time is 8-18
+  if (oh.includes('mo-fr') && ['mo', 'tu', 'we', 'th', 'fr'].includes(day) && hour >= 8 && hour < 18) return true;
+  if (oh.includes('mo-sa') && ['mo', 'tu', 'we', 'th', 'fr', 'sa'].includes(day) && hour >= 8 && hour < 18) return true;
+  return null; // unknown
+}
+
+const TYPE_CONFIG = {
+  hospital:  { label: 'Hospitals',   emoji: '🏥', color: 'var(--accent-red)',    glow: 'rgba(255,51,102,0.2)',  tags: ['hospital'] },
+  clinic:    { label: 'Clinics',     emoji: '🩺', color: 'var(--accent-teal)',   glow: 'rgba(0,245,212,0.2)',   tags: ['clinic', 'doctors'] },
+  pharmacy:  { label: 'Pharmacies',  emoji: '💊', color: 'var(--accent-orange)', glow: 'rgba(255,143,0,0.2)',   tags: ['pharmacy', 'chemist'] },
+  dentist:   { label: 'Dentists',    emoji: '🦷', color: 'var(--accent-purple)', glow: 'rgba(223,64,255,0.2)',  tags: ['dentist'] },
+  lab:       { label: 'Labs',        emoji: '🔬', color: 'var(--accent-yellow)', glow: 'rgba(255,214,0,0.2)',   tags: ['laboratory'] },
+};
+
+// ── Build Overpass query ───────────────────────────────────────────────────
+function buildQuery(lat, lon, radiusM, types) {
+  const parts = types.flatMap((t) =>
+    (TYPE_CONFIG[t]?.tags || []).map(
+      (tag) => `node["amenity"="${tag}"](around:${radiusM},${lat},${lon});
+way["amenity"="${tag}"](around:${radiusM},${lat},${lon});`
+    )
+  );
+  return `[out:json][timeout:25];(${parts.join('')});out center;`;
+}
+
+async function fetchPlaces(lat, lon, radiusM, types) {
+  const query = buildQuery(lat, lon, radiusM, types);
+  const res = await fetch(
+    `https://overpass-api.de/api/interpreter?data=${encodeURIComponent(query)}`
+  );
+  if (!res.ok) throw new Error('Overpass API error');
+  const data = await res.json();
+  return data.elements
+    .map((el) => {
+      const pLat = el.lat ?? el.center?.lat;
+      const pLon = el.lon ?? el.center?.lon;
+      if (!pLat || !pLon) return null;
+      const tags = el.tags || {};
+      const amenity = tags.amenity || '';
+      let type = 'clinic';
+      if (amenity === 'hospital') type = 'hospital';
+      else if (amenity === 'pharmacy' || amenity === 'chemist') type = 'pharmacy';
+      else if (amenity === 'dentist') type = 'dentist';
+      else if (amenity === 'laboratory') type = 'lab';
+      return {
+        id: el.id,
+        name: tags.name || tags['name:en'] || 'Unnamed Facility',
+        type,
+        lat: pLat,
+        lon: pLon,
+        distance: haversineKm(lat, lon, pLat, pLon),
+        phone: tags.phone || tags['contact:phone'] || null,
+        opening_hours: tags.opening_hours || null,
+        address: [tags['addr:housenumber'], tags['addr:street'], tags['addr:city']].filter(Boolean).join(', ') || null,
+        website: tags.website || tags['contact:website'] || null,
+        emergency: tags.emergency === 'yes',
+        wheelchair: tags.wheelchair || null,
+        speciality: tags.speciality || tags['healthcare:speciality'] || null,
+        operator: tags.operator || null,
+      };
+    })
+    .filter(Boolean)
+    .sort((a, b) => a.distance - b.distance);
+}
+
+// ── SOS Emergency Panel ────────────────────────────────────────────────────
+function SOSPanel({ places, location, isPatient }) {
+  const [activated, setActivated] = useState(false);
+  const nearest = places.find((p) => p.type === 'hospital');
+
+  if (!nearest || !location) return null;
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, scale: 0.97 }}
+      animate={{ opacity: 1, scale: 1 }}
+      className="p-4 rounded mb-4"
+      style={{
+        background: 'linear-gradient(135deg, rgba(255,0,85,0.08), rgba(0,4,45,0.6))',
+        border: activated ? '1.5px solid #ff0055' : '1px solid rgba(255,0,85,0.3)',
+        boxShadow: activated ? '0 0 24px rgba(255,0,85,0.3)' : 'none',
+        transition: 'all 0.3s ease',
+      }}
+    >
+      <div className="d-flex align-items-center justify-content-between flex-wrap gap-3">
+        <div>
+          <div className="d-flex align-items-center gap-2 mb-1">
+            <span style={{ fontSize: '1.1rem' }}>🚨</span>
+            <span className="fw-bold font-monospace text-uppercase" style={{ fontSize: '0.78rem', color: '#ff3366', letterSpacing: '0.1em' }}>
+              Emergency Fast Route
+            </span>
+          </div>
+          <p className="text-white fw-bold m-0" style={{ fontSize: '0.92rem' }}>{nearest.name}</p>
+          <p className="text-secondary m-0 mt-1" style={{ fontSize: '0.75rem' }}>
+            {nearest.distance < 1
+              ? `${Math.round(nearest.distance * 1000)} m away`
+              : `${nearest.distance.toFixed(1)} km away`}
+            {nearest.phone && ` • ${nearest.phone}`}
+          </p>
+        </div>
+        <div className="d-flex gap-2 flex-wrap">
+          <a
+            href={`https://www.google.com/maps/dir/?api=1&destination=${nearest.lat},${nearest.lon}&travelmode=driving`}
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={() => setActivated(true)}
+            className="px-4 py-2 rounded fw-bold font-monospace text-uppercase text-decoration-none d-flex align-items-center gap-2"
+            style={{ fontSize: '0.75rem', background: 'rgba(255,0,85,0.2)', border: '1px solid #ff3366', color: '#ff3366' }}
+          >
+            <Navigation size={13} /> Navigate Now
+          </a>
+          {nearest.phone && (
+            <a
+              href={`tel:${nearest.phone}`}
+              className="px-4 py-2 rounded fw-bold font-monospace text-uppercase text-decoration-none d-flex align-items-center gap-2"
+              style={{ fontSize: '0.75rem', background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.15)', color: '#fff' }}
+            >
+              <Phone size={13} /> Call
+            </a>
+          )}
+        </div>
+      </div>
+    </motion.div>
+  );
+}
+
+// ── Map Embed (OpenStreetMap iframe — no API key) ─────────────────────────
+// ── Export Emergency Sheet ────────────────────────────────────────────────
+function exportEmergencySheet(places, location) {
+  const lines = [
+    '============================================',
+    '   MEDFUSION AI — EMERGENCY MEDICAL SHEET',
+    '============================================',
+    `Generated: ${new Date().toLocaleString()}`,
+    location ? `Your Location: ${location.lat.toFixed(5)}, ${location.lon.toFixed(5)}` : '',
+    '',
+    '--- NEAREST HOSPITALS ---',
+    ...places
+      .filter((p) => p.type === 'hospital')
+      .slice(0, 5)
+      .map(
+        (p, i) =>
+          `${i + 1}. ${p.name}\n   Distance: ${p.distance < 1 ? `${Math.round(p.distance * 1000)}m` : `${p.distance.toFixed(1)}km`}\n   Phone: ${p.phone || 'N/A'}\n   Address: ${p.address || 'N/A'}\n   Directions: https://maps.google.com/?q=${p.lat},${p.lon}`
+      ),
+    '',
+    '--- NEAREST PHARMACIES ---',
+    ...places
+      .filter((p) => p.type === 'pharmacy')
+      .slice(0, 3)
+      .map(
+        (p, i) =>
+          `${i + 1}. ${p.name}\n   Distance: ${p.distance < 1 ? `${Math.round(p.distance * 1000)}m` : `${p.distance.toFixed(1)}km`}\n   Phone: ${p.phone || 'N/A'}`
+      ),
+    '',
+    '--- NEAREST CLINICS ---',
+    ...places
+      .filter((p) => p.type === 'clinic')
+      .slice(0, 3)
+      .map(
+        (p, i) =>
+          `${i + 1}. ${p.name}\n   Distance: ${p.distance < 1 ? `${Math.round(p.distance * 1000)}m` : `${p.distance.toFixed(1)}km`}\n   Phone: ${p.phone || 'N/A'}`
+      ),
+    '',
+    '============================================',
+    'MedFusion AI — Not a substitute for 112/911',
+    '============================================',
+  ];
+
+  const blob = new Blob([lines.join('\n')], { type: 'text/plain' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `MedFusion_Emergency_Sheet_${new Date().toISOString().split('T')[0]}.txt`;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+// ── PlaceCard ──────────────────────────────────────────────────────────────
+function PlaceCard({ place, isPatient, expanded, onToggle }) {
+  const cfg = TYPE_CONFIG[place.type] || TYPE_CONFIG.clinic;
+  const openStatus = isOpenNow(place.opening_hours);
+
+  return (
+    <motion.div
+      layout
+      initial={{ opacity: 0, y: 8 }}
+      animate={{ opacity: 1, y: 0 }}
+      className="p-3 rounded border cursor-pointer transition-all"
+      style={{
+        background: expanded ? 'rgba(0,4,45,0.75)' : 'rgba(0,4,45,0.4)',
+        borderColor: expanded ? cfg.color : 'rgba(255,255,255,0.07)',
+        boxShadow: expanded ? `0 0 18px ${cfg.glow}` : 'none',
+      }}
+      onClick={onToggle}
+    >
+      <div className="d-flex align-items-start justify-content-between gap-2">
+        <div className="d-flex align-items-start gap-2 flex-grow-1">
+          <span style={{ fontSize: '1.25rem', lineHeight: 1, flexShrink: 0, marginTop: '2px' }}>{cfg.emoji}</span>
+          <div className="flex-grow-1">
+            <p className="text-white fw-bold m-0" style={{ fontSize: '0.88rem', lineHeight: 1.3 }}>{place.name}</p>
+            <div className="d-flex flex-wrap gap-1 mt-1">
+              <span className="badge px-2 py-1" style={{ fontSize: '0.6rem', background: cfg.glow, border: `1px solid ${cfg.color}`, color: cfg.color, letterSpacing: '0.05em' }}>
+                {cfg.label.slice(0, -1).toUpperCase()}
+              </span>
+              {place.emergency && (
+                <span className="badge px-2 py-1" style={{ fontSize: '0.6rem', background: 'rgba(255,0,85,0.15)', border: '1px solid #ff0055', color: '#ff0055' }}>
+                  🚨 24H EMERGENCY
+                </span>
+              )}
+              {openStatus === true && (
+                <span className="badge px-2 py-1" style={{ fontSize: '0.6rem', background: 'rgba(0,255,170,0.1)', border: '1px solid var(--accent-green)', color: 'var(--accent-green)' }}>
+                  ✅ OPEN NOW
+                </span>
+              )}
+              {openStatus === false && (
+                <span className="badge px-2 py-1" style={{ fontSize: '0.6rem', background: 'rgba(255,0,0,0.08)', border: '1px solid rgba(255,100,100,0.3)', color: 'rgba(255,120,120,0.8)' }}>
+                  CLOSED
+                </span>
+              )}
+              {place.wheelchair === 'yes' && (
+                <span className="badge px-2 py-1" style={{ fontSize: '0.6rem', background: 'rgba(0,191,255,0.1)', border: '1px solid rgba(0,191,255,0.3)', color: '#00bfff' }}>
+                  ♿ ACCESSIBLE
+                </span>
+              )}
+              {place.speciality && (
+                <span className="badge px-2 py-1" style={{ fontSize: '0.6rem', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: 'rgba(255,255,255,0.6)' }}>
+                  {place.speciality}
+                </span>
+              )}
+            </div>
+          </div>
+        </div>
+        <div className="d-flex flex-column align-items-end flex-shrink-0 gap-1">
+          <span className="fw-bold font-monospace" style={{ color: cfg.color, fontSize: '0.88rem' }}>
+            {place.distance < 1 ? `${Math.round(place.distance * 1000)} m` : `${place.distance.toFixed(1)} km`}
+          </span>
+          {expanded ? <ChevronUp size={14} className="text-secondary" /> : <ChevronDown size={14} className="text-secondary" />}
+        </div>
+      </div>
+
+      <AnimatePresence>
+        {expanded && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: 'auto' }}
+            exit={{ opacity: 0, height: 0 }}
+            className="mt-3 pt-3 border-top"
+            style={{ borderColor: 'rgba(255,255,255,0.07)', overflow: 'hidden' }}
+          >
+            <div className="d-flex flex-column gap-2" style={{ fontSize: '0.78rem' }}>
+              {place.address && (
+                <div className="d-flex align-items-start gap-2 text-secondary">
+                  <MapPin size={12} style={{ color: cfg.color, flexShrink: 0, marginTop: 2 }} />
+                  <span>{place.address}</span>
+                </div>
+              )}
+              {place.phone && (
+                <div className="d-flex align-items-center gap-2 text-secondary">
+                  <Phone size={12} style={{ color: cfg.color, flexShrink: 0 }} />
+                  <a href={`tel:${place.phone}`} className="text-secondary" style={{ textDecoration: 'none' }} onClick={(e) => e.stopPropagation()}>{place.phone}</a>
+                </div>
+              )}
+              {place.opening_hours && (
+                <div className="d-flex align-items-center gap-2 text-secondary">
+                  <Clock size={12} style={{ color: cfg.color, flexShrink: 0 }} />
+                  <span>{place.opening_hours}</span>
+                </div>
+              )}
+              {place.operator && (
+                <div className="d-flex align-items-center gap-2 text-secondary">
+                  <span style={{ color: cfg.color, flexShrink: 0, fontSize: '0.7rem' }}>🏢</span>
+                  <span>{place.operator}</span>
+                </div>
+              )}
+
+              {/* Action buttons */}
+              <div className="d-flex gap-2 mt-2 flex-wrap">
+                <a
+                  href={`https://www.google.com/maps/dir/?api=1&destination=${place.lat},${place.lon}&travelmode=driving`}
+                  target="_blank" rel="noopener noreferrer"
+                  className="px-3 py-1 rounded font-monospace text-uppercase fw-bold text-decoration-none d-flex align-items-center gap-1"
+                  style={{ fontSize: '0.65rem', background: cfg.glow, border: `1px solid ${cfg.color}`, color: cfg.color }}
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <Navigation size={10} /> Directions
+                </a>
+                {isPatient && place.phone && (
+                  <a
+                    href={`tel:${place.phone}`}
+                    className="px-3 py-1 rounded font-monospace text-uppercase fw-bold text-decoration-none d-flex align-items-center gap-1"
+                    style={{ fontSize: '0.65rem', background: 'rgba(0,255,170,0.08)', border: '1px solid var(--accent-green)', color: 'var(--accent-green)' }}
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    <Phone size={10} /> Call
+                  </a>
+                )}
+                {isPatient && place.website && (
+                  <a
+                    href={place.website}
+                    target="_blank" rel="noopener noreferrer"
+                    className="px-3 py-1 rounded font-monospace text-uppercase fw-bold text-decoration-none d-flex align-items-center gap-1"
+                    style={{ fontSize: '0.65rem', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.15)', color: '#fff' }}
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    <ExternalLink size={10} /> Website
+                  </a>
+                )}
+                {/* Share location — patients only */}
+                {isPatient && (
+                  <button
+                    className="px-3 py-1 rounded font-monospace text-uppercase fw-bold d-flex align-items-center gap-1"
+                    style={{ fontSize: '0.65rem', background: 'rgba(223,64,255,0.08)', border: '1px solid rgba(223,64,255,0.3)', color: 'var(--accent-purple)', cursor: 'pointer' }}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      const text = `${place.name} — ${place.distance.toFixed(1)}km away\nhttps://maps.google.com/?q=${place.lat},${place.lon}`;
+                      navigator.clipboard?.writeText(text);
+                    }}
+                    title="Copy facility info to clipboard"
+                  >
+                    <Share2 size={10} /> Share
+                  </button>
+                )}
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </motion.div>
+  );
+}
+
+// ── Main Component ─────────────────────────────────────────────────────────
+export default function NearbyMap({
+  user,
+  persistedLocation, setPersistedLocation,
+  persistedPlaces, setPersistedPlaces,
+  persistedActiveTypes, setPersistedActiveTypes,
+  persistedRadius, setPersistedRadius,
+}) {
+  const isPatient = !!user;
+  const { setSidebarContent } = useContext(SidebarContext);
+
+  // Use persisted state from parent — survives navigation
+  const [location, _setLocation]     = useState(persistedLocation);
+  const [locError, setLocError]       = useState(null);
+  const [locLoading, setLocLoading]   = useState(false);
+  const [places, _setPlaces]          = useState(persistedPlaces);
+  const [loading, setLoading]         = useState(false);
+  const [error, setError]             = useState(null);
+
+  const [activeTypes, _setActiveTypes] = useState(
+    persistedActiveTypes || ['hospital', 'clinic', 'pharmacy']
+  );
+  const [radius, _setRadius]           = useState(
+    persistedRadius !== null && persistedRadius !== undefined
+      ? persistedRadius
+      : (isPatient ? 5000 : 3000)
+  );
+  const [search, setSearch]           = useState('');
+  const [expandedId, setExpandedId]   = useState(null);
+  const [sortBy, setSortBy]           = useState('distance');
+  const [showOpenOnly, setShowOpenOnly] = useState(false);
+  const [exportDone, setExportDone]   = useState(false);
+
+  // Track the config used for the last fetch — allows re-fetch on radius/type change
+  // while still skipping re-fetch on plain navigation back to the page
+  const lastFetchConfigRef = useRef(null);
+
+  // Wrapped setters that sync back to the parent so state persists on navigation
+  const setLocation = useCallback((val) => {
+    _setLocation(val);
+    setPersistedLocation(val);
+  }, [setPersistedLocation]);
+
+  const setPlaces = useCallback((val) => {
+    _setPlaces(val);
+    setPersistedPlaces(val);
+  }, [setPersistedPlaces]);
+
+  const setActiveTypes = useCallback((fn) => {
+    _setActiveTypes(prev => {
+      const next = typeof fn === 'function' ? fn(prev) : fn;
+      setPersistedActiveTypes(next);
+      return next;
+    });
+  }, [setPersistedActiveTypes]);
+
+  const setRadius = useCallback((val) => {
+    _setRadius(val);
+    setPersistedRadius(val);
+  }, [setPersistedRadius]);
+
+  const getLocation = useCallback(() => {
+    setLocLoading(true);
+    setLocError(null);
+    if (!navigator.geolocation) {
+      setLocError('Geolocation not supported by your browser.');
+      setLocLoading(false);
+      return;
+    }
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        setLocation({ lat: pos.coords.latitude, lon: pos.coords.longitude });
+        setLocLoading(false);
+      },
+      () => {
+        setLocError('Location access denied. Enable location in browser settings.');
+        setLocLoading(false);
+      },
+      { enableHighAccuracy: true, timeout: 10000 }
+    );
+  }, [setLocation]);
+
+  // Only request geolocation on first visit — skip if location already persisted
+  useEffect(() => {
+    if (!location) { getLocation(); }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    if (!location) return;
+    const configKey = `${location.lat},${location.lon},${radius},${[...activeTypes].sort().join(',')}`;
+    if (lastFetchConfigRef.current === configKey && places.length > 0) return;
+    lastFetchConfigRef.current = configKey;
+    setLoading(true);
+    setError(null);
+    fetchPlaces(location.lat, location.lon, radius, activeTypes)
+      .then((data) => { setPlaces(data); setLoading(false); })
+      .catch(() => { setError('Failed to load facilities. Check your connection.'); setLoading(false); });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [location, radius, activeTypes]);
+
+  // Sidebar injection
+  useEffect(() => {
+    setSidebarContent(
+      <div className="d-flex flex-column gap-4 pt-2">
+        <div className="glass-card p-4 reveal" style={{ borderRadius: '12px' }}>
+          <h2 className="fw-bolder m-0 text-white" style={{ fontSize: '1.15rem' }}>
+            Medical <span className="text-info">Facility Radar</span>
+          </h2>
+          <p className="text-secondary m-0 mt-2" style={{ fontSize: '0.8rem', lineHeight: '1.5' }}>
+            {isPatient ? 'Full details, one-tap call, directions and emergency sheet export.' : 'Sign in for phone numbers, call buttons and 15km radius.'}
+          </p>
+        </div>
+        <div className="d-flex flex-column gap-2">
+          <p className="text-secondary font-monospace text-uppercase mb-1" style={{ fontSize: '0.62rem', letterSpacing: '0.1em' }}>Live Counts</p>
+          {Object.entries(TYPE_CONFIG).map(([key, cfg]) => (
+            <div key={key} className="d-flex align-items-center justify-content-between p-2 rounded" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)' }}>
+              <span style={{ fontSize: '0.78rem', color: cfg.color }}>{cfg.emoji} {cfg.label}</span>
+              <span className="fw-bold font-monospace" style={{ color: cfg.color, fontSize: '0.8rem' }}>
+                {places.filter((p) => p.type === key).length}
+              </span>
+            </div>
+          ))}
+        </div>
+        {isPatient && places.filter((p) => p.type === 'hospital').length > 0 && (
+          <div className="d-flex flex-column gap-2">
+            <p className="text-secondary font-monospace text-uppercase mb-1" style={{ fontSize: '0.62rem', letterSpacing: '0.1em' }}>Nearest Hospital</p>
+            {places.filter((p) => p.type === 'hospital').slice(0, 1).map((p) => (
+              <div key={p.id} className="p-3 rounded" style={{ background: 'rgba(255,0,85,0.07)', border: '1px solid rgba(255,0,85,0.22)' }}>
+                <p className="text-white fw-bold m-0" style={{ fontSize: '0.82rem' }}>{p.name}</p>
+                <p className="text-secondary m-0 mt-1" style={{ fontSize: '0.7rem' }}>
+                  {p.distance < 1 ? `${Math.round(p.distance * 1000)}m` : `${p.distance.toFixed(1)}km`} away
+                </p>
+                <a href={`https://www.google.com/maps/dir/?api=1&destination=${p.lat},${p.lon}`} target="_blank" rel="noopener noreferrer"
+                  className="d-block mt-2 text-center py-1 rounded font-monospace text-uppercase text-decoration-none"
+                  style={{ fontSize: '0.62rem', background: 'rgba(255,0,85,0.14)', border: '1px solid rgba(255,0,85,0.3)', color: '#ff3366' }}>
+                  🚨 Get Directions
+                </a>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    );
+    return () => setSidebarContent(null);
+  }, [setSidebarContent, isPatient, places]);
+
+  const toggleType = (type) => {
+    setActiveTypes((prev) =>
+      prev.includes(type)
+        ? prev.length > 1 ? prev.filter((t) => t !== type) : prev
+        : [...prev, type]
+    );
+  };
+
+  const filtered = places
+    .filter((p) => p.name.toLowerCase().includes(search.toLowerCase()))
+    .filter((p) => !showOpenOnly || isOpenNow(p.opening_hours) === true)
+    .sort((a, b) => sortBy === 'distance' ? a.distance - b.distance : a.name.localeCompare(b.name));
+
+  const counts = {};
+  Object.keys(TYPE_CONFIG).forEach((k) => { counts[k] = places.filter((p) => p.type === k).length; });
+
+  const handleExport = () => {
+    exportEmergencySheet(places, location);
+    setExportDone(true);
+    setTimeout(() => setExportDone(false), 3000);
+  };
+
+  return (
+    <div className="reveal theme-general" style={{ paddingBottom: '32px' }}>
+      {/* ── Header ── */}
+      <div className="glass-card p-4 mb-4 d-flex align-items-center justify-content-between flex-wrap gap-3" style={{ borderRadius: '16px' }}>
+        <div>
+          <div className="d-flex align-items-center gap-2 font-monospace text-info small mb-1" style={{ letterSpacing: '0.12em' }}>
+            <MapPin size={14} />
+            <span>MEDICAL FACILITY RADAR • {location ? `${filtered.length} RESULTS` : 'OFFLINE'}</span>
+          </div>
+          <h1 className="fw-bolder fs-2 m-0 text-white" style={{ letterSpacing: '-0.03em' }}>
+            Nearby <span className="text-info">Hospitals & Pharmacies</span>
+          </h1>
+          <p className="text-secondary m-0 mt-1 small">
+            {isPatient
+              ? 'Real-time facility search with one-tap directions, call, open status, and emergency sheet export.'
+              : 'Find hospitals, clinics and pharmacies. Sign in for full contact details.'}
+          </p>
+        </div>
+        {/* Export button — patients only */}
+        {isPatient && places.length > 0 && (
+          <button
+            onClick={handleExport}
+            className="d-flex align-items-center gap-2 px-4 py-2 rounded font-monospace text-uppercase fw-bold"
+            style={{
+              fontSize: '0.72rem',
+              background: exportDone ? 'rgba(0,255,170,0.12)' : 'rgba(255,214,0,0.08)',
+              border: exportDone ? '1px solid var(--accent-green)' : '1px solid rgba(255,214,0,0.4)',
+              color: exportDone ? 'var(--accent-green)' : 'var(--accent-yellow)',
+              cursor: 'pointer',
+              letterSpacing: '0.08em',
+              transition: 'all 0.3s',
+            }}
+          >
+            <Download size={14} />
+            {exportDone ? '✅ Saved!' : 'Export Emergency Sheet'}
+          </button>
+        )}
+      </div>
+
+      {/* ── SOS Panel ── */}
+      {isPatient && <SOSPanel places={places} location={location} isPatient={isPatient} />}
+
+      {/* ── Interactive Map ── */}
+      {location && (
+        <InteractiveMap
+          location={location}
+          places={filtered}
+          isPatient={isPatient}
+        />
+      )}
+
+      <div className="row g-4">
+        {/* ── LEFT CONTROLS ── */}
+        <div className="col-lg-4 col-md-5">
+          <div className="d-flex flex-column gap-3">
+
+            {/* Location */}
+            <div className="glass-card p-4" style={{ borderRadius: '12px' }}>
+              <h5 className="text-white fw-bold font-monospace mb-3" style={{ fontSize: '0.85rem', letterSpacing: '0.06em' }}>📍 YOUR LOCATION</h5>
+              {location ? (
+                <>
+                  <p className="text-success small font-monospace mb-1">✅ GPS acquired</p>
+                  <p className="text-secondary mb-3" style={{ fontSize: '0.7rem' }}>{location.lat.toFixed(5)}°N, {location.lon.toFixed(5)}°E</p>
+                  <button onClick={getLocation} className="btn-clinical py-2 d-flex align-items-center gap-2 font-monospace text-uppercase" style={{ fontSize: '0.7rem' }} disabled={locLoading}>
+                    <RefreshCw size={12} className={locLoading ? 'spin' : ''} /> Refresh
+                  </button>
+                </>
+              ) : locError ? (
+                <>
+                  <p className="text-danger small mb-3">{locError}</p>
+                  <button onClick={getLocation} className="btn-clinical primary py-2 d-flex align-items-center gap-2 font-monospace text-uppercase" style={{ fontSize: '0.7rem' }} disabled={locLoading}>
+                    <Navigation size={12} /> {locLoading ? 'Locating...' : 'Try Again'}
+                  </button>
+                </>
+              ) : (
+                <button onClick={getLocation} className="btn-clinical primary py-2 d-flex align-items-center gap-2 font-monospace text-uppercase" style={{ fontSize: '0.7rem' }} disabled={locLoading}>
+                  <Navigation size={12} /> {locLoading ? 'Locating...' : 'Get My Location'}
+                </button>
+              )}
+            </div>
+
+            {/* Facility types */}
+            <div className="glass-card p-4" style={{ borderRadius: '12px' }}>
+              <h5 className="text-white fw-bold font-monospace mb-3" style={{ fontSize: '0.85rem', letterSpacing: '0.06em' }}>
+                <Filter size={13} className="me-2" />FACILITY TYPE
+              </h5>
+              <div className="d-flex flex-column gap-2">
+                {Object.entries(TYPE_CONFIG).map(([key, cfg]) => (
+                  isPatient || ['hospital', 'clinic', 'pharmacy'].includes(key) ? (
+                    <button
+                      key={key}
+                      onClick={() => toggleType(key)}
+                      className="d-flex align-items-center justify-content-between px-3 py-2 rounded font-monospace"
+                      style={{
+                        background: activeTypes.includes(key) ? cfg.glow : 'rgba(255,255,255,0.02)',
+                        border: `1px solid ${activeTypes.includes(key) ? cfg.color : 'rgba(255,255,255,0.07)'}`,
+                        color: activeTypes.includes(key) ? cfg.color : 'rgba(255,255,255,0.35)',
+                        fontSize: '0.72rem', letterSpacing: '0.06em', width: '100%', transition: 'all 0.2s',
+                      }}
+                    >
+                      <span>{cfg.emoji} {cfg.label.toUpperCase()}</span>
+                      <span className="badge" style={{ background: activeTypes.includes(key) ? cfg.glow : 'transparent', border: `1px solid ${activeTypes.includes(key) ? cfg.color : 'rgba(255,255,255,0.08)'}`, color: activeTypes.includes(key) ? cfg.color : 'rgba(255,255,255,0.25)', fontSize: '0.6rem' }}>
+                        {counts[key] || 0}
+                      </span>
+                    </button>
+                  ) : null
+                ))}
+                {!isPatient && (
+                  <p className="text-secondary mt-1 mb-0" style={{ fontSize: '0.65rem' }}>🔒 Sign in for Dentists & Labs</p>
+                )}
+              </div>
+            </div>
+
+            {/* Radius */}
+            <div className="glass-card p-4" style={{ borderRadius: '12px' }}>
+              <h5 className="text-white fw-bold font-monospace mb-3" style={{ fontSize: '0.85rem', letterSpacing: '0.06em' }}>📡 SEARCH RADIUS</h5>
+              <div className="d-flex align-items-center gap-3">
+                <input type="range" min={500} max={isPatient ? 15000 : 5000} step={500} value={radius} onChange={(e) => setRadius(Number(e.target.value))} style={{ margin: 0 }} />
+                <span className="text-info fw-bold font-monospace" style={{ minWidth: '52px', fontSize: '0.8rem' }}>
+                  {radius >= 1000 ? `${(radius / 1000).toFixed(1)} km` : `${radius} m`}
+                </span>
+              </div>
+              {!isPatient && <p className="text-secondary mt-2 mb-0" style={{ fontSize: '0.65rem' }}>Sign in to search up to 15 km</p>}
+            </div>
+
+            {/* Google Maps link */}
+            {location && (
+              <a
+                href={`https://www.google.com/maps/search/hospitals+clinics+near+me/@${location.lat},${location.lon},14z`}
+                target="_blank" rel="noopener noreferrer"
+                className="btn-clinical primary py-3 d-flex align-items-center justify-content-center gap-2 font-monospace text-uppercase text-decoration-none"
+                style={{ fontSize: '0.75rem', borderRadius: '10px' }}
+              >
+                <MapPin size={14} /> Open in Google Maps
+              </a>
+            )}
+          </div>
+        </div>
+
+        {/* ── RIGHT RESULTS ── */}
+        <div className="col-lg-8 col-md-7">
+          <div className="glass-card p-4" style={{ borderRadius: '12px' }}>
+            {/* Search + filters row */}
+            <div className="d-flex align-items-center gap-2 mb-3 flex-wrap">
+              <div className="d-flex align-items-center gap-2 flex-grow-1" style={{ background: 'rgba(0,4,45,0.55)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: '8px', padding: '8px 12px' }}>
+                <Search size={14} className="text-secondary" />
+                <input
+                  type="text" placeholder="Search facilities..."
+                  value={search} onChange={(e) => setSearch(e.target.value)}
+                  style={{ background: 'transparent', border: 'none', color: '#fff', outline: 'none', width: '100%', fontSize: '0.83rem', padding: 0, marginBottom: 0 }}
+                />
+              </div>
+              {isPatient && (
+                <>
+                  <select
+                    value={sortBy} onChange={(e) => setSortBy(e.target.value)}
+                    style={{ background: 'rgba(0,4,45,0.55)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: '8px', color: '#fff', padding: '8px 10px', fontSize: '0.75rem', marginBottom: 0 }}
+                  >
+                    <option value="distance">Nearest first</option>
+                    <option value="name">Name A–Z</option>
+                  </select>
+                  <button
+                    onClick={() => setShowOpenOnly((v) => !v)}
+                    className="px-3 py-2 rounded font-monospace text-uppercase"
+                    style={{
+                      fontSize: '0.68rem', letterSpacing: '0.05em',
+                      background: showOpenOnly ? 'rgba(0,255,170,0.1)' : 'rgba(255,255,255,0.03)',
+                      border: `1px solid ${showOpenOnly ? 'var(--accent-green)' : 'rgba(255,255,255,0.07)'}`,
+                      color: showOpenOnly ? 'var(--accent-green)' : 'rgba(255,255,255,0.35)',
+                      cursor: 'pointer', transition: 'all 0.2s',
+                    }}
+                  >
+                    ✅ Open Now
+                  </button>
+                </>
+              )}
+            </div>
+
+            {/* Summary row */}
+            {!loading && !locLoading && filtered.length > 0 && (
+              <p className="text-secondary font-monospace mb-3" style={{ fontSize: '0.65rem', letterSpacing: '0.06em' }}>
+                {filtered.length} FACILITIES FOUND • WITHIN {radius >= 1000 ? `${(radius / 1000).toFixed(1)} KM` : `${radius} M`}
+                {showOpenOnly && ' • OPEN NOW ONLY'}
+              </p>
+            )}
+
+            {/* States */}
+            {!location && !locLoading && (
+              <div className="text-center py-5 opacity-50">
+                <MapPin size={36} className="text-secondary mb-3" />
+                <p className="text-secondary font-monospace small">Allow location access to find nearby facilities</p>
+              </div>
+            )}
+            {(locLoading || loading) && (
+              <div className="text-center py-5">
+                <div className="spinner-border text-info mb-3" style={{ width: '38px', height: '38px' }} />
+                <p className="text-secondary font-monospace small">{locLoading ? 'Acquiring GPS signal...' : 'Scanning facility radar...'}</p>
+              </div>
+            )}
+            {error && (
+              <div className="text-center py-4">
+                <AlertCircle size={30} className="text-danger mb-2" />
+                <p className="text-danger small">{error}</p>
+                <button onClick={() => fetchPlaces(location.lat, location.lon, radius, activeTypes)} className="btn-clinical py-2 font-monospace text-uppercase mt-2" style={{ fontSize: '0.7rem' }}>Retry</button>
+              </div>
+            )}
+            {!loading && !locLoading && location && filtered.length === 0 && !error && (
+              <div className="text-center py-5 opacity-50">
+                <p className="text-secondary font-monospace small">No facilities found. Try increasing the search radius.</p>
+              </div>
+            )}
+
+            {/* Results list */}
+            {!loading && !locLoading && filtered.length > 0 && (
+              <div className="d-flex flex-column gap-2" style={{ maxHeight: '580px', overflowY: 'auto', paddingRight: '4px' }}>
+                {filtered.map((place) => (
+                  <PlaceCard
+                    key={place.id}
+                    place={place}
+                    isPatient={isPatient}
+                    expanded={expandedId === place.id}
+                    onToggle={() => setExpandedId(expandedId === place.id ? null : place.id)}
+                  />
+                ))}
+              </div>
+            )}
+
+            {/* Guest upsell */}
+            {!isPatient && !loading && filtered.length > 0 && (
+              <div className="mt-4 p-3 rounded" style={{ background: 'rgba(0,245,212,0.05)', border: '1px solid rgba(0,245,212,0.18)', fontSize: '0.75rem' }}>
+                <p className="text-info font-monospace m-0">
+                  🔒 Sign in to unlock phone numbers, one-tap calling, Dentist & Lab search, Open Now filter, 15km radius, and Emergency Sheet export.
+                </p>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}

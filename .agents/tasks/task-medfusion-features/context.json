@@ -1,0 +1,30 @@
+{
+  "project_type": "Full-stack medical SaaS — Django REST API backend + React SPA frontend",
+  "language": "Python 3 (backend), JavaScript/JSX (frontend)",
+  "build_system": "Backend: Django manage.py (plain Python, .venv at d:\\MEDICAL_PROJECT\\medfusion-ai\\backend\\.venv). Frontend: Vite 8 (npm scripts in package.json). No monorepo tooling.",
+  "test_framework": "No automated test suite in repo. Verification is: (1) Django check/migrate, (2) Vite build, (3) manual smoke.",
+  "build_command": "Frontend: cd d:\\MEDICAL_PROJECT\\medfusion-ai\\frontend && node_modules\\.bin\\vite build",
+  "test_command": "Backend check: cd d:\\MEDICAL_PROJECT\\medfusion-ai\\backend && .venv\\Scripts\\python.exe manage.py check 2>&1",
+  "verification_instructions": "1. cd d:\\MEDICAL_PROJECT\\medfusion-ai\\backend && .venv\\Scripts\\python.exe manage.py makemigrations 2>&1\n2. cd d:\\MEDICAL_PROJECT\\medfusion-ai\\backend && .venv\\Scripts\\python.exe manage.py migrate 2>&1\n3. cd d:\\MEDICAL_PROJECT\\medfusion-ai\\backend && .venv\\Scripts\\python.exe manage.py check 2>&1\n4. cd d:\\MEDICAL_PROJECT\\medfusion-ai\\frontend && node_modules\\.bin\\eslint src --ext .jsx,.js --max-warnings=0 2>&1\n5. cd d:\\MEDICAL_PROJECT\\medfusion-ai\\frontend && node_modules\\.bin\\vite build 2>&1",
+  "snapshot_or_generated_files": null,
+  "environment_constraints": "Windows PowerShell. Python venv at backend\\.venv\\Scripts\\python.exe. Recharts is NOT installed (not in package.json) — use pure SVG for charts. No Tailwind, no Bootstrap. Do not restart the dev server.",
+  "contribution_requirements": "Do NOT introduce new dependencies (no chart libs, no QR libs beyond the free image API). Do not rewrite existing architecture. Reuse glassmorphism CSS classes from index.css.",
+  "key_patterns": "1) All backend views use @api_view + @permission_classes decorators from DRF. 2) All views return JsonResponse (not DRF Response). 3) csrf_exempt on all mutation endpoints. 4) Frontend uses 'api' axios instance from src/services/api.js (baseURL=http://127.0.0.1:8000/api). 5) CSS uses CSS variables --theme-accent, --text-primary, etc defined in :root and .theme-* classes. 6) glassmorphism: .glass-card class. 7) Buttons: .btn-clinical.primary or plain button.primary. 8) Font: JetBrains Mono for .font-monospace, Outfit for main. 9) Models: report_data on PathologyReport is JSON string of [{name,value,unit}] array. 10) _predict_using_ml returns Optional[float] currently — must be changed to Optional[dict]. 11) run_prediction view currently stores factors nowhere — factors should be added to JsonResponse but NOT to PredictionRecord model.",
+  "relevant_files": [
+    "backend/medical/models.py",
+    "backend/medical/views.py",
+    "backend/medical/urls.py",
+    "backend/medical/services/ai_service.py",
+    "backend/medical/migrations/0005_pathologyreport_guest_email_and_more.py",
+    "frontend/src/App.jsx",
+    "frontend/src/index.css",
+    "frontend/src/services/api.js",
+    "frontend/src/pages/Profile.jsx",
+    "frontend/src/pages/profile/MedicalVault.jsx",
+    "frontend/src/pages/profile/ProfileIdentity.jsx",
+    "frontend/src/pages/dashboard/PatientDashboard.jsx",
+    "frontend/src/pages/dashboard/GuestDashboard.jsx",
+    "frontend/src/context/SidebarContext.jsx"
+  ],
+  "directory_structure": "backend/medical/ — Django app with models.py, views.py, urls.py, services/ai_service.py, services/llm_provider.py, ml_models/{heart_attack_rf,diabetes_rf,cancer_rf}.pkl, migrations/. frontend/src/ — App.jsx (router+navbar+sidebar), index.css (all styles), services/api.js, pages/{Profile,Upload,Dashboard,...}.jsx, pages/profile/{ProfileIdentity,MedicalVault,RiskAssessments,PillBox}.jsx, pages/dashboard/{PatientDashboard,GuestDashboard,DoctorDashboard}.jsx, components/{AIChatbot,InteractiveMap}.jsx, context/SidebarContext.jsx"
+}

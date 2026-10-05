@@ -1,0 +1,32 @@
+{
+  "id": "FEAT-004",
+  "type": "feat",
+  "description": "Frontend: Feature 5 (Multilingual + Voice Explanation) — create VoiceExplainer component and integrate into PatientDashboard, GuestDashboard, and MedicalVault. This is the last feature because it adds a new reusable component that gets dropped into existing result panels already modified in FEAT-002 and FEAT-003.",
+  "status": "pending",
+  "steps": [
+    "STEP 1 — Create frontend/src/components/VoiceExplainer.jsx. Props: text (string), label (string, optional). State: language ('en'|'ta'|'hi'), displayText (string, starts as text prop), translating (bool), speaking (bool). Render:\n  - Language selector: 3 buttons/tabs: 'EN' / 'தமிழ்' / 'हिंदी'. Active one highlighted with var(--theme-accent) border.\n  - 'Listen' button with speaker icon: calls window.speechSynthesis.speak(new SpeechSynthesisUtterance(displayText)) with lang set to locale map: {en: 'en-IN', ta: 'ta-IN', hi: 'hi-IN'}[language]. If window.speechSynthesis is undefined, show 'Voice not supported in this browser.'\n  - When language changes away from 'en': call POST /api/ai/explain/ with {text, language}. On response set displayText = response.data.explanation. Show loading spinner during translation. On error, keep displayText as original text.\n  - When language changes back to 'en': reset displayText to original text prop immediately.\n  - If speaking, show 'Stop' button that calls window.speechSynthesis.cancel().\n  - Container style: background rgba(255,255,255,0.03), border 1px solid rgba(255,255,255,0.08), border-radius 10px, padding 12px, margin-top 12px.\n  - Small disclaimer: 'Translation powered by Gemini AI. Medical values and medication names are preserved.'",
+    "STEP 2 — PatientDashboard.jsx: Import VoiceExplainer from '../../components/VoiceExplainer'. In the result panel, after the clinical_reasoning text display, add: <VoiceExplainer text={result.clinical_reasoning} label='Clinical Reasoning' />",
+    "STEP 3 — GuestDashboard.jsx: Same import and same addition in the result panel's clinical_reasoning section.",
+    "STEP 4 — MedicalVault.jsx: Import VoiceExplainer. In the pathology report expanded detail section, after parsedAnalysis.summary display, add: <VoiceExplainer text={parsedAnalysis.summary} label='Pathology Summary' />. Wrap in conditional: only show if parsedAnalysis.summary exists.",
+    "STEP 5 — Final full verification: run Django check and Vite build. Fix any remaining issues before marking complete."
+  ],
+  "acceptance_criteria": [
+    "VoiceExplainer.jsx created in frontend/src/components/",
+    "Language selector shows EN / தமிழ் / हिंदी buttons",
+    "Selecting Tamil or Hindi triggers POST /api/ai/explain/ and displays translated text",
+    "Listen button triggers browser TTS with correct locale",
+    "Stop button cancels speech synthesis",
+    "Graceful fallback message if speechSynthesis is unsupported",
+    "VoiceExplainer added below clinical_reasoning in PatientDashboard result panel",
+    "VoiceExplainer added below clinical_reasoning in GuestDashboard result panel",
+    "VoiceExplainer added below parsedAnalysis.summary in MedicalVault expanded pathology section",
+    "Django manage.py check reports 0 issues",
+    "Vite build succeeds with 0 errors"
+  ],
+  "verification": [
+    "cd d:\\MEDICAL_PROJECT\\medfusion-ai\\backend && .venv\\Scripts\\python.exe manage.py check 2>&1 (expect: System check identified no issues)",
+    "cd d:\\MEDICAL_PROJECT\\medfusion-ai\\frontend && node_modules\\.bin\\vite build 2>&1 (expect: built in X.Xs with no errors)"
+  ],
+  "blocked_reason": null,
+  "findings": ""
+}

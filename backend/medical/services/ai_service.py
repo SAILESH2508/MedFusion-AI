@@ -1,4 +1,4 @@
-import json
+﻿import json
 import logging
 import os
 from typing import Dict, Any, List, Optional
@@ -28,7 +28,7 @@ class AIService:
               "frequency": "e.g. Once daily, Twice daily, TID, QID",
               "frequency_number": 2,
               "timing": "Before food" or "After food" or "With food" (choose based on instructions; default to "After food" if not specified),
-              "times_of_day": ["morning", "night"] (use any combination of: "morning", "afternoon", "evening", "night" — must match frequency_number count),
+              "times_of_day": ["morning", "night"] (use any combination of: "morning", "afternoon", "evening", "night" â€” must match frequency_number count),
               "type": "e.g. Antibiotic, Antacid, Analgesic",
               "description": "Brief clinical purpose of this medicine"
             }
@@ -42,10 +42,10 @@ class AIService:
         Rules:
         - timing MUST be one of: "Before food", "After food", "With food"
         - times_of_day MUST be a list with exactly frequency_number elements chosen from: "morning", "afternoon", "evening", "night"
-        - If frequency is once daily → times_of_day has 1 item (typically "morning")
-        - If twice daily → ["morning", "night"]
-        - If three times daily (TID) → ["morning", "afternoon", "night"]
-        - If four times daily (QID) → ["morning", "afternoon", "evening", "night"]
+        - If frequency is once daily â†’ times_of_day has 1 item (typically "morning")
+        - If twice daily â†’ ["morning", "night"]
+        - If three times daily (TID) â†’ ["morning", "afternoon", "night"]
+        - If four times daily (QID) â†’ ["morning", "afternoon", "evening", "night"]
         - Return ONLY the JSON object. No markdown, no explanation.
         """
 
@@ -304,6 +304,10 @@ class AIService:
             res = self._parse_json(response_text)
             if not isinstance(res, dict) or "risk_score" not in res:
                 return self._get_fallback_prediction(disease_type, parameters, "Invalid prediction response format")
+            # Augment Gemini response with real ML feature importances
+            if 'factors' not in res or not res.get('factors'):
+                ml_result = self._predict_using_ml(disease_type, parameters)
+                res['factors'] = ml_result['factors'] if ml_result is not None else []
             return res
         except Exception as e:
             logger.error(f"Health Risk Prediction failed for {disease_type}: {e}")
@@ -317,9 +321,9 @@ class AIService:
         disease = disease_type.lower()
         
         # Try running real-time Machine Learning prediction via our trained Random Forest models
-        ml_score = self._predict_using_ml(disease_type, parameters)
-        risk_score = ml_score if ml_score is not None else 15.0
-        ml_active = ml_score is not None
+        ml_result = self._predict_using_ml(disease_type, parameters)
+        risk_score = ml_result['score'] if ml_result is not None else 15.0
+        ml_active = ml_result is not None
         
         # Extract common fields
         age = int(parameters.get("age", 35) or 35)
@@ -598,7 +602,7 @@ class AIService:
             ]
             
         if ml_active:
-            risk_score = ml_score
+            risk_score = ml_result['score']
             clinical_reasoning = (
                 f"[Trained Random Forest Machine Learning Model active. Calculated exact probability of {risk_score}% based on patient clinical parameters.] "
                 + clinical_reasoning
@@ -611,18 +615,20 @@ class AIService:
             "risk_level": "CRITICAL" if risk_score > 80 else ("HIGH" if risk_score > 55 else ("MODERATE" if risk_score > 30 else "LOW")),
             "clinical_reasoning": clinical_reasoning,
             "remedies": remedies,
+            "factors": ml_result['factors'] if ml_result is not None else [],
             "note": "Calculated via MedFusion Machine Learning (Random Forest) Diagnostics Core.",
             "error_detail": error_msg
         }
 
-    def _predict_using_ml(self, disease_type: str, parameters: Dict[str, Any]) -> Optional[float]:
+    def _predict_using_ml(self, disease_type: str, parameters: Dict[str, Any]) -> Optional[Dict[str, Any]]:
+        """Run the trained Random Forest model and return {score, factors} or None on failure."""
         try:
             import pickle
             import numpy as np
-            
+
             disease = disease_type.lower()
             model_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'ml_models')
-            
+
             age = int(parameters.get("age", 35) or 35)
             gender_val = 1 if str(parameters.get("gender", "M")).upper() == "F" else 0
             family_hist_val = parameters.get("family_history", "no")
@@ -633,13 +639,12 @@ class AIService:
                 model_path = os.path.join(model_dir, 'heart_attack_rf.pkl')
                 if not os.path.exists(model_path):
                     return None
-                
-                # Input features: age, gender, systolic_bp, diastolic_bp, cholesterol, max_heart_rate, chest_pain, exercise_angina, fasting_sugar, shortness_of_breath, left_arm_pain
+
                 systolic_bp = float(parameters.get("systolic_bp", 120) or 120)
                 diastolic_bp = float(parameters.get("diastolic_bp", 80) or 80)
                 cholesterol = float(parameters.get("cholesterol", 180) or 180)
                 max_heart_rate = float(parameters.get("max_heart_rate", 150) or 150)
-                
+
                 cp_str = str(parameters.get("chest_pain", "none")).lower()
                 if "typical_angina" in cp_str:
                     cp_val = 1
@@ -649,83 +654,120 @@ class AIService:
                     cp_val = 3
                 else:
                     cp_val = 0
-                    
+
                 exercise_angina = 1 if parameters.get("exercise_angina", "no") == "yes" else 0
                 fasting_sugar = 1 if parameters.get("fasting_sugar", "no") == "yes" else 0
-                
+
                 symptoms = parameters.get("symptoms", [])
                 shortness_of_breath = 1 if "shortness_of_breath" in symptoms else 0
                 left_arm_pain = 1 if "left_arm_pain" in symptoms else 0
-                
-                features = np.array([[
-                    age, gender_val, systolic_bp, diastolic_bp, cholesterol, max_heart_rate, 
+
+                feature_names = [
+                    'Age', 'Gender', 'Systolic BP', 'Diastolic BP', 'Cholesterol',
+                    'Max Heart Rate', 'Chest Pain', 'Exercise Angina', 'Fasting Sugar',
+                    'Shortness of Breath', 'Left Arm Pain'
+                ]
+                feature_values = [
+                    age, gender_val, systolic_bp, diastolic_bp, cholesterol, max_heart_rate,
                     cp_val, exercise_angina, fasting_sugar, shortness_of_breath, left_arm_pain
-                ]])
-                
-                with open(model_path, 'rb') as f:
-                    model = pickle.load(f)
-                score = float(model.predict(features)[0])
-                return round(score, 1)
+                ]
+                display_values = [
+                    age, parameters.get("gender", "M"), systolic_bp, diastolic_bp, cholesterol,
+                    max_heart_rate, parameters.get("chest_pain", "none"),
+                    parameters.get("exercise_angina", "no"), parameters.get("fasting_sugar", "no"),
+                    shortness_of_breath, left_arm_pain
+                ]
 
             elif "diabetes" in disease or "diabetic" in disease:
                 model_path = os.path.join(model_dir, 'diabetes_rf.pkl')
                 if not os.path.exists(model_path):
                     return None
-                
-                # Input features: age, gender, glucose, hba1c, bmi, hypertension, heart_disease, family_history, thirst, urination, blurry_vision, sores
+
                 glucose = float(parameters.get("glucose", 90) or 90)
                 hba1c = float(parameters.get("hba1c", 5.0) or 5.0)
                 bmi = float(parameters.get("bmi", 22.0) or 22.0)
                 hypertension = 1 if parameters.get("hypertension", "no") == "yes" else 0
                 heart_disease = 1 if parameters.get("heart_disease_history", "no") == "yes" else 0
-                
+
                 symptoms = parameters.get("symptoms", [])
                 thirst = 1 if "excessive_thirst" in symptoms else 0
                 urination = 1 if "frequent_urination" in symptoms else 0
                 blurry = 1 if "blurry_vision" in symptoms else 0
                 sores = 1 if "slow_healing_sores" in symptoms else 0
-                
-                features = np.array([[
-                    age, gender_val, glucose, hba1c, bmi, hypertension, heart_disease, 
+
+                feature_names = [
+                    'Age', 'Gender', 'Glucose', 'HbA1c', 'BMI', 'Hypertension',
+                    'Heart Disease', 'Family History', 'Excessive Thirst',
+                    'Frequent Urination', 'Blurry Vision', 'Slow Healing Sores'
+                ]
+                feature_values = [
+                    age, gender_val, glucose, hba1c, bmi, hypertension, heart_disease,
                     family_hist, thirst, urination, blurry, sores
-                ]])
-                
-                with open(model_path, 'rb') as f:
-                    model = pickle.load(f)
-                score = float(model.predict(features)[0])
-                return round(score, 1)
+                ]
+                display_values = [
+                    age, parameters.get("gender", "M"), glucose, hba1c, bmi,
+                    parameters.get("hypertension", "no"), parameters.get("heart_disease_history", "no"),
+                    parameters.get("family_history", "no"), thirst, urination, blurry, sores
+                ]
 
             elif "cancer" in disease or "oncological" in disease:
                 model_path = os.path.join(model_dir, 'cancer_rf.pkl')
                 if not os.path.exists(model_path):
                     return None
-                
-                # Input features: age, gender, family_history, smoking, alcohol, exposure, weight_loss, cough, fatigue, mole_changes, lumps
+
                 alcohol = 1 if parameters.get("alcohol", "no") == "yes" else 0
                 exposure = 1 if parameters.get("exposure", "no") == "yes" else 0
-                
+
                 symptoms = parameters.get("symptoms", [])
                 weight_loss = 1 if "unexplained_weight_loss" in symptoms else 0
                 cough = 1 if "persistent_cough" in symptoms else 0
                 fatigue = 1 if "persistent_fatigue" in symptoms else 0
                 mole_changes = 1 if "skin_mole_changes" in symptoms else 0
                 lumps = 1 if "unusual_lumps" in symptoms else 0
-                
-                features = np.array([[
-                    age, gender_val, family_hist, smoking_val, alcohol, exposure, 
+
+                feature_names = [
+                    'Age', 'Gender', 'Family History', 'Smoking', 'Alcohol',
+                    'Toxin Exposure', 'Weight Loss', 'Persistent Cough',
+                    'Fatigue', 'Skin/Mole Changes', 'Unusual Lumps'
+                ]
+                feature_values = [
+                    age, gender_val, family_hist, smoking_val, alcohol, exposure,
                     weight_loss, cough, fatigue, mole_changes, lumps
-                ]])
-                
-                with open(model_path, 'rb') as f:
-                    model = pickle.load(f)
-                score = float(model.predict(features)[0])
-                return round(score, 1)
-                
-            return None
+                ]
+                display_values = [
+                    age, parameters.get("gender", "M"), parameters.get("family_history", "no"),
+                    parameters.get("smoking", "no"), parameters.get("alcohol", "no"),
+                    parameters.get("exposure", "no"), weight_loss, cough, fatigue, mole_changes, lumps
+                ]
+
+            else:
+                return None
+
+            features = np.array([feature_values])
+            with open(model_path, 'rb') as f:
+                model = pickle.load(f)
+            score = float(model.predict(features)[0])
+
+            # Extract feature importances from the trained Random Forest
+            importances = model.feature_importances_
+            factors = sorted(
+                [
+                    {
+                        "feature": feature_names[i],
+                        "importance": round(float(importances[i]), 4),
+                        "value": display_values[i],
+                    }
+                    for i in range(len(feature_names))
+                ],
+                key=lambda x: x["importance"],
+                reverse=True,
+            )[:5]
+
+            return {"score": round(score, 1), "factors": factors}
+
         except Exception as e:
             logger.error(f"Error executing ML inference model: {e}")
             return None
-
 
 ai_service = AIService()
 

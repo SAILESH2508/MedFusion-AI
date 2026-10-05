@@ -1,0 +1,31 @@
+{
+  "project_type": "Full-stack medical app: Django 5 REST API backend + React 19 Vite SPA frontend (monorepo at d:\\MEDICAL_PROJECT\\medfusion-ai)",
+  "language": "Python (backend), JavaScript/JSX (frontend)",
+  "build_system": "Backend: Django manage.py (venv at backend\\.venv). Frontend: Vite 8 via npm scripts. NO Tailwind, NO Bootstrap — custom CSS only.",
+  "test_framework": "No automated test suite configured. Verification = Django system check + Vite production build.",
+  "build_command": "Frontend: cd d:\\MEDICAL_PROJECT\\medfusion-ai\\frontend && node_modules\\.bin\\vite build 2>&1",
+  "test_command": "Backend check: cd d:\\MEDICAL_PROJECT\\medfusion-ai\\backend && .venv\\Scripts\\python.exe manage.py check 2>&1",
+  "verification_instructions": "1. cd d:\\MEDICAL_PROJECT\\medfusion-ai\\backend && .venv\\Scripts\\python.exe manage.py makemigrations 2>&1\n2. cd d:\\MEDICAL_PROJECT\\medfusion-ai\\backend && .venv\\Scripts\\python.exe manage.py migrate 2>&1\n3. cd d:\\MEDICAL_PROJECT\\medfusion-ai\\backend && .venv\\Scripts\\python.exe manage.py check 2>&1\n4. cd d:\\MEDICAL_PROJECT\\medfusion-ai\\frontend && node_modules\\.bin\\vite build 2>&1\nExpected: Django check shows 0 issues, Vite build completes without errors.",
+  "snapshot_or_generated_files": null,
+  "environment_constraints": "Windows PowerShell. Python venv: d:\\MEDICAL_PROJECT\\medfusion-ai\\backend\\.venv\\Scripts\\python.exe. Recharts is NOT installed (not in package.json) — use pure SVG charts. No new npm packages or pip packages allowed. SQLite database.",
+  "contribution_requirements": "Do NOT rewrite from scratch. Reuse existing architecture, models, components, and CSS classes. No Tailwind, no Bootstrap, no new frameworks, no LangChain, no new AI providers. Custom CSS glassmorphism system: .glass-card, .btn-primary, .font-monospace, .text-theme-accent, etc.",
+  "key_patterns": "Backend views: @api_view + @permission_classes + @csrf_exempt decorators. Sync Django with asyncio.run() wrapper called run_async(). All responses are JsonResponse. URL patterns use re_path with r'^.../?$'. Frontend: axios `api` instance from services/api.js at base http://127.0.0.1:8000/api. Inline styles match existing glassmorphism: background rgba(255,255,255,0.04), border rgba(255,255,255,0.1). Patient data fetched via /api/telemetry/emergency/ (requires JWT). Pathology data: PathologyReport.report_data is JSON list of {name, value, unit}. ML models loaded with pickle from backend/medical/ml_models/{heart_attack_rf.pkl,diabetes_rf.pkl,cancer_rf.pkl}.",
+  "relevant_files": [
+    "backend/medical/models.py",
+    "backend/medical/views.py",
+    "backend/medical/urls.py",
+    "backend/medical/services/ai_service.py",
+    "backend/medical/services/llm_provider.py",
+    "frontend/src/App.jsx",
+    "frontend/src/index.css",
+    "frontend/src/services/api.js",
+    "frontend/src/pages/Profile.jsx",
+    "frontend/src/pages/profile/MedicalVault.jsx",
+    "frontend/src/pages/profile/ProfileIdentity.jsx",
+    "frontend/src/pages/dashboard/PatientDashboard.jsx",
+    "frontend/src/pages/dashboard/GuestDashboard.jsx",
+    "frontend/src/context/SidebarContext.jsx",
+    "frontend/package.json"
+  ],
+  "directory_structure": "d:\\MEDICAL_PROJECT\\medfusion-ai\\ — project root\n  backend/ — Django project\n    medical/ — main app\n      models.py — User, Patient, Prescription, PathologyReport, PredictionRecord\n      views.py — all API view functions\n      urls.py — URL routing (all under /api/)\n      services/ai_service.py — AIService class with _predict_using_ml, predict_health_risk, analyze_pathology\n      services/llm_provider.py — LLMProvider wrapping Gemini/OpenAI\n      ml_models/ — heart_attack_rf.pkl, diabetes_rf.pkl, cancer_rf.pkl\n      migrations/ — latest is 0005_...\n    .venv/ — Python virtualenv\n  frontend/ — Vite React app\n    src/\n      App.jsx — Router + Navbar + Sidebar components\n      index.css — ALL global styles, glassmorphism, CSS variables in :root\n      context/SidebarContext.jsx — simple createContext, no ThemeContext yet\n      services/api.js — axios instance with JWT interceptor\n      pages/\n        Profile.jsx — tab-based profile page (identity/vault/adherence tabs)\n        profile/ProfileIdentity.jsx — left: emergency card smartcard; right: demographics grid\n        profile/MedicalVault.jsx — archive list of prescriptions + pathology reports\n        profile/RiskAssessments.jsx — prediction history\n        profile/PillBox.jsx — medication adherence tracker\n        dashboard/PatientDashboard.jsx — disease prediction forms + result panel\n        dashboard/GuestDashboard.jsx — same as PatientDashboard but for unauthenticated users"
+}

@@ -1,6 +1,6 @@
 import React, { useState, useEffect, createContext, useCallback } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate, Link, useLocation } from 'react-router-dom';
-import { Activity, FileUp, Database, User, LogOut, Menu, X, Home, PanelLeft, Pill, Smile, Calendar, MessageSquare } from 'lucide-react';
+import { Activity, FileUp, Database, User, LogOut, Menu, X, Home, PanelLeft, Pill, Smile, Calendar, MessageSquare, MapPin, Sun, Moon } from 'lucide-react';
 import { AnimatePresence, motion } from 'framer-motion';
 
 // Pages
@@ -11,9 +11,12 @@ import GuestDashboard from './pages/dashboard/GuestDashboard';
 import Profile from './pages/Profile';
 import Auth from './pages/Auth';
 import Landing from './pages/Landing';
+import NearbyMap from './pages/NearbyMap';
+import AIChatbot from './components/AIChatbot';
 import { removeAuthToken } from './services/api';
 
 import { SidebarContext } from './context/SidebarContext';
+import { ThemeProvider, useTheme } from './context/ThemeContext';
 
 function App() {
   const getInitialUser = () => {
@@ -41,9 +44,11 @@ function App() {
   };
 
   return (
-    <Router>
-      <AppContent user={user} login={login} logout={logout} />
-    </Router>
+    <ThemeProvider>
+      <Router>
+        <AppContent user={user} login={login} logout={logout} />
+      </Router>
+    </ThemeProvider>
   );
 }
 
@@ -57,11 +62,17 @@ function RedirectToHomeAndOpenAuth({ openAuth }) {
 function AppContent({ user, login, logout }) {
   const location = useLocation();
   const isAuthPage = location.pathname.startsWith('/auth');
-  const isSidebarPage = location.pathname.includes('dashboard') || location.pathname.includes('upload') || (!!user && location.pathname.includes('profile'));
+  const isSidebarPage = location.pathname.includes('dashboard') || location.pathname.includes('upload') || location.pathname.includes('nearby') || (!!user && location.pathname.includes('profile'));
   
   const [sidebarContent, setSidebarContent] = useState(null);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
+
+  // ── Persistent map state — lifted here so navigating away doesn't reset it ──
+  const [mapLocation, setMapLocation] = useState(null);
+  const [mapPlaces, setMapPlaces]     = useState([]);
+  const [mapActiveTypes, setMapActiveTypes] = useState(['hospital', 'clinic', 'pharmacy']);
+  const [mapRadius, setMapRadius]     = useState(null); // null = will default inside NearbyMap based on user role
 
   const [navbarHealthScore, setNavbarHealthScore] = useState(() => {
     if (!user || user.role !== 'Patient') return null;
@@ -82,14 +93,16 @@ function AppContent({ user, login, logout }) {
 
     window.addEventListener('medfusion_health_score_updated', handleScoreUpdate);
     window.addEventListener('storage', handleScoreUpdate);
+    window.addEventListener('medfusion_auth_logout', logout);
     
     handleScoreUpdate();
 
     return () => {
       window.removeEventListener('medfusion_health_score_updated', handleScoreUpdate);
       window.removeEventListener('storage', handleScoreUpdate);
+      window.removeEventListener('medfusion_auth_logout', logout);
     };
-  }, [user]);
+  }, [user, logout]);
 
   const [isAuthOpen, setIsAuthOpen] = useState(false);
   const [authPortalType, setAuthPortalType] = useState('patient');
@@ -105,12 +118,6 @@ function AppContent({ user, login, logout }) {
     setIsAuthOpen(false);
     setAuthMessage('');
   }, []);
-
-  console.log('MedFusion Layout Debug:', {
-    pathname: location.pathname,
-    hasUser: !!user,
-    isSidebarPage: isSidebarPage
-  });
 
   return (
     <SidebarContext.Provider value={{ sidebarContent, setSidebarContent }}>
@@ -132,6 +139,19 @@ function AppContent({ user, login, logout }) {
                 
                 <Route path="/dashboard" element={user ? <Dashboard user={user} openAuth={openAuth} /> : <GuestDashboard openAuth={openAuth} />} />
                 <Route path="/upload" element={user ? <Upload user={user} /> : <GuestUpload openAuth={openAuth} />} />
+                <Route path="/nearby" element={
+                  <NearbyMap
+                    user={user}
+                    persistedLocation={mapLocation}
+                    setPersistedLocation={setMapLocation}
+                    persistedPlaces={mapPlaces}
+                    setPersistedPlaces={setMapPlaces}
+                    persistedActiveTypes={mapActiveTypes}
+                    setPersistedActiveTypes={setMapActiveTypes}
+                    persistedRadius={mapRadius}
+                    setPersistedRadius={setMapRadius}
+                  />
+                } />
                 <Route path="/vault" element={<Navigate to="/profile" />} />
                 <Route path="/profile" element={user ? <Profile user={user} onUserUpdate={login} /> : <RedirectToHomeAndOpenAuth openAuth={openAuth} />} />
                 
@@ -152,6 +172,9 @@ function AppContent({ user, login, logout }) {
           </div>
         </div>
       )}
+
+      {/* Global AI Chatbot — available on all pages */}
+      {!isAuthPage && <AIChatbot user={user} />}
     </SidebarContext.Provider>
   );
 }
@@ -270,6 +293,7 @@ function SidebarLink({ to, icon, label, active }) {
 function Navbar({ user, logout, toggleSidebar, isSidebarPage, openAuth, navbarHealthScore }) {
   const [isOpen, setIsOpen] = useState(false);
   const isDoctor = user && user.role === 'Doctor';
+  const { theme, toggleTheme } = useTheme();
 
   return (
     <nav className="border-bottom border-white-10 py-4 bg-glass backdrop-blur w-100">
@@ -294,18 +318,21 @@ function Navbar({ user, logout, toggleSidebar, isSidebarPage, openAuth, navbarHe
             <>
               <NavLink to="/dashboard" icon={<Activity size={18} />} label="Patient Registry" />
               <NavLink to="/upload" icon={<FileUp size={18} />} label="Clinical Ingestion" />
+              <NavLink to="/nearby" icon={<MapPin size={18} />} label="Nearby Facilities" />
             </>
           )}
           {user && user.role === 'Patient' && (
             <>
               <NavLink to="/dashboard" icon={<Activity size={18} />} label="AI Health Check" />
               <NavLink to="/upload" icon={<FileUp size={18} />} label="AI Report Scanner" />
+              <NavLink to="/nearby" icon={<MapPin size={18} />} label="Nearby Facilities" />
             </>
           )}
           {!user && (
             <>
               <NavLink to="/dashboard" icon={<Activity size={18} />} label="AI Health Check" />
               <NavLink to="/upload" icon={<FileUp size={18} />} label="AI Report Scanner" />
+              <NavLink to="/nearby" icon={<MapPin size={18} />} label="Nearby" />
             </>
           )}
           {user ? (
@@ -328,6 +355,14 @@ function Navbar({ user, logout, toggleSidebar, isSidebarPage, openAuth, navbarHe
               Login
             </button>
           )}
+          <button
+            onClick={toggleTheme}
+            className="btn-icon p-2 border-0 bg-transparent text-white opacity-70 hover-opacity-100"
+            title={theme === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
+            aria-label={theme === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
+          >
+            {theme === 'dark' ? <Sun size={20} /> : <Moon size={20} />}
+          </button>
         </div>
 
         {/* Mobile menu toggle */}
@@ -351,18 +386,21 @@ function Navbar({ user, logout, toggleSidebar, isSidebarPage, openAuth, navbarHe
                   <>
                     <MobileNavLink to="/dashboard" label="Patient Registry" onClick={() => setIsOpen(false)} />
                     <MobileNavLink to="/upload" label="Clinical Ingestion" onClick={() => setIsOpen(false)} />
+                    <MobileNavLink to="/nearby" label="Nearby Facilities" onClick={() => setIsOpen(false)} />
                   </>
                 )}
                 {user && user.role === 'Patient' && (
                   <>
                     <MobileNavLink to="/dashboard" label="AI Health Check" onClick={() => setIsOpen(false)} />
                     <MobileNavLink to="/upload" label="AI Report Scanner" onClick={() => setIsOpen(false)} />
+                    <MobileNavLink to="/nearby" label="Nearby Facilities" onClick={() => setIsOpen(false)} />
                   </>
                 )}
                 {!user && (
                   <>
                     <MobileNavLink to="/dashboard" label="AI Health Check" onClick={() => setIsOpen(false)} />
                     <MobileNavLink to="/upload" label="AI Report Scanner" onClick={() => setIsOpen(false)} />
+                    <MobileNavLink to="/nearby" label="Nearby" onClick={() => setIsOpen(false)} />
                   </>
                 )}
                 {user ? (
@@ -381,6 +419,15 @@ function Navbar({ user, logout, toggleSidebar, isSidebarPage, openAuth, navbarHe
                       Login
                     </button>
                 )}
+                <button
+                  onClick={toggleTheme}
+                  className="btn-icon p-2 border-0 bg-transparent text-white opacity-70 mt-2"
+                  title={theme === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
+                  aria-label={theme === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
+                >
+                  {theme === 'dark' ? <Sun size={20} /> : <Moon size={20} />}
+                  <span className="ms-2" style={{ fontSize: '0.9rem' }}>{theme === 'dark' ? 'Light Mode' : 'Dark Mode'}</span>
+                </button>
              </div>
           </motion.div>
         )}

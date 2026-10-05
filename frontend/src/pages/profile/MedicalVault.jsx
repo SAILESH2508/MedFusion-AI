@@ -45,17 +45,27 @@ function MedicalVault({
             const isExpanded = expandedId === recKey;
 
             // For prescriptions:
-            const parsedData = typeof record.extracted_data === 'string'
-              ? JSON.parse(record.extracted_data || '{}')
-              : (record.extracted_data || {});
+            let parsedData = {};
+            try {
+              parsedData = typeof record.extracted_data === 'string'
+                ? JSON.parse(record.extracted_data || '{}')
+                : (record.extracted_data || {});
+            } catch (e) { parsedData = {}; }
 
             // For pathology reports:
-            const parsedReportData = typeof record.report_data === 'string'
-              ? JSON.parse(record.report_data || '[]')
-              : (record.report_data || []);
-            const parsedAnalysis = typeof record.analysis === 'string'
-              ? JSON.parse(record.analysis || '{}')
-              : (record.analysis || {});
+            let parsedReportData = [];
+            try {
+              parsedReportData = typeof record.report_data === 'string'
+                ? JSON.parse(record.report_data || '[]')
+                : (record.report_data || []);
+            } catch (e) { parsedReportData = []; }
+
+            let parsedAnalysis = {};
+            try {
+              parsedAnalysis = typeof record.analysis === 'string'
+                ? JSON.parse(record.analysis || '{}')
+                : (record.analysis || {});
+            } catch (e) { parsedAnalysis = {}; }
 
             return (
               <div key={recKey} className="vault-record-card font-monospace hover-border-accent" style={{ fontSize: '0.88rem' }}>
@@ -150,7 +160,18 @@ function MedicalVault({
                               return true;
                             });
                             return uniqueBiomarkers.map((b, idx) => {
-                              const isAbnormal = b.value > 100 || b.value < 70;
+                              const nameLower = (b.name || '').toLowerCase();
+                              const val = parseFloat(b.value);
+                              let isAbnormal = false;
+                              if (!isNaN(val)) {
+                                if (nameLower.includes('glucose') || nameLower.includes('fbs')) isAbnormal = val > 100 || val < 70;
+                                else if (nameLower.includes('hba1c')) isAbnormal = val >= 5.7;
+                                else if (nameLower.includes('cholesterol')) isAbnormal = val >= 200;
+                                else if (nameLower.includes('hemoglobin') || (nameLower.includes('hb') && !nameLower.includes('hba'))) isAbnormal = val > 17.5 || val < 11.5;
+                                else if (nameLower.includes('wbc') || nameLower.includes('white blood')) isAbnormal = val > 11000 || val < 4000;
+                                else if (nameLower.includes('rbc') || nameLower.includes('red blood')) isAbnormal = val > 6.1 || val < 4.0;
+                                else if (nameLower.includes('platelet')) isAbnormal = val > 450000 || val < 150000;
+                              }
                             return (
                               <div className="col-12 col-xl-6 d-flex" key={idx}>
                                 <div className="inner-vault-card d-flex flex-column justify-content-between gap-2 w-100">

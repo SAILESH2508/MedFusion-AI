@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 
 function Landing() {
@@ -8,9 +9,9 @@ function Landing() {
   ];
 
   return (
-    <div className="reveal" style={{ marginTop: '-1.25rem', paddingBottom: '32px', maxHeight: 'calc(100vh - 80px)', overflow: 'hidden' }}>
-      
-      {/* Hero Header Panel - Redesigned with premium clinical copy */}
+    <div className="reveal" style={{ paddingBottom: '32px' }}>
+
+      {/* Hero Header Panel */}
       <div className="glass-card text-center p-5 mb-4" style={{ 
         borderRadius: '16px', 
         border: '1px solid rgba(255, 255, 255, 0.09)', 
@@ -20,14 +21,36 @@ function Landing() {
         <h2 className="fw-bolder mb-3 text-white" style={{ fontSize: '2.5rem', lineHeight: '1.25', letterSpacing: '-0.03em' }}>
           Welcome to MedFusion AI — <span style={{ background: 'linear-gradient(135deg, #00f5d4 0%, #00bfff 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', fontWeight: 800 }}>Next-Generation Health Intelligence</span>
         </h2>
-        
-        <p className="text-secondary mx-auto mb-0" style={{ maxWidth: '820px', fontSize: '1.08rem', lineHeight: '1.65', opacity: 0.9 }}>
-          Empower your healthcare journey with secure, real-time predictive analytics. MedFusion AI integrates clinical diagnostics, pathology scans, and biometric telemetry to deliver personalized disease risk assessments and custom daily wellness pathways.
+        <p className="text-secondary mx-auto mb-4" style={{ maxWidth: '820px', fontSize: '1.08rem', lineHeight: '1.65', opacity: 0.9 }}>
+          Empower your healthcare journey with secure, real-time predictive analytics. MedFusion AI integrates clinical diagnostics, pathology scans, and biometric telemetry to deliver personalised disease risk assessments and custom daily wellness pathways.
         </p>
+        <div className="d-flex justify-content-center align-items-center gap-3 flex-wrap mt-2">
+          <Link
+            to="/dashboard"
+            className="btn-clinical primary w-auto-override px-4 py-3 d-inline-flex align-items-center gap-2 font-monospace text-uppercase fw-bold text-decoration-none"
+            style={{ fontSize: '0.88rem', letterSpacing: '0.06em', borderRadius: '10px' }}
+          >
+            ⚡ Check My Health Risk
+          </Link>
+          <Link
+            to="/upload"
+            className="px-4 py-3 d-inline-flex align-items-center gap-2 font-monospace text-uppercase fw-bold text-decoration-none"
+            style={{
+              fontSize: '0.88rem', letterSpacing: '0.06em',
+              background: 'rgba(255,255,255,0.05)',
+              border: '1.5px solid rgba(255,255,255,0.18)',
+              color: 'rgba(255,255,255,0.85)',
+              borderRadius: '10px',
+              width: 'auto',
+            }}
+          >
+            🧬 Scan a Report
+          </Link>
+        </div>
       </div>
 
       {/* Feature Grid Panel */}
-      <div className="row g-4 mt-2">
+      <div className="row g-4 mt-4">
         {features.map((f, i) => {
           const cardThemes = ['theme-heart', 'theme-diabetes', 'theme-general'];
           return (

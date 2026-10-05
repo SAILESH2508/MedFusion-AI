@@ -1,0 +1,131 @@
+    def _predict_using_ml(self, disease_type: str, parameters: Dict[str, Any]) -> Optional[Dict[str, Any]]:
+        """Run the trained Random Forest model and return {score, factors} or None."""
+        try:
+            import pickle
+            import numpy as np
+
+            disease = disease_type.lower()
+            model_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'ml_models')
+
+            age = int(parameters.get("age", 35) or 35)
+            gender_val = 1 if str(parameters.get("gender", "M")).upper() == "F" else 0
+            family_hist_val = parameters.get("family_history", "no")
+            family_hist = 1 if family_hist_val in ["yes", "severe", "mild"] else 0
+            smoking_val = 1 if parameters.get("smoking", "no") == "yes" else 0
+
+            if "heart" in disease:
+                model_path = os.path.join(model_dir, 'heart_attack_rf.pkl')
+                if not os.path.exists(model_path):
+                    return None
+
+                systolic_bp = float(parameters.get("systolic_bp", 120) or 120)
+                diastolic_bp = float(parameters.get("diastolic_bp", 80) or 80)
+                cholesterol = float(parameters.get("cholesterol", 180) or 180)
+                max_heart_rate = float(parameters.get("max_heart_rate", 150) or 150)
+
+                cp_str = str(parameters.get("chest_pain", "none")).lower()
+                if "typical_angina" in cp_str:
+                    cp_val = 1
+                elif "atypical_angina" in cp_str:
+                    cp_val = 2
+                elif "non_anginal" in cp_str:
+                    cp_val = 3
+                else:
+                    cp_val = 0
+
+                exercise_angina = 1 if parameters.get("exercise_angina", "no") == "yes" else 0
+                fasting_sugar = 1 if parameters.get("fasting_sugar", "no") == "yes" else 0
+
+                symptoms = parameters.get("symptoms", [])
+                shortness_of_breath = 1 if "shortness_of_breath" in symptoms else 0
+                left_arm_pain = 1 if "left_arm_pain" in symptoms else 0
+
+                feature_names = [
+                    'Age', 'Gender', 'Systolic BP', 'Diastolic BP', 'Cholesterol',
+                    'Max Heart Rate', 'Chest Pain', 'Exercise Angina', 'Fasting Sugar',
+                    'Shortness of Breath', 'Left Arm Pain'
+                ]
+                feature_values = [
+                    age, gender_val, systolic_bp, diastolic_bp, cholesterol, max_heart_rate,
+                    cp_val, exercise_angina, fasting_sugar, shortness_of_breath, left_arm_pain
+                ]
+
+            elif "diabetes" in disease or "diabetic" in disease:
+                model_path = os.path.join(model_dir, 'diabetes_rf.pkl')
+                if not os.path.exists(model_path):
+                    return None
+
+                glucose = float(parameters.get("glucose", 90) or 90)
+                hba1c = float(parameters.get("hba1c", 5.0) or 5.0)
+                bmi = float(parameters.get("bmi", 22.0) or 22.0)
+                hypertension = 1 if parameters.get("hypertension", "no") == "yes" else 0
+                heart_disease = 1 if parameters.get("heart_disease_history", "no") == "yes" else 0
+
+                symptoms = parameters.get("symptoms", [])
+                thirst = 1 if "excessive_thirst" in symptoms else 0
+                urination = 1 if "frequent_urination" in symptoms else 0
+                blurry = 1 if "blurry_vision" in symptoms else 0
+                sores = 1 if "slow_healing_sores" in symptoms else 0
+
+                feature_names = [
+                    'Age', 'Gender', 'Glucose', 'HbA1c', 'BMI', 'Hypertension',
+                    'Heart Disease', 'Family History', 'Excessive Thirst',
+                    'Frequent Urination', 'Blurry Vision', 'Slow Healing Sores'
+                ]
+                feature_values = [
+                    age, gender_val, glucose, hba1c, bmi, hypertension, heart_disease,
+                    family_hist, thirst, urination, blurry, sores
+                ]
+
+            elif "cancer" in disease or "oncological" in disease:
+                model_path = os.path.join(model_dir, 'cancer_rf.pkl')
+                if not os.path.exists(model_path):
+                    return None
+
+                alcohol = 1 if parameters.get("alcohol", "no") == "yes" else 0
+                exposure = 1 if parameters.get("exposure", "no") == "yes" else 0
+
+                symptoms = parameters.get("symptoms", [])
+                weight_loss = 1 if "unexplained_weight_loss" in symptoms else 0
+                cough = 1 if "persistent_cough" in symptoms else 0
+                fatigue = 1 if "persistent_fatigue" in symptoms else 0
+                mole_changes = 1 if "skin_mole_changes" in symptoms else 0
+                lumps = 1 if "unusual_lumps" in symptoms else 0
+
+                feature_names = [
+                    'Age', 'Gender', 'Family History', 'Smoking', 'Alcohol',
+                    'Toxin Exposure', 'Weight Loss', 'Persistent Cough',
+                    'Fatigue', 'Skin/Mole Changes', 'Unusual Lumps'
+                ]
+                feature_values = [
+                    age, gender_val, family_hist, smoking_val, alcohol, exposure,
+                    weight_loss, cough, fatigue, mole_changes, lumps
+                ]
+
+            else:
+                return None
+
+            features = np.array([feature_values])
+
+            with open(model_path, 'rb') as f:
+                model = pickle.load(f)
+
+            score = float(model.predict(features)[0])
+
+            # Extract feature importances from the trained model
+            importances = model.feature_importances_
+            paired = sorted(
+                zip(feature_names, importances, feature_values),
+                key=lambda x: x[1],
+                reverse=True
+            )
+            factors = [
+                {"feature": name, "importance": round(float(imp), 4), "value": val}
+                for name, imp, val in paired[:5]
+            ]
+
+            return {"score": round(score, 1), "factors": factors}
+
+        except Exception as e:
+            logger.error(f"Error executing ML inference model: {e}")
+            return None

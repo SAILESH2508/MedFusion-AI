@@ -129,6 +129,17 @@ class PathologyReport(models.Model):
         }
 
 
+class EmergencyToken(models.Model):
+    patient = models.OneToOneField(Patient, on_delete=models.CASCADE, related_name='emergency_token')
+    token = models.CharField(max_length=64, unique=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    expires_at = models.DateTimeField(null=True, blank=True)
+    is_active = models.BooleanField(default=True)
+
+    def __str__(self):
+        return f"EmergencyToken for {self.patient} ({'active' if self.is_active else 'revoked'})"
+
+
 class PredictionRecord(models.Model):
     patient = models.ForeignKey(Patient, on_delete=models.CASCADE, null=True, blank=True, related_name='predictions')
     guest_email = models.EmailField(blank=True, null=True)

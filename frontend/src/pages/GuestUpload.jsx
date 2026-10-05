@@ -32,6 +32,19 @@ function GuestUpload({ openAuth }) {
   const [scanLog, setScanLog] = useState('');
   const [result, setResult] = useState(null);
   const [error, setError] = useState('');
+  const [isDragging, setIsDragging] = useState(false);
+
+  const handleDragOver = (e) => { e.preventDefault(); e.stopPropagation(); setIsDragging(true); };
+  const handleDragLeave = (e) => { e.preventDefault(); e.stopPropagation(); setIsDragging(false); };
+  const handleDrop = (e) => {
+    e.preventDefault(); e.stopPropagation(); setIsDragging(false);
+    const dropped = e.dataTransfer?.files?.[0];
+    if (!dropped) return;
+    const allowed = ['image/jpeg', 'image/png', 'image/jpg', 'application/pdf'];
+    if (!allowed.includes(dropped.type)) { setError('Unsupported file type. Please upload a JPG, PNG, or PDF.'); return; }
+    if (dropped.size > 16 * 1024 * 1024) { setError('File too large. Maximum size is 16MB.'); return; }
+    setError(''); setFile(dropped);
+  };
   
   // Guest Credentials State
   const [guestName, setGuestName] = useState('');
@@ -177,11 +190,18 @@ function GuestUpload({ openAuth }) {
     try {
       const formData = new FormData();
       formData.append('file', file);
-      if (guestEmail) {
-        formData.append('guest_email', guestEmail);
+
+      // Require guest email so the record can be retrieved later
+      if (!guestEmail.trim()) {
+        clearInterval(interval);
+        setLoading(false);
+        setError('Please enter your email address so we can link this record to you.');
+        return;
       }
-      if (guestName) {
-        formData.append('guest_name', guestName);
+
+      formData.append('guest_email', guestEmail.trim());
+      if (guestName.trim()) {
+        formData.append('guest_name', guestName.trim());
       }
       
       const endpoint = docType.includes('Rx') ? '/prescriptions/upload/' : '/pathology/analyze/';
@@ -349,8 +369,8 @@ function GuestUpload({ openAuth }) {
 
 
   return (
-    <div className="reveal px-1 py-1 theme-general">
-      <div className="row g-4 mt-2 flex-grow-1">
+    <div className="reveal px-1 theme-general">
+      <div className="row g-4 flex-grow-1">
         {/* ============================================================== */}
         {/* LEFT SIDEBAR PANEL: Scanner Ingestion Input Control */}
         {/* ============================================================== */}
@@ -389,16 +409,17 @@ function GuestUpload({ openAuth }) {
                     />
                   </div>
                   <div className="col-6">
-                    <label className="text-secondary mb-1" style={{ fontSize: '0.72rem' }}>Email Address (Key)</label>
+                    <label className="text-secondary mb-1" style={{ fontSize: '0.72rem' }}>Email Address <span style={{ color: 'var(--accent-red)' }}>*</span></label>
                     <input 
                       type="email" 
                       placeholder="e.g. john.doe@example.com"
+                      required
                       value={guestEmail}
                       onChange={(e) => setGuestEmail(e.target.value)}
                       style={{
                         width: '100%',
                         background: 'rgba(255, 255, 255, 0.04)',
-                        border: '1px solid rgba(255, 255, 255, 0.1)',
+                        border: `1px solid ${guestEmail.trim() ? 'rgba(0,245,212,0.3)' : 'rgba(255,255,255,0.1)'}`,
                         borderRadius: '6px',
                         color: 'white',
                         padding: '6px 10px',
@@ -413,7 +434,22 @@ function GuestUpload({ openAuth }) {
               <div 
                 className={`border border-2 border-dashed rounded p-4 text-center mt-3 mb-2 ${docType.includes('Rx') ? 'border-brand-blue hover-border-brand-blue-glow' : 'border-brand-orange hover-border-brand-orange-glow'} transition-all cursor-pointer position-relative overflow-hidden`}
                 onClick={() => document.getElementById('fileInput').click()}
-                style={{ minHeight: '280px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: 'rgba(255,255,255,0.02)' }}
+                onDragOver={handleDragOver}
+                onDragLeave={handleDragLeave}
+                onDrop={handleDrop}
+                style={{
+                  minHeight: '280px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+                  background: isDragging
+                    ? (docType.includes('Rx') ? 'rgba(0,210,255,0.08)' : 'rgba(255,143,0,0.08)')
+                    : 'rgba(255,255,255,0.02)',
+                  boxShadow: isDragging
+                    ? (docType.includes('Rx') ? '0 0 30px rgba(0,210,255,0.25)' : '0 0 30px rgba(255,143,0,0.25)')
+                    : 'none',
+                  borderColor: isDragging
+                    ? (docType.includes('Rx') ? 'rgba(0,210,255,0.8)' : 'rgba(255,143,0,0.8)')
+                    : undefined,
+                  transition: 'all 0.2s ease',
+                }}
               >
                 <div 
                   className="position-absolute w-100" 
@@ -431,7 +467,7 @@ function GuestUpload({ openAuth }) {
                   {file ? `Ingested: ${file.name.toUpperCase()}` : (docType.includes('Rx') ? 'DROP RX PRESCRIPTION HERE' : 'DROP PATHOLOGY LAB REPORT HERE')}
                 </span>
                 <span className="text-secondary d-block font-monospace mt-2" style={{ fontSize: '0.9rem', opacity: 0.85 }}>
-                  {docType.includes('Rx') ? 'Supports scanned prescription images or PDFs' : 'Supports blood chemistry or pathology sheets'}
+                  {isDragging ? 'Drop it here!' : (docType.includes('Rx') ? 'Supports scanned prescription images or PDFs' : 'Supports blood chemistry or pathology sheets')}
                 </span>
                 
                 <input 
