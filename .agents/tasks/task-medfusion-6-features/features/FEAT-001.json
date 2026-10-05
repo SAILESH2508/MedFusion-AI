@@ -2,7 +2,7 @@
   "id": "FEAT-001",
   "type": "feat",
   "description": "Backend: Add GET /api/pathology/trends/ endpoint + POST /api/predictions/simulate/ endpoint + POST /api/ai/explain/ endpoint. These are the pure backend additions needed before any frontend work. Frontend: Feature 6 (Light/Dark Theme) — ThemeContext + CSS variable conversion + Navbar toggle. Theme is first because it touches index.css and App.jsx globally and must be stable before other features add UI.",
-  "status": "pending",
+  "status": "completed",
   "steps": [
     "STEP 1 — Backend: Add EmergencyToken model to backend/medical/models.py. Add fields: patient (OneToOneField to Patient, CASCADE, related_name='emergency_token'), token (CharField max_length=64, unique=True), created_at (auto_now_add), expires_at (null=True blank=True DateTimeField), is_active (BooleanField default=True).",
     "STEP 2 — Backend migrations: cd d:\\MEDICAL_PROJECT\\medfusion-ai\\backend && .venv\\Scripts\\python.exe manage.py makemigrations && .venv\\Scripts\\python.exe manage.py migrate",
@@ -35,5 +35,5 @@
     "cd d:\\MEDICAL_PROJECT\\medfusion-ai\\frontend && node_modules\\.bin\\vite build 2>&1 (expect: built in X.Xs)"
   ],
   "blocked_reason": null,
-  "findings": ""
+  "findings": "Migration 0006_emergencytoken.py created (renamed from pre-existing 0006_knowledgechunk.py). _predict_using_ml now returns Optional[dict] with {score, factors} — 5 top features by importance from model.feature_importances_. All 6 new view functions added. URL patterns ordered correctly (trends before pathology/, simulate before predictions routes). ThemeContext uses localStorage key 'medfusion-theme', defaults 'dark'. data-theme attribute set on document.documentElement. Dark theme CSS variables match existing hardcoded values exactly."
 }
