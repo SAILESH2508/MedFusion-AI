@@ -1,16 +1,12 @@
-import React, { useState, useEffect, useCallback, useContext, useRef } from 'react';
+import React, { useState, useEffect, useCallback, useContext } from 'react';
 import {
   User,
   Activity,
   Database,
   Heart,
   FileText,
-  MessageSquare,
   Pill,
-  Calendar,
-  Smile,
   FileUp,
-  Edit3,
   Droplet,
   Scale,
   Ruler
@@ -26,31 +22,28 @@ import ProfileIdentity from './profile/ProfileIdentity';
 import MedicalVault from './profile/MedicalVault';
 import RiskAssessments from './profile/RiskAssessments';
 import PillBox from './profile/PillBox';
-import SymptomDiary from './profile/SymptomDiary';
-import Consultations from './profile/Consultations';
 
 
 function Profile({ user, onUserUpdate }) {
   const { setSidebarContent } = useContext(SidebarContext);
-  const chatEndRef = useRef(null);
 
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
   const [isEditing, setIsEditing] = useState(false);
   const [editData, setEditData] = useState({});
   const [saveLoading, setSaveLoading] = useState(false);
+  const [saveSuccess, setSaveSuccess] = useState('');
+  const [saveError, setSaveError] = useState('');
 
   const [searchParams] = useSearchParams();
   const tabParam = searchParams.get('tab');
   const [activeTabState, setActiveTabState] = useState('identity');
 
-  const activeTab = (tabParam && ['identity', 'vault', 'adherence', 'diary'].includes(tabParam))
+  const activeTab = (tabParam && ['identity', 'vault', 'adherence'].includes(tabParam))
     ? tabParam
-    : (tabParam === 'health_log' ? 'diary' : (tabParam === 'assessments' ? 'vault' : (tabParam === 'appointments' || tabParam === 'assistant' ? 'adherence' : activeTabState)));
+    : activeTabState;
 
-  const setActiveTab = (tabId) => {
-    setActiveTabState(tabId);
-  };
+  const setActiveTab = (tabId) => setActiveTabState(tabId);
 
   // Archives states
   const [history, setHistory] = useState([]);
@@ -61,28 +54,8 @@ function Profile({ user, onUserUpdate }) {
   const [loadingArchive, setLoadingArchive] = useState(false);
   const [expandedId, setExpandedId] = useState(null);
 
-  // Stats for doctors (preserved logic)
+  // Stats for doctors
   const [docStats, setDocStats] = useState({ patientCount: 0, rxCount: 0, pathCount: 0 });
-
-  // -------------------------------------------------------------
-  // DRUG SAFETY & INTERACTION STATE
-  // -------------------------------------------------------------
-  const [safetyReport, setSafetyReport] = useState(null);
-  const [safetyLoading, setSafetyLoading] = useState(false);
-  const [safetyError, setSafetyError] = useState('');
-
-  // -------------------------------------------------------------
-  // CLINICAL CHATBOT STATE
-  // -------------------------------------------------------------
-  const [chatMessage, setChatMessage] = useState('');
-  const [chatHistory, setChatHistory] = useState([
-    {
-      sender: 'assistant',
-      text: "Hello! I am your MedFusion Clinical AI Assistant. Feel free to list any symptoms you are experiencing, ask questions about your uploaded lab reports, or inquire about your active prescriptions. How can I help you today?",
-      timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false })
-    }
-  ]);
-  const [chatLoading, setChatLoading] = useState(false);
 
   // -------------------------------------------------------------
   // MEDICATION ADHERENCE TRACKER
@@ -150,110 +123,16 @@ function Profile({ user, onUserUpdate }) {
   };
 
   // -------------------------------------------------------------
-  // DAILY HEALTH LOG & SYMPTOM DIARY
+  // DRUG SAFETY ADVISOR
   // -------------------------------------------------------------
-  const [wellnessRating, setWellnessRating] = useState(8);
-  const [energyLevel, setEnergyLevel] = useState('High');
-  const [moodState, setMoodState] = useState('Good');
-  const [selectedSymptoms, setSelectedSymptoms] = useState({
-    headache: false,
-    fatigue: false,
-    cough: false,
-    fever: false,
-    dizziness: false,
-    chest_tightness: false
-  });
-  const [diaryNotes, setDiaryNotes] = useState('');
-  const [healthLogs, setHealthLogs] = useState(() => {
-    try {
-      const saved = localStorage.getItem(`medfusion_health_logs_${user?.id || 'guest'}`);
-      return saved ? JSON.parse(saved) : [];
-    } catch (e) {
-      return [];
-    }
-  });
-
-  const handleToggleDiarySymptom = (symptomKey) => {
-    setSelectedSymptoms(prev => ({ ...prev, [symptomKey]: !prev[symptomKey] }));
-  };
-
-  const handleSaveDiaryLog = (e) => {
-    e.preventDefault();
-    const activeSymptomsList = Object.keys(selectedSymptoms).filter(k => selectedSymptoms[k]);
-    const newLog = {
-      id: `log-${Date.now()}`,
-      date: new Date().toLocaleDateString(),
-      timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false }),
-      wellnessRating,
-      energyLevel,
-      moodState,
-      symptoms: activeSymptomsList,
-      notes: diaryNotes
-    };
-    const updatedLogs = [newLog, ...healthLogs];
-    setHealthLogs(updatedLogs);
-    localStorage.setItem(`medfusion_health_logs_${user?.id || 'guest'}`, JSON.stringify(updatedLogs));
-
-    // Reset inputs
-    setWellnessRating(8);
-    setEnergyLevel('High');
-    setMoodState('Good');
-    setSelectedSymptoms({
-      headache: false,
-      fatigue: false,
-      cough: false,
-      fever: false,
-      dizziness: false,
-      chest_tightness: false
-    });
-    setDiaryNotes('');
-    alert("Daily wellness check-in logged successfully!");
-  };
+  const [safetyLoading, setSafetyLoading] = useState(false);
+  const [safetyError, setSafetyError] = useState('');
+  const [safetyReport, setSafetyReport] = useState(null);
 
   // -------------------------------------------------------------
-  // VIRTUAL APPOINTMENTS SCHEDULER
+  // CONSULTATIONS / APPOINTMENT BOOKING
   // -------------------------------------------------------------
-  const [upcomingAppointments, setUpcomingAppointments] = useState(() => {
-    try {
-      const saved = localStorage.getItem(`medfusion_appointments_${user?.id || 'guest'}`);
-      return saved ? JSON.parse(saved) : [];
-    } catch (e) {
-      return [];
-    }
-  });
-  const [selectedDoctor, setSelectedDoctor] = useState(null);
-  const [appointmentDate, setAppointmentDate] = useState('');
-  const [appointmentTime, setAppointmentTime] = useState('09:00 AM');
-  const [appointmentReason, setAppointmentReason] = useState('');
-  const [showBookingModal, setShowBookingModal] = useState(false);
-
-  const handleBookAppointment = (e) => {
-    e.preventDefault();
-    if (!selectedDoctor || !appointmentDate || !appointmentTime || !appointmentReason.trim()) {
-      alert("Please enter all details to book a consultation.");
-      return;
-    }
-    const newAppointment = {
-      id: `app-${Date.now()}`,
-      doctor: selectedDoctor,
-      date: appointmentDate,
-      time: appointmentTime,
-      reason: appointmentReason,
-      status: 'scheduled',
-      isUpcoming: true
-    };
-    const updated = [newAppointment, ...upcomingAppointments];
-    setUpcomingAppointments(updated);
-    localStorage.setItem(`medfusion_appointments_${user?.id || 'guest'}`, JSON.stringify(updated));
-
-    // Reset states
-    setShowBookingModal(false);
-    setSelectedDoctor(null);
-    setAppointmentDate('');
-    setAppointmentTime('09:00 AM');
-    setAppointmentReason('');
-    alert(`Appointment successfully scheduled with ${newAppointment.doctor.name}!`);
-  };
+  // Removed: upcomingAppointments, selectedDoctor, appointmentDate, appointmentTime, appointmentReason, showBookingModal, handleBookAppointment
 
   // -------------------------------------------------------------
   // DATA SYNC AND LOADING LOGIC
@@ -363,13 +242,6 @@ function Profile({ user, onUserUpdate }) {
     loadAll();
   }, [user, fetchProfile, fetchHistory, fetchArchive]);
 
-  // Scroll chat to bottom
-  useEffect(() => {
-    if (chatEndRef.current) {
-      chatEndRef.current.scrollIntoView({ behavior: 'smooth' });
-    }
-  }, [chatHistory, chatLoading]);
-
   // Sidebar controls
   useEffect(() => {
     if (user && user.role === 'Doctor') {
@@ -422,14 +294,12 @@ function Profile({ user, onUserUpdate }) {
               {[
                 { id: 'identity', label: 'Profile & Vitals', icon: <User size={18} /> },
                 { id: 'vault', label: 'Medical Vault & History', icon: <FileUp size={18} /> },
-                { id: 'adherence', label: 'Pill Box & Consultations', icon: <Pill size={18} /> },
-                { id: 'diary', label: 'Symptom Diary Logs', icon: <Smile size={18} /> }
+                { id: 'adherence', label: 'Pill Box', icon: <Pill size={18} /> }
               ].map((tab) => {
                 const tabThemeClasses = {
                   identity: 'theme-general-active',
                   vault: 'theme-cancer-active',
-                  adherence: 'theme-diabetes-active',
-                  diary: 'theme-heart-active'
+                  adherence: 'theme-diabetes-active'
                 };
                 return (
                   <div
@@ -470,9 +340,14 @@ function Profile({ user, onUserUpdate }) {
     return { label: 'Obese', color: 'text-danger' };
   };
 
-  const calculateHealthScore = () => {
+  const calculateHealthScore = useCallback(() => {
     let score = 100;
-    const bmi = calculateBmi();
+    // Inline BMI calculation so useCallback deps are fully satisfied
+    let bmi = null;
+    if (profile?.weight && profile?.height) {
+      const hMet = profile.height / 100;
+      bmi = parseFloat((profile.weight / (hMet * hMet)).toFixed(1));
+    }
     if (bmi) {
       if (bmi < 18.5 || bmi >= 25) score -= 6;
       if (bmi >= 30) score -= 10;
@@ -487,7 +362,7 @@ function Profile({ user, onUserUpdate }) {
       score -= Math.min(15, highRisks.length * 4);
     }
     return Math.max(45, Math.min(100, score));
-  };
+  }, [profile, history]);
 
   useEffect(() => {
     const userId = user?.id || user?.user_id || user?.pk || 'guest';
@@ -498,32 +373,41 @@ function Profile({ user, onUserUpdate }) {
         window.dispatchEvent(new Event('medfusion_health_score_updated'));
       }
     }
-  }, [profile, history, user]);
+  }, [profile, history, user, calculateHealthScore]);
 
   // -------------------------------------------------------------
   // PROFILE UPDATE ACTION
   // -------------------------------------------------------------
   const handleSave = async () => {
     setSaveLoading(true);
+    setSaveError('');
+    setSaveSuccess('');
     try {
       const userId = user.id || user.user_id || user.pk;
       if (!userId) {
-        alert("User ID not found. Please try logging in again.");
+        setSaveError('User ID not found. Please try logging in again.');
+        setSaveLoading(false);
         return;
       }
       const response = await api.post('/profile/update/', {
         patient_id: userId,
         ...editData
       });
-      if (response.data && response.data.user && onUserUpdate) {
-        onUserUpdate(response.data.user);
+      if (response.data && response.data.user) {
+        // Sync updated user to parent App state and localStorage
+        const updatedUser = response.data.user;
+        localStorage.setItem('medfusion_user', JSON.stringify(updatedUser));
+        if (onUserUpdate) onUserUpdate(updatedUser);
       }
       setIsEditing(false);
-      fetchProfile();
-      alert("Profile details updated successfully!");
+      await fetchProfile();
+      setSaveSuccess('Profile details updated successfully!');
+      setTimeout(() => setSaveSuccess(''), 4000);
     } catch (err) {
-      console.error("Failed to update profile:", err);
-      alert("Failed to update profile. Check backend server.");
+      console.error('Failed to update profile:', err);
+      const msg = err.response?.data?.error || 'Failed to update profile. Please try again.';
+      setSaveError(msg);
+      setTimeout(() => setSaveError(''), 5000);
     } finally {
       setSaveLoading(false);
     }
@@ -550,56 +434,13 @@ function Profile({ user, onUserUpdate }) {
     }
   };
 
-  // -------------------------------------------------------------
-  // CLINICAL AI SYMPTOM ASSISTANT CHAT SEND
-  // -------------------------------------------------------------
-  const handleChatSend = async (e) => {
-    e.preventDefault();
-    if (!chatMessage.trim()) return;
-
-    const userMsg = {
-      sender: 'user',
-      text: chatMessage,
-      timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false })
-    };
-
-    setChatHistory(prev => [...prev, userMsg]);
-    const currentMsg = chatMessage;
-    setChatMessage('');
-    setChatLoading(true);
-
-    try {
-      const response = await api.post('/telemetry/chat/', {
-        message: currentMsg,
-        history: chatHistory
-      });
-
-      const resMsg = {
-        sender: 'assistant',
-        text: response.data.response,
-        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false })
-      };
-      setChatHistory(prev => [...prev, resMsg]);
-    } catch (err) {
-      console.error("Failed to fetch chat reply:", err);
-      const errorMsg = {
-        sender: 'assistant',
-        text: "Failed to generate AI clinical advice. Please verify connection to the backend.",
-        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false })
-      };
-      setChatHistory(prev => [...prev, errorMsg]);
-    } finally {
-      setChatLoading(false);
-    }
-  };
-
   if (loading) return <div className="text-center py-5 opacity-50 font-monospace text-theme-accent small">Synchronizing consolidated health vault...</div>;
   if (!profile) return <div className="glass-card p-5 text-center font-monospace text-danger">[ERROR: NEURAL IDENTITY OFFLINE]</div>;
 
   if (user && user.role === 'Doctor') {
     return (
-      <div className="reveal px-1 py-1 theme-general font-monospace" style={{ minHeight: 'calc(100vh - 120px)', display: 'flex', flexDirection: 'column' }}>
-        <div className="row g-4 mt-2 flex-grow-1">
+      <div className="reveal px-1 theme-general font-monospace" style={{ minHeight: 'calc(100vh - 120px)', display: 'flex', flexDirection: 'column' }}>
+        <div className="row g-4 flex-grow-1">
 
           {/* Avatar and Credentials Panel */}
           <div className="col-lg-5 col-md-5 d-flex">
@@ -736,13 +577,23 @@ function Profile({ user, onUserUpdate }) {
     identity: 'theme-general',
     vault: 'theme-cancer',
     adherence: 'theme-diabetes',
-    diary: 'theme-heart',
-    appointments: 'theme-heart'
   };
   const activeTheme = tabThemes[activeTab] || 'theme-general';
 
   return (
-    <div className={`reveal px-1 py-1 ${activeTheme} transition-all duration-300 vault-tab-active-layout`}>
+    <div className={`reveal px-1 ${activeTheme} transition-all duration-300 vault-tab-active-layout`}>
+
+      {/* Global save success / error toast */}
+      {saveSuccess && (
+        <div className="alert alert-success d-flex align-items-center gap-2 py-2 px-3 mb-3 rounded-3 font-monospace" style={{ fontSize: '0.8rem', background: 'rgba(0,200,130,0.12)', border: '1px solid rgba(0,200,130,0.3)', color: '#00f5a0', letterSpacing: '0.02em' }}>
+          <span>✓</span> {saveSuccess}
+        </div>
+      )}
+      {saveError && (
+        <div className="alert alert-danger d-flex align-items-center gap-2 py-2 px-3 mb-3 rounded-3 font-monospace" style={{ fontSize: '0.8rem', background: 'rgba(255,50,80,0.1)', border: '1px solid rgba(255,50,80,0.3)', color: '#ff6080', letterSpacing: '0.02em' }}>
+          <span>⚠</span> {saveError}
+        </div>
+      )}
 
 
       {/* Holographic Segmented Tab Switcher */}
@@ -751,10 +602,9 @@ function Profile({ user, onUserUpdate }) {
           {[
             { id: 'identity', label: 'Identity & Vitals', icon: <User size={16} /> },
             { id: 'vault', label: 'Medical Vault & History', icon: <FileText size={16} /> },
-            { id: 'adherence', label: 'Pill Box & Consultations', icon: <Pill size={16} /> },
-            { id: 'diary', label: 'Symptom Diary', icon: <Smile size={16} /> }
+            { id: 'adherence', label: 'Pill Box', icon: <Pill size={16} /> }
           ].map((tab) => (
-            <div className="col-3 p-0" key={tab.id}>
+            <div className="col-4 p-0" key={tab.id}>
               <button
                 onClick={() => setActiveTab(tab.id)}
                 className={`btn-clinical py-2.5 w-100 d-flex align-items-center justify-content-center gap-2 border-0 rounded-3 font-monospace text-uppercase font-bold ${activeTab === tab.id ? 'primary' : 'bg-transparent text-secondary hover-white'}`}
@@ -790,34 +640,13 @@ function Profile({ user, onUserUpdate }) {
               bmiCat={bmiCat}
               healthScore={healthScore}
               history={history}
+              saveSuccess={saveSuccess}
+              saveError={saveError}
             />
           </motion.div>
         )}
 
-        {activeTab === 'diary' && (
-          <motion.div
-            key="diary"
-            initial={{ opacity: 0, y: 15 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -15 }}
-            className="row g-4 mt-2 align-items-stretch vault-tab-row"
-          >
-            <SymptomDiary
-              wellnessRating={wellnessRating}
-              setWellnessRating={setWellnessRating}
-              energyLevel={energyLevel}
-              setEnergyLevel={setEnergyLevel}
-              moodState={moodState}
-              setMoodState={setMoodState}
-              selectedSymptoms={selectedSymptoms}
-              handleToggleDiarySymptom={handleToggleDiarySymptom}
-              diaryNotes={diaryNotes}
-              setDiaryNotes={setDiaryNotes}
-              healthLogs={healthLogs}
-              handleSaveDiaryLog={handleSaveDiaryLog}
-            />
-          </motion.div>
-        )}
+        {activeTab === 'diary' && null}
 
         {activeTab === 'vault' && (
           <motion.div
@@ -854,7 +683,7 @@ function Profile({ user, onUserUpdate }) {
             exit={{ opacity: 0, y: -15 }}
             className="row g-4 mt-2 align-items-stretch vault-tab-row"
           >
-            <div className="col-lg-6">
+            <div className="col-12">
               <PillBox
                 archive={archive}
                 customMeds={customMeds}
@@ -874,22 +703,6 @@ function Profile({ user, onUserUpdate }) {
                 safetyLoading={safetyLoading}
                 safetyError={safetyError}
                 handleCheckDrugSafety={handleCheckDrugSafety}
-              />
-            </div>
-            <div className="col-lg-6">
-              <Consultations
-                upcomingAppointments={upcomingAppointments}
-                selectedDoctor={selectedDoctor}
-                setSelectedDoctor={setSelectedDoctor}
-                appointmentDate={appointmentDate}
-                setAppointmentDate={setAppointmentDate}
-                appointmentTime={appointmentTime}
-                setAppointmentTime={setAppointmentTime}
-                appointmentReason={appointmentReason}
-                setAppointmentReason={setAppointmentReason}
-                showBookingModal={showBookingModal}
-                setShowBookingModal={setShowBookingModal}
-                handleBookAppointment={handleBookAppointment}
               />
             </div>
           </motion.div>

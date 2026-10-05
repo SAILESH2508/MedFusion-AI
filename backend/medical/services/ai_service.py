@@ -17,14 +17,36 @@ class AIService:
         Uses Gemini 1.5 Flash as primary for its strong vision-to-text capabilities.
         """
         prompt = """
-        Analyze this medical prescription. Extract:
-        1. medicines: list of (name, dosage, frequency, type, timing, description)
-        2. recommendations: list of strings (safety warnings, lifestyle advice)
-        3. urgency: "Low", "Moderate", or "High"
-        4. physician: Doctor's name if visible
-        5. clinical_intent: Brief summary of what this prescription aims to treat
-        
-        Return ONLY a JSON object. No Markdown, no explanation.
+        Analyze this medical prescription image carefully. Extract all medicines and their full schedule.
+
+        Return a JSON object with this exact structure:
+        {
+          "medicines": [
+            {
+              "name": "Medicine name",
+              "dosage": "e.g. 500mg, 1 tablet, 2 drops",
+              "frequency": "e.g. Once daily, Twice daily, TID, QID",
+              "frequency_number": 2,
+              "timing": "Before food" or "After food" or "With food" (choose based on instructions; default to "After food" if not specified),
+              "times_of_day": ["morning", "night"] (use any combination of: "morning", "afternoon", "evening", "night" — must match frequency_number count),
+              "type": "e.g. Antibiotic, Antacid, Analgesic",
+              "description": "Brief clinical purpose of this medicine"
+            }
+          ],
+          "recommendations": ["list of safety warnings or lifestyle advice"],
+          "urgency": "Low" or "Moderate" or "High",
+          "physician": "Doctor name if visible, else null",
+          "clinical_intent": "One sentence summary of what condition this prescription treats"
+        }
+
+        Rules:
+        - timing MUST be one of: "Before food", "After food", "With food"
+        - times_of_day MUST be a list with exactly frequency_number elements chosen from: "morning", "afternoon", "evening", "night"
+        - If frequency is once daily → times_of_day has 1 item (typically "morning")
+        - If twice daily → ["morning", "night"]
+        - If three times daily (TID) → ["morning", "afternoon", "night"]
+        - If four times daily (QID) → ["morning", "afternoon", "evening", "night"]
+        - Return ONLY the JSON object. No markdown, no explanation.
         """
 
         try:
@@ -172,8 +194,10 @@ class AIService:
                 "name": "Metformin HCL",
                 "dosage": "500mg",
                 "frequency": "Twice daily",
+                "frequency_number": 2,
+                "timing": "After food",
+                "times_of_day": ["morning", "night"],
                 "type": "Antidiabetic",
-                "timing": "With meals",
                 "description": "For glycemic control in type 2 diabetes",
                 "note": "Monitor renal function periodically"
             },
@@ -181,8 +205,10 @@ class AIService:
                 "name": "Lisinopril",
                 "dosage": "10mg",
                 "frequency": "Once daily",
+                "frequency_number": 1,
+                "timing": "After food",
+                "times_of_day": ["morning"],
                 "type": "ACE Inhibitor",
-                "timing": "Morning",
                 "description": "Blood pressure management",
                 "note": "Avoid potassium supplements"
             },
@@ -190,8 +216,10 @@ class AIService:
                 "name": "Atorvastatin",
                 "dosage": "20mg",
                 "frequency": "Once daily",
+                "frequency_number": 1,
+                "timing": "After food",
+                "times_of_day": ["night"],
                 "type": "Statin",
-                "timing": "Evening",
                 "description": "Lipid management",
                 "note": "Avoid grapefruit juice"
             }
@@ -258,8 +286,6 @@ class AIService:
            - stage: A string description of the clinical stage or severity classification of this risk based on their parameters (e.g., "Stage 0 (Normal)", "Stage I (Pre-Clinical)", "Stage II (Mild / Early Symptom)", "Stage III (Moderate Risk)", "Stage IV (Severe / Critical)").
            - dietary_guidelines: Specific evidence-based dietary guidelines (e.g. DASH diet for cardiovascular risk, low-glycemic foods for diabetes risk).
            - lifestyle_modifications: Targeted habits, exercise regimens, and behavioral adjustments.
-           - home_remedies: Safe, supportive home-based care or general wellness practices.
-           - otc_suggestions: Over-the-counter supplements or basic non-prescription options with appropriate medical context (e.g. CoQ10, Vitamin D, fiber supplements).
            - clinical_recommendations: Clinical next steps, diagnostic blood panels to order (e.g. HbA1c, lipid panel, specific imaging/screenings), and recommended specialist referrals.
            - urgent_warning_signs: Urgent red-flag symptoms that necessitate immediate emergency department evaluation.
 
@@ -314,8 +340,6 @@ class AIService:
             "stage": stage_val,
             "dietary_guidelines": [],
             "lifestyle_modifications": [],
-            "home_remedies": [],
-            "otc_suggestions": [],
             "clinical_recommendations": [],
             "urgent_warning_signs": []
         }
@@ -399,17 +423,6 @@ class AIService:
                 "Integrate progressive resistance training 2-3 times/week to improve insulin receptor upregulation",
                 "Practice sleep hygiene targeting 7-8 hours nightly to regulate cortisol and leptin balances",
                 "Target a 5% to 10% reduction in total body weight if overweight"
-            ]
-            remedies["home_remedies"] = [
-                "Consume green tea daily (rich in EGCG catechins which support metabolic rate)",
-                "Incorporate apple cider vinegar (1-2 tablespoons diluted in water) before carbohydrate-heavy meals",
-                "Utilize culinary cinnamon (Cassia or Ceylon) in daily foods to help support insulin action"
-            ]
-            remedies["otc_suggestions"] = [
-                "Alpha-Lipoic Acid (ALA): 600mg daily to support peripheral insulin sensitivity and reduce neuropathic risk",
-                "Chromium Picolinate: 200-500mcg daily to support carbohydrate metabolism",
-                "Magnesium Glycinate: 300-400mg daily (magnesium deficiency is highly correlated with insulin resistance)",
-                "Vitamin D3 + K2: 2000 IU daily to support pancreatic beta-cell function"
             ]
             remedies["clinical_recommendations"] = [
                 "Schedule a formal Laboratory Fasting Plasma Glucose and HbA1c confirmation panel",
@@ -504,17 +517,6 @@ class AIService:
                 "Maintain a healthy waist circumference (target <40 inches for men, <35 inches for women)",
                 "Complete tobacco/smoking cessation immediately if applicable"
             ]
-            remedies["home_remedies"] = [
-                "Incorporate raw garlic daily (contains allicin which supports mild vasodilation)",
-                "Drink hibiscus tea twice daily (shown in clinical literature to assist in mild blood pressure reduction)",
-                "Ensure daily intake of high-antioxidant berries to protect vascular linings from oxidative stress"
-            ]
-            remedies["otc_suggestions"] = [
-                "Coenzyme Q10 (CoQ10): 100-200mg daily to optimize cardiac muscle cellular energy output",
-                "Omega-3 Fish Oil (EPA/DHA): 2,000mg daily to reduce serum triglycerides and support vascular health",
-                "Garlic Extract Supplement: 600-1200mg daily for circulatory support",
-                "Magnesium Taurate: 200-400mg daily (specifically beneficial for cardiac muscle excitability and rhythm)"
-            ]
             remedies["clinical_recommendations"] = [
                 "Request a comprehensive Cardiovascular panel: Lipid Fractionation, High-Sensitivity CRP (hs-CRP), and Lipoprotein(a)",
                 "Obtain a Resting 12-lead Electrocardiogram (ECG) and seek a Referral for a Coronary Calcium Scan (CAC)",
@@ -526,100 +528,6 @@ class AIService:
                 "Acute, unexplained shortness of breath, sudden cold sweats, and overwhelming dizziness or syncope",
                 "Chest discomfort that does not subside after 5 minutes of complete physical rest"
             ]
-        elif "neuro" in disease or "stroke" in disease or "cognitive" in disease or "dementia" in disease:
-            # Neurological & Stroke Screening risk
-            systolic_bp = float(parameters.get("systolic_bp", 120) or 120)
-            glucose = float(parameters.get("glucose", 90) or 90)
-            sleep_quality = float(parameters.get("sleep_quality", 7) or 7)
-            physical_activity = float(parameters.get("physical_activity", 4) or 4)
-            symptoms = parameters.get("symptoms", [])
-            
-            risk_score = 10.0
-            reasons = []
-            
-            if systolic_bp > 130:
-                risk_score += 15
-                reasons.append(f"Systolic hypertension ({systolic_bp} mmHg) is a primary risk driver for cerebrovascular stroke")
-            if systolic_bp > 150:
-                risk_score += 20
-                reasons.append("Severe systolic blood pressure puts significant hemodynamic pressure on cerebral arteries")
-                
-            if glucose > 125:
-                risk_score += 15
-                reasons.append(f"Chronic hyperglycemic trends ({glucose} mg/dL) damage cerebral microvasculature")
-                
-            if sleep_quality < 6:
-                risk_score += 12
-                reasons.append(f"Deficient sleep duration ({sleep_quality} hrs) impairs glymphatic waste clearance and elevates neuro-inflammation")
-                
-            if physical_activity < 3:
-                risk_score += 10
-                reasons.append(f"Sedentary lifestyle ({physical_activity} hrs/wk physical activity) reduces cerebral perfusion and plasticity")
-                
-            if age > 55:
-                risk_score += 15
-                reasons.append(f"Age factor ({age} years) is associated with normal vascular senescence and cognitive decay")
-            if age > 70:
-                risk_score += 20
-                
-            if family_history:
-                risk_score += 15
-                reasons.append("Family history of early cardiovascular accidents or Alzheimer's raises neurological risk")
-                
-            if smoking:
-                risk_score += 20
-                reasons.append("Nicotine and toxic inhalants promote vascular plaque and carotid artery stenosis")
-                
-            if symptoms:
-                active_symptoms = [s for s, val in symptoms.items() if val is True] if isinstance(symptoms, dict) else symptoms
-                risk_score += min(30, len(active_symptoms) * 8)
-                if active_symptoms:
-                    reasons.append(f"Reported cognitive and sensory symptoms: {', '.join(active_symptoms[:3])}")
-                    
-            risk_score = min(96.0, max(5.0, risk_score))
-            
-            reasons_str = "; ".join(reasons) if reasons else "no major neurological risk factors reported."
-            clinical_reasoning = (
-                f"Neurological health screening calculates a Stroke and Cognitive Decline risk index of {risk_score:.1f}%. "
-                f"Critical vectors: {reasons_str}. Adequate arterial supply and glymphatic clearance are vital to "
-                f"protect cortical structures and prevent ischemic cerebral incidents."
-            )
-            
-            remedies["dietary_guidelines"] = [
-                "Implement a brain-supporting MIND diet (combination of Mediterranean and DASH diets)",
-                "Increase intake of flavonoid-rich foods such as blueberries and strawberries (shown to delay cognitive aging)",
-                "Consume wild-caught cold-water fish (salmon, sardines) twice weekly for high DHA/EPA omega-3 content",
-                "Reduce saturated fats, simple carbohydrates, and refined sodium to protect blood-brain barrier integrity"
-            ]
-            remedies["lifestyle_modifications"] = [
-                "Engage in 30 minutes of aerobic exercise 4-5 times a week to promote brain-derived neurotrophic factor (BDNF)",
-                "Incorporate daily cognitive challenges (puzzles, learning a new language, reading complex material)",
-                "Establish a strict sleep hygiene regimen targeting 7-8 hours of sound sleep for glymphatic clearance",
-                "Ensure social engagement and interactive conversations to build cognitive reserve"
-            ]
-            remedies["home_remedies"] = [
-                "Drink 1-2 cups of green tea daily (rich in L-theanine and EGCG to promote cognitive focus)",
-                "Integrate cognitive meditation or mindfulness breathing for 15 minutes daily to regulate stress and blood pressure",
-                "Engage in physical coordination exercises (like yoga or tai chi) to support balance and motor neural pathways"
-            ]
-            remedies["otc_suggestions"] = [
-                "Omega-3 DHA Supplement (500-1000mg DHA daily) to support neuronal membrane health",
-                "Ginkgo Biloba Extract (120-240mg daily) to support microvascular cerebral blood flow",
-                "Alpha-GPC or Phosphatidylserine (100-300mg daily) to support acetylcholine levels and memory",
-                "Melatonin (1-3mg before bed) if needed to regulate sleep cycles and provide neuroprotection"
-            ]
-            remedies["clinical_recommendations"] = [
-                "Schedule a detailed carotid artery ultrasound scan to check for stenosis or plaque build-up",
-                "Obtain a comprehensive cognitive evaluation panel (such as MoCA or MMSE) if forgetfulness is persistent",
-                "Request a metabolic blood panel including Fasting Glucose, HbA1c, hs-CRP (inflammation indicator), and Lipid Fractionation",
-                "Seek referral to a neurologist if numbness, speech issues, or balance loss are reported or suspected"
-            ]
-            remedies["urgent_warning_signs"] = [
-                "F.A.S.T. symptoms: Sudden facial drooping, arm weakness, speech difficulty or slurring",
-                "Sudden, severe headache with no known cause ('thunderclap' headache)",
-                "Acute confusion, sudden loss of vision in one or both eyes, or sudden difficulty walking and loss of balance"
-            ]
-
         else:
             # Cancer risk (screening focus)
             symptoms = parameters.get("symptoms", [])
@@ -676,17 +584,6 @@ class AIService:
                 "Ensure strict UV solar protection (SPF 50+, wide-brimmed hats) and avoid tanning beds",
                 "Optimize physical exercise to 220+ minutes of active movement weekly to stimulate natural killer cell activity",
                 "Minimize household and occupational exposure to chemical solvents, heavy metals, and radon"
-            ]
-            remedies["home_remedies"] = [
-                "Consume organic green tea (Matcha) daily for its high epigallocatechin gallate (EGCG) content",
-                "Incorporate turmeric (curcumin) paired with black pepper (piperine) in cooking for anti-inflammatory support",
-                "Consume fermented foods (kefir, kimchi) weekly to support intestinal mucosal immunity"
-            ]
-            remedies["otc_suggestions"] = [
-                "Curcumin Extract: 500-1000mg daily to support cellular anti-inflammatory pathways",
-                "Vitamin D3: 2000-5000 IU daily (optimal serum Vitamin D levels are clinically correlated with lower cancer risk)",
-                "Resveratrol: 100-250mg daily to support cellular defense and DNA repair pathways",
-                "Probiotics: Multi-strain high-CFU supplement to support general immunological competence"
             ]
             remedies["clinical_recommendations"] = [
                 "Schedule routine age-appropriate clinical screenings (e.g., Mammogram, Colonoscopy, Pap Smear, or PSA test)",
@@ -831,5 +728,14 @@ class AIService:
 
 
 ai_service = AIService()
+
+
+async def llm_chat(message: str, system_prompt: str) -> str:
+    """Standalone chat function for the chatbot endpoint."""
+    return await llm_provider.generate_response(
+        prompt=message,
+        model_name=os.getenv("DEFAULT_LLM_MODEL", "gemini-2.5-flash"),
+        system_prompt=system_prompt,
+    )
 
 

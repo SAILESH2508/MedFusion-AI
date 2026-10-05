@@ -7,12 +7,12 @@ import {
   Plus,
   Trash2,
   Calculator,
-  Calendar,
   FileText,
   Database,
   Activity,
   Sparkles,
-  RefreshCw
+  RefreshCw,
+  Search
 } from 'lucide-react';
 import { api } from '../../services/api';
 import { SidebarContext } from '../../context/SidebarContext';
@@ -33,27 +33,20 @@ function DoctorDashboard({ user }) {
   const [medDosage, setMedDosage] = useState('');
   const [medFreq, setMedFreq] = useState('Once daily');
   const [submittingRx, setSubmittingRx] = useState(false);
+  const [rxStatus, setRxStatus] = useState(null);
 
-  // Daily Clinical Planner widget State
-  const [plannerTasks, setPlannerTasks] = useState(() => {
-    if (user) {
-      const stored = localStorage.getItem(`doctor_tasks_${user.id}`);
-      if (stored) {
-        try {
-          return JSON.parse(stored);
-        } catch (e) {
-          console.error("Failed to parse stored doctor tasks", e);
-        }
-      }
-      return [
-        { id: 1, text: "Review latest pathology lab files", completed: false },
-        { id: 2, text: "Follow up with newly diagnosed diabetic patients", completed: false },
-        { id: 3, text: "Certify pending medical proof updates", completed: true }
-      ];
-    }
-    return [];
-  });
-  const [newTaskText, setNewTaskText] = useState('');
+  // Patient directory search
+  const [patientSearch, setPatientSearch] = useState('');
+
+  const filteredPatients = useMemo(() => {
+    if (!patientSearch.trim()) return patients;
+    const q = patientSearch.toLowerCase();
+    return patients.filter(p =>
+      p.name?.toLowerCase().includes(q) ||
+      p.email?.toLowerCase().includes(q) ||
+      String(p.id).includes(q)
+    );
+  }, [patients, patientSearch]);
 
   // Diagnostic calculators State
   const [calcTab, setCalcTab] = useState('bmi'); // 'bmi' | 'thr'
@@ -118,34 +111,6 @@ function DoctorDashboard({ user }) {
     return Array.from(new Set(warnings));
   }, [medName, doctorMeds, selectedPatient, patientDetails]);
 
-  const saveTasks = (updatedTasks) => {
-    setPlannerTasks(updatedTasks);
-    if (user) {
-      localStorage.setItem(`doctor_tasks_${user.id}`, JSON.stringify(updatedTasks));
-    }
-  };
-
-  const addTask = () => {
-    if (!newTaskText.trim()) return;
-    const newTask = {
-      id: Date.now(),
-      text: newTaskText.trim(),
-      completed: false
-    };
-    saveTasks([...plannerTasks, newTask]);
-    setNewTaskText('');
-  };
-
-  const toggleTask = (taskId) => {
-    const updated = plannerTasks.map(t => t.id === taskId ? { ...t, completed: !t.completed } : t);
-    saveTasks(updated);
-  };
-
-  const deleteTask = (taskId) => {
-    const updated = plannerTasks.filter(t => t.id !== taskId);
-    saveTasks(updated);
-  };
-
   // Fetch Patients Registry for Doctors
   const fetchPatients = useCallback(async () => {
     if (!user || user.role !== 'Doctor') return;
@@ -183,14 +148,17 @@ function DoctorDashboard({ user }) {
         medicines: doctorMeds,
         recommendations: doctorNotes ? doctorNotes.split('\n').filter(r => r.trim() !== '') : ["Continue daily monitoring"]
       };
-      await api.post(`/patients/${selectedPatient.id}/prescribe`, payload);
+      await api.post(`/patients/${selectedPatient.id}/prescribe/`, payload);
       fetchPatientDetails(selectedPatient.id);
       setDoctorMeds([]);
       setDoctorNotes('');
-      alert("Prescription synchronized successfully!");
+      setRxStatus({ type: 'success', message: 'Prescription synchronized successfully.' });
+      setTimeout(() => setRxStatus(null), 4000);
     } catch (err) {
       console.error("Failed to issue prescription:", err);
-      alert("Failed to synchronize prescription. Check backend server.");
+      const msg = err.response?.data?.error || 'Failed to synchronize prescription. Check backend server.';
+      setRxStatus({ type: 'error', message: msg });
+      setTimeout(() => setRxStatus(null), 5000);
     } finally {
       setSubmittingRx(false);
     }
@@ -321,7 +289,7 @@ function DoctorDashboard({ user }) {
   }, [patients, selectedPatient, setSidebarContent, user]);
 
   return (
-    <div className="reveal px-1 py-1 theme-general font-monospace" style={{ height: 'calc(100vh - 155px)', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
+    <div className="reveal px-1 theme-general font-monospace" style={{ height: 'calc(100vh - 155px)', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
       {!selectedPatient ? (
         /* PATIENT DIRECTORY SCREEN WITH PLANNER & CALCULATOR WIDGETS */
         <div className="row g-4 flex-grow-1 align-items-stretch" style={{ minHeight: 0, overflow: 'hidden' }}>
@@ -353,7 +321,24 @@ function DoctorDashboard({ user }) {
                 </div>
               ) : (
                 <div className="d-flex flex-column gap-3 overflow-auto flex-grow-1 pe-2" style={{ minHeight: 0 }}>
-                  {patients.map((p) => (
+                  {/* Search bar */}
+                  <div className="position-relative flex-shrink-0">
+                    <Search size={14} className="position-absolute text-secondary" style={{ left: '12px', top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none' }} />
+                    <input
+                      type="text"
+                      value={patientSearch}
+                      onChange={e => setPatientSearch(e.target.value)}
+                      placeholder="Search by name, email or ID..."
+                      className="w-100 font-monospace text-white bg-transparent rounded border border-white-10"
+                      style={{ padding: '10px 12px 10px 34px', fontSize: '0.82rem', outline: 'none' }}
+                    />
+                  </div>
+
+                  {filteredPatients.length === 0 ? (
+                    <div className="text-center py-4 text-secondary font-monospace" style={{ fontSize: '0.82rem' }}>
+                      No patients match "<strong className="text-white">{patientSearch}</strong>"
+                    </div>
+                  ) : filteredPatients.map((p) => (
                     <div 
                       key={p.id} 
                       className="d-flex align-items-center justify-content-between p-3 rounded border border-white-5"
@@ -393,66 +378,8 @@ function DoctorDashboard({ user }) {
             </div>
           </div>
 
-          {/* Sidebar Planner & Calculator Tools Column */}
+          {/* Sidebar Calculator Tools Column */}
           <div className="col-lg-4 d-flex flex-column justify-content-start gap-3" style={{ height: 'calc(100% - 24px)', overflow: 'hidden' }}>
-            {/* Daily Clinical Planner widget */}
-            <div className="glass-card p-3 d-flex flex-column gap-2.5 flex-grow-1" style={{ borderRadius: '16px', overflow: 'hidden' }}>
-              <div className="d-flex align-items-center gap-2 border-bottom border-white-10 pb-2">
-                <Calendar className="text-theme-accent animate-pulse" size={18} />
-                <h4 className="fw-bold m-0 text-white text-uppercase" style={{ fontSize: '0.95rem', letterSpacing: '0.02em' }}>Daily Planner</h4>
-              </div>
-              
-              {/* Add task form */}
-              <div className="d-flex gap-2">
-                <input 
-                  type="text" 
-                  placeholder="New task..." 
-                  value={newTaskText} 
-                  onChange={(e) => setNewTaskText(e.target.value)}
-                  onKeyDown={(e) => { if (e.key === 'Enter') addTask(); }}
-                  className="font-monospace text-white bg-dark border-secondary px-3 py-1 flex-grow-1"
-                  style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', fontSize: '0.85rem' }}
-                />
-                <button 
-                  onClick={addTask} 
-                  className="btn-clinical px-3 py-1 d-flex align-items-center justify-content-center"
-                  style={{ width: 'auto' }}
-                >
-                  <Plus size={16} />
-                </button>
-              </div>
-
-              {/* Tasks List */}
-              <div className="d-flex flex-column gap-2 overflow-auto flex-grow-1" style={{ minHeight: 0 }}>
-                {plannerTasks.length === 0 ? (
-                  <p className="text-secondary small font-monospace italic text-center py-3 m-0">No tasks planned for today.</p>
-                ) : (
-                  plannerTasks.map((t) => (
-                    <div key={t.id} className="d-flex align-items-center justify-content-between p-2 rounded bg-white-5 border border-white-5">
-                      <div className="d-flex align-items-center gap-2 cursor-pointer flex-grow-1 text-start" onClick={() => toggleTask(t.id)}>
-                        <input 
-                          type="checkbox" 
-                          checked={t.completed} 
-                          onChange={() => toggleTask(t.id)} 
-                          onClick={(e) => e.stopPropagation()}
-                          className="cursor-pointer"
-                        />
-                        <span className={`small text-white font-monospace text-start ${t.completed ? 'text-decoration-line-through text-secondary' : ''}`} style={{ fontSize: '0.82rem' }}>
-                          {t.text}
-                        </span>
-                      </div>
-                      <button 
-                        onClick={() => deleteTask(t.id)}
-                        className="px-1.5 py-0.5 bg-transparent border-0 text-danger hover-white"
-                      >
-                        <Trash2 size={13} />
-                      </button>
-                    </div>
-                  ))
-                )}
-              </div>
-            </div>
-
             {/* Quick Diagnostic Calculator widget */}
             <div className="glass-card p-3 d-flex flex-column gap-2.5" style={{ borderRadius: '16px' }}>
               <div className="d-flex align-items-center justify-content-between border-bottom border-white-10 pb-2">
@@ -865,6 +792,18 @@ function DoctorDashboard({ user }) {
                     </>
                   )}
                 </button>
+
+                {rxStatus && (
+                  <div className="d-flex align-items-center gap-2 px-3 py-2 rounded font-monospace" style={{
+                    fontSize: '0.78rem',
+                    background: rxStatus.type === 'success' ? 'rgba(0,245,212,0.08)' : 'rgba(255,51,102,0.08)',
+                    border: `1px solid ${rxStatus.type === 'success' ? 'rgba(0,245,212,0.3)' : 'rgba(255,51,102,0.3)'}`,
+                    color: rxStatus.type === 'success' ? 'var(--accent-teal)' : 'var(--accent-red)',
+                  }}>
+                    <span>{rxStatus.type === 'success' ? '✓' : '✕'}</span>
+                    <span>{rxStatus.message}</span>
+                  </div>
+                )}
 
               </form>
 

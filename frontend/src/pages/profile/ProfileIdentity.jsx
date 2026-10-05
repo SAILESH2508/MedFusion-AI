@@ -27,10 +27,6 @@ function ProfileIdentity({
         <div className="col-lg-5 d-flex flex-column gap-4">
           <div className="smartcard-hologram p-4 text-start w-100 d-flex flex-column justify-content-between position-relative" style={{ minHeight: '420px' }}>
             
-            {/* Holographic visuals */}
-            <div className="smartcard-bio-grid"></div>
-            <div className="smartcard-scanner-beam"></div>
-
             <div>
               <div className="d-flex justify-content-between align-items-center pb-3 mb-4 border-bottom border-white-10">
                 <div className="d-flex align-items-center gap-2.5">
@@ -152,13 +148,16 @@ function ProfileIdentity({
                   </div>
                   <div>
                     <label className="text-secondary small d-block mb-1 font-monospace">BLOOD GROUP</label>
-                    <input 
-                      type="text" 
-                      value={editData.blood_group || ''} 
+                    <select
+                      value={editData.blood_group || ''}
                       onChange={(e) => setEditData({...editData, blood_group: e.target.value})}
-                      placeholder="e.g. O+, A-, AB+"
-                      className="w-100 p-2 border border-white-10 rounded text-white bg-transparent font-monospace"
-                    />
+                      className="w-100 bg-dark text-white border border-white-10 rounded p-2 font-monospace"
+                    >
+                      <option value="">Select Blood Group</option>
+                      {['A+','A-','B+','B-','AB+','AB-','O+','O-'].map(bg => (
+                        <option key={bg} value={bg}>{bg}</option>
+                      ))}
+                    </select>
                   </div>
                   <div>
                     <label className="text-secondary small d-block mb-1 font-monospace">EMERGENCY CONTACT PHONE</label>

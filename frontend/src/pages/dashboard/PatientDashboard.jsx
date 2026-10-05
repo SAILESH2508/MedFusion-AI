@@ -5,7 +5,7 @@ import {
   ShieldAlert, 
   Compass, 
   BookOpen, 
-  Printer, 
+  Download, 
   RotateCcw, 
   User,
   Sparkles,
@@ -30,7 +30,7 @@ const logs = [
 
 function PatientDashboard({ user }) {
   const { setSidebarContent } = useContext(SidebarContext);
-  const [selectedDisease, setSelectedDisease] = useState('heart_attack'); // 'heart_attack' | 'diabetes' | 'cancer' | 'neurological'
+  const [selectedDisease, setSelectedDisease] = useState('heart_attack'); // 'heart_attack' | 'diabetes' | 'cancer'
   const [selectedPatient, setSelectedPatient] = useState(null);
 
   // Vitals & Symptoms Forms State
@@ -41,17 +41,7 @@ function PatientDashboard({ user }) {
   const [familyHistory, setFamilyHistory] = useState('no');
   const [smoking, setSmoking] = useState('no');
 
-  // Neurological-specific
-  const [sleepQuality, setSleepQuality] = useState(7);
-  const [physicalActivity, setPhysicalActivity] = useState(4);
-  const [neurologicalSymptoms, setNeurologicalSymptoms] = useState({
-    no_symptoms: true,
-    forgetfulness: false,
-    confusion: false,
-    speech_difficulty: false,
-    loss_of_balance: false,
-    numbness_weakness: false
-  });
+  // Neurological-specific state removed
 
   // Heart-specific
   const [systolicBp, setSystolicBp] = useState(125);
@@ -130,8 +120,7 @@ function PatientDashboard({ user }) {
     age, gender, familyHistory, smoking,
     systolicBp, diastolicBp, cholesterol, maxHeartRate, chestPain, exerciseAngina, fastingSugar, heartSymptoms,
     glucose, hba1c, weight, height, hypertension, heartDiseaseHistory, diabetesSymptoms,
-    cancerCategory, alcohol, toxinExposure, cancerSymptoms,
-    sleepQuality, physicalActivity, neurologicalSymptoms
+    cancerCategory, alcohol, toxinExposure, cancerSymptoms
   ]);
 
   // Compute BMI
@@ -193,27 +182,6 @@ function PatientDashboard({ user }) {
       });
     } else {
       setCancerSymptoms(prev => {
-        const next = { ...prev, [key]: !prev[key] };
-        const hasRealSymptom = Object.keys(next).some(k => k !== 'no_symptoms' && next[k]);
-        next.no_symptoms = !hasRealSymptom;
-        return next;
-      });
-    }
-  };
-
-  const handleNeurologicalSymptomToggle = (key) => {
-    setHasChanges(true);
-    if (key === 'no_symptoms') {
-      setNeurologicalSymptoms({
-        no_symptoms: true,
-        forgetfulness: false,
-        confusion: false,
-        speech_difficulty: false,
-        loss_of_balance: false,
-        numbness_weakness: false
-      });
-    } else {
-      setNeurologicalSymptoms(prev => {
         const next = { ...prev, [key]: !prev[key] };
         const hasRealSymptom = Object.keys(next).some(k => k !== 'no_symptoms' && next[k]);
         next.no_symptoms = !hasRealSymptom;
@@ -324,42 +292,10 @@ function PatientDashboard({ user }) {
     }
   };
 
-  const applyNeurologicalPreset = (type) => {
-    setHasChanges(true);
-    if (type === 'healthy') {
-      setSystolicBp(115);
-      setGlucose(85);
-      setSleepQuality(8);
-      setPhysicalActivity(7);
-      setNeurologicalSymptoms({
-        no_symptoms: true,
-        forgetfulness: false,
-        confusion: false,
-        speech_difficulty: false,
-        loss_of_balance: false,
-        numbness_weakness: false
-      });
-    } else {
-      setSystolicBp(155);
-      setGlucose(135);
-      setSleepQuality(4.5);
-      setPhysicalActivity(1);
-      setNeurologicalSymptoms({
-        no_symptoms: false,
-        forgetfulness: true,
-        confusion: true,
-        speech_difficulty: false,
-        loss_of_balance: true,
-        numbness_weakness: true
-      });
-    }
-  };
-
   const getThemeClass = () => {
     if (selectedDisease === 'heart_attack') return 'theme-heart';
     if (selectedDisease === 'diabetes') return 'theme-diabetes';
     if (selectedDisease === 'cancer') return 'theme-cancer';
-    if (selectedDisease === 'neurological') return 'theme-cancer';
     return 'theme-general';
   };
 
@@ -433,7 +369,6 @@ function PatientDashboard({ user }) {
       if (diseaseId === 'heart_attack' && type.includes('heart')) return true;
       if (diseaseId === 'diabetes' && type.includes('diabetes')) return true;
       if (diseaseId === 'cancer' && type.includes('cancer')) return true;
-      if (diseaseId === 'neurological' && type.includes('neuro')) return true;
       return false;
     });
     if (hasHistory) return true;
@@ -453,11 +388,6 @@ function PatientDashboard({ user }) {
       if (alcohol === 'yes' || toxinExposure === 'yes') return true;
       const hasCancerSymptoms = Object.keys(cancerSymptoms).some(k => k !== 'no_symptoms' && cancerSymptoms[k]);
       if (hasCancerSymptoms) return true;
-    }
-    if (diseaseId === 'neurological') {
-      if (systolicBp > 130 || sleepQuality < 6 || physicalActivity < 3) return true;
-      const hasNeuroSymptoms = Object.keys(neurologicalSymptoms).some(k => k !== 'no_symptoms' && neurologicalSymptoms[k]);
-      if (hasNeuroSymptoms) return true;
     }
 
     // 3. Check prescriptions for active meds
@@ -508,8 +438,7 @@ function PatientDashboard({ user }) {
     predictionsHistory, prescriptions, pathologyReports,
     systolicBp, diastolicBp, cholesterol, chestPain, exerciseAngina, fastingSugar, heartSymptoms,
     glucose, hba1c, bmi, hypertension, heartDiseaseHistory, diabetesSymptoms,
-    alcohol, toxinExposure, cancerSymptoms,
-    sleepQuality, physicalActivity, neurologicalSymptoms
+    alcohol, toxinExposure, cancerSymptoms
   ]);
 
   // Set patient sidebar content dynamically
@@ -518,7 +447,6 @@ function PatientDashboard({ user }) {
       { id: 'heart_attack', label: 'Heart Attack Predictor', icon: <Heart size={20} /> },
       { id: 'diabetes', label: 'Diabetes Risk Engine', icon: <Activity size={20} /> },
       { id: 'cancer', label: 'Cancer Risk Surveillance', icon: <Compass size={20} /> },
-      { id: 'neurological', label: 'Neurological & Stroke Screening', icon: <Cpu size={20} /> },
     ];
     
     // Hide irrelevant predictors to avoid informational clutter
@@ -714,23 +642,13 @@ function PatientDashboard({ user }) {
           exposure: toxinExposure,
           symptoms: Object.keys(cancerSymptoms).filter(k => cancerSymptoms[k])
         };
-      } else if (selectedDisease === 'neurological') {
-        params = {
-          ...params,
-          systolic_bp: systolicBp,
-          glucose: glucose,
-          sleep_quality: sleepQuality,
-          physical_activity: physicalActivity,
-          symptoms: Object.keys(neurologicalSymptoms).filter(k => neurologicalSymptoms[k])
-        };
       }
 
       try {
         const diseaseNameMap = {
           heart_attack: 'Heart Attack',
           diabetes: 'Diabetes',
-          cancer: 'Cancer Screening',
-          neurological: 'Neurological Screening'
+          cancer: 'Cancer Screening'
         };
         const response = await api.post('/predictions/predict/', {
           disease_type: diseaseNameMap[selectedDisease] || 'Heart Attack',
@@ -754,8 +672,44 @@ function PatientDashboard({ user }) {
     setError('');
   };
 
-  const handlePrint = () => {
-    window.print();
+  const handleExportReport = () => {
+    if (!result) return;
+    const lines = [
+      '==============================================',
+      '   MEDFUSION AI — CLINICAL RISK ASSESSMENT',
+      '==============================================',
+      `Generated: ${new Date().toLocaleString()}`,
+      `Disease:    ${result.disease_type || selectedDisease}`,
+      `Risk Score: ${result.risk_score}%`,
+      `Risk Level: ${result.risk_level}`,
+      '',
+      '--- CLINICAL REASONING ---',
+      result.clinical_reasoning || 'N/A',
+      '',
+      '--- DIETARY GUIDELINES ---',
+      ...(result.remedies?.dietary_guidelines || []).map(g => `• ${g}`),
+      '',
+      '--- LIFESTYLE MODIFICATIONS ---',
+      ...(result.remedies?.lifestyle_modifications || []).map(g => `• ${g}`),
+      '',
+      '--- CLINICAL RECOMMENDATIONS ---',
+      ...(result.remedies?.clinical_recommendations || []).map(g => `• ${g}`),
+      '',
+      '--- URGENT WARNING SIGNS ---',
+      ...(result.remedies?.urgent_warning_signs || []).map(g => `⚠ ${g}`),
+      '',
+      '==============================================',
+      'DISCLAIMER: AI-generated analysis only.',
+      'Always consult a licensed healthcare provider.',
+      '==============================================',
+    ];
+    const blob = new Blob([lines.join('\n')], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `MedFusion_Report_${(result.disease_type || selectedDisease).replace(/\s+/g, '_')}_${new Date().toISOString().split('T')[0]}.txt`;
+    a.click();
+    URL.revokeObjectURL(url);
   };
 
   const renderDiseaseVitals = () => {
@@ -1352,150 +1306,6 @@ function PatientDashboard({ user }) {
           </div>
         );
 
-      case 'neurological':
-        return (
-          <div className="reveal">
-            <div className="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
-              <h4 className="fw-bold text-white d-flex align-items-center gap-2 m-0" style={{ fontSize: '1.05rem', letterSpacing: '0.05em' }}>
-                <Cpu className="animate-pulse" size={18} style={{ color: 'var(--theme-accent)' }} />
-                <span style={{ color: 'var(--theme-accent)' }}>Neurological & Cognitive Vitals</span>
-              </h4>
-              <div className="d-flex gap-2">
-                <button 
-                  type="button" 
-                  onClick={() => applyNeurologicalPreset('healthy')}
-                  className="btn border rounded font-monospace hover-white px-3 py-1.5"
-                  style={{ fontSize: '0.78rem', width: 'auto', backgroundColor: 'rgba(25, 135, 84, 0.2)', color: '#4ade80', borderColor: 'rgba(25, 135, 84, 0.5)' }}
-                >
-                  🌿 Healthy Preset
-                </button>
-                <button 
-                  type="button" 
-                  onClick={() => applyNeurologicalPreset('risk')}
-                  className="btn border rounded font-monospace hover-white px-3 py-1.5"
-                  style={{ fontSize: '0.78rem', width: 'auto', backgroundColor: 'rgba(220, 53, 69, 0.2)', color: '#f87171', borderColor: 'rgba(220, 53, 69, 0.5)' }}
-                >
-                  ⚠️ High Risk Preset
-                </button>
-              </div>
-            </div>
-            
-            <div className="row g-3">
-              <div className="col-md-6">
-                <div className="predictor-card">
-                  <label className="small text-secondary fw-semibold mb-2 font-monospace">SYSTOLIC PRESSURE</label>
-                  <div className="d-flex align-items-center gap-3">
-                    <input 
-                      type="range" 
-                      value={systolicBp} 
-                      onChange={(e) => setSystolicBp(Number(e.target.value))} 
-                      min="80" max="220" 
-                      className="flex-grow-1 m-0"
-                    />
-                    <div className="d-flex align-items-center gap-1 flex-shrink-0 font-monospace fw-bold" style={{ color: 'var(--theme-accent)' }}>
-                      <input 
-                        type="number" 
-                        value={systolicBp} 
-                        onChange={(e) => setSystolicBp(e.target.value === '' ? '' : Number(e.target.value))}
-                        min="80" max="220"
-                        className="typeable-number-input"
-                        style={{
-                          width: '65px',
-                          background: 'rgba(255,255,255,0.07)',
-                          border: '1px solid rgba(255,255,255,0.15)',
-                          borderRadius: '4px',
-                          color: 'var(--theme-accent)',
-                          textAlign: 'center',
-                          padding: '3px 6px',
-                          fontSize: '0.82rem',
-                          fontWeight: 'bold',
-                          outline: 'none'
-                        }}
-                      />
-                      <span>mmHg</span>
-                    </div>
-                  </div>
-                  <small className="text-secondary d-block mt-2" style={{ fontSize: '0.74rem' }}>Normal range: 90 - 120 mmHg</small>
-                </div>
-              </div>
-              <div className="col-md-6">
-                <div className="predictor-card">
-                  <label className="small text-secondary fw-semibold mb-2 font-monospace">BLOOD GLUCOSE</label>
-                  <div className="d-flex align-items-center gap-3">
-                    <input 
-                      type="range" 
-                      value={glucose} 
-                      onChange={(e) => setGlucose(Number(e.target.value))} 
-                      min="50" max="300" 
-                      className="flex-grow-1 m-0"
-                    />
-                    <div className="d-flex align-items-center gap-1 flex-shrink-0 font-monospace fw-bold" style={{ color: 'var(--theme-accent)' }}>
-                      <input 
-                        type="number" 
-                        value={glucose} 
-                        onChange={(e) => setGlucose(e.target.value === '' ? '' : Number(e.target.value))}
-                        min="50" max="300"
-                        className="typeable-number-input"
-                        style={{
-                          width: '65px',
-                          background: 'rgba(255,255,255,0.07)',
-                          border: '1px solid rgba(255,255,255,0.15)',
-                          borderRadius: '4px',
-                          color: 'var(--theme-accent)',
-                          textAlign: 'center',
-                          padding: '3px 6px',
-                          fontSize: '0.82rem',
-                          fontWeight: 'bold',
-                          outline: 'none'
-                        }}
-                      />
-                      <span>mg/dL</span>
-                    </div>
-                  </div>
-                  <small className="text-secondary d-block mt-2" style={{ fontSize: '0.74rem' }}>Normal range: 70 - 100 mg/dL</small>
-                </div>
-              </div>
-              
-              <div className="col-md-6">
-                <div className="predictor-card">
-                  <label className="small text-secondary fw-semibold mb-2 font-monospace">DAILY SLEEP QUANTITY</label>
-                  <div className="d-flex align-items-center gap-3">
-                    <input 
-                      type="range" 
-                      value={sleepQuality} 
-                      onChange={(e) => setSleepQuality(Number(e.target.value))} 
-                      min="3" max="12" step="0.5"
-                      className="flex-grow-1 m-0"
-                    />
-                    <div className="d-flex align-items-center gap-1 flex-shrink-0 font-monospace fw-bold" style={{ color: 'var(--theme-accent)' }}>
-                      <span className="fs-6">{sleepQuality} Hrs</span>
-                    </div>
-                  </div>
-                  <small className="text-secondary d-block mt-2" style={{ fontSize: '0.74rem' }}>Target: 7 - 9 hours daily</small>
-                </div>
-              </div>
-              <div className="col-md-6">
-                <div className="predictor-card">
-                  <label className="small text-secondary fw-semibold mb-2 font-monospace">PHYSICAL ACTIVITY</label>
-                  <div className="d-flex align-items-center gap-3">
-                    <input 
-                      type="range" 
-                      value={physicalActivity} 
-                      onChange={(e) => setPhysicalActivity(Number(e.target.value))} 
-                      min="0" max="21" 
-                      className="flex-grow-1 m-0"
-                    />
-                    <div className="d-flex align-items-center gap-1 flex-shrink-0 font-monospace fw-bold" style={{ color: 'var(--theme-accent)' }}>
-                      <span className="fs-6">{physicalActivity} Hrs/Wk</span>
-                    </div>
-                  </div>
-                  <small className="text-secondary d-block mt-2" style={{ fontSize: '0.74rem' }}>Recommended: 2.5+ hours/week</small>
-                </div>
-              </div>
-            </div>
-          </div>
-        );
-
       default:
         return null;
     }
@@ -1608,49 +1418,15 @@ function PatientDashboard({ user }) {
           </div>
         );
 
-      case 'neurological':
-        return (
-          <div className="reveal">
-            <h4 className="fw-bold mb-4 text-white d-flex align-items-center gap-2" style={{ fontSize: '1.05rem', letterSpacing: '0.05em' }}>
-              <ShieldAlert className="animate-pulse" size={18} style={{ color: 'var(--theme-accent)' }} />
-              <span style={{ color: 'var(--theme-accent)' }}>Active Cognitive & Neurological Symptoms Checklist</span>
-            </h4>
-            <div className="row g-2">
-              {Object.keys(neurologicalSymptoms).map((sym) => (
-                <div className="col-md-6" key={sym}>
-                  <div 
-                    onClick={() => handleNeurologicalSymptomToggle(sym)}
-                    className={`p-3 rounded border cursor-pointer transition-all d-flex align-items-center gap-3 ${
-                      neurologicalSymptoms[sym] 
-                        ? (sym === 'no_symptoms' ? 'active-no-symptoms' : 'border-cancer active-symptom') 
-                        : 'border-white-5 hover-border-white-10 text-secondary bg-white-10 bg-opacity-30'
-                    }`}
-                  >
-                    <input 
-                      type="checkbox" 
-                      checked={neurologicalSymptoms[sym]} 
-                      onChange={() => handleNeurologicalSymptomToggle(sym)}
-                      onClick={(e) => e.stopPropagation()}
-                      aria-label={sym.replace(/_/g, ' ')}
-                      className="m-0 cursor-pointer"
-                      style={{ width: '20px', height: '20px', marginBottom: 0 }}
-                    />
-                    <span className={`text-capitalize font-monospace ${neurologicalSymptoms[sym] ? 'text-white fw-bold' : ''}`} style={{ fontSize: '0.95rem' }}>{sym.replace(/_/g, ' ')}</span>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        );
-
       default:
         return null;
     }
   };
 
   return (
-    <div className={`reveal px-1 py-1 ${getThemeClass()}`}>
-      <div className="row g-4 mt-2 align-items-stretch">
+    <div className={`reveal px-1 ${getThemeClass()}`}>
+
+      <div className="row g-4 align-items-stretch">
         {/* CENTERED LAYOUT STAGE: Vitals Forms and Holographic Results HUD */}
         <div className="col-12 col-xl-10 mx-auto reveal">
           <AnimatePresence mode="wait">
@@ -1937,12 +1713,12 @@ function PatientDashboard({ user }) {
                   </button>
 
                   <button 
-                    onClick={handlePrint}
+                    onClick={handleExportReport}
                     className="btn-icon p-2 px-3 border border-white-10 bg-transparent text-secondary rounded d-flex align-items-center gap-2 hover-white font-monospace text-uppercase"
                     style={{ width: 'auto', fontSize: '0.9rem' }}
                   >
-                    <Printer size={14} />
-                    Print EMR Report
+                    <Download size={14} />
+                    Export Report
                   </button>
                 </div>
 
@@ -2036,6 +1812,13 @@ function PatientDashboard({ user }) {
                     >
                       Clinical Follow-up
                     </button>
+                    <button 
+                      onClick={() => setRemedyTab('warnings')}
+                      className={`flex-fill px-3 py-2 text-uppercase text-xs font-bold ${remedyTab === 'warnings' ? 'primary' : 'bg-transparent text-secondary hover-white'}`}
+                      style={{ borderRadius: '4px', width: 'auto', fontSize: '0.92rem' }}
+                    >
+                      Warning Signs
+                    </button>
                   </div>
 
                   {/* Tab Contents */}
@@ -2088,41 +1871,31 @@ function PatientDashboard({ user }) {
                         exit={{ opacity: 0, y: -5 }}
                         className="font-monospace"
                       >
-                        <div className="row g-3">
-                          <div className="col-md-6">
-                            <h5 className="font-monospace text-theme-accent small mb-2 fw-bold" style={{ fontSize: '0.94rem' }}>Extracted OTC & Home Remedies</h5>
-                            <div className="d-flex flex-column gap-2">
-                              {result.remedies?.otc_suggestions?.map((item, idx) => (
-                                <div key={idx} className="p-2 rounded bg-white-10 border border-white-5 font-monospace text-secondary small" style={{ fontSize: '0.88rem' }}>
-                                  💊 {item}
-                                </div>
-                              ))}
-                              {result.remedies?.home_remedies?.map((item, idx) => (
-                                <div key={idx} className="p-2 rounded bg-white-10 border border-white-5 font-monospace text-secondary small" style={{ fontSize: '0.88rem' }}>
-                                  🏡 {item}
-                                </div>
-                              ))}
-                            </div>
-                          </div>
+                        <div className="p-3 bg-white-10 border border-white-10 rounded">
+                          <h6 className="fw-bold text-white m-0 mb-2 font-monospace" style={{ fontSize: '0.94rem' }}>Clinical Recommendations</h6>
+                          <ul className="small text-secondary ps-3 mb-0 font-monospace" style={{ fontSize: '0.88rem' }}>
+                            {result.remedies?.clinical_recommendations?.map((item, idx) => (
+                              <li key={idx} className="mb-1">{item}</li>
+                            ))}
+                          </ul>
+                        </div>
+                      </motion.div>
+                    )}
 
-                          <div className="col-md-6">
-                            <h5 className="font-monospace text-danger small mb-2 fw-bold" style={{ fontSize: '0.94rem' }}>Critical Warning Flags</h5>
-                            <div className="p-3 bg-danger bg-opacity-10 border border-danger border-opacity-30 rounded mb-3">
-                              <ul className="small text-danger ps-3 mb-0 font-monospace" style={{ fontSize: '0.88rem' }}>
-                                {result.remedies?.urgent_warning_signs?.map((item, idx) => (
-                                  <li key={idx} className="mb-1">{item}</li>
-                                ))}
-                              </ul>
-                            </div>
-                            <div className="p-3 bg-white-10 border border-white-10 rounded">
-                              <h6 className="fw-bold text-white m-0 mb-2 font-monospace" style={{ fontSize: '0.94rem' }}>Clinical Recommendations</h6>
-                              <ul className="small text-secondary ps-3 mb-0 font-monospace" style={{ fontSize: '0.88rem' }}>
-                                {result.remedies?.clinical_recommendations?.map((item, idx) => (
-                                  <li key={idx} className="mb-1">{item}</li>
-                                ))}
-                              </ul>
-                            </div>
-                          </div>
+                    {remedyTab === 'warnings' && (
+                      <motion.div 
+                        key="warnings"
+                        initial={{ opacity: 0, y: 5 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -5 }}
+                        className="font-monospace"
+                      >
+                        <div className="p-3 bg-danger bg-opacity-10 border border-danger border-opacity-30 rounded">
+                          <ul className="small text-danger ps-3 mb-0 font-monospace" style={{ fontSize: '0.88rem' }}>
+                            {result.remedies?.urgent_warning_signs?.map((item, idx) => (
+                              <li key={idx} className="mb-1">{item}</li>
+                            ))}
+                          </ul>
                         </div>
                       </motion.div>
                     )}

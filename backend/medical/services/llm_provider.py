@@ -8,8 +8,6 @@ from dotenv import load_dotenv
 from google import genai
 from google.genai import types
 from openai import AsyncOpenAI
-import anthropic
-import cohere
 
 # Load environment variables
 load_dotenv()
@@ -20,8 +18,6 @@ logger = logging.getLogger(__name__)
 class ModelProvider(Enum):
     OPENAI = "openai"
     GOOGLE = "google"
-    ANTHROPIC = "anthropic"
-    COHERE = "cohere"
 
 
 @dataclass
@@ -36,31 +32,18 @@ class LLMProvider:
     def __init__(self):
         self.clients = {}
         self.models = {
-            "gpt-4o-mini": ModelConfig(
-                ModelProvider.OPENAI, "gpt-4o-mini", max_tokens=16000
-            ),
+            # Primary — current stable Flash model
             "gemini-2.5-flash": ModelConfig(
                 ModelProvider.GOOGLE, "gemini-2.5-flash", max_tokens=8192
             ),
-            "gemini-2.5-pro": ModelConfig(
-                ModelProvider.GOOGLE, "gemini-2.5-pro", max_tokens=8192
-            ),
+            # Stable Flash model (previous generation)
             "gemini-2.0-flash": ModelConfig(
                 ModelProvider.GOOGLE, "gemini-2.0-flash", max_tokens=8192
             ),
-            "gemini-flash-latest": ModelConfig(
-                ModelProvider.GOOGLE, "gemini-flash-latest", max_tokens=8192
+            # OpenAI fallback
+            "gpt-4o-mini": ModelConfig(
+                ModelProvider.OPENAI, "gpt-4o-mini", max_tokens=16000
             ),
-            "gemini-pro-latest": ModelConfig(
-                ModelProvider.GOOGLE, "gemini-pro-latest", max_tokens=8192
-            ),
-            "gemini-3-flash-preview": ModelConfig(
-                ModelProvider.GOOGLE, "gemini-3-flash-preview", max_tokens=8192
-            ),
-            "command-r": ModelConfig(
-                ModelProvider.COHERE, "command-r", max_tokens=4000
-            ),
-            "command": ModelConfig(ModelProvider.COHERE, "command", max_tokens=4000),
         }
         self._load_keys()
 
@@ -77,9 +60,6 @@ class LLMProvider:
                 for k in os.getenv("GEMINI_API_KEY", "").split(",")
                 if k.strip()
             ]
-        self.cohere_keys = [
-            k.strip() for k in os.getenv("COHERE_API_KEY", "").split(",") if k.strip()
-        ]
 
     def _get_client(self, provider: ModelProvider, key_idx: int = 0) -> Any:
         client_key = f"{provider.value}_{key_idx}"
@@ -92,10 +72,6 @@ class LLMProvider:
                 elif provider == ModelProvider.GOOGLE and self.google_keys:
                     self.clients[client_key] = genai.Client(
                         api_key=self.google_keys[key_idx % len(self.google_keys)]
-                    )
-                elif provider == ModelProvider.COHERE and self.cohere_keys:
-                    self.clients[client_key] = cohere.AsyncClient(
-                        api_key=self.cohere_keys[key_idx % len(self.cohere_keys)]
                     )
             return self.clients.get(client_key)
         except Exception as e:
@@ -118,7 +94,7 @@ class LLMProvider:
         config = self.models.get(model_name)
 
         if not config:
-            # Fallback to a default if the requested model is missing
+            # Fallback to primary model if the requested model name is unknown
             model_name = "gemini-2.5-flash"
             config = self.models.get(model_name)
             if not config:
@@ -167,19 +143,6 @@ class LLMProvider:
                 )
                 return res.text
 
-            elif provider == ModelProvider.COHERE:
-                h = (
-                    [{"role": "SYSTEM", "message": system_prompt}]
-                    if system_prompt
-                    else []
-                )
-                res = await asyncio.wait_for(
-                    client.chat(
-                        model=target_model, message=str(prompt), chat_history=h
-                    ),
-                    timeout=timeout,
-                )
-                return res.text
             else:
                 raise Exception(f"Unhandled provider: {provider}")
 
@@ -204,15 +167,9 @@ class LLMProvider:
 
     def _select_best_fallback(self, tried_models: List[str]) -> Optional[str]:
         chain = [
-            "gemini-2.5-flash",
-            "gemini-2.5-pro",
-            "gemini-2.0-flash",
-            "gemini-flash-latest",
-            "gemini-pro-latest",
-            "gemini-3-flash-preview",
-            "gpt-4o-mini",
-            "command-r",
-            "command",
+            'gemini-2.5-flash',
+            'gemini-2.0-flash',
+            'gpt-4o-mini',
         ]
         for model in chain:
             if model not in tried_models:
