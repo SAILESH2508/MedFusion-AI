@@ -38,19 +38,20 @@ function Profile({ user, onUserUpdate }) {
   // ------------------------------------------------------------------
   // EMERGENCY QR TOKEN STATE
   // ------------------------------------------------------------------
+  const _userId = user?.id || user?.user_id || user?.pk || 'guest';
   const [emergencyToken, setEmergencyToken] = useState(() => {
     try {
       const uid = user?.id || user?.user_id || user?.pk || 'guest';
-      return localStorage.getItem(`medfusion_emergency_token_${uid}`) || null;
+      return localStorage.getItem(`medfusion_emergency_token_${uid}`) || '';
     } catch (e) {
-      return null;
+      return '';
     }
   });
 
   const handleGenerateToken = async () => {
     try {
       const res = await api.post('/emergency/generate/');
-      const token = res.data.token;
+      const token = res.data.token || '';
       const uid = user?.id || user?.user_id || user?.pk || 'guest';
       setEmergencyToken(token);
       localStorage.setItem(`medfusion_emergency_token_${uid}`, token);
@@ -66,14 +67,13 @@ function Profile({ user, onUserUpdate }) {
       console.error('Failed to revoke emergency token:', err);
     } finally {
       const uid = user?.id || user?.user_id || user?.pk || 'guest';
-      setEmergencyToken(null);
+      setEmergencyToken('');
       localStorage.removeItem(`medfusion_emergency_token_${uid}`);
     }
   };
 
   // ------------------------------------------------------------------
-  // TAB STATE
-  // ------------------------------------------------------------------
+
   const [searchParams] = useSearchParams();
   const tabParam = searchParams.get('tab');
   const [activeTabState, setActiveTabState] = useState('identity');
@@ -110,7 +110,7 @@ function Profile({ user, onUserUpdate }) {
   const [newMedName, setNewMedName] = useState('');
   const [newMedDosage, setNewMedDosage] = useState('');
   const [newMedFrequency, setNewMedFrequency] = useState('Once daily');
-  const [newMedTime, setNewMedTime] = useState('Morning'); // Morning, Afternoon, Evening, Night
+  const [newMedTime, setNewMedTime] = useState('Morning');
 
   const [medsTakenToday, setMedsTakenToday] = useState(() => {
     try {
@@ -234,7 +234,6 @@ function Profile({ user, onUserUpdate }) {
         api.get('/prescriptions/'),
         api.get('/pathology/')
       ]);
-      // Normalize combined history
       const normalizedRx = rxRes.data.map(r => ({ ...r, type: 'prescription' }));
       const normalizedPath = pathRes.data.map(p => ({ ...p, type: 'pathology' }));
       const combined = [...normalizedRx, ...normalizedPath].sort((a, b) =>
@@ -376,7 +375,6 @@ function Profile({ user, onUserUpdate }) {
 
   const calculateHealthScore = useCallback(() => {
     let score = 100;
-    // Inline BMI calculation so useCallback deps are fully satisfied
     let bmi = null;
     if (profile?.weight && profile?.height) {
       const hMet = profile.height / 100;
@@ -428,7 +426,6 @@ function Profile({ user, onUserUpdate }) {
         ...editData
       });
       if (response.data && response.data.user) {
-        // Sync updated user to parent App state and localStorage
         const updatedUser = response.data.user;
         localStorage.setItem('medfusion_user', JSON.stringify(updatedUser));
         if (onUserUpdate) onUserUpdate(updatedUser);
@@ -479,7 +476,6 @@ function Profile({ user, onUserUpdate }) {
           {/* Avatar and Credentials Panel */}
           <div className="col-lg-5 col-md-5 d-flex">
             <div className="glass-card text-center w-100 p-5 d-flex flex-column align-items-center justify-content-center position-relative border-theme-accent border-opacity-15 bg-white-5">
-              {/* Edit controls */}
               <div className="position-absolute top-0 end-0 p-3">
                 {!isEditing ? (
                   <button
