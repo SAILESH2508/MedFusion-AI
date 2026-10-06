@@ -40,7 +40,13 @@ const STATUS_COLORS = {
 
 // ─── Pure SVG line chart ──────────────────────────────────────────────────────
 function BiomarkerChart({ data }) {
-  if (!data || data.length < 2) return null;
+  if (!data || data.length < 2) {
+    return (
+      <p style={{ textAlign: 'center', color: 'rgba(255,255,255,0.35)', fontFamily: 'monospace', fontSize: '0.78rem', margin: 0 }}>
+        Only one data point recorded. Upload another lab report to see a trend chart.
+      </p>
+    );
+  }
 
   const PADDING = { top: 10, right: 16, bottom: 28, left: 36 };
   const WIDTH = 520;

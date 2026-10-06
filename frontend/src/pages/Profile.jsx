@@ -38,6 +38,16 @@ function Profile({ user, onUserUpdate }) {
   // ------------------------------------------------------------------
   // EMERGENCY QR TOKEN STATE
   // ------------------------------------------------------------------
+  // SECURITY NOTE: The emergency token is persisted in localStorage so it
+  // survives page refreshes without requiring an extra network round-trip on
+  // every profile load. Trade-off: localStorage is accessible to any JS
+  // running in the same origin, so an XSS vulnerability could expose the
+  // token. Mitigations in place: (1) the token only grants read access to
+  // non-sensitive emergency card fields — no auth credentials are stored;
+  // (2) users can revoke the token at any time via handleRevokeToken;
+  // (3) the token is scoped per user ID. If a stricter posture is required,
+  // swap localStorage for sessionStorage (cleared on tab close) or replace
+  // client-side persistence with a GET /api/emergency/status/ call on mount.
   const _userId = user?.id || user?.user_id || user?.pk || 'guest';
   const [emergencyToken, setEmergencyToken] = useState(() => {
     try {
@@ -54,6 +64,7 @@ function Profile({ user, onUserUpdate }) {
       const token = res.data.token || '';
       const uid = user?.id || user?.user_id || user?.pk || 'guest';
       setEmergencyToken(token);
+      // See SECURITY NOTE above regarding localStorage usage.
       localStorage.setItem(`medfusion_emergency_token_${uid}`, token);
     } catch (err) {
       console.error('Failed to generate emergency token:', err);
