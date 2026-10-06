@@ -105,6 +105,16 @@ function GuestDashboard({ openAuth }) {
   // Remedy Tab state inside results
   const [remedyTab, setRemedyTab] = useState('diet'); // 'diet' | 'lifestyle' | 'clinical'
 
+  // Explainable Risk state
+  const [showFactors, setShowFactors] = useState(false);
+
+  // What-If Simulator state
+  const [showSimulator, setShowSimulator] = useState(false);
+  const [simParams, setSimParams] = useState({});
+  const [simResult, setSimResult] = useState(null);
+  const [simLoading, setSimLoading] = useState(false);
+  const [simError, setSimError] = useState('');
+
   // Track manual changes in vitals/symptoms/demographics
   const isInitialMount = useRef(true);
   useEffect(() => {
@@ -566,6 +576,34 @@ function GuestDashboard({ openAuth }) {
     setResult(null);
     setAnalysisProgress(0);
     setError('');
+    setShowFactors(false);
+    setShowSimulator(false);
+    setSimResult(null);
+    setSimError('');
+    setSimParams({});
+  };
+
+  const diseaseNameMap = {
+    heart_attack: 'Heart Attack',
+    diabetes: 'Diabetes',
+    cancer: 'Cancer Screening'
+  };
+
+  const runSimulation = async () => {
+    setSimLoading(true);
+    setSimError('');
+    try {
+      const commonParams = { age, gender, family_history: familyHistory, smoking, symptoms: [] };
+      const response = await api.post('/predictions/simulate/', {
+        disease_type: diseaseNameMap[selectedDisease] || 'Heart Attack',
+        parameters: { ...commonParams, ...simParams }
+      });
+      setSimResult(response.data);
+    } catch (err) {
+      setSimError(err.response?.data?.error || err.message || 'Simulation failed');
+    } finally {
+      setSimLoading(false);
+    }
   };
 
   const handleExportReport = () => {
@@ -1768,6 +1806,220 @@ function GuestDashboard({ openAuth }) {
                       </motion.div>
                     )}
                   </AnimatePresence>
+                </div>
+
+                {/* EXPLAINABLE RISK — Why this score? */}
+                <div className="glass-card p-4">
+                  <button
+                    onClick={() => setShowFactors(prev => !prev)}
+                    className="btn-icon d-flex align-items-center gap-2 font-monospace text-uppercase w-100 justify-content-between"
+                    style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px', padding: '12px 16px', color: 'var(--theme-accent)', fontSize: '0.9rem', cursor: 'pointer', width: '100%' }}
+                  >
+                    <span>🔍 Why this score?</span>
+                    <span style={{ fontSize: '0.75rem', opacity: 0.7 }}>{showFactors ? '▲ Hide' : '▼ Show'} Key Risk Factors</span>
+                  </button>
+
+                  {showFactors && (
+                    <div className="mt-3">
+                      <h6 className="fw-bold text-white font-monospace mb-2" style={{ fontSize: '0.95rem' }}>Key Risk Factors</h6>
+                      <p className="text-secondary font-monospace mb-3" style={{ fontSize: '0.78rem', lineHeight: '1.5', padding: '10px 14px', background: 'rgba(255,255,255,0.03)', borderRadius: '6px', border: '1px solid rgba(255,255,255,0.07)' }}>
+                        ⚠️ These factors influenced the machine learning model estimate. They do not establish medical causation or constitute a diagnosis.
+                      </p>
+                      {result.factors && result.factors.length > 0 ? (
+                        <div className="d-flex flex-column gap-2">
+                          {result.factors.slice(0, 5).map((factor, idx) => (
+                            <div key={idx} style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px', padding: '12px 16px' }}>
+                              <div className="d-flex justify-content-between align-items-center mb-1">
+                                <span className="font-monospace fw-bold text-white" style={{ fontSize: '0.88rem' }}>{factor.feature}</span>
+                                <span className="font-monospace text-secondary" style={{ fontSize: '0.8rem' }}>
+                                  Value: <span style={{ color: 'var(--theme-accent)' }}>{factor.value}</span>
+                                </span>
+                              </div>
+                              <div style={{ background: 'rgba(255,255,255,0.08)', borderRadius: '4px', height: '6px', overflow: 'hidden' }}>
+                                <div style={{ width: `${Math.min(100, (factor.importance || 0) * 100)}%`, height: '100%', background: 'var(--theme-accent)', borderRadius: '4px', transition: 'width 0.6s ease' }} />
+                              </div>
+                              <div className="d-flex justify-content-between mt-1">
+                                <span className="text-secondary font-monospace" style={{ fontSize: '0.72rem' }}>Model weight</span>
+                                <span className="font-monospace" style={{ fontSize: '0.72rem', color: 'var(--theme-accent)' }}>{((factor.importance || 0) * 100).toFixed(1)}%</span>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      ) : (
+                        <p className="text-secondary font-monospace" style={{ fontSize: '0.85rem' }}>Factor breakdown not available for this analysis.</p>
+                      )}
+                    </div>
+                  )}
+                </div>
+
+                {/* WHAT-IF RISK SIMULATOR */}
+                <div className="glass-card p-4">
+                  <button
+                    onClick={() => {
+                      // Pre-fill simParams from current form values
+                      const initialParams = {};
+                      if (selectedDisease === 'heart_attack') {
+                        initialParams.systolic_bp = systolicBp;
+                        initialParams.diastolic_bp = diastolicBp;
+                        initialParams.cholesterol = cholesterol;
+                        initialParams.max_heart_rate = maxHeartRate;
+                      } else if (selectedDisease === 'diabetes') {
+                        initialParams.glucose = glucose;
+                        initialParams.hba1c = hba1c;
+                        initialParams.bmi = bmi;
+                      } else if (selectedDisease === 'cancer') {
+                        initialParams.alcohol = alcohol;
+                        initialParams.exposure = toxinExposure;
+                        initialParams.smoking = smoking;
+                      }
+                      setSimParams(initialParams);
+                      setSimResult(null);
+                      setSimError('');
+                      setShowSimulator(prev => !prev);
+                    }}
+                    className="btn-icon d-flex align-items-center gap-2 font-monospace text-uppercase w-100 justify-content-between"
+                    style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px', padding: '12px 16px', color: '#60a5fa', fontSize: '0.9rem', cursor: 'pointer', width: '100%' }}
+                  >
+                    <span>⚗️ What If?</span>
+                    <span style={{ fontSize: '0.75rem', opacity: 0.7 }}>{showSimulator ? '▲ Close' : '▼ Open'} Simulator</span>
+                  </button>
+
+                  {showSimulator && (
+                    <div className="mt-3">
+                      <h6 className="fw-bold text-white font-monospace mb-2" style={{ fontSize: '0.95rem' }}>What-If Risk Simulator</h6>
+                      <p className="text-secondary font-monospace mb-3" style={{ fontSize: '0.78rem', lineHeight: '1.5', padding: '10px 14px', background: 'rgba(96,165,250,0.06)', borderRadius: '6px', border: '1px solid rgba(96,165,250,0.2)' }}>
+                        ⚗️ This is a model simulation, not a medical prediction or treatment recommendation. Changing a value does not guarantee a real-world health outcome.
+                      </p>
+
+                      <div className="row g-3 mb-3">
+                        {selectedDisease === 'heart_attack' && (
+                          <>
+                            <div className="col-md-6">
+                              <label className="small text-secondary fw-semibold mb-1 font-monospace d-block">Systolic BP (mmHg)</label>
+                              <div className="d-flex gap-2 align-items-center">
+                                <span className="text-secondary font-monospace" style={{ fontSize: '0.78rem', minWidth: '60px' }}>Current: {systolicBp}</span>
+                                <input type="number" value={simParams.systolic_bp ?? systolicBp} onChange={(e) => setSimParams(p => ({ ...p, systolic_bp: Number(e.target.value) }))} min="80" max="220" style={{ flex: 1, background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.15)', borderRadius: '6px', color: '#60a5fa', padding: '8px 12px', fontSize: '0.88rem', outline: 'none' }} />
+                              </div>
+                            </div>
+                            <div className="col-md-6">
+                              <label className="small text-secondary fw-semibold mb-1 font-monospace d-block">Diastolic BP (mmHg)</label>
+                              <div className="d-flex gap-2 align-items-center">
+                                <span className="text-secondary font-monospace" style={{ fontSize: '0.78rem', minWidth: '60px' }}>Current: {diastolicBp}</span>
+                                <input type="number" value={simParams.diastolic_bp ?? diastolicBp} onChange={(e) => setSimParams(p => ({ ...p, diastolic_bp: Number(e.target.value) }))} min="40" max="130" style={{ flex: 1, background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.15)', borderRadius: '6px', color: '#60a5fa', padding: '8px 12px', fontSize: '0.88rem', outline: 'none' }} />
+                              </div>
+                            </div>
+                            <div className="col-md-6">
+                              <label className="small text-secondary fw-semibold mb-1 font-monospace d-block">Cholesterol (mg/dL)</label>
+                              <div className="d-flex gap-2 align-items-center">
+                                <span className="text-secondary font-monospace" style={{ fontSize: '0.78rem', minWidth: '60px' }}>Current: {cholesterol}</span>
+                                <input type="number" value={simParams.cholesterol ?? cholesterol} onChange={(e) => setSimParams(p => ({ ...p, cholesterol: Number(e.target.value) }))} min="100" max="400" style={{ flex: 1, background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.15)', borderRadius: '6px', color: '#60a5fa', padding: '8px 12px', fontSize: '0.88rem', outline: 'none' }} />
+                              </div>
+                            </div>
+                            <div className="col-md-6">
+                              <label className="small text-secondary fw-semibold mb-1 font-monospace d-block">Max Heart Rate (BPM)</label>
+                              <div className="d-flex gap-2 align-items-center">
+                                <span className="text-secondary font-monospace" style={{ fontSize: '0.78rem', minWidth: '60px' }}>Current: {maxHeartRate}</span>
+                                <input type="number" value={simParams.max_heart_rate ?? maxHeartRate} onChange={(e) => setSimParams(p => ({ ...p, max_heart_rate: Number(e.target.value) }))} min="60" max="220" style={{ flex: 1, background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.15)', borderRadius: '6px', color: '#60a5fa', padding: '8px 12px', fontSize: '0.88rem', outline: 'none' }} />
+                              </div>
+                            </div>
+                          </>
+                        )}
+                        {selectedDisease === 'diabetes' && (
+                          <>
+                            <div className="col-md-4">
+                              <label className="small text-secondary fw-semibold mb-1 font-monospace d-block">Glucose (mg/dL)</label>
+                              <div className="d-flex gap-2 align-items-center">
+                                <span className="text-secondary font-monospace" style={{ fontSize: '0.78rem', minWidth: '60px' }}>Current: {glucose}</span>
+                                <input type="number" value={simParams.glucose ?? glucose} onChange={(e) => setSimParams(p => ({ ...p, glucose: Number(e.target.value) }))} min="50" max="400" style={{ flex: 1, background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.15)', borderRadius: '6px', color: '#60a5fa', padding: '8px 12px', fontSize: '0.88rem', outline: 'none' }} />
+                              </div>
+                            </div>
+                            <div className="col-md-4">
+                              <label className="small text-secondary fw-semibold mb-1 font-monospace d-block">HbA1c (%)</label>
+                              <div className="d-flex gap-2 align-items-center">
+                                <span className="text-secondary font-monospace" style={{ fontSize: '0.78rem', minWidth: '60px' }}>Current: {hba1c}</span>
+                                <input type="number" step="0.1" value={simParams.hba1c ?? hba1c} onChange={(e) => setSimParams(p => ({ ...p, hba1c: Number(e.target.value) }))} min="3.0" max="16.0" style={{ flex: 1, background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.15)', borderRadius: '6px', color: '#60a5fa', padding: '8px 12px', fontSize: '0.88rem', outline: 'none' }} />
+                              </div>
+                            </div>
+                            <div className="col-md-4">
+                              <label className="small text-secondary fw-semibold mb-1 font-monospace d-block">BMI (kg/m²)</label>
+                              <div className="d-flex gap-2 align-items-center">
+                                <span className="text-secondary font-monospace" style={{ fontSize: '0.78rem', minWidth: '60px' }}>Current: {bmi}</span>
+                                <input type="number" step="0.1" value={simParams.bmi ?? bmi} onChange={(e) => setSimParams(p => ({ ...p, bmi: Number(e.target.value) }))} min="10" max="70" style={{ flex: 1, background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.15)', borderRadius: '6px', color: '#60a5fa', padding: '8px 12px', fontSize: '0.88rem', outline: 'none' }} />
+                              </div>
+                            </div>
+                          </>
+                        )}
+                        {selectedDisease === 'cancer' && (
+                          <>
+                            <div className="col-md-4">
+                              <label className="small text-secondary fw-semibold mb-1 font-monospace d-block">Alcohol</label>
+                              <select value={simParams.alcohol ?? alcohol} onChange={(e) => setSimParams(p => ({ ...p, alcohol: e.target.value }))} style={{ width: '100%', background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.15)', borderRadius: '6px', color: '#60a5fa', padding: '8px 12px', fontSize: '0.88rem', outline: 'none' }}>
+                                <option value="no">None / Rare</option>
+                                <option value="mild">Occasional</option>
+                                <option value="yes">Moderate / Heavy</option>
+                              </select>
+                            </div>
+                            <div className="col-md-4">
+                              <label className="small text-secondary fw-semibold mb-1 font-monospace d-block">Toxin Exposure</label>
+                              <select value={simParams.exposure ?? toxinExposure} onChange={(e) => setSimParams(p => ({ ...p, exposure: e.target.value }))} style={{ width: '100%', background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.15)', borderRadius: '6px', color: '#60a5fa', padding: '8px 12px', fontSize: '0.88rem', outline: 'none' }}>
+                                <option value="no">None</option>
+                                <option value="mild">Intermittent</option>
+                                <option value="yes">High Exposure</option>
+                              </select>
+                            </div>
+                            <div className="col-md-4">
+                              <label className="small text-secondary fw-semibold mb-1 font-monospace d-block">Smoking</label>
+                              <select value={simParams.smoking ?? smoking} onChange={(e) => setSimParams(p => ({ ...p, smoking: e.target.value }))} style={{ width: '100%', background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.15)', borderRadius: '6px', color: '#60a5fa', padding: '8px 12px', fontSize: '0.88rem', outline: 'none' }}>
+                                <option value="no">Never / Non-Smoker</option>
+                                <option value="former">Former Smoker</option>
+                                <option value="yes">Active Smoker</option>
+                              </select>
+                            </div>
+                          </>
+                        )}
+                      </div>
+
+                      <button
+                        onClick={runSimulation}
+                        disabled={simLoading}
+                        className="btn-icon d-flex align-items-center justify-content-center gap-2 font-monospace text-uppercase"
+                        style={{ background: 'rgba(96,165,250,0.12)', border: '1px solid rgba(96,165,250,0.4)', borderRadius: '8px', padding: '10px 20px', color: '#60a5fa', fontSize: '0.88rem', cursor: simLoading ? 'not-allowed' : 'pointer', opacity: simLoading ? 0.6 : 1, width: '100%' }}
+                      >
+                        {simLoading ? (
+                          <><span className="spinner-border spinner-border-sm" role="status" />&nbsp;Calculating...</>
+                        ) : (
+                          <>⚗️ Recalculate Simulation</>
+                        )}
+                      </button>
+
+                      {simError && (
+                        <div className="mt-2 p-2 rounded font-monospace" style={{ background: 'rgba(220,53,69,0.1)', border: '1px solid rgba(220,53,69,0.3)', color: '#f87171', fontSize: '0.82rem' }}>
+                          {simError}
+                        </div>
+                      )}
+
+                      {simResult && (
+                        <div className="mt-3 p-3 rounded" style={{ background: 'rgba(96,165,250,0.06)', border: '1px solid rgba(96,165,250,0.25)', borderRadius: '10px' }}>
+                          <div className="row g-3 text-center">
+                            <div className="col-4">
+                              <p className="text-secondary font-monospace mb-1" style={{ fontSize: '0.72rem', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Current Estimate</p>
+                              <p className="fw-bold font-monospace mb-0" style={{ fontSize: '1.6rem', color: 'var(--theme-accent)' }}>{result.risk_score}%</p>
+                            </div>
+                            <div className="col-4 d-flex flex-column align-items-center justify-content-center">
+                              <p className="text-secondary font-monospace mb-1" style={{ fontSize: '0.72rem', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Difference</p>
+                              <p className="fw-bold font-monospace mb-0" style={{ fontSize: '1.4rem', color: (simResult.simulated_score - result.risk_score) > 0 ? '#f87171' : '#4ade80' }}>
+                                {(simResult.simulated_score - result.risk_score) > 0 ? '+' : ''}{(simResult.simulated_score - result.risk_score).toFixed(0)} pts
+                              </p>
+                            </div>
+                            <div className="col-4">
+                              <p className="text-secondary font-monospace mb-1" style={{ fontSize: '0.72rem', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Simulated Estimate</p>
+                              <p className="fw-bold font-monospace mb-0" style={{ fontSize: '1.6rem', color: '#60a5fa' }}>{simResult.simulated_score}%</p>
+                            </div>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  )}
                 </div>
               </motion.div>
             )}
