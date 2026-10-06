@@ -80,7 +80,7 @@ function EmergencyCard() {
         {/* Patient name */}
         <div style={styles.section}>
           <span style={styles.label}>PATIENT NAME</span>
-          <span style={styles.valueLarge}>{data.patient_name || 'Unknown'}</span>
+          <span style={styles.valueLarge}>{data.name || 'Unknown'}</span>
         </div>
 
         {/* Vault ID */}

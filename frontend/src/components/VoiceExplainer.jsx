@@ -24,9 +24,25 @@ function VoiceExplainer({ text, label }) {
   // Keep originalTextRef in sync if the text prop changes
   useEffect(() => {
     originalTextRef.current = text || '';
-    // Reset to original when the source text changes
     if (language === 'en') {
+      // English: just update display text directly
       setDisplayText(text || '');
+    } else {
+      // Non-English: re-translate so the new result text is shown in the selected language
+      if (!text) {
+        setDisplayText('');
+        return;
+      }
+      setTranslating(true);
+      api
+        .post('/ai/explain/', { text: text, language })
+        .then((res) => {
+          setDisplayText(res.data.explanation || text);
+        })
+        .catch(() => {
+          setDisplayText(text);
+        })
+        .finally(() => setTranslating(false));
     }
   }, [text]); // eslint-disable-line react-hooks/exhaustive-deps
 
