@@ -1,6 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { Database, Upload, ChevronUp, ChevronDown, Pill, CheckCircle, FileText, TrendingUp, ChevronRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import VoiceExplainer from '../../components/VoiceExplainer';
 
 // ─── Biomarker direction rules ───────────────────────────────────────────────
 // lower=better: glucose, hba1c, cholesterol, ldl, triglycerides, creatinine, urea
@@ -425,6 +426,7 @@ function MedicalVault({
                             <div className="inner-vault-card text-secondary small" style={{ lineHeight: '1.6' }}>
                               {parsedAnalysis.summary}
                             </div>
+                            {parsedAnalysis.summary && <VoiceExplainer text={parsedAnalysis.summary} label="Pathology Summary" />}
                           </div>
                         )}
                       </div>

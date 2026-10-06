@@ -11,6 +11,7 @@ import {
   Sparkles,
   Cpu
 } from 'lucide-react';
+import VoiceExplainer from '../../components/VoiceExplainer';
 import { api } from '../../services/api';
 import { motion, AnimatePresence } from 'framer-motion';
 import { SidebarContext } from '../../context/SidebarContext';
@@ -1816,6 +1817,7 @@ function PatientDashboard({ user }) {
                       <p className="text-secondary font-monospace" style={{ lineHeight: 1.6, fontSize: '0.98rem' }}>
                         {result.clinical_reasoning}
                       </p>
+                      <VoiceExplainer text={result.clinical_reasoning} label="Clinical Reasoning" />
                     </div>
                   </div>
                 </div>

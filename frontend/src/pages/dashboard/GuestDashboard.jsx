@@ -15,6 +15,7 @@ import { api } from '../../services/api';
 import { motion, AnimatePresence } from 'framer-motion';
 import { SidebarContext } from '../../context/SidebarContext';
 import { getRiskColor, getRiskBg, getAge, getHasShownGuestPopup, setHasShownGuestPopup } from '../../services/utils';
+import VoiceExplainer from '../../components/VoiceExplainer';
 
 const logs = [
   "Establishing neural connection to MedFusion Core...",
@@ -1684,6 +1685,7 @@ function GuestDashboard({ openAuth }) {
                       <p className="text-secondary font-monospace" style={{ lineHeight: 1.6, fontSize: '0.98rem' }}>
                         {result.clinical_reasoning}
                       </p>
+                      <VoiceExplainer text={result.clinical_reasoning} label="Clinical Reasoning" />
                     </div>
                   </div>
                 </div>
