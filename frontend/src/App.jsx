@@ -12,6 +12,7 @@ import Profile from './pages/Profile';
 import Auth from './pages/Auth';
 import Landing from './pages/Landing';
 import NearbyMap from './pages/NearbyMap';
+import EmergencyCard from './pages/EmergencyCard';
 import AIChatbot from './components/AIChatbot';
 import { removeAuthToken } from './services/api';
 
@@ -155,6 +156,9 @@ function AppContent({ user, login, logout }) {
                 <Route path="/vault" element={<Navigate to="/profile" />} />
                 <Route path="/profile" element={user ? <Profile user={user} onUserUpdate={login} /> : <RedirectToHomeAndOpenAuth openAuth={openAuth} />} />
                 
+                {/* Public emergency card — no auth required */}
+                <Route path="/emergency/:token" element={<EmergencyCard />} />
+
                 <Route path="*" element={<Navigate to="/" />} />
               </Routes>
             </main>

@@ -14,7 +14,10 @@ function ProfileIdentity({
   bmi, 
   bmiCat, 
   healthScore,
-  history = []
+  history = [],
+  emergencyToken = null,
+  onGenerateToken,
+  onRevokeToken
 }) {
 
   return (
@@ -121,6 +124,66 @@ function ProfileIdentity({
                         <span className="text-secondary italic font-monospace" style={{ fontSize: '0.78rem' }}>No drug/food allergies logged.</span>
                       )}
                     </div>
+                  </div>
+
+                  {/* ---- EMERGENCY QR CARD ---- */}
+                  <div className="p-3.5 rounded-4 text-start mt-2" style={{ border: '1px solid rgba(0,245,212,0.15)', background: 'rgba(0,245,212,0.03)' }}>
+                    <span className="small text-theme-accent d-block text-uppercase mb-2 fw-bold font-monospace" style={{ fontSize: '0.64rem', letterSpacing: '0.06em' }}>
+                      🔑 Emergency QR Card
+                    </span>
+                    <p className="text-secondary m-0 mb-2" style={{ fontSize: '0.72rem', lineHeight: '1.5' }}>
+                      Scan to access emergency medical information without login required.
+                    </p>
+
+                    {!emergencyToken ? (
+                      <button
+                        onClick={onGenerateToken}
+                        className="px-3 py-1.5 bg-theme-accent border-0 text-white rounded-3 font-monospace text-uppercase hover-white"
+                        style={{ fontSize: '0.74rem', cursor: 'pointer', width: '100%', marginTop: '4px' }}
+                      >
+                        Generate Emergency QR
+                      </button>
+                    ) : (
+                      <div className="d-flex flex-column align-items-center gap-3">
+                        <img
+                          src={`https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodeURIComponent(window.location.origin + '/emergency/' + emergencyToken)}`}
+                          alt="Emergency QR Code"
+                          style={{ width: '180px', height: '180px', borderRadius: '8px', border: '2px solid rgba(0,245,212,0.25)', display: 'block' }}
+                        />
+                        <p className="text-secondary m-0" style={{ fontSize: '0.62rem', wordBreak: 'break-all', textAlign: 'center', opacity: 0.5 }}>
+                          {window.location.origin}/emergency/{emergencyToken}
+                        </p>
+                        <div className="d-flex gap-2 flex-wrap justify-content-center w-100">
+                          <button
+                            onClick={onGenerateToken}
+                            className="px-3 py-1.5 border border-white-10 bg-transparent text-theme-accent rounded-3 font-monospace text-uppercase hover-white"
+                            style={{ fontSize: '0.72rem', cursor: 'pointer' }}
+                            title="Generate a new token (old QR will be invalidated)"
+                          >
+                            Regenerate
+                          </button>
+                          <button
+                            onClick={onRevokeToken}
+                            className="px-3 py-1.5 border border-white-10 bg-transparent text-danger rounded-3 font-monospace text-uppercase"
+                            style={{ fontSize: '0.72rem', cursor: 'pointer' }}
+                          >
+                            Revoke
+                          </button>
+                          <a
+                            href={`https://api.qrserver.com/v1/create-qr-code/?size=400x400&data=${encodeURIComponent(window.location.origin + '/emergency/' + emergencyToken)}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="px-3 py-1.5 border border-white-10 bg-transparent text-secondary rounded-3 font-monospace text-uppercase text-decoration-none"
+                            style={{ fontSize: '0.72rem' }}
+                          >
+                            Download
+                          </a>
+                        </div>
+                        <p className="text-secondary m-0" style={{ fontSize: '0.65rem', opacity: 0.5, textAlign: 'center' }}>
+                          Revoke at any time to invalidate the QR code.
+                        </p>
+                      </div>
+                    )}
                   </div>
                 </div>
               ) : (

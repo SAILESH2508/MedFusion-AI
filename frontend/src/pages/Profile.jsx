@@ -35,6 +35,45 @@ function Profile({ user, onUserUpdate }) {
   const [saveSuccess, setSaveSuccess] = useState('');
   const [saveError, setSaveError] = useState('');
 
+  // ------------------------------------------------------------------
+  // EMERGENCY QR TOKEN STATE
+  // ------------------------------------------------------------------
+  const [emergencyToken, setEmergencyToken] = useState(() => {
+    try {
+      const uid = user?.id || user?.user_id || user?.pk || 'guest';
+      return localStorage.getItem(`medfusion_emergency_token_${uid}`) || null;
+    } catch (e) {
+      return null;
+    }
+  });
+
+  const handleGenerateToken = async () => {
+    try {
+      const res = await api.post('/emergency/generate/');
+      const token = res.data.token;
+      const uid = user?.id || user?.user_id || user?.pk || 'guest';
+      setEmergencyToken(token);
+      localStorage.setItem(`medfusion_emergency_token_${uid}`, token);
+    } catch (err) {
+      console.error('Failed to generate emergency token:', err);
+    }
+  };
+
+  const handleRevokeToken = async () => {
+    try {
+      await api.delete('/emergency/revoke/');
+    } catch (err) {
+      console.error('Failed to revoke emergency token:', err);
+    } finally {
+      const uid = user?.id || user?.user_id || user?.pk || 'guest';
+      setEmergencyToken(null);
+      localStorage.removeItem(`medfusion_emergency_token_${uid}`);
+    }
+  };
+
+  // ------------------------------------------------------------------
+  // TAB STATE
+  // ------------------------------------------------------------------
   const [searchParams] = useSearchParams();
   const tabParam = searchParams.get('tab');
   const [activeTabState, setActiveTabState] = useState('identity');
@@ -128,11 +167,6 @@ function Profile({ user, onUserUpdate }) {
   const [safetyLoading, setSafetyLoading] = useState(false);
   const [safetyError, setSafetyError] = useState('');
   const [safetyReport, setSafetyReport] = useState(null);
-
-  // -------------------------------------------------------------
-  // CONSULTATIONS / APPOINTMENT BOOKING
-  // -------------------------------------------------------------
-  // Removed: upcomingAppointments, selectedDoctor, appointmentDate, appointmentTime, appointmentReason, showBookingModal, handleBookAppointment
 
   // -------------------------------------------------------------
   // DATA SYNC AND LOADING LOGIC
@@ -365,11 +399,11 @@ function Profile({ user, onUserUpdate }) {
   }, [profile, history]);
 
   useEffect(() => {
-    const userId = user?.id || user?.user_id || user?.pk || 'guest';
-    if (userId && user?.role === 'Patient') {
+    const uid = user?.id || user?.user_id || user?.pk || 'guest';
+    if (uid && user?.role === 'Patient') {
       const score = calculateHealthScore();
       if (score) {
-        localStorage.setItem(`medfusion_health_score_${userId}`, score);
+        localStorage.setItem(`medfusion_health_score_${uid}`, score);
         window.dispatchEvent(new Event('medfusion_health_score_updated'));
       }
     }
@@ -383,14 +417,14 @@ function Profile({ user, onUserUpdate }) {
     setSaveError('');
     setSaveSuccess('');
     try {
-      const userId = user.id || user.user_id || user.pk;
-      if (!userId) {
+      const uid = user.id || user.user_id || user.pk;
+      if (!uid) {
         setSaveError('User ID not found. Please try logging in again.');
         setSaveLoading(false);
         return;
       }
       const response = await api.post('/profile/update/', {
-        patient_id: userId,
+        patient_id: uid,
         ...editData
       });
       if (response.data && response.data.user) {
@@ -459,7 +493,7 @@ function Profile({ user, onUserUpdate }) {
                     }}
                     style={{ width: 'auto', fontSize: '0.8rem' }}
                   >
-                    <Edit3 size={12} /> Edit
+                    Edit
                   </button>
                 ) : (
                   <div className="d-flex gap-2">
@@ -572,7 +606,6 @@ function Profile({ user, onUserUpdate }) {
   const bmiCat = getBmiCategory(bmi);
   const healthScore = calculateHealthScore();
 
-
   const tabThemes = {
     identity: 'theme-general',
     vault: 'theme-cancer',
@@ -594,7 +627,6 @@ function Profile({ user, onUserUpdate }) {
           <span>⚠</span> {saveError}
         </div>
       )}
-
 
       {/* Holographic Segmented Tab Switcher */}
       <div className="mb-4 tab-selector-container p-1 bg-glass d-md-none" style={{ borderRadius: '12px', border: '1.5px solid var(--theme-accent, rgba(0, 245, 212, 0.25))' }}>
@@ -642,6 +674,9 @@ function Profile({ user, onUserUpdate }) {
               history={history}
               saveSuccess={saveSuccess}
               saveError={saveError}
+              emergencyToken={emergencyToken}
+              onGenerateToken={handleGenerateToken}
+              onRevokeToken={handleRevokeToken}
             />
           </motion.div>
         )}
