@@ -54,7 +54,8 @@ api.interceptors.response.use(
           window.location.pathname !== '/dashboard' &&
           window.location.pathname !== '/upload' &&
           window.location.pathname !== '/nearby' &&
-          window.location.pathname !== '/diet'
+          window.location.pathname !== '/diet' &&
+          !window.location.pathname.includes('/digital-twin')
         ) {
           window.location.href = '/auth';
         }
