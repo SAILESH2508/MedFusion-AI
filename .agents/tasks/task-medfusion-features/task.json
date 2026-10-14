@@ -1,7 +1,0 @@
-{
-  "task_id": "task-medfusion-features",
-  "task_description": "Implement 6 new features in MedFusion AI without breaking existing functionality: (1) Biomarker Trend Timeline, (2) Explainable Risk, (3) What-If Risk Simulator, (4) Emergency QR, (5) Multilingual + Voice Explanation, (6) Light/Dark Theme System.",
-  "status": "pending",
-  "feature_order": ["FEAT-001", "FEAT-002", "FEAT-003", "FEAT-004"],
-  "blocked_reason": null
-}

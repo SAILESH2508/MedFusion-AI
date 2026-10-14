@@ -1,0 +1,7 @@
+{
+  "task_id": "task-health-twin",
+  "task_description": "Remove Health Garden, simplify Quick Calc, and build a 3D Personal Health Twin with organ viewer, health timeline, medication safety panel, and biomarker change explorer. Also add a consolidated backend endpoint GET /api/health-twin/.",
+  "status": "pending",
+  "feature_order": ["FEAT-001", "FEAT-002", "FEAT-003", "FEAT-004"],
+  "blocked_reason": null
+}

@@ -170,3 +170,148 @@ class PredictionRecord(models.Model):
             "created_at": self.created_at.isoformat(),
         }
 
+
+
+# ── Diet Planner Models ────────────────────────────────────────────────────
+
+REGION_CHOICES = [
+    ('Tamil Nadu', 'Tamil Nadu'),
+    ('Kerala', 'Kerala'),
+    ('Karnataka', 'Karnataka'),
+    ('Andhra Pradesh', 'Andhra Pradesh'),
+    ('Telangana', 'Telangana'),
+    ('Maharashtra', 'Maharashtra'),
+    ('North Indian', 'North Indian'),
+    ('Other', 'Other'),
+]
+
+DIET_TYPE_CHOICES = [
+    ('vegetarian', 'Vegetarian'),
+    ('non_vegetarian', 'Non-Vegetarian'),
+    ('vegan', 'Vegan'),
+]
+
+CALORIE_CHOICES = [
+    ('low', 'Low (<1500 kcal)'),
+    ('moderate', 'Moderate (1500-2000 kcal)'),
+    ('high', 'High (>2000 kcal)'),
+]
+
+BUDGET_CHOICES = [
+    ('low', 'Budget-Friendly'),
+    ('moderate', 'Moderate'),
+    ('high', 'Premium'),
+]
+
+
+class DietPreference(models.Model):
+    patient = models.OneToOneField(Patient, on_delete=models.CASCADE, related_name='diet_preference')
+    region = models.CharField(max_length=50, choices=REGION_CHOICES, default='Tamil Nadu')
+    diet_type = models.CharField(max_length=20, choices=DIET_TYPE_CHOICES, default='vegetarian')
+    food_allergies = models.TextField(default='[]')   # JSON list of strings
+    food_dislikes = models.TextField(default='[]')    # JSON list of strings
+    meals_per_day = models.IntegerField(default=3)
+    calorie_preference = models.CharField(max_length=20, choices=CALORIE_CHOICES, default='moderate')
+    budget = models.CharField(max_length=20, choices=BUDGET_CHOICES, default='moderate')
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"DietPreference({self.patient}, {self.region}, {self.diet_type})"
+
+
+class MealPlan(models.Model):
+    patient = models.ForeignKey(Patient, on_delete=models.CASCADE, related_name='meal_plans')
+    week_start = models.DateField()
+    plan_data = models.TextField()    # JSON: {"monday": {"breakfast": {...}, ...}, ...}
+    generated_at = models.DateTimeField(auto_now_add=True)
+    is_active = models.BooleanField(default=True)
+
+    class Meta:
+        ordering = ['-generated_at']
+
+    def __str__(self):
+        return f"MealPlan({self.patient}, week={self.week_start})"
+
+
+class MealCompletion(models.Model):
+    MEAL_TYPES = ['breakfast', 'snack1', 'lunch', 'snack2', 'dinner']
+
+    patient = models.ForeignKey(Patient, on_delete=models.CASCADE, related_name='meal_completions')
+    date = models.DateField()
+    meal_type = models.CharField(max_length=20)
+    meal_name = models.CharField(max_length=200, blank=True)
+    completed = models.BooleanField(default=False)
+    completed_at = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        unique_together = [('patient', 'date', 'meal_type')]
+        ordering = ['-date']
+
+    def __str__(self):
+        return f"MealCompletion({self.patient}, {self.date}, {self.meal_type}, completed={self.completed})"
+
+
+class FavoriteMeal(models.Model):
+    patient = models.ForeignKey(Patient, on_delete=models.CASCADE, related_name='favorite_meals')
+    meal_data = models.TextField()    # JSON blob of the meal object
+    added_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-added_at']
+
+
+class ShoppingListItem(models.Model):
+    patient = models.ForeignKey(Patient, on_delete=models.CASCADE, related_name='shopping_items')
+    ingredient = models.CharField(max_length=200)
+    quantity = models.CharField(max_length=100, blank=True)
+    checked = models.BooleanField(default=False)
+    added_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['checked', '-added_at']
+
+
+# ── Health Garden Models ────────────────────────────────────────────────────
+
+ACTIVITY_TYPE_CHOICES = [
+    ('medication_taken', 'Medication Taken'),
+    ('meal_completed', 'Meal Completed'),
+    ('symptom_logged', 'Symptom Logged'),
+    ('activity_completed', 'Activity Completed'),
+    ('checkin', 'Health Check-in'),
+]
+
+POINTS_MAP = {
+    'medication_taken': 10,
+    'meal_completed': 5,
+    'symptom_logged': 5,
+    'activity_completed': 10,
+    'checkin': 5,
+}
+
+
+class HealthActivity(models.Model):
+    patient = models.ForeignKey(Patient, on_delete=models.CASCADE, related_name='health_activities')
+    activity_type = models.CharField(max_length=30, choices=ACTIVITY_TYPE_CHOICES)
+    points = models.IntegerField(default=5)
+    note = models.CharField(max_length=200, blank=True)
+    logged_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-logged_at']
+
+    def __str__(self):
+        return f"HealthActivity({self.patient}, {self.activity_type}, +{self.points}pts)"
+
+
+class GardenProgress(models.Model):
+    patient = models.OneToOneField(Patient, on_delete=models.CASCADE, related_name='garden')
+    total_points = models.IntegerField(default=0)
+    current_streak = models.IntegerField(default=0)
+    best_streak = models.IntegerField(default=0)
+    last_activity_date = models.DateField(null=True, blank=True)
+    achievements = models.TextField(default='[]')   # JSON list of achievement id strings
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"GardenProgress({self.patient}, pts={self.total_points}, streak={self.current_streak})"

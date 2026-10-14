@@ -32,11 +32,11 @@ class LLMProvider:
     def __init__(self):
         self.clients = {}
         self.models = {
-            # Primary — current stable Flash model
+            # Primary — fast, multimodal, 1M context
             "gemini-2.5-flash": ModelConfig(
                 ModelProvider.GOOGLE, "gemini-2.5-flash", max_tokens=8192
             ),
-            # Stable Flash model (previous generation)
+            # Stable previous-gen Gemini fallback
             "gemini-2.0-flash": ModelConfig(
                 ModelProvider.GOOGLE, "gemini-2.0-flash", max_tokens=8192
             ),
