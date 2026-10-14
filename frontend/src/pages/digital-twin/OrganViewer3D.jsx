@@ -225,7 +225,7 @@ export default function OrganViewer3D({ selectedOrgan, onOrganSelect, patientDat
       <Canvas
         camera={{ position: [0, 0, 4], fov: 50 }}
         style={{ height: '100%', width: '100%' }}
-        onPointerMissed={() => {/* deselect handled in parent */}}
+        onPointerMissed={() => onOrganSelect(null)}
       >
         <Suspense fallback={null}>
           <Scene selectedOrgan={selectedOrgan} onOrganSelect={onOrganSelect} />

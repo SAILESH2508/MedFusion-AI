@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 
 const ORGAN_INFO = {
   heart: {
@@ -148,9 +149,9 @@ export default function OrganInfoPanel({ selectedOrgan, patientData }) {
           )}
 
           <div className="mt-2">
-            <a href="/profile?tab=vault" style={{ fontSize: '0.72rem', color: 'var(--accent-teal, #00f5d4)', textDecoration: 'none' }}>
+            <Link to="/profile?tab=vault" style={{ fontSize: '0.72rem', color: 'var(--accent-teal, #00f5d4)', textDecoration: 'none' }}>
               View in Medical Vault →
-            </a>
+            </Link>
           </div>
         </>
       )}

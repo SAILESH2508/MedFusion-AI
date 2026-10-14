@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 
 const TYPE_COLORS = {
   prediction: '#ff8c00',
@@ -213,9 +214,9 @@ export default function HealthTimeline({ patientData, loading }) {
 
               {isExpanded && (
                 <div style={{ marginTop: '8px', borderTop: '1px solid rgba(255,255,255,0.07)', paddingTop: '6px' }}>
-                  <a href="/profile?tab=vault" style={{ fontSize: '0.72rem', color: 'var(--accent-teal, #00f5d4)', textDecoration: 'none' }}>
+                  <Link to="/profile?tab=vault" style={{ fontSize: '0.72rem', color: 'var(--accent-teal, #00f5d4)', textDecoration: 'none' }}>
                     View full record →
-                  </a>
+                  </Link>
                 </div>
               )}
             </div>

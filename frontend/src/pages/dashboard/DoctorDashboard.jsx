@@ -381,14 +381,8 @@ function DoctorDashboard({ user }) {
                 Clinical Calculators
               </summary>
             <div className="p-3 d-flex flex-column gap-2.5" style={{ }}>
-              <div className="d-flex align-items-center justify-content-between border-bottom border-white-10 pb-2">
-                <div className="d-flex align-items-center gap-2">
-                  <Calculator className="text-theme-accent" size={18} />
-                  <h4 className="fw-bold m-0 text-white text-uppercase" style={{ fontSize: '0.95rem', letterSpacing: '0.02em' }}>Quick Calc</h4>
-                </div>
-                
-                {/* Calc tabs */}
-                <div className="d-flex gap-1">
+              {/* Calc tabs */}
+              <div className="d-flex gap-1 mb-1">
                   <button 
                     onClick={() => setCalcTab('bmi')} 
                     aria-pressed={calcTab === 'bmi'}
@@ -406,7 +400,6 @@ function DoctorDashboard({ user }) {
                     THR
                   </button>
                 </div>
-              </div>
 
               {calcTab === 'bmi' ? (
                 <div className="d-flex flex-column gap-3">
