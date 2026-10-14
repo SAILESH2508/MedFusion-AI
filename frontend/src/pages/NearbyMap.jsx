@@ -108,7 +108,6 @@ function SOSPanel({ places, location, isPatient }) {
       style={{
         background: 'linear-gradient(135deg, rgba(255,0,85,0.08), rgba(0,4,45,0.6))',
         border: activated ? '1.5px solid #ff0055' : '1px solid rgba(255,0,85,0.3)',
-        boxShadow: activated ? '0 0 24px rgba(255,0,85,0.3)' : 'none',
         transition: 'all 0.3s ease',
       }}
     >
@@ -346,6 +345,7 @@ function PlaceCard({ place, isPatient, expanded, onToggle }) {
                       navigator.clipboard?.writeText(text);
                     }}
                     title="Copy facility info to clipboard"
+                    aria-label={`Copy ${place.name} location to clipboard`}
                   >
                     <Share2 size={10} /> Share
                   </button>
@@ -645,7 +645,7 @@ export default function NearbyMap({
             <div className="glass-card p-4" style={{ borderRadius: '12px' }}>
               <h5 className="text-white fw-bold font-monospace mb-3" style={{ fontSize: '0.85rem', letterSpacing: '0.06em' }}>📡 SEARCH RADIUS</h5>
               <div className="d-flex align-items-center gap-3">
-                <input type="range" min={500} max={isPatient ? 15000 : 5000} step={500} value={radius} onChange={(e) => setRadius(Number(e.target.value))} style={{ margin: 0 }} />
+                <input type="range" min={500} max={isPatient ? 15000 : 5000} step={500} value={radius} onChange={(e) => setRadius(Number(e.target.value))} style={{ margin: 0 }} aria-label="Search radius" />
                 <span className="text-info fw-bold font-monospace" style={{ minWidth: '52px', fontSize: '0.8rem' }}>
                   {radius >= 1000 ? `${(radius / 1000).toFixed(1)} km` : `${radius} m`}
                 </span>

@@ -351,7 +351,7 @@ function Navbar({ user, logout, toggleSidebar, isSidebarPage, openAuth, navbarHe
             <>
               <NavLink to="/profile" icon={<User size={16} />} label={isDoctor ? "Vault" : "Profile"} />
               {!isSidebarPage && (
-                <button onClick={logout} className="btn-icon p-2 border-0 bg-transparent text-white opacity-70 hover-opacity-100">
+                <button onClick={logout} className="btn-icon p-2 border-0 bg-transparent text-white opacity-70 hover-opacity-100" aria-label="Log out">
                   <LogOut size={18} />
                 </button>
               )}

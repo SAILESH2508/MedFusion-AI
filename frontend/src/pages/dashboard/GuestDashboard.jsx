@@ -688,6 +688,7 @@ function GuestDashboard({ openAuth }) {
                       onChange={(e) => setSystolicBp(Number(e.target.value))} 
                       min="80" max="220" 
                       className="flex-grow-1 m-0"
+                      aria-label="Systolic pressure"
                     />
                     <div className="d-flex align-items-center gap-1 flex-shrink-0 font-monospace fw-bold" style={{ color: 'var(--theme-accent)' }}>
                       <input 
@@ -729,6 +730,7 @@ function GuestDashboard({ openAuth }) {
                       onChange={(e) => setDiastolicBp(Number(e.target.value))} 
                       min="40" max="130" 
                       className="flex-grow-1 m-0"
+                      aria-label="Diastolic pressure"
                     />
                     <div className="d-flex align-items-center gap-1 flex-shrink-0 font-monospace fw-bold" style={{ color: 'var(--theme-accent)' }}>
                       <input 
@@ -771,6 +773,7 @@ function GuestDashboard({ openAuth }) {
                       onChange={(e) => setCholesterol(Number(e.target.value))} 
                       min="100" max="400" 
                       className="flex-grow-1 m-0"
+                      aria-label="Serum cholesterol"
                     />
                     <div className="d-flex align-items-center gap-1 flex-shrink-0 font-monospace fw-bold" style={{ color: 'var(--theme-accent)' }}>
                       <input 
@@ -812,6 +815,7 @@ function GuestDashboard({ openAuth }) {
                       onChange={(e) => setMaxHeartRate(Number(e.target.value))} 
                       min="60" max="220" 
                       className="flex-grow-1 m-0"
+                      aria-label="Max heart rate"
                     />
                     <div className="d-flex align-items-center gap-1 flex-shrink-0 font-monospace fw-bold" style={{ color: 'var(--theme-accent)' }}>
                       <input 
@@ -945,6 +949,7 @@ function GuestDashboard({ openAuth }) {
                       onChange={(e) => setGlucose(Number(e.target.value))} 
                       min="50" max="400" 
                       className="flex-grow-1 m-0"
+                      aria-label="Fasting glucose"
                     />
                     <div className="d-flex align-items-center gap-1 flex-shrink-0 font-monospace fw-bold" style={{ color: 'var(--theme-accent)' }}>
                       <input 
@@ -987,6 +992,7 @@ function GuestDashboard({ openAuth }) {
                       onChange={(e) => setHba1c(Number(e.target.value))} 
                       min="3.0" max="16.0" 
                       className="flex-grow-1 m-0"
+                      aria-label="HbA1c level"
                     />
                     <div className="d-flex align-items-center gap-1 flex-shrink-0 font-monospace fw-bold" style={{ color: 'var(--theme-accent)' }}>
                       <input 
@@ -1030,6 +1036,7 @@ function GuestDashboard({ openAuth }) {
                       onChange={(e) => setWeight(Number(e.target.value))} 
                       min="30" max="250" 
                       className="flex-grow-1 m-0"
+                      aria-label="Weight in kilograms"
                     />
                     <div className="d-flex align-items-center gap-1 flex-shrink-0 font-monospace fw-bold" style={{ color: 'var(--theme-accent)' }}>
                       <input 
@@ -1070,6 +1077,7 @@ function GuestDashboard({ openAuth }) {
                       onChange={(e) => setHeight(Number(e.target.value))} 
                       min="100" max="250" 
                       className="flex-grow-1 m-0"
+                      aria-label="Height in centimetres"
                     />
                     <div className="d-flex align-items-center gap-1 flex-shrink-0 font-monospace fw-bold" style={{ color: 'var(--theme-accent)' }}>
                       <input 
@@ -1449,6 +1457,7 @@ function GuestDashboard({ openAuth }) {
                             onChange={(e) => setAge(Number(e.target.value))}
                             className="flex-grow-1"
                             style={{ margin: 0 }}
+                            aria-label="Age in years"
                           />
                           <div className="d-flex align-items-center gap-1 flex-shrink-0 font-monospace fw-bold" style={{ color: 'var(--theme-accent)' }}>
                             <input 

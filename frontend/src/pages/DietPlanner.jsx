@@ -444,7 +444,7 @@ export default function DietPlanner({ user }) {
                 <input type="checkbox" checked={item.checked} onChange={() => toggleShoppingItem(item.id)} style={{ cursor: 'pointer' }} />
                 <span className="flex-grow-1 font-monospace" style={{ color: 'var(--text-primary)', fontSize: '0.88rem', textDecoration: item.checked ? 'line-through' : 'none', opacity: item.checked ? 0.5 : 1 }}>{item.ingredient}</span>
                 {item.quantity && <span className="text-secondary font-monospace" style={{ fontSize: '0.78rem' }}>{item.quantity}</span>}
-                <button onClick={() => deleteShoppingItem(item.id)} className="btn-icon p-1 bg-transparent border-0" style={{ color: 'rgba(255,51,102,0.6)' }}>
+                <button onClick={() => deleteShoppingItem(item.id)} className="btn-icon p-1 bg-transparent border-0" style={{ color: 'rgba(255,51,102,0.6)' }} aria-label={`Remove ${item.ingredient} from shopping list`}>
                   <Trash2 size={14} />
                 </button>
               </div>

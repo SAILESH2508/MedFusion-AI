@@ -133,6 +133,8 @@ function VoiceExplainer({ text, label }) {
               key={code}
               onClick={() => handleLanguageChange(code)}
               disabled={translating}
+              aria-label={`Switch to ${code === 'en' ? 'English' : code === 'ta' ? 'Tamil' : 'Hindi'}`}
+              aria-pressed={language === code}
               style={{
                 padding: '3px 10px',
                 fontSize: '0.75rem',

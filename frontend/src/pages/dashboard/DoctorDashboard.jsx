@@ -415,7 +415,8 @@ function DoctorDashboard({ user }) {
                       min="30" max="200" 
                       value={calcWeight} 
                       onChange={(e) => setCalcWeight(Number(e.target.value))}
-                      className="w-100" 
+                      className="w-100"
+                      aria-label="Patient weight in kilograms"
                     />
                   </div>
                   <div>
@@ -428,7 +429,8 @@ function DoctorDashboard({ user }) {
                       min="100" max="230" 
                       value={calcHeight} 
                       onChange={(e) => setCalcHeight(Number(e.target.value))}
-                      className="w-100" 
+                      className="w-100"
+                      aria-label="Patient height in centimetres"
                     />
                   </div>
 
@@ -478,7 +480,8 @@ function DoctorDashboard({ user }) {
                       min="1" max="110" 
                       value={calcAge} 
                       onChange={(e) => setCalcAge(Number(e.target.value))}
-                      className="w-100" 
+                      className="w-100"
+                      aria-label="Patient age in years"
                     />
                   </div>
 

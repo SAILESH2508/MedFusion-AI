@@ -284,7 +284,7 @@ export default function InteractiveMap({ location, places, isPatient }) {
       {/* Header row */}
       <div className="d-flex align-items-center justify-content-between mb-3 flex-wrap gap-2">
         <h5 className="text-white fw-bold font-monospace m-0" style={{ fontSize: '0.88rem', letterSpacing: '0.06em' }}>
-          🗺️ INTERACTIVE MAP — {places.length} FACILITIES
+          INTERACTIVE MAP — {places.length} FACILITIES
         </h5>
         <div className="d-flex gap-2 align-items-center flex-wrap">
           {/* Layer toggle */}
@@ -308,6 +308,7 @@ export default function InteractiveMap({ location, places, isPatient }) {
           <button
             onClick={recenter}
             title="Re-center on my location"
+            aria-label="Re-centre map on my location"
             style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '6px', color: 'rgba(255,255,255,0.55)', cursor: 'pointer', padding: '5px 8px', display: 'flex', alignItems: 'center' }}
           >
             <Crosshair size={14} />
@@ -316,6 +317,7 @@ export default function InteractiveMap({ location, places, isPatient }) {
           {routeInfo && (
             <button
               onClick={clearRoute}
+              aria-label="Clear route"
               style={{ background: 'rgba(255,0,85,0.1)', border: '1px solid rgba(255,0,85,0.3)', borderRadius: '6px', color: '#ff3366', cursor: 'pointer', padding: '5px 8px', display: 'flex', alignItems: 'center', gap: '4px', fontSize: '0.65rem', fontFamily: 'monospace' }}
             >
               <X size={12} /> Clear Route

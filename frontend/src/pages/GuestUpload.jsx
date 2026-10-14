@@ -135,8 +135,7 @@ function GuestUpload({ openAuth }) {
               height: '10px', 
               background: val > normalMax || val < normalMin ? '#ff8f00' : '#00f5d4', 
               top: '-2px',
-              transform: 'translateX(-50%)',
-              boxShadow: '0 0 6px rgba(255,255,255,0.8)'
+              transform: 'translateX(-50%)'
             }}
           ></div>
         </div>
@@ -144,27 +143,27 @@ function GuestUpload({ openAuth }) {
     );
   };
 
-  // Simulated visual logs for scanning wow factor
+  // Scanning progress log messages
   const rxLogs = [
-    "Establishing optical sensor matrix...",
-    "Scanning document layout and topography...",
-    "Executing optical character recognition (OCR)...",
-    "Filtering artifact noises from handwritten tokens...",
-    "Synthesizing active pharmacological ingredients...",
-    "Cross-referencing clinical drug monographs...",
-    "Structuring medication dosages and timing schedules...",
-    "Finalizing prescription digital ingestion..."
+    "Preparing optical character recognition...",
+    "Scanning document layout...",
+    "Extracting text from image...",
+    "Filtering handwritten content...",
+    "Identifying active ingredients...",
+    "Cross-referencing drug information...",
+    "Structuring medication schedules...",
+    "Finalising prescription record..."
   ];
 
   const labLogs = [
-    "Establishing digital hematology ingestion core...",
-    "Detecting key clinical biomarkers and units...",
-    "Normalizing raw biomarkers and vitals parameters...",
-    "Evaluating risk scales relative to healthy parameters...",
-    "Assessing metabolic markers (FBS, PPBS, Lipids)...",
-    "Running multi-layer pathological classification...",
-    "Generating clinical normal range indices...",
-    "Finalizing pathology analysis digest..."
+    "Preparing pathology analysis...",
+    "Detecting clinical biomarkers...",
+    "Normalising biomarker values...",
+    "Evaluating against reference ranges...",
+    "Assessing metabolic markers...",
+    "Running pathological classification...",
+    "Generating clinical reference indices...",
+    "Finalising pathology report..."
   ];
 
   const handleUpload = async () => {
@@ -449,17 +448,6 @@ function GuestUpload({ openAuth }) {
                   transition: 'all 0.2s ease',
                 }}
               >
-                <div 
-                  className="position-absolute w-100" 
-                  style={{ 
-                    height: '3px', 
-                    background: docType.includes('Rx') ? 'rgba(0, 210, 255, 0.4)' : 'rgba(255, 143, 0, 0.4)', 
-                    top: 0, 
-                    left: 0, 
-                    animation: 'scanSweep 4s linear infinite',
-                    boxShadow: docType.includes('Rx') ? '0 0 15px rgba(0, 210, 255, 0.8)' : '0 0 15px rgba(255, 143, 0, 0.8)'
-                  }}
-                ></div>
                 <UploadIcon size={56} className="mb-3" style={{ color: docType.includes('Rx') ? '#00d2ff' : '#ff8f00' }} />
                 <span className="text-white fw-bold font-monospace d-block text-uppercase" style={{ fontSize: '1.25rem', letterSpacing: '0.04em' }}>
                   {file ? `Ingested: ${file.name.toUpperCase()}` : (docType.includes('Rx') ? 'DROP RX PRESCRIPTION HERE' : 'DROP PATHOLOGY LAB REPORT HERE')}
