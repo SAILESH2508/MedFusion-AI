@@ -50,6 +50,9 @@ urlpatterns = [
     # AI explain/translate route
     re_path(r'^ai/explain/?$', views.explain_result, name='explain_result'),
 
+    # FEAT-004: Consolidated health-twin endpoint
+    re_path(r'^health-twin/?$', views.health_twin_view, name='health_twin'),
+
     # ── Diet Planner ──────────────────────────────────────────────────────
     re_path(r'^diet/preferences/?$', diet_views.diet_preferences, name='diet_preferences'),
     re_path(r'^diet/generate/?$', diet_views.generate_meal_plan, name='diet_generate'),

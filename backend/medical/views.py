@@ -1225,3 +1225,49 @@ def explain_result(request):
     except Exception as e:
         logger.error(f"explain_result translation failed: {e}")
         return JsonResponse({"explanation": text, "warning": "Translation unavailable, returning original."}, status=200)
+
+
+# ------------------------------------------------------------------------------
+# FEAT-004: Consolidated health-twin endpoint
+# ------------------------------------------------------------------------------
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def health_twin_view(request):
+    """
+    Return a consolidated snapshot of the authenticated patient's health data in
+    a single call:  profile, predictions, pathology_reports, prescriptions.
+
+    Returns 404 when the authenticated user has no Patient record (e.g. Doctors).
+    """
+    user = request.user
+    try:
+        patient = Patient.objects.get(user=user)
+    except Patient.DoesNotExist:
+        return JsonResponse({"error": "Patient profile not found"}, status=404)
+
+    # Build profile dict
+    profile_data = {
+        "id": patient.id,
+        "name": f"{patient.first_name} {patient.last_name}".strip() or user.full_name or "Patient",
+        "first_name": patient.first_name,
+        "last_name": patient.last_name,
+        "blood_group": patient.blood_group or "",
+        "allergies": json.loads(patient.allergies or '[]'),
+        "dob": patient.dob.isoformat() if patient.dob else "",
+        "gender": patient.gender or "",
+        "weight": patient.weight_kg,
+        "height": patient.height_cm,
+        "emergency_contact": patient.emergency_contact or "",
+    }
+
+    predictions = [p.to_dict() for p in patient.predictions.order_by('-created_at')[:20]]
+    pathology = [r.to_dict() for r in patient.pathology_reports.order_by('-created_at')[:20]]
+    prescriptions = [p.to_dict() for p in patient.prescriptions.order_by('-created_at')[:10]]
+
+    return JsonResponse({
+        "profile": profile_data,
+        "predictions": predictions,
+        "pathology_reports": pathology,
+        "prescriptions": prescriptions,
+    }, status=200)
