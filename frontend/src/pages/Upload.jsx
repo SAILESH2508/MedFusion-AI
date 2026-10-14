@@ -5,7 +5,6 @@ import {
   Cpu, 
   FileText, 
   ArrowRight,
-  Sparkles,
   Database
 } from 'lucide-react';
 import { api } from '../services/api';
@@ -143,7 +142,7 @@ function Upload({ user }) {
               background: val > normalMax || val < normalMin ? '#ff8f00' : '#00f5d4', 
               top: '-2px',
               transform: 'translateX(-50%)',
-              boxShadow: '0 0 6px rgba(255,255,255,0.8)'
+              boxShadow: '0 1px 3px rgba(0,0,0,0.4)'
             }}
           ></div>
         </div>
@@ -151,27 +150,27 @@ function Upload({ user }) {
     );
   };
 
-  // Simulated visual logs for scanning wow factor
+  // Scanning progress log messages
   const rxLogs = [
-    "Establishing optical sensor matrix...",
-    "Scanning document layout and topography...",
-    "Executing optical character recognition (OCR)...",
-    "Filtering artifact noises from handwritten tokens...",
-    "Synthesizing active pharmacological ingredients...",
-    "Cross-referencing clinical drug monographs...",
-    "Structuring medication dosages and timing schedules...",
-    "Finalizing prescription digital ingestion..."
+    "Preparing optical character recognition...",
+    "Scanning document layout...",
+    "Extracting text from image...",
+    "Filtering handwritten content...",
+    "Identifying active ingredients...",
+    "Cross-referencing drug information...",
+    "Structuring medication schedules...",
+    "Finalising prescription record..."
   ];
 
   const labLogs = [
-    "Establishing digital hematology ingestion core...",
-    "Detecting key clinical biomarkers and units...",
-    "Normalizing raw biomarkers and vitals parameters...",
-    "Evaluating risk scales relative to healthy parameters...",
-    "Assessing metabolic markers (FBS, PPBS, Lipids)...",
-    "Running multi-layer pathological classification...",
-    "Generating clinical normal range indices...",
-    "Finalizing pathology analysis digest..."
+    "Preparing pathology analysis...",
+    "Detecting clinical biomarkers...",
+    "Normalising biomarker values...",
+    "Evaluating against reference ranges...",
+    "Assessing metabolic markers...",
+    "Running pathological classification...",
+    "Generating clinical reference indices...",
+    "Finalising pathology report..."
   ];
 
   const handleUpload = async () => {
@@ -334,7 +333,7 @@ function Upload({ user }) {
         <div className="d-flex flex-column gap-4 pt-2">
           <div className="glass-card p-4 mb-2 reveal border-theme-accent border-opacity-15 bg-white-5" style={{ borderRadius: '12px' }}>
             <h2 className="fw-bolder fs-6 m-0 text-white" style={{ letterSpacing: '-0.02em', fontSize: '1.25rem' }}>
-              Clinical <span className="text-theme-accent" style={{ textShadow: '0 0 20px var(--theme-accent-glow)' }}>Scanner</span>
+              Clinical <span className="text-theme-accent">Scanner</span>
             </h2>
             <p className="text-secondary m-0 mt-2" style={{ fontSize: '0.88rem', lineHeight: '1.4' }}>
               Upload lab reports or prescriptions to extract clinical values directly into patient records.
@@ -402,7 +401,7 @@ function Upload({ user }) {
           {/* Sleek Medical Header Console inside Sidebar */}
           <div className="glass-card p-4 mb-2 reveal border-theme-accent border-opacity-15 bg-white-5" style={{ borderRadius: '12px' }}>
             <h2 className="fw-bolder fs-6 m-0 text-white" style={{ letterSpacing: '-0.02em', fontSize: '1.25rem' }}>
-              AI Report <span className="text-theme-accent" style={{ textShadow: '0 0 20px var(--theme-accent-glow)' }}>Scanner</span>
+              AI Report <span className="text-theme-accent">Scanner</span>
             </h2>
             <p className="text-secondary m-0 mt-2" style={{ fontSize: '0.88rem', lineHeight: '1.4' }}>
               Select your report category and ingest documents to extract medical parameters.
@@ -454,7 +453,7 @@ function Upload({ user }) {
           <div className="glass-card p-4 d-flex flex-column gap-4 w-100 justify-content-between" style={{ borderRadius: '16px' }}>
             <div className="d-flex flex-column gap-3 w-100">
               <h4 className="fw-bold text-white font-monospace d-flex align-items-center gap-3 mb-2" style={{ fontSize: '1.25rem' }}>
-                <Database size={24} className="text-theme-accent animate-pulse" />
+                <Database size={24} className="text-theme-accent" />
                 {user && user.role === 'Doctor' ? 'Clinical Ingestion suite' : 'Ingestion Controls'}
               </h4>
 
@@ -519,37 +518,27 @@ function Upload({ user }) {
               )}
 
               <div 
-                className={`border border-2 border-dashed rounded p-4 text-center mt-3 mb-2 ${docType.includes('Rx') ? 'border-brand-blue hover-border-brand-blue-glow' : 'border-brand-orange hover-border-brand-orange-glow'} transition-all cursor-pointer position-relative overflow-hidden`}
+                className={`border border-2 border-dashed rounded p-4 text-center mt-3 mb-2 ${docType.includes('Rx') ? 'border-brand-blue' : 'border-brand-orange'} transition-all cursor-pointer position-relative overflow-hidden`}
                 onClick={() => document.getElementById('fileInput').click()}
                 onDragOver={handleDragOver}
                 onDragLeave={handleDragLeave}
                 onDrop={handleDrop}
+                role="button"
+                aria-label="Upload medical document — click or drag and drop a file here"
+                tabIndex={0}
+                onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); document.getElementById('fileInput').click(); } }}
                 style={{
                   minHeight: '280px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
                   background: isDragging
                     ? (docType.includes('Rx') ? 'rgba(0,210,255,0.08)' : 'rgba(255,143,0,0.08)')
                     : 'rgba(255,255,255,0.02)',
-                  boxShadow: isDragging
-                    ? (docType.includes('Rx') ? '0 0 30px rgba(0,210,255,0.25)' : '0 0 30px rgba(255,143,0,0.25)')
-                    : 'none',
                   borderColor: isDragging
                     ? (docType.includes('Rx') ? 'rgba(0,210,255,0.8)' : 'rgba(255,143,0,0.8)')
                     : undefined,
                   transition: 'all 0.2s ease',
                 }}
               >
-                <div 
-                  className="position-absolute w-100" 
-                  style={{ 
-                    height: '3px', 
-                    background: docType.includes('Rx') ? 'rgba(0, 210, 255, 0.4)' : 'rgba(255, 143, 0, 0.4)', 
-                    top: 0, 
-                    left: 0, 
-                    animation: 'scanSweep 4s linear infinite',
-                    boxShadow: docType.includes('Rx') ? '0 0 15px rgba(0, 210, 255, 0.8)' : '0 0 15px rgba(255, 143, 0, 0.8)'
-                  }}
-                ></div>
-                <UploadIcon size={56} className="mb-3 animate-pulse" style={{ color: docType.includes('Rx') ? '#00d2ff' : '#ff8f00' }} />
+                <UploadIcon size={56} className="mb-3" style={{ color: docType.includes('Rx') ? '#00d2ff' : '#ff8f00' }} />
                 <span className="text-white fw-bold font-monospace d-block text-uppercase" style={{ fontSize: '1.25rem', letterSpacing: '0.04em' }}>
                   {file ? `Ingested: ${file.name.toUpperCase()}` : user && user.role === 'Doctor' ? (docType.includes('Rx') ? 'UPLOAD PATIENT Rx RECORD' : 'UPLOAD PATIENT PATHOLOGY REPORT') : (docType.includes('Rx') ? 'DROP RX PRESCRIPTION HERE' : 'DROP PATHOLOGY LAB REPORT HERE')}
                 </span>
@@ -563,6 +552,7 @@ function Upload({ user }) {
                   className="d-none" 
                   accept="image/jpeg,image/png,image/jpg,application/pdf"
                   onChange={handleFileChange}
+                  aria-label="Choose a medical document file"
                 />
               </div>
 
@@ -580,13 +570,10 @@ function Upload({ user }) {
                   color: docType.includes('Rx') ? '#00d2ff' : '#ff8f00',
                   cursor: !file || loading ? 'not-allowed' : 'pointer',
                   opacity: !file || loading ? 0.45 : 1,
-                  boxShadow: `0 4px 15px ${docType.includes('Rx') ? 'rgba(0, 210, 255, 0.15)' : 'rgba(255, 143, 0, 0.15)'}`,
                   transition: 'all 0.3s ease',
                 }}
-                onMouseEnter={e => { if (file && !loading) { e.currentTarget.style.boxShadow = `0 8px 25px ${docType.includes('Rx') ? 'rgba(0, 210, 255, 0.4)' : 'rgba(255, 143, 0, 0.4)'}`; e.currentTarget.style.background = docType.includes('Rx') ? 'rgba(0, 210, 255, 0.2)' : 'rgba(255, 143, 0, 0.2)'; e.currentTarget.style.transform = 'translateY(-2px)'; }}}
-                onMouseLeave={e => { e.currentTarget.style.boxShadow = `0 4px 15px ${docType.includes('Rx') ? 'rgba(0, 210, 255, 0.15)' : 'rgba(255, 143, 0, 0.15)'}`; e.currentTarget.style.background = docType.includes('Rx') ? 'rgba(0, 210, 255, 0.1)' : 'rgba(255, 143, 0, 0.1)'; e.currentTarget.style.transform = 'translateY(0)'; }}
               >
-                <Sparkles size={20} style={{ opacity: 0.95 }} />
+                <UploadIcon size={20} style={{ opacity: 0.95 }} />
                 {loading
                   ? 'INGESTING...'
                   : user && user.role === 'Doctor'
@@ -600,7 +587,7 @@ function Upload({ user }) {
             {loading && (
               <div className="border-top border-white-10 pt-4 mt-auto reveal">
                 <h4 className="fw-bold mb-2 text-white font-monospace d-flex align-items-center gap-2" style={{ fontSize: '1.05rem' }}>
-                  <Cpu className="animate-pulse" size={20} style={{ color: docType.includes('Rx') ? '#00d2ff' : '#ff8f00' }} />
+                  <Cpu size={20} style={{ color: docType.includes('Rx') ? '#00d2ff' : '#ff8f00' }} />
                   Scanner Sensor Feed
                 </h4>
                 <p className="font-monospace bg-white-10 px-3 py-2 border border-white-5 rounded" style={{ fontSize: '0.85rem', minHeight: '52px', color: docType.includes('Rx') ? '#00d2ff' : '#ff8f00' }}>
@@ -629,17 +616,16 @@ function Upload({ user }) {
                   width: '130px', 
                   height: '130px',
                   background: docType.includes('Rx') ? 'rgba(0, 245, 212, 0.08)' : 'rgba(0, 255, 170, 0.08)',
-                  border: docType.includes('Rx') ? '1px solid rgba(0, 245, 212, 0.2)' : '1px solid rgba(0, 255, 170, 0.2)',
-                  boxShadow: docType.includes('Rx') ? '0 0 30px rgba(0, 245, 212, 0.15)' : '0 0 30px rgba(0, 255, 170, 0.15)'
+                  border: docType.includes('Rx') ? '1px solid rgba(0, 245, 212, 0.2)' : '1px solid rgba(0, 255, 170, 0.2)'
                 }}
               >
                 {docType.includes('Rx') ? (
-                  <FileText size={60} className="text-theme-accent animate-pulse" />
+                  <FileText size={60} className="text-theme-accent" />
                 ) : (
-                  <Database size={60} className="text-success animate-pulse" />
+                  <Database size={60} className="text-success" />
                 )}
               </div>
-              <h4 className="fw-bold text-white font-monospace text-uppercase animate-pulse mb-2" style={{ fontSize: '1.35rem', letterSpacing: '0.04em' }}>
+              <h4 className="fw-bold text-white font-monospace text-uppercase mb-2" style={{ fontSize: '1.35rem', letterSpacing: '0.04em' }}>
                 {docType.includes('Rx') ? 'Prescription OCR Ingestor' : 'Pathology Vector Engine'}
               </h4>
               <p className="text-secondary font-monospace mt-2 px-4 m-0" style={{ maxWidth: '580px', fontSize: '0.95rem', lineHeight: '1.6' }}>
@@ -656,7 +642,7 @@ function Upload({ user }) {
             <div className="glass-card text-center p-5 d-flex flex-column align-items-center justify-content-center w-100" style={{ borderRadius: '16px' }}>
               <div className="mb-5 position-relative d-flex align-items-center justify-content-center" style={{ width: '160px', height: '160px' }}>
                 <div className="spinner-border position-absolute" style={{ width: '100px', height: '100px', borderWidth: '4.5px', borderColor: '#00d2ff transparent #ff8f00 transparent' }} role="status"></div>
-                <Cpu size={42} className="position-absolute animate-pulse brand-logo-orange" style={{ filter: 'drop-shadow(0 0 10px rgba(255, 143, 0, 0.4))' }} />
+                <Cpu size={42} className="position-absolute brand-logo-orange" />
               </div>
               <h3 className="fw-bold mb-2 font-monospace text-brand-gradient-blue" style={{ fontSize: '1.8rem' }}>Extracting Clinical Vectors</h3>
               <p className="text-brand-gradient-orange font-monospace fw-bold" style={{ fontSize: '1.1rem' }}>Re-mapping handwritten characters onto OCR models...</p>
@@ -676,7 +662,7 @@ function Upload({ user }) {
               <div className="d-flex align-items-center justify-content-between mb-4 border-bottom border-white-10 pb-3 flex-wrap gap-2">
                 <div className="font-monospace">
                   <h3 className="fw-bold m-0 text-uppercase d-flex align-items-center gap-2" style={{ fontSize: '1.35rem' }}>
-                    <CheckCircle className="text-brand-gradient-blue animate-pulse" size={24} />
+                    <CheckCircle className="text-brand-gradient-blue" size={24} />
                     <span className="text-brand-gradient-blue">Ingestion</span> <span className="text-brand-gradient-orange">Vector Complete</span>
                   </h3>
                   <span className="text-secondary small font-monospace">Extracted: {result.timestamp}</span>

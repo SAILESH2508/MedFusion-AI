@@ -5,7 +5,7 @@ import {
   Cpu, 
   FileText, 
   ArrowRight,
-  Sparkles,
+  Activity,
   Database
 } from 'lucide-react';
 import { api } from '../services/api';
@@ -378,14 +378,14 @@ function GuestUpload({ openAuth }) {
           <div className="glass-card p-4 d-flex flex-column gap-4 w-100 justify-content-between" style={{ borderRadius: '16px' }}>
             <div className="d-flex flex-column gap-3 w-100">
               <h4 className="fw-bold text-white font-monospace d-flex align-items-center gap-3 mb-2" style={{ fontSize: '1.25rem' }}>
-                <Database size={24} className="text-theme-accent animate-pulse" />
+                <Database size={24} className="text-theme-accent" />
                 Ingestion Controls
               </h4>
 
               {/* Guest Profile Identification Card */}
               <div className="glass-card p-3 mb-1 bg-white-5" style={{ borderRadius: '10px', border: '1px solid rgba(255, 255, 255, 0.08)' }}>
                 <h5 className="fw-bold mb-2 text-white d-flex align-items-center gap-2" style={{ fontSize: '0.85rem' }}>
-                  <Sparkles className="animate-pulse" size={14} style={{ color: 'var(--theme-accent)' }} />
+                  <Activity size={14} style={{ color: 'var(--theme-accent)' }} />
                   <span style={{ color: 'var(--theme-accent)' }}>Guest Identification Info</span>
                 </h5>
                 <div className="row g-2 mt-2 font-monospace">
@@ -442,9 +442,7 @@ function GuestUpload({ openAuth }) {
                   background: isDragging
                     ? (docType.includes('Rx') ? 'rgba(0,210,255,0.08)' : 'rgba(255,143,0,0.08)')
                     : 'rgba(255,255,255,0.02)',
-                  boxShadow: isDragging
-                    ? (docType.includes('Rx') ? '0 0 30px rgba(0,210,255,0.25)' : '0 0 30px rgba(255,143,0,0.25)')
-                    : 'none',
+                  boxShadow: 'none',
                   borderColor: isDragging
                     ? (docType.includes('Rx') ? 'rgba(0,210,255,0.8)' : 'rgba(255,143,0,0.8)')
                     : undefined,
@@ -462,7 +460,7 @@ function GuestUpload({ openAuth }) {
                     boxShadow: docType.includes('Rx') ? '0 0 15px rgba(0, 210, 255, 0.8)' : '0 0 15px rgba(255, 143, 0, 0.8)'
                   }}
                 ></div>
-                <UploadIcon size={56} className="mb-3 animate-pulse" style={{ color: docType.includes('Rx') ? '#00d2ff' : '#ff8f00' }} />
+                <UploadIcon size={56} className="mb-3" style={{ color: docType.includes('Rx') ? '#00d2ff' : '#ff8f00' }} />
                 <span className="text-white fw-bold font-monospace d-block text-uppercase" style={{ fontSize: '1.25rem', letterSpacing: '0.04em' }}>
                   {file ? `Ingested: ${file.name.toUpperCase()}` : (docType.includes('Rx') ? 'DROP RX PRESCRIPTION HERE' : 'DROP PATHOLOGY LAB REPORT HERE')}
                 </span>
@@ -493,13 +491,10 @@ function GuestUpload({ openAuth }) {
                   color: docType.includes('Rx') ? '#00d2ff' : '#ff8f00',
                   cursor: !file || loading ? 'not-allowed' : 'pointer',
                   opacity: !file || loading ? 0.45 : 1,
-                  boxShadow: `0 4px 15px ${docType.includes('Rx') ? 'rgba(0, 210, 255, 0.15)' : 'rgba(255, 143, 0, 0.15)'}`,
-                  transition: 'all 0.3s ease',
+                  transition: 'all 0.2s ease',
                 }}
-                onMouseEnter={e => { if (file && !loading) { e.currentTarget.style.boxShadow = `0 8px 25px ${docType.includes('Rx') ? 'rgba(0, 210, 255, 0.4)' : 'rgba(255, 143, 0, 0.4)'}`; e.currentTarget.style.background = docType.includes('Rx') ? 'rgba(0, 210, 255, 0.2)' : 'rgba(255, 143, 0, 0.2)'; e.currentTarget.style.transform = 'translateY(-2px)'; }}}
-                onMouseLeave={e => { e.currentTarget.style.boxShadow = `0 4px 15px ${docType.includes('Rx') ? 'rgba(0, 210, 255, 0.15)' : 'rgba(255, 143, 0, 0.15)'}`; e.currentTarget.style.background = docType.includes('Rx') ? 'rgba(0, 210, 255, 0.1)' : 'rgba(255, 143, 0, 0.1)'; e.currentTarget.style.transform = 'translateY(0)'; }}
               >
-                <Sparkles size={20} style={{ opacity: 0.95 }} />
+                <UploadIcon size={20} />
                 {loading
                   ? 'INGESTING...'
                   : (docType.includes('Rx') ? 'INGEST RX TO PATIENT RECORD' : 'EXTRACT CLINICAL BIOMARKERS')
@@ -511,7 +506,7 @@ function GuestUpload({ openAuth }) {
             {loading && (
               <div className="border-top border-white-10 pt-4 mt-auto reveal">
                 <h4 className="fw-bold mb-2 text-white font-monospace d-flex align-items-center gap-2" style={{ fontSize: '1.05rem' }}>
-                  <Cpu className="animate-pulse" size={20} style={{ color: docType.includes('Rx') ? '#00d2ff' : '#ff8f00' }} />
+                  <Cpu size={20} style={{ color: docType.includes('Rx') ? '#00d2ff' : '#ff8f00' }} />
                   Scanner Sensor Feed
                 </h4>
                 <p className="font-monospace bg-white-10 px-3 py-2 border border-white-5 rounded" style={{ fontSize: '0.85rem', minHeight: '52px', color: docType.includes('Rx') ? '#00d2ff' : '#ff8f00' }}>
@@ -540,17 +535,16 @@ function GuestUpload({ openAuth }) {
                   width: '130px', 
                   height: '130px',
                   background: docType.includes('Rx') ? 'rgba(0, 245, 212, 0.08)' : 'rgba(0, 255, 170, 0.08)',
-                  border: docType.includes('Rx') ? '1px solid rgba(0, 245, 212, 0.2)' : '1px solid rgba(0, 255, 170, 0.2)',
-                  boxShadow: docType.includes('Rx') ? '0 0 30px rgba(0, 245, 212, 0.15)' : '0 0 30px rgba(0, 255, 170, 0.15)'
+                  border: docType.includes('Rx') ? '1px solid rgba(0, 245, 212, 0.2)' : '1px solid rgba(0, 255, 170, 0.2)'
                 }}
               >
                 {docType.includes('Rx') ? (
-                  <FileText size={60} className="text-theme-accent animate-pulse" />
+                  <FileText size={60} className="text-theme-accent" />
                 ) : (
-                  <Database size={60} className="text-success animate-pulse" />
+                  <Database size={60} className="text-success" />
                 )}
               </div>
-              <h4 className="fw-bold text-white font-monospace text-uppercase animate-pulse mb-2" style={{ fontSize: '1.35rem', letterSpacing: '0.04em' }}>
+              <h4 className="fw-bold text-white font-monospace text-uppercase mb-2" style={{ fontSize: '1.35rem', letterSpacing: '0.04em' }}>
                 {docType.includes('Rx') ? 'Prescription OCR Ingestor' : 'Pathology Vector Engine'}
               </h4>
               <p className="text-secondary font-monospace mt-2 px-4 m-0" style={{ maxWidth: '580px', fontSize: '0.95rem', lineHeight: '1.6' }}>
@@ -567,7 +561,7 @@ function GuestUpload({ openAuth }) {
             <div className="glass-card text-center p-5 d-flex flex-column align-items-center justify-content-center w-100" style={{ borderRadius: '16px' }}>
               <div className="mb-5 position-relative d-flex align-items-center justify-content-center" style={{ width: '160px', height: '160px' }}>
                 <div className="spinner-border position-absolute" style={{ width: '100px', height: '100px', borderWidth: '4.5px', borderColor: '#00d2ff transparent #ff8f00 transparent' }} role="status"></div>
-                <Cpu size={42} className="position-absolute animate-pulse brand-logo-orange" style={{ filter: 'drop-shadow(0 0 10px rgba(255, 143, 0, 0.4))' }} />
+                <Cpu size={42} className="position-absolute brand-logo-orange" />
               </div>
               <h3 className="fw-bold mb-2 font-monospace text-brand-gradient-blue" style={{ fontSize: '1.8rem' }}>Extracting Clinical Vectors</h3>
               <p className="text-brand-gradient-orange font-monospace fw-bold" style={{ fontSize: '1.1rem' }}>Re-mapping handwritten characters onto OCR models...</p>
@@ -587,7 +581,7 @@ function GuestUpload({ openAuth }) {
               <div className="d-flex align-items-center justify-content-between mb-4 border-bottom border-white-10 pb-3 flex-wrap gap-2">
                 <div className="font-monospace">
                   <h3 className="fw-bold m-0 text-uppercase d-flex align-items-center gap-2" style={{ fontSize: '1.35rem' }}>
-                    <CheckCircle className="text-brand-gradient-blue animate-pulse" size={24} />
+                    <CheckCircle className="text-brand-gradient-blue" size={24} />
                     <span className="text-brand-gradient-blue">Ingestion</span> <span className="text-brand-gradient-orange">Vector Complete</span>
                   </h3>
                   <span className="text-secondary small font-monospace">Extracted: {result.timestamp}</span>

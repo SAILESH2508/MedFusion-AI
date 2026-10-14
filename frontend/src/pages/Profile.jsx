@@ -9,7 +9,9 @@ import {
   FileUp,
   Droplet,
   Scale,
-  Ruler
+  Ruler,
+  CheckCircle2,
+  AlertTriangle
 } from 'lucide-react';
 import { api } from '../services/api';
 import { useSearchParams, Link } from 'react-router-dom';
@@ -293,7 +295,7 @@ function Profile({ user, onUserUpdate }) {
         <div className="d-flex flex-column gap-4 pt-2">
           <div className="glass-card p-4 mb-2 reveal border-theme-accent border-opacity-15 bg-white-5" style={{ borderRadius: '12px' }}>
             <h2 className="fw-bolder fs-6 m-0 text-white" style={{ letterSpacing: '-0.02em', fontSize: '1.25rem' }}>
-              Doctor <span className="text-theme-accent" style={{ textShadow: '0 0 20px var(--theme-accent-glow)' }}>Credentials</span>
+              Doctor <span className="text-theme-accent">Credentials</span>
             </h2>
             <p className="text-secondary m-0 mt-2" style={{ fontSize: '0.88rem', lineHeight: '1.4' }}>
               Verify credential profiles and clinical practicing registry statistics.
@@ -323,7 +325,7 @@ function Profile({ user, onUserUpdate }) {
         <div className="d-flex flex-column gap-4 pt-2">
           <div className="glass-card p-4 mb-2 reveal border-theme-accent border-opacity-15 bg-white-5" style={{ borderRadius: '12px' }}>
             <h2 className="fw-bolder fs-6 m-0 text-white" style={{ letterSpacing: '-0.02em', fontSize: '1.25rem' }}>
-              Health <span className="text-theme-accent" style={{ textShadow: '0 0 20px var(--theme-accent-glow)' }}>Vault Console</span>
+              Health <span className="text-theme-accent">Vault Console</span>
             </h2>
             <p className="text-secondary m-0 mt-2" style={{ fontSize: '0.88rem', lineHeight: '1.4' }}>
               Manage clinical profiles, run health risk diagnostics, scan doctor prescriptions, or chat with AI.
@@ -476,8 +478,8 @@ function Profile({ user, onUserUpdate }) {
     }
   };
 
-  if (loading) return <div className="text-center py-5 opacity-50 font-monospace text-theme-accent small">Synchronizing consolidated health vault...</div>;
-  if (!profile) return <div className="glass-card p-5 text-center font-monospace text-danger">[ERROR: NEURAL IDENTITY OFFLINE]</div>;
+  if (loading) return <div className="text-center py-5 opacity-50 font-monospace text-theme-accent small">Loading profile...</div>;
+  if (!profile) return <div className="glass-card p-5 text-center font-monospace text-danger">Failed to load profile. Please refresh the page.</div>;
 
   if (user && user.role === 'Doctor') {
     return (
@@ -524,7 +526,7 @@ function Profile({ user, onUserUpdate }) {
               </div>
 
               <div className="mx-auto mb-4 bg-white-10 rounded-circle border border-2 border-dashed border-theme-accent d-flex align-items-center justify-content-center" style={{ width: '130px', height: '130px' }}>
-                <User size={55} className="text-theme-accent animate-pulse" />
+                <User size={55} className="text-theme-accent" />
               </div>
 
               {!isEditing ? (
@@ -570,7 +572,7 @@ function Profile({ user, onUserUpdate }) {
           <div className="col-lg-7 col-md-7 d-flex">
             <div className="glass-card p-5 w-100 d-flex flex-column gap-4 justify-content-center text-start border-theme-accent border-opacity-15 bg-white-5">
               <h3 className="fw-bold text-white m-0 d-flex align-items-center gap-2 border-bottom border-white-10 pb-3" style={{ fontSize: '1.4rem' }}>
-                <Activity className="text-theme-accent animate-pulse" />
+                <Activity className="text-theme-accent" />
                 Practice Registry Statistics
               </h3>
 
@@ -626,12 +628,12 @@ function Profile({ user, onUserUpdate }) {
       {/* Global save success / error toast */}
       {saveSuccess && (
         <div className="alert alert-success d-flex align-items-center gap-2 py-2 px-3 mb-3 rounded-3 font-monospace" style={{ fontSize: '0.8rem', background: 'rgba(0,200,130,0.12)', border: '1px solid rgba(0,200,130,0.3)', color: '#00f5a0', letterSpacing: '0.02em' }}>
-          <span>✓</span> {saveSuccess}
+          <CheckCircle2 size={14} /> {saveSuccess}
         </div>
       )}
       {saveError && (
         <div className="alert alert-danger d-flex align-items-center gap-2 py-2 px-3 mb-3 rounded-3 font-monospace" style={{ fontSize: '0.8rem', background: 'rgba(255,50,80,0.1)', border: '1px solid rgba(255,50,80,0.3)', color: '#ff6080', letterSpacing: '0.02em' }}>
-          <span>⚠</span> {saveError}
+          <AlertTriangle size={14} /> {saveError}
         </div>
       )}
 

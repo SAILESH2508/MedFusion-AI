@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { MessageSquare, X, Send, Bot, User, RefreshCw, ChevronDown, Mic, MicOff, Download, Activity, AlertTriangle } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { api } from '../services/api';
+import { useTheme } from '../context/useTheme';
 
 // ── Detect urgency in user message ────────────────────────────────────────
 function detectUrgency(text) {
@@ -34,6 +35,8 @@ function renderContent(content) {
 // ── Message Bubble ─────────────────────────────────────────────────────────
 function MessageBubble({ msg, onFollowUp }) {
   const isUser = msg.role === 'user';
+  const { theme } = useTheme();
+  const isLight = theme === 'light';
   const urgency = isUser ? detectUrgency(msg.content) : 'normal';
 
   return (
@@ -65,10 +68,15 @@ function MessageBubble({ msg, onFollowUp }) {
         )}
 
         <div style={{
-          background: isUser ? 'linear-gradient(135deg,rgba(0,245,212,0.12),rgba(0,4,45,0.5))' : 'rgba(0,4,45,0.55)',
-          border: isUser ? `1px solid ${urgency === 'critical' ? 'rgba(255,0,85,0.5)' : 'rgba(0,245,212,0.22)'}` : '1px solid rgba(255,255,255,0.07)',
+          background: isUser
+            ? (isLight ? 'linear-gradient(135deg,rgba(0,200,180,0.15),rgba(220,235,255,0.8))' : 'linear-gradient(135deg,rgba(0,245,212,0.12),rgba(0,4,45,0.5))')
+            : (isLight ? 'rgba(240,244,255,0.9)' : 'rgba(0,4,45,0.55)'),
+          border: isUser
+            ? `1px solid ${urgency === 'critical' ? 'rgba(255,0,85,0.5)' : (isLight ? 'rgba(0,180,160,0.35)' : 'rgba(0,245,212,0.22)')}`
+            : `1px solid ${isLight ? 'rgba(0,80,200,0.12)' : 'rgba(255,255,255,0.07)'}`,
           borderRadius: isUser ? '14px 14px 4px 14px' : '14px 14px 14px 4px',
-          padding: '10px 14px', fontSize: '0.82rem', lineHeight: '1.55', color: '#fff',
+          padding: '10px 14px', fontSize: '0.82rem', lineHeight: '1.55',
+          color: isLight ? '#0a0a23' : '#fff',
         }}>
           {renderContent(msg.content)}
           <span className="d-block mt-1" style={{ fontSize: '0.58rem', opacity: 0.4 }}>{msg.time}</span>
@@ -82,8 +90,11 @@ function MessageBubble({ msg, onFollowUp }) {
                 key={i}
                 onClick={() => onFollowUp(f)}
                 style={{
-                  background: 'rgba(120,40,200,0.1)', border: '1px solid rgba(180,130,255,0.2)',
-                  borderRadius: '16px', color: 'rgba(210,190,255,0.75)', fontSize: '0.65rem',
+                  background: isLight ? 'rgba(100,40,200,0.07)' : 'rgba(120,40,200,0.1)',
+                  border: `1px solid ${isLight ? 'rgba(100,40,200,0.18)' : 'rgba(180,130,255,0.2)'}`,
+                  borderRadius: '16px',
+                  color: isLight ? 'rgba(60,20,140,0.85)' : 'rgba(210,190,255,0.75)',
+                  fontSize: '0.65rem',
                   padding: '3px 10px', cursor: 'pointer', transition: 'all 0.2s',
                 }}
               >
@@ -121,7 +132,7 @@ function SymptomChecker({ onComplete, onCancel }) {
           <span className="text-info font-monospace" style={{ fontSize: '0.65rem', letterSpacing: '0.08em' }}>
             SYMPTOM CHECK • STEP {step + 1}/{SYMPTOM_STEPS.length}
           </span>
-          <button onClick={onCancel} style={{ background: 'transparent', border: 'none', color: 'rgba(255,255,255,0.35)', cursor: 'pointer', padding: 0 }}>
+          <button onClick={onCancel} style={{ background: 'transparent', border: 'none', color: 'rgba(255,255,255,0.35)', cursor: 'pointer', padding: 0 }} aria-label="Cancel symptom check">
             <X size={14} />
           </button>
         </div>
@@ -151,12 +162,51 @@ function SymptomChecker({ onComplete, onCancel }) {
 // ── Main Chatbot ───────────────────────────────────────────────────────────
 export default function AIChatbot({ user }) {
   const isPatient = !!user;
+  const { theme } = useTheme();
+  const isLight = theme === 'light';
+
+  // Theme-aware colour palette
+  const C = isLight ? {
+    panelBg:      'rgba(255,255,255,0.97)',
+    panelBorder:  'rgba(0,100,200,0.25)',
+    panelShadow:  '0 24px 64px rgba(0,80,180,0.2)',
+    headerBg:     'linear-gradient(135deg,rgba(30,60,180,0.9),rgba(100,40,180,0.85))',
+    headerBorder: 'rgba(0,80,200,0.15)',
+    msgBg:        'rgba(240,245,255,0.8)',
+    msgBorder:    'rgba(0,80,200,0.1)',
+    inputBg:      'rgba(240,244,255,0.95)',
+    inputBorder:  'rgba(0,100,200,0.25)',
+    inputColor:   '#0a0a23',
+    quickBg:      'rgba(100,40,200,0.08)',
+    quickBorder:  'rgba(100,40,200,0.2)',
+    quickColor:   'rgba(60,30,150,0.9)',
+    divider:      'rgba(0,0,0,0.07)',
+    btnColor:     'rgba(30,30,80,0.5)',
+    dotsBg:       'rgba(240,244,255,0.9)',
+  } : {
+    panelBg:      'rgba(0,4,45,0.93)',
+    panelBorder:  'rgba(180,130,255,0.22)',
+    panelShadow:  '0 24px 64px rgba(0,0,0,0.65)',
+    headerBg:     'linear-gradient(135deg,rgba(13,27,110,0.85),rgba(123,47,190,0.65))',
+    headerBorder: 'rgba(180,130,255,0.12)',
+    msgBg:        'rgba(0,4,45,0.55)',
+    msgBorder:    'rgba(255,255,255,0.07)',
+    inputBg:      'rgba(0,4,30,0.6)',
+    inputBorder:  'rgba(180,130,255,0.18)',
+    inputColor:   '#fff',
+    quickBg:      'rgba(120,40,200,0.1)',
+    quickBorder:  'rgba(180,130,255,0.2)',
+    quickColor:   'rgba(210,190,255,0.75)',
+    divider:      'rgba(255,255,255,0.07)',
+    btnColor:     'rgba(255,255,255,0.35)',
+    dotsBg:       'rgba(0,4,45,0.55)',
+  };
   const [isOpen, setIsOpen]   = useState(false);
   const [messages, setMessages] = useState([{
     role: 'assistant',
     content: isPatient
-      ? `Hello ${user?.full_name?.split(' ')[0] || 'there'}! 👋 I'm your MedFusion AI health assistant. Ask me anything about your health, medications, or risk assessments. Use the 🩺 button for a guided symptom check.`
-      : `Hello! 👋 I'm MedFusion AI. Ask me general health questions, or use the 🩺 Symptom Checker for a guided assessment. Sign in for personalized guidance.`,
+      ? `Hello ${user?.full_name?.split(' ')[0] || 'there'}! I'm your MedFusion AI health assistant. Ask me anything about your health, medications, or risk assessments. Use the symptom check button for a guided symptom assessment.`
+      : `Hello! I'm MedFusion AI. Ask me general health questions, or use the Symptom Checker button for a guided assessment. Sign in for personalized guidance.`,
     time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
     followUps: isPatient
       ? ['What does my risk score mean?', 'What foods should I avoid?', 'Am I at heart disease risk?']
@@ -294,13 +344,14 @@ export default function AIChatbot({ user }) {
         whileHover={{ scale: 1.08 }}
         whileTap={{ scale: 0.95 }}
         onClick={() => setIsOpen(!isOpen)}
+        aria-label={isOpen ? 'Close health assistant' : 'Open health assistant'}
         className="d-flex align-items-center justify-content-center"
         style={{
           position: 'fixed', bottom: '28px', right: '28px',
           width: '58px', height: '58px', borderRadius: '50%',
           background: 'linear-gradient(135deg, #0d1b6e 0%, #7b2fbe 100%)',
           border: '1.5px solid rgba(180,130,255,0.45)',
-          boxShadow: '0 8px 32px rgba(120,40,200,0.45), 0 0 0 4px rgba(120,40,200,0.1)',
+          boxShadow: '0 4px 16px rgba(0,0,0,0.4)',
           cursor: 'pointer', zIndex: 9999,
         }}
       >
@@ -325,15 +376,15 @@ export default function AIChatbot({ user }) {
               position: 'fixed', bottom: '100px', right: '28px',
               width: '390px', maxWidth: 'calc(100vw - 36px)', maxHeight: '600px',
               display: 'flex', flexDirection: 'column',
-              background: 'rgba(0,4,45,0.93)', backdropFilter: 'blur(22px)',
-              border: '1.5px solid rgba(180,130,255,0.22)',
+              background: C.panelBg, backdropFilter: 'blur(6px)',
+              border: `1.5px solid ${C.panelBorder}`,
               borderRadius: '20px',
-              boxShadow: '0 24px 64px rgba(0,0,0,0.65), 0 0 0 1px rgba(255,255,255,0.03)',
+              boxShadow: C.panelShadow,
               zIndex: 9998, overflow: 'hidden',
             }}
           >
             {/* Header */}
-            <div className="d-flex align-items-center justify-content-between px-4 py-3" style={{ background: 'linear-gradient(135deg,rgba(13,27,110,0.85),rgba(123,47,190,0.65))', borderBottom: '1px solid rgba(180,130,255,0.12)', flexShrink: 0 }}>
+            <div className="d-flex align-items-center justify-content-between px-4 py-3" style={{ background: C.headerBg, borderBottom: `1px solid ${C.headerBorder}`, flexShrink: 0 }}>
               <div className="d-flex align-items-center gap-2">
                 <div className="d-flex align-items-center justify-content-center rounded-circle" style={{ width: '34px', height: '34px', background: 'rgba(223,64,255,0.2)', border: '1px solid rgba(223,64,255,0.4)' }}>
                   <Bot size={16} style={{ color: 'var(--accent-purple)' }} />
@@ -359,14 +410,14 @@ export default function AIChatbot({ user }) {
                 </button>
                 {/* Export */}
                 {messages.length > 1 && (
-                  <button onClick={exportChat} title="Export chat" style={{ background: 'transparent', border: 'none', color: 'rgba(255,255,255,0.35)', cursor: 'pointer', padding: '5px' }}>
+                  <button onClick={exportChat} title="Export chat" style={{ background: 'transparent', border: 'none', color: C.btnColor, cursor: 'pointer', padding: '5px' }}>
                     <Download size={14} />
                   </button>
                 )}
-                <button onClick={clearChat} title="Clear chat" style={{ background: 'transparent', border: 'none', color: 'rgba(255,255,255,0.35)', cursor: 'pointer', padding: '5px' }}>
+                <button onClick={clearChat} title="Clear chat" style={{ background: 'transparent', border: 'none', color: C.btnColor, cursor: 'pointer', padding: '5px' }}>
                   <RefreshCw size={14} />
                 </button>
-                <button onClick={() => setIsOpen(false)} style={{ background: 'transparent', border: 'none', color: 'rgba(255,255,255,0.4)', cursor: 'pointer', padding: '5px' }}>
+                <button onClick={() => setIsOpen(false)} style={{ background: 'transparent', border: 'none', color: C.btnColor, cursor: 'pointer', padding: '5px' }}>
                   <X size={18} />
                 </button>
               </div>
@@ -383,7 +434,7 @@ export default function AIChatbot({ user }) {
                     style={{ width: '28px', height: '28px', background: 'rgba(223,64,255,0.15)', border: '1px solid rgba(223,64,255,0.3)' }}>
                     <Bot size={13} style={{ color: 'var(--accent-purple)' }} />
                   </div>
-                  <div style={{ background: 'rgba(0,4,45,0.55)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: '14px 14px 14px 4px', padding: '10px 14px' }}>
+                  <div style={{ background: C.dotsBg, border: `1px solid ${C.msgBorder}`, borderRadius: '14px 14px 14px 4px', padding: '10px 14px' }}>
                     <div className="d-flex gap-1 align-items-center">
                       {[0, 1, 2].map((i) => (
                         <span key={i} style={{ width: '6px', height: '6px', borderRadius: '50%', background: 'var(--accent-purple)', animation: `dotBounce 1.2s ${i * 0.2}s infinite` }} />
@@ -407,12 +458,12 @@ export default function AIChatbot({ user }) {
 
             {/* Quick prompts */}
             {!showSymptomChecker && messages.length <= 2 && (
-              <div className="px-3 pb-2 d-flex gap-1 flex-wrap" style={{ flexShrink: 0, borderTop: '1px solid rgba(255,255,255,0.05)', paddingTop: '10px' }}>
+              <div className="px-3 pb-2 d-flex gap-1 flex-wrap" style={{ flexShrink: 0, borderTop: `1px solid ${C.divider}`, paddingTop: '10px' }}>
                 {QUICK.map((q, i) => (
                   <button
                     key={i}
                     onClick={() => sendMessage(q)}
-                    style={{ background: 'rgba(120,40,200,0.1)', border: '1px solid rgba(180,130,255,0.2)', borderRadius: '20px', color: 'rgba(210,190,255,0.75)', fontSize: '0.65rem', padding: '4px 10px', cursor: 'pointer', whiteSpace: 'nowrap' }}
+                    style={{ background: C.quickBg, border: `1px solid ${C.quickBorder}`, borderRadius: '20px', color: C.quickColor, fontSize: '0.65rem', padding: '4px 10px', cursor: 'pointer', whiteSpace: 'nowrap' }}
                   >
                     {q}
                   </button>
@@ -422,12 +473,13 @@ export default function AIChatbot({ user }) {
 
             {/* Input row */}
             {!showSymptomChecker && (
-              <div className="d-flex align-items-center gap-2 px-3 py-3" style={{ borderTop: '1px solid rgba(255,255,255,0.07)', flexShrink: 0 }}>
+              <div className="d-flex align-items-center gap-2 px-3 py-3" style={{ borderTop: `1px solid ${C.divider}`, flexShrink: 0 }}>
                 {/* Voice button */}
                 {voiceSupported && (
                   <button
                     onClick={isListening ? stopListening : startListening}
                     title={isListening ? 'Stop listening' : 'Voice input'}
+                    aria-label={isListening ? 'Stop voice input' : 'Start voice input'}
                     style={{
                       width: '36px', height: '36px', borderRadius: '10px', flexShrink: 0,
                       background: isListening ? 'rgba(255,0,85,0.2)' : 'rgba(255,255,255,0.04)',
@@ -448,12 +500,14 @@ export default function AIChatbot({ user }) {
                   onChange={(e) => setInput(e.target.value)}
                   onKeyDown={(e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); } }}
                   disabled={loading || isListening}
-                  style={{ flex: 1, background: 'rgba(0,4,30,0.6)', border: '1px solid rgba(180,130,255,0.18)', borderRadius: '12px', color: '#fff', padding: '10px 14px', fontSize: '0.82rem', outline: 'none', marginBottom: 0 }}
+                  aria-label="Type your health question"
+                  style={{ flex: 1, background: C.inputBg, border: `1px solid ${C.inputBorder}`, borderRadius: '12px', color: C.inputColor, padding: '10px 14px', fontSize: '0.82rem', outline: 'none', marginBottom: 0 }}
                 />
 
                 <button
                   onClick={() => sendMessage()}
                   disabled={!input.trim() || loading}
+                  aria-label="Send message"
                   style={{
                     width: '38px', height: '38px', borderRadius: '12px', flexShrink: 0,
                     background: input.trim() && !loading ? 'linear-gradient(135deg,#0d1b6e,#7b2fbe)' : 'rgba(255,255,255,0.04)',

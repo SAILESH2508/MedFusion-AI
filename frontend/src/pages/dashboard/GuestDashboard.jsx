@@ -8,8 +8,8 @@ import {
   Download, 
   RotateCcw, 
   User,
-  Sparkles,
-  Cpu
+  Cpu,
+  ScanLine
 } from 'lucide-react';
 import { api } from '../../services/api';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -18,15 +18,15 @@ import { getRiskColor, getRiskBg, getAge, getHasShownGuestPopup, setHasShownGues
 import VoiceExplainer from '../../components/VoiceExplainer';
 
 const logs = [
-  "Establishing neural connection to MedFusion Core...",
-  "Retrieving patient demographic baseline vectors...",
-  "Normalizing raw biomarkers and vitals parameters...",
-  "Processing clinical variables across multi-layer neural networks...",
-  "Evaluating risk scales relative to historical medical data...",
-  "Assessing symptoms profiles via clinical NLP parser...",
-  "Calculating predictive risk factor metrics...",
-  "Upregulating protective remedy recommendations matrix...",
-  "Finalizing diagnostic synthesis report..."
+  "Preparing analysis engine...",
+  "Loading patient demographic baseline...",
+  "Normalising biomarkers and vital parameters...",
+  "Processing clinical variables...",
+  "Evaluating risk scales against historical data...",
+  "Assessing symptom profiles...",
+  "Calculating predictive risk metrics...",
+  "Generating personalised remedy recommendations...",
+  "Finalising diagnostic synthesis report..."
 ];
 
 function GuestDashboard({ openAuth }) {
@@ -443,7 +443,7 @@ function GuestDashboard({ openAuth }) {
         {/* Sleek Medical Header Console inside Sidebar */}
         <div className="glass-card p-4 mb-2 reveal border-theme-accent border-opacity-15 bg-white-5" style={{ borderRadius: '12px' }}>
           <h2 className="fw-bolder fs-6 m-0 text-white" style={{ letterSpacing: '-0.02em', fontSize: '1.25rem' }}>
-            AI Health <span className="text-theme-accent" style={{ textShadow: '0 0 20px var(--theme-accent-glow)' }}>Diagnostics</span>
+            AI Health <span className="text-theme-accent">Diagnostics</span>
           </h2>
           <p className="text-secondary m-0 mt-2" style={{ fontSize: '0.88rem', lineHeight: '1.4' }}>
             Enter your medical numbers and symptoms to check your health risks instantly.
@@ -475,7 +475,7 @@ function GuestDashboard({ openAuth }) {
           {allPredictors.length > displayedPredictors.length && (
             <div className="mt-3 text-center">
               <span className="text-secondary font-monospace" style={{ fontSize: '0.72rem', opacity: 0.65 }}>
-                🔍 Filtered based on clinical history
+                Filtered based on clinical history
               </span>
             </div>
           )}
@@ -654,7 +654,7 @@ function GuestDashboard({ openAuth }) {
           <div className="reveal">
             <div className="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
               <h4 className="fw-bold text-white d-flex align-items-center gap-2 m-0" style={{ fontSize: '1.05rem', letterSpacing: '0.05em' }}>
-                <Heart className="animate-pulse" size={18} style={{ color: 'var(--theme-accent)' }} />
+                <Heart size={18} style={{ color: 'var(--theme-accent)' }} />
                 <span style={{ color: 'var(--theme-accent)' }}>Cardiovascular Vitals</span>
               </h4>
               <div className="d-flex gap-2">
@@ -664,7 +664,7 @@ function GuestDashboard({ openAuth }) {
                   className="btn border rounded font-monospace hover-white px-3 py-1.5"
                   style={{ fontSize: '0.78rem', width: 'auto', backgroundColor: 'rgba(25, 135, 84, 0.2)', color: '#4ade80', borderColor: 'rgba(25, 135, 84, 0.5)' }}
                 >
-                  🌿 Healthy Preset
+                  Healthy Preset
                 </button>
                 <button 
                   type="button" 
@@ -672,7 +672,7 @@ function GuestDashboard({ openAuth }) {
                   className="btn border rounded font-monospace hover-white px-3 py-1.5"
                   style={{ fontSize: '0.78rem', width: 'auto', backgroundColor: 'rgba(220, 53, 69, 0.2)', color: '#f87171', borderColor: 'rgba(220, 53, 69, 0.5)' }}
                 >
-                  ⚠️ High Risk Preset
+                  High Risk Preset
                 </button>
               </div>
             </div>
@@ -911,7 +911,7 @@ function GuestDashboard({ openAuth }) {
           <div className="reveal">
             <div className="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
               <h4 className="fw-bold text-white d-flex align-items-center gap-2 m-0" style={{ fontSize: '1.05rem', letterSpacing: '0.05em' }}>
-                <Activity className="animate-pulse" size={18} style={{ color: 'var(--theme-accent)' }} />
+                <Activity size={18} style={{ color: 'var(--theme-accent)' }} />
                 <span style={{ color: 'var(--theme-accent)' }}>Metabolic & Glycemic Parameters</span>
               </h4>
               <div className="d-flex gap-2">
@@ -921,7 +921,7 @@ function GuestDashboard({ openAuth }) {
                   className="btn border rounded font-monospace hover-white px-3 py-1.5"
                   style={{ fontSize: '0.78rem', width: 'auto', backgroundColor: 'rgba(25, 135, 84, 0.2)', color: '#4ade80', borderColor: 'rgba(25, 135, 84, 0.5)' }}
                 >
-                  🌿 Healthy Preset
+                  Healthy Preset
                 </button>
                 <button 
                   type="button" 
@@ -929,7 +929,7 @@ function GuestDashboard({ openAuth }) {
                   className="btn border rounded font-monospace hover-white px-3 py-1.5"
                   style={{ fontSize: '0.78rem', width: 'auto', backgroundColor: 'rgba(220, 53, 69, 0.2)', color: '#f87171', borderColor: 'rgba(220, 53, 69, 0.5)' }}
                 >
-                  ⚠️ High Risk Preset
+                  High Risk Preset
                 </button>
               </div>
             </div>
@@ -1142,7 +1142,7 @@ function GuestDashboard({ openAuth }) {
               <div className="col-12">
                 <div className="predictor-card d-flex flex-row justify-content-between align-items-center font-monospace" style={{ padding: '20px' }}>
                   <span className="small text-secondary" style={{ marginBottom: 0 }}>CALCULATING BODY MASS INDEX (BMI)</span>
-                  <span className="fw-bold" style={{ textShadow: '0 0 10px var(--theme-accent-glow)', color: 'var(--theme-accent)' }}>{bmi} kg/m²</span>
+                  <span className="fw-bold" style={{ color: 'var(--theme-accent)' }}>{bmi} kg/m²</span>
                 </div>
               </div>
             </div>
@@ -1154,7 +1154,7 @@ function GuestDashboard({ openAuth }) {
           <div className="reveal">
             <div className="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
               <h4 className="fw-bold text-white d-flex align-items-center gap-2 m-0" style={{ fontSize: '1.05rem', letterSpacing: '0.05em' }}>
-                <Compass className="animate-pulse" size={18} style={{ color: 'var(--theme-accent)' }} />
+                <Compass size={18} style={{ color: 'var(--theme-accent)' }} />
                 <span style={{ color: 'var(--theme-accent)' }}>Oncological Surveillance Parameters</span>
               </h4>
               <div className="d-flex gap-2">
@@ -1164,7 +1164,7 @@ function GuestDashboard({ openAuth }) {
                   className="btn border rounded font-monospace hover-white px-3 py-1.5"
                   style={{ fontSize: '0.78rem', width: 'auto', backgroundColor: 'rgba(25, 135, 84, 0.2)', color: '#4ade80', borderColor: 'rgba(25, 135, 84, 0.5)' }}
                 >
-                  🌿 Healthy Preset
+                  Healthy Preset
                 </button>
                 <button 
                   type="button" 
@@ -1172,7 +1172,7 @@ function GuestDashboard({ openAuth }) {
                   className="btn border rounded font-monospace hover-white px-3 py-1.5"
                   style={{ fontSize: '0.78rem', width: 'auto', backgroundColor: 'rgba(220, 53, 69, 0.2)', color: '#f87171', borderColor: 'rgba(220, 53, 69, 0.5)' }}
                 >
-                  ⚠️ High Risk Preset
+                  High Risk Preset
                 </button>
               </div>
             </div>
@@ -1252,7 +1252,7 @@ function GuestDashboard({ openAuth }) {
         return (
           <div className="reveal">
             <h4 className="fw-bold mb-4 text-white d-flex align-items-center gap-2" style={{ fontSize: '1.05rem', letterSpacing: '0.05em' }}>
-              <ShieldAlert className="animate-pulse" size={18} style={{ color: 'var(--theme-accent)' }} />
+              <ShieldAlert size={18} style={{ color: 'var(--theme-accent)' }} />
               <span style={{ color: 'var(--theme-accent)' }}>Active Cardiovascular Symptoms Checklist</span>
             </h4>
             <div className="row g-2">
@@ -1287,7 +1287,7 @@ function GuestDashboard({ openAuth }) {
         return (
           <div className="reveal">
             <h4 className="fw-bold mb-4 text-white d-flex align-items-center gap-2" style={{ fontSize: '1.05rem', letterSpacing: '0.05em' }}>
-              <ShieldAlert className="animate-pulse" size={18} style={{ color: 'var(--theme-accent)' }} />
+              <ShieldAlert size={18} style={{ color: 'var(--theme-accent)' }} />
               <span style={{ color: 'var(--theme-accent)' }}>Active Glycemic Symptoms Checklist</span>
             </h4>
             <div className="row g-2">
@@ -1322,7 +1322,7 @@ function GuestDashboard({ openAuth }) {
         return (
           <div className="reveal">
             <h4 className="fw-bold mb-4 text-white d-flex align-items-center gap-2" style={{ fontSize: '1.05rem', letterSpacing: '0.05em' }}>
-              <ShieldAlert className="animate-pulse" size={18} style={{ color: 'var(--theme-accent)' }} />
+              <ShieldAlert size={18} style={{ color: 'var(--theme-accent)' }} />
               <span style={{ color: 'var(--theme-accent)' }}>Active Oncological Symptoms & Warning Flags</span>
             </h4>
             <div className="row g-2">
@@ -1377,7 +1377,7 @@ function GuestDashboard({ openAuth }) {
                 {/* Guest Profile Information Card */}
                 <div className="glass-card p-4">
                   <h4 className="fw-bold mb-3 text-white d-flex align-items-center gap-2" style={{ fontSize: '1rem' }}>
-                    <Sparkles className="animate-pulse" size={18} style={{ color: 'var(--theme-accent)' }} />
+                    <User size={18} style={{ color: 'var(--theme-accent)' }} />
                     <span style={{ color: 'var(--theme-accent)' }}>Guest Identification Info</span>
                   </h4>
                   <p className="text-secondary font-monospace mb-3" style={{ fontSize: '0.85rem', lineHeight: '1.4' }}>
@@ -1434,7 +1434,7 @@ function GuestDashboard({ openAuth }) {
                 {/* Container 1: Modular Demographics Card */}
                 <div className="glass-card p-4">
                   <h4 className="fw-bold mb-3 text-white d-flex align-items-center gap-2" style={{ fontSize: '1rem' }}>
-                    <User className="animate-pulse" size={18} style={{ color: 'var(--theme-accent)' }} />
+                    <User size={18} style={{ color: 'var(--theme-accent)' }} />
                     <span style={{ color: 'var(--theme-accent)' }}>Patient Demographics</span>
                   </h4>
                   <div className="row g-3 mt-1">
@@ -1604,7 +1604,7 @@ function GuestDashboard({ openAuth }) {
                   <div className="position-absolute w-100 h-100 rounded-circle border border-2 border-dashed border-white" style={{ animation: 'spin 10s linear infinite', opacity: 0.25 }}></div>
                   <div className="position-absolute w-75 h-75 rounded-circle border border-1" style={{ animation: 'spin 6s linear infinite reverse', opacity: 0.4, borderColor: 'var(--theme-accent)' }}></div>
                   <div className="spinner-border position-absolute" style={{ width: '80px', height: '80px', borderWidth: '3.5px', color: 'var(--theme-accent)' }} role="status"></div>
-                  <Cpu size={32} className="position-absolute animate-pulse" style={{ color: 'var(--theme-accent)' }} />
+                  <Cpu size={32} className="position-absolute" style={{ color: 'var(--theme-accent)' }} />
                 </div>
                 
                 <h3 className="fw-bold mb-2 font-monospace text-white">Analyzing Health Profile...</h3>
@@ -1646,7 +1646,7 @@ function GuestDashboard({ openAuth }) {
                 </div>
 
                 {/* Holographic Diagnostic card */}
-                <div className="glass-card mb-4" style={{ borderColor: getRiskColor(result.risk_level), boxShadow: `0 25px 60px rgba(0, 3, 50, 0.75), 0 0 35px ${getRiskBg(result.risk_level)}` }}>
+                <div className="glass-card mb-4" style={{ borderColor: getRiskColor(result.risk_level) }}>
                   <div className="row g-4 align-items-center">
                     
                     {/* Left Risk Gauge sub-column */}
@@ -1693,7 +1693,7 @@ function GuestDashboard({ openAuth }) {
                 {/* PRESCRIBED PREVENTATIVE REMEDY MATRIX */}
                 <div className="glass-card p-4">
                   <h4 className="fw-bold mb-4 text-white d-flex align-items-center gap-2" style={{ fontSize: '1.35rem' }}>
-                    <BookOpen className="text-theme-accent animate-pulse" size={20} />
+                    <BookOpen className="text-theme-accent" size={20} />
                     Prescribed Preventative Remedies
                   </h4>
 
@@ -1817,7 +1817,7 @@ function GuestDashboard({ openAuth }) {
                     className="btn-icon d-flex align-items-center gap-2 font-monospace text-uppercase w-100 justify-content-between"
                     style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px', padding: '12px 16px', color: 'var(--theme-accent)', fontSize: '0.9rem', cursor: 'pointer', width: '100%' }}
                   >
-                    <span>🔍 Why this score?</span>
+                    <span>Why this score?</span>
                     <span style={{ fontSize: '0.75rem', opacity: 0.7 }}>{showFactors ? '▲ Hide' : '▼ Show'} Key Risk Factors</span>
                   </button>
 
@@ -1825,7 +1825,7 @@ function GuestDashboard({ openAuth }) {
                     <div className="mt-3">
                       <h6 className="fw-bold text-white font-monospace mb-2" style={{ fontSize: '0.95rem' }}>Key Risk Factors</h6>
                       <p className="text-secondary font-monospace mb-3" style={{ fontSize: '0.78rem', lineHeight: '1.5', padding: '10px 14px', background: 'rgba(255,255,255,0.03)', borderRadius: '6px', border: '1px solid rgba(255,255,255,0.07)' }}>
-                        ⚠️ These factors influenced the machine learning model estimate. They do not establish medical causation or constitute a diagnosis.
+                        These factors influenced the machine learning model estimate. They do not establish medical causation or constitute a diagnosis.
                       </p>
                       {result.factors && result.factors.length > 0 ? (
                         <div className="d-flex flex-column gap-2">

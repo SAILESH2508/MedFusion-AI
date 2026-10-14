@@ -34,7 +34,7 @@ function ProfileIdentity({
               <div className="d-flex justify-content-between align-items-center pb-3 mb-4 border-bottom border-white-10">
                 <div className="d-flex align-items-center gap-2.5">
                   <h4 className="fw-bold text-white d-flex align-items-center gap-2 m-0 font-monospace" style={{ fontSize: '1.05rem', letterSpacing: '0.02em' }}>
-                    <ShieldCheck className="text-success animate-pulse" size={18} />
+                    <ShieldCheck className="text-success" size={18} />
                     EMERGENCY MEDICAL ID
                   </h4>
                 </div>
@@ -91,7 +91,7 @@ function ProfileIdentity({
                   {/* Patient Name Visual representation */}
                   <div className="p-3 bg-white-5 rounded-4 border border-white-5 text-start mt-2">
                     <span className="text-secondary font-monospace d-block text-uppercase" style={{ fontSize: '0.62rem', letterSpacing: '0.06em' }}>PATIENT NAME</span>
-                    <h2 className="text-white fw-bolder mt-1 text-uppercase text-truncate" style={{ fontSize: '1.6rem', letterSpacing: '0.02em', textShadow: '0 0 10px rgba(255,255,255,0.1)' }}>
+                    <h2 className="text-white fw-bolder mt-1 text-uppercase text-truncate" style={{ fontSize: '1.6rem', letterSpacing: '0.02em' }}>
                       {profile.first_name || profile.last_name ? `${profile.first_name} ${profile.last_name}` : user?.full_name || 'Anonymous Patient'}
                     </h2>
                     <span className="text-secondary font-monospace small" style={{ fontSize: '0.74rem', opacity: 0.8 }}>
@@ -124,66 +124,6 @@ function ProfileIdentity({
                         <span className="text-secondary italic font-monospace" style={{ fontSize: '0.78rem' }}>No drug/food allergies logged.</span>
                       )}
                     </div>
-                  </div>
-
-                  {/* ---- EMERGENCY QR CARD ---- */}
-                  <div className="p-3.5 rounded-4 text-start mt-2" style={{ border: '1px solid rgba(0,245,212,0.15)', background: 'rgba(0,245,212,0.03)' }}>
-                    <span className="small text-theme-accent d-block text-uppercase mb-2 fw-bold font-monospace" style={{ fontSize: '0.64rem', letterSpacing: '0.06em' }}>
-                      🔑 Emergency QR Card
-                    </span>
-                    <p className="text-secondary m-0 mb-2" style={{ fontSize: '0.72rem', lineHeight: '1.5' }}>
-                      Scan to access emergency medical information without login required.
-                    </p>
-
-                    {!emergencyToken ? (
-                      <button
-                        onClick={onGenerateToken}
-                        className="px-3 py-1.5 bg-theme-accent border-0 text-white rounded-3 font-monospace text-uppercase hover-white"
-                        style={{ fontSize: '0.74rem', cursor: 'pointer', width: '100%', marginTop: '4px' }}
-                      >
-                        Generate Emergency QR
-                      </button>
-                    ) : (
-                      <div className="d-flex flex-column align-items-center gap-3">
-                        <img
-                          src={`https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodeURIComponent(window.location.origin + '/emergency/' + emergencyToken)}`}
-                          alt="Emergency QR Code"
-                          style={{ width: '180px', height: '180px', borderRadius: '8px', border: '2px solid rgba(0,245,212,0.25)', display: 'block' }}
-                        />
-                        <p className="text-secondary m-0" style={{ fontSize: '0.62rem', wordBreak: 'break-all', textAlign: 'center', opacity: 0.5 }}>
-                          {window.location.origin}/emergency/{emergencyToken}
-                        </p>
-                        <div className="d-flex gap-2 flex-wrap justify-content-center w-100">
-                          <button
-                            onClick={onGenerateToken}
-                            className="px-3 py-1.5 border border-white-10 bg-transparent text-theme-accent rounded-3 font-monospace text-uppercase hover-white"
-                            style={{ fontSize: '0.72rem', cursor: 'pointer' }}
-                            title="Generate a new token (old QR will be invalidated)"
-                          >
-                            Regenerate
-                          </button>
-                          <button
-                            onClick={onRevokeToken}
-                            className="px-3 py-1.5 border border-white-10 bg-transparent text-danger rounded-3 font-monospace text-uppercase"
-                            style={{ fontSize: '0.72rem', cursor: 'pointer' }}
-                          >
-                            Revoke
-                          </button>
-                          <a
-                            href={`https://api.qrserver.com/v1/create-qr-code/?size=400x400&data=${encodeURIComponent(window.location.origin + '/emergency/' + emergencyToken)}`}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="px-3 py-1.5 border border-white-10 bg-transparent text-secondary rounded-3 font-monospace text-uppercase text-decoration-none"
-                            style={{ fontSize: '0.72rem' }}
-                          >
-                            Download
-                          </a>
-                        </div>
-                        <p className="text-secondary m-0" style={{ fontSize: '0.65rem', opacity: 0.5, textAlign: 'center' }}>
-                          Revoke at any time to invalidate the QR code.
-                        </p>
-                      </div>
-                    )}
                   </div>
                 </div>
               ) : (
@@ -244,6 +184,99 @@ function ProfileIdentity({
                   </div>
                 </div>
               )}
+
+              {/* ---- EMERGENCY QR CARD — always visible, not hidden in edit mode ---- */}
+              <div className="p-3.5 rounded-4 text-start mt-3" style={{ border: '1px solid rgba(0,245,212,0.15)', background: 'rgba(0,245,212,0.03)' }}>
+                <span className="small text-theme-accent d-block text-uppercase mb-2 fw-bold font-monospace" style={{ fontSize: '0.64rem', letterSpacing: '0.06em' }}>
+                  🔑 Emergency QR Card
+                </span>
+                <p className="text-secondary m-0 mb-2" style={{ fontSize: '0.72rem', lineHeight: '1.5' }}>
+                  Scan to access emergency medical information without login required.
+                </p>
+
+                {!emergencyToken ? (
+                  <button
+                    onClick={onGenerateToken}
+                    className="px-3 py-1.5 bg-theme-accent border-0 text-white rounded-3 font-monospace text-uppercase hover-white"
+                    style={{ fontSize: '0.74rem', cursor: 'pointer', width: '100%', marginTop: '4px' }}
+                  >
+                    Generate Emergency QR
+                  </button>
+                ) : (
+                  <div className="d-flex flex-column align-items-center gap-3">
+                    <img
+                      src={`https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodeURIComponent(window.location.origin + '/emergency/' + emergencyToken)}`}
+                      alt="Emergency QR Code"
+                      style={{ width: '180px', height: '180px', borderRadius: '8px', border: '2px solid rgba(0,245,212,0.25)', display: 'block' }}
+                    />
+                    <p className="text-secondary m-0" style={{ fontSize: '0.62rem', wordBreak: 'break-all', textAlign: 'center', opacity: 0.5 }}>
+                      {window.location.origin}/emergency/{emergencyToken}
+                    </p>
+                    <div className="d-flex gap-2 flex-wrap justify-content-center w-100">
+                      <button
+                        onClick={onGenerateToken}
+                        className="px-3 py-1.5 border border-white-10 bg-transparent text-theme-accent rounded-3 font-monospace text-uppercase hover-white"
+                        style={{ fontSize: '0.72rem', cursor: 'pointer' }}
+                        title="Generate a new token (old QR will be invalidated)"
+                      >
+                        Regenerate
+                      </button>
+                      <button
+                        onClick={onRevokeToken}
+                        className="px-3 py-1.5 border border-white-10 bg-transparent text-danger rounded-3 font-monospace text-uppercase"
+                        style={{ fontSize: '0.72rem', cursor: 'pointer' }}
+                      >
+                        Revoke
+                      </button>
+                      <a
+                        href={`https://api.qrserver.com/v1/create-qr-code/?size=400x400&data=${encodeURIComponent(window.location.origin + '/emergency/' + emergencyToken)}`}
+                        download="MedFusion_Emergency_QR.png"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="px-3 py-1.5 border border-white-10 bg-transparent text-secondary rounded-3 font-monospace text-uppercase text-decoration-none"
+                        style={{ fontSize: '0.72rem' }}
+                      >
+                        Download
+                      </a>
+                      <button
+                        onClick={() => {
+                          const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(window.location.origin + '/emergency/' + emergencyToken)}`;
+                          const emergencyUrl = `${window.location.origin}/emergency/${emergencyToken}`;
+                          const printWin = window.open('', '_blank', 'width=500,height=620');
+                          if (!printWin) return;
+                          printWin.document.write(`
+                            <!DOCTYPE html><html><head><title>MedFusion Emergency QR</title>
+                            <style>
+                              body { font-family: monospace; text-align: center; background: #fff; color: #111; padding: 40px 24px; }
+                              h2 { font-size: 1.1rem; letter-spacing: 0.08em; margin-bottom: 4px; }
+                              p { font-size: 0.72rem; color: #555; margin: 4px 0 20px; }
+                              img { border: 2px solid #00c2a0; border-radius: 8px; }
+                              .url { font-size: 0.6rem; color: #888; word-break: break-all; margin-top: 12px; }
+                              .warn { font-size: 0.62rem; color: #c00; margin-top: 14px; }
+                            </style></head><body>
+                            <h2>🚨 MEDFUSION AI — EMERGENCY QR</h2>
+                            <p>Scan this QR code to access the patient's emergency medical information</p>
+                            <img src="${qrUrl}" width="260" height="260" />
+                            <div class="url">${emergencyUrl}</div>
+                            <div class="warn">⚕ For emergency responders only. Always confirm patient identity.</div>
+                            <script>window.onload = function(){ window.print(); }</script>
+                            </body></html>
+                          `);
+                          printWin.document.close();
+                        }}
+                        className="px-3 py-1.5 border border-white-10 bg-transparent text-theme-accent rounded-3 font-monospace text-uppercase"
+                        style={{ fontSize: '0.72rem', cursor: 'pointer' }}
+                        title="Print QR code for physical card"
+                      >
+                        Print
+                      </button>
+                    </div>
+                    <p className="text-secondary m-0" style={{ fontSize: '0.65rem', opacity: 0.5, textAlign: 'center' }}>
+                      Revoke at any time to invalidate the QR code.
+                    </p>
+                  </div>
+                )}
+              </div>
             </div>
 
             <div className="border-top border-white-10 pt-3 mt-4 d-flex justify-content-between align-items-center">
@@ -273,7 +306,7 @@ function ProfileIdentity({
                         <Calendar size={14} className="text-secondary" style={{ color: 'rgb(186, 104, 200)' }} />
                         <span className="text-secondary font-monospace" style={{ fontSize: '0.58rem', letterSpacing: '0.04em' }}>AGE</span>
                       </div>
-                      <strong className="text-white fs-5 font-monospace" style={{ textShadow: '0 0 10px rgba(186, 104, 200, 0.15)' }}>
+                      <strong className="text-white fs-5 font-monospace">
                         {profile.dob ? `${getAge(profile.dob)} Yrs` : 'N/A'}
                       </strong>
                     </div>
@@ -286,7 +319,7 @@ function ProfileIdentity({
                         <Dna size={14} className="text-secondary" style={{ color: 'rgb(240, 98, 146)' }} />
                         <span className="text-secondary font-monospace" style={{ fontSize: '0.58rem', letterSpacing: '0.04em' }}>GENDER</span>
                       </div>
-                      <strong className="text-white fs-5 font-monospace" style={{ textShadow: '0 0 10px rgba(240, 98, 146, 0.15)' }}>
+                      <strong className="text-white fs-5 font-monospace">
                         {profile.gender === 'M' ? 'Male' : profile.gender === 'F' ? 'Female' : 'N/A'}
                       </strong>
                     </div>
@@ -312,7 +345,7 @@ function ProfileIdentity({
                         <Droplet size={14} className="text-secondary" style={{ color: 'rgb(255, 143, 0)' }} />
                         <span className="text-secondary font-monospace" style={{ fontSize: '0.58rem', letterSpacing: '0.04em' }}>BLOOD GROUP</span>
                       </div>
-                      <strong className="text-white fs-5 font-monospace" style={{ textShadow: '0 0 10px rgba(255, 143, 0, 0.15)' }}>
+                      <strong className="text-white fs-5 font-monospace">
                         {profile.blood_group || 'N/A'}
                       </strong>
                     </div>
@@ -325,7 +358,7 @@ function ProfileIdentity({
                         <Ruler size={14} className="text-secondary" style={{ color: 'rgb(0, 245, 212)' }} />
                         <span className="text-secondary font-monospace" style={{ fontSize: '0.58rem', letterSpacing: '0.04em' }}>HEIGHT</span>
                       </div>
-                      <strong className="text-white fs-5 font-monospace" style={{ textShadow: '0 0 10px rgba(0, 245, 212, 0.15)' }}>
+                      <strong className="text-white fs-5 font-monospace">
                         {profile.height ? `${profile.height} cm` : 'N/A'}
                       </strong>
                     </div>
@@ -338,7 +371,7 @@ function ProfileIdentity({
                         <Scale size={14} className="text-secondary" style={{ color: 'rgb(78, 205, 196)' }} />
                         <span className="text-secondary font-monospace" style={{ fontSize: '0.58rem', letterSpacing: '0.04em' }}>WEIGHT</span>
                       </div>
-                      <strong className="text-white fs-5 font-monospace" style={{ textShadow: '0 0 10px rgba(78, 205, 196, 0.15)' }}>
+                      <strong className="text-white fs-5 font-monospace">
                         {profile.weight ? `${profile.weight} kg` : 'N/A'}
                       </strong>
                     </div>
@@ -397,7 +430,7 @@ function ProfileIdentity({
             <div className="glass-card p-3.5 text-start w-100 border-theme-accent border-opacity-15 bg-white-5" style={{ borderRadius: '16px' }}>
               <div className="d-flex justify-content-between align-items-center mb-3">
                 <span className="text-secondary small fw-bold font-monospace d-flex align-items-center gap-2" style={{ fontSize: '0.72rem', letterSpacing: '0.04em' }}>
-                  <Sparkles size={14} className="text-theme-accent animate-pulse" />
+                  <Sparkles size={14} className="text-theme-accent" />
                   DAILY CLINICAL TARGETS & HEALTH INSIGHTS
                 </span>
               </div>

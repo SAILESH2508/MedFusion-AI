@@ -201,7 +201,7 @@ function DoctorDashboard({ user }) {
         {/* Header Console */}
         <div className="glass-card p-4 mb-2 reveal border-theme-accent border-opacity-15 bg-white-5" style={{ borderRadius: '12px' }}>
           <h2 className="fw-bolder fs-6 m-0 text-white" style={{ letterSpacing: '-0.02em', fontSize: '1.25rem' }}>
-            Clinical <span className="text-theme-accent" style={{ textShadow: '0 0 20px var(--theme-accent-glow)' }}>Examiner</span>
+            Clinical <span className="text-theme-accent">Examiner</span>
           </h2>
           <p className="text-secondary m-0 mt-2" style={{ fontSize: '0.88rem', lineHeight: '1.4' }}>
             Logged in as Dr. {user.full_name || "Examiner"}. Select patients to review diagnostics, pathology and write clinical recommendations.
@@ -299,7 +299,7 @@ function DoctorDashboard({ user }) {
               <div className="d-flex align-items-center justify-content-between mb-4 border-bottom border-white-10 pb-3 flex-wrap gap-2">
                 <div>
                   <h3 className="fw-bold m-0 text-white text-uppercase d-flex align-items-center gap-2" style={{ fontSize: '1.25rem' }}>
-                    <Cpu className="text-theme-accent animate-pulse" size={24} />
+                    <Cpu className="text-theme-accent" size={24} />
                     Patient Directory Console
                   </h3>
                   <span className="text-secondary small font-monospace">Synchronized clinical registry database</span>
@@ -329,6 +329,7 @@ function DoctorDashboard({ user }) {
                       value={patientSearch}
                       onChange={e => setPatientSearch(e.target.value)}
                       placeholder="Search by name, email or ID..."
+                      aria-label="Search patients by name, email or ID"
                       className="w-100 font-monospace text-white bg-transparent rounded border border-white-10"
                       style={{ padding: '10px 12px 10px 34px', fontSize: '0.82rem', outline: 'none' }}
                     />
@@ -341,18 +342,10 @@ function DoctorDashboard({ user }) {
                   ) : filteredPatients.map((p) => (
                     <div 
                       key={p.id} 
-                      className="d-flex align-items-center justify-content-between p-3 rounded border border-white-5"
+                      className="d-flex align-items-center justify-content-between p-3 rounded border border-white-5 patient-row"
                       style={{ 
                         background: 'rgba(255, 255, 255, 0.03)',
                         transition: 'all 0.2s ease',
-                      }}
-                      onMouseEnter={(e) => {
-                        e.currentTarget.style.background = 'var(--theme-accent-glow)';
-                        e.currentTarget.style.borderColor = 'var(--theme-accent)';
-                      }}
-                      onMouseLeave={(e) => {
-                        e.currentTarget.style.background = 'rgba(255, 255, 255, 0.03)';
-                        e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.05)';
                       }}
                     >
                       <div className="d-flex align-items-center gap-3 text-truncate pe-3">
@@ -366,6 +359,7 @@ function DoctorDashboard({ user }) {
                       </div>
                       <button 
                         onClick={() => setSelectedPatient(p)}
+                        aria-label={`Inspect patient ${p.name}`}
                         className="btn-clinical py-2 px-4 d-inline-flex align-items-center justify-content-center gap-2 font-monospace text-uppercase flex-shrink-0 w-auto-override"
                         style={{ fontSize: '0.85rem', borderRadius: '8px' }}
                       >
@@ -392,6 +386,7 @@ function DoctorDashboard({ user }) {
                 <div className="d-flex gap-1">
                   <button 
                     onClick={() => setCalcTab('bmi')} 
+                    aria-pressed={calcTab === 'bmi'}
                     className="px-2 py-0.5 rounded font-monospace text-uppercase" 
                     style={{ fontSize: '0.7rem', width: 'auto', background: calcTab === 'bmi' ? 'rgba(0,245,212,0.15)' : 'transparent', color: calcTab === 'bmi' ? '#00f5d4' : '#6c757d', border: calcTab === 'bmi' ? '1px solid rgba(0,245,212,0.3)' : '1px solid transparent' }}
                   >
@@ -399,6 +394,7 @@ function DoctorDashboard({ user }) {
                   </button>
                   <button 
                     onClick={() => setCalcTab('thr')} 
+                    aria-pressed={calcTab === 'thr'}
                     className="px-2 py-0.5 rounded font-monospace text-uppercase" 
                     style={{ fontSize: '0.7rem', width: 'auto', background: calcTab === 'thr' ? 'rgba(0,245,212,0.15)' : 'transparent', color: calcTab === 'thr' ? '#00f5d4' : '#6c757d', border: calcTab === 'thr' ? '1px solid rgba(0,245,212,0.3)' : '1px solid transparent' }}
                   >

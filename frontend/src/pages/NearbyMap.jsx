@@ -219,7 +219,7 @@ function PlaceCard({ place, isPatient, expanded, onToggle }) {
       style={{
         background: expanded ? 'rgba(0,4,45,0.75)' : 'rgba(0,4,45,0.4)',
         borderColor: expanded ? cfg.color : 'rgba(255,255,255,0.07)',
-        boxShadow: expanded ? `0 0 18px ${cfg.glow}` : 'none',
+        boxShadow: expanded ? '0 4px 16px rgba(0,0,0,0.4)' : 'none',
       }}
       onClick={onToggle}
     >
