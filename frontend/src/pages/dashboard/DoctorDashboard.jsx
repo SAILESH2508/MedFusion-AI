@@ -375,7 +375,12 @@ function DoctorDashboard({ user }) {
           {/* Sidebar Calculator Tools Column */}
           <div className="col-lg-4 d-flex flex-column justify-content-start gap-3" style={{ height: 'calc(100% - 24px)', overflow: 'hidden' }}>
             {/* Quick Diagnostic Calculator widget */}
-            <div className="glass-card p-3 d-flex flex-column gap-2.5" style={{ borderRadius: '16px' }}>
+            <details className="glass-card" style={{ borderRadius: '16px' }}>
+              <summary className="d-flex align-items-center gap-2 p-3 border-bottom border-white-10 font-monospace text-white text-uppercase" style={{ fontSize: '0.95rem', letterSpacing: '0.02em', listStyle: 'none', cursor: 'pointer' }}>
+                <Calculator className="text-theme-accent" size={18} />
+                Clinical Calculators
+              </summary>
+            <div className="p-3 d-flex flex-column gap-2.5" style={{ }}>
               <div className="d-flex align-items-center justify-content-between border-bottom border-white-10 pb-2">
                 <div className="d-flex align-items-center gap-2">
                   <Calculator className="text-theme-accent" size={18} />
@@ -505,6 +510,7 @@ function DoctorDashboard({ user }) {
                 </div>
               )}
             </div>
+            </details>
           </div>
         </div>
       ) : (
