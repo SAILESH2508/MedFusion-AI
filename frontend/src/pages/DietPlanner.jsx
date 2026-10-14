@@ -485,7 +485,7 @@ export default function DietPlanner({ user }) {
           <div className="modal-overlay" onClick={() => setSwapModal(null)}>
             <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.95 }}
               className="modal-container glass-card p-4" onClick={e => e.stopPropagation()} style={{ maxWidth: '480px', padding: '30px' }}>
-              <button className="modal-close-btn" onClick={() => setSwapModal(null)}><X size={20} /></button>
+              <button className="modal-close-btn" onClick={() => setSwapModal(null)} aria-label="Close swap modal"><X size={20} /></button>
               <h4 className="fw-bold mb-1 font-monospace" style={{ color: 'var(--text-primary)' }}>Swap Meal</h4>
               <p className="text-secondary mb-4 font-monospace" style={{ fontSize: '0.82rem' }}>Replacing: <strong style={{ color: 'var(--text-primary)' }}>{swapModal?.name}</strong></p>
               {swapLoading && <div className="text-center py-3"><div className="spinner-border" style={{ color: 'var(--accent-teal)', width: '28px', height: '28px' }} /></div>}

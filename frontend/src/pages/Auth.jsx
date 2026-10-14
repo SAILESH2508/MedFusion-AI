@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { api, setAuthToken } from '../services/api';
-import { Lock, Key, Cpu, RefreshCw, Upload, User, Heart, Sparkles } from 'lucide-react';
+import { Lock, Key, Cpu, RefreshCw, Upload, User, Heart, Info, CheckCircle2, AlertTriangle } from 'lucide-react';
 
 function Auth({ login, initialPortal: propInitialPortal = 'patient', onClose, message }) {
   const [searchParams] = useSearchParams();
@@ -128,10 +128,7 @@ function Auth({ login, initialPortal: propInitialPortal = 'patient', onClose, me
   return (
     <div className={`d-flex justify-content-center align-items-center font-monospace ${currentTheme}`} style={typeof onClose === 'function' ? { width: '100%' } : { minHeight: '70vh' }}>
       <div className="glass-card reveal w-100 position-relative overflow-hidden" style={{ 
-        maxWidth: '520px', 
-        boxShadow: portal === 'doctor' 
-          ? '0 30px 70px rgba(70,0,30,0.8), 0 0 30px rgba(255, 140, 0, 0.15)' 
-          : '0 30px 70px rgba(0,3,70,0.8), 0 0 30px rgba(0, 255, 255, 0.15)'
+        maxWidth: '520px'
       }}>
         
         {/* Terminal Header */}
@@ -170,22 +167,22 @@ function Auth({ login, initialPortal: propInitialPortal = 'patient', onClose, me
         </div>
 
         {message && (
-          <div className="d-flex align-items-start gap-3 p-3.5 rounded border border-white-5 bg-white-5 mb-4 small text-secondary" style={{ fontSize: '0.78rem', lineHeight: '1.5' }}>
-            <Sparkles size={16} className="text-theme-accent flex-shrink-0 mt-0.5 animate-pulse" />
+          <div className="d-flex align-items-start gap-3 p-3.5 rounded border border-white-5 bg-white-5 mb-4 small text-secondary" style={{ fontSize: '0.78rem', lineHeight: '1.5' }} aria-live="polite">
+            <Info size={16} className="text-theme-accent flex-shrink-0 mt-0.5" />
             <div className="flex-grow-1">
-              <span className="text-theme-accent fw-bold d-block mb-1 text-uppercase font-monospace" style={{ letterSpacing: '0.06em', fontSize: '0.72rem' }}>SYSTEM NOTICE GATEWAY INFO</span>
-              <span className="font-monospace" style={{ opacity: 0.88 }}>{message}</span>
+              <span className="text-theme-accent fw-bold d-block mb-1 text-uppercase font-monospace" style={{ letterSpacing: '0.06em', fontSize: '0.72rem' }}>Notice</span>
+              <span style={{ opacity: 0.88 }}>{message}</span>
             </div>
           </div>
         )}
         
         {error && (
-          <div className={`p-3 rounded border font-monospace mb-4 small ${
+          <div className={`p-3 rounded border font-monospace mb-4 small d-flex align-items-center gap-2 ${
             error.includes('successful') 
               ? 'border-success bg-success bg-opacity-10 text-success' 
               : 'border-danger bg-danger bg-opacity-10 text-danger'
-          }`} style={{ fontSize: '0.72rem' }}>
-            {error.includes('successful') ? '✓' : '⚠️'} {error.toUpperCase()}
+          }`} style={{ fontSize: '0.72rem' }} aria-live="polite">
+            {error.includes('successful') ? <CheckCircle2 size={14} /> : <AlertTriangle size={14} />} {error}
           </div>
         )}
         
@@ -273,7 +270,7 @@ function Auth({ login, initialPortal: propInitialPortal = 'patient', onClose, me
                   <div className="col-12 mt-2 border-top border-white-5 pt-3 animate-fadeIn">
                     <label className="small text-secondary fw-bold mb-2">Certification Proof (PDF/JPG/PNG)</label>
                     <div 
-                      className="p-3 border border-dashed border-white-10 rounded text-center cursor-pointer position-relative hover-border-info-glow" 
+                      className="p-3 border border-dashed border-white-10 rounded text-center cursor-pointer position-relative" 
                       onClick={() => document.getElementById('proofFileInput').click()} 
                       style={{ background: 'rgba(255,255,255,0.03)' }}
                     >

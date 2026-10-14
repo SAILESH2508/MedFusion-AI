@@ -1,6 +1,6 @@
 import React, { useState, useEffect, createContext, useCallback } from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate, Link, useLocation } from 'react-router-dom';
-import { Activity, FileUp, Database, User, LogOut, Menu, X, Home, PanelLeft, Pill, Smile, Calendar, MessageSquare, MapPin, Sun, Moon } from 'lucide-react';
+import { BrowserRouter as Router, Routes, Route, Navigate, Link, useLocation, NavLink as RouterNavLink } from 'react-router-dom';
+import { Activity, FileUp, Database, User, LogOut, Menu, X, Home, PanelLeft, Pill, Smile, Calendar, MessageSquare, MapPin, Sun, Moon, Salad, Flower2 } from 'lucide-react';
 import { AnimatePresence, motion } from 'framer-motion';
 
 // Pages
@@ -13,11 +13,14 @@ import Auth from './pages/Auth';
 import Landing from './pages/Landing';
 import NearbyMap from './pages/NearbyMap';
 import EmergencyCard from './pages/EmergencyCard';
+import DietPlanner from './pages/DietPlanner';
+import HealthGarden from './pages/HealthGarden';
 import AIChatbot from './components/AIChatbot';
 import { removeAuthToken } from './services/api';
 
 import { SidebarContext } from './context/SidebarContext';
-import { ThemeProvider, useTheme } from './context/ThemeContext';
+import { ThemeProvider } from './context/ThemeContext';
+import { useTheme } from './context/useTheme';
 
 function App() {
   const getInitialUser = () => {
@@ -63,7 +66,7 @@ function RedirectToHomeAndOpenAuth({ openAuth }) {
 function AppContent({ user, login, logout }) {
   const location = useLocation();
   const isAuthPage = location.pathname.startsWith('/auth');
-  const isSidebarPage = location.pathname.includes('dashboard') || location.pathname.includes('upload') || location.pathname.includes('nearby') || (!!user && location.pathname.includes('profile'));
+  const isSidebarPage = location.pathname.includes('dashboard') || location.pathname.includes('upload') || location.pathname.includes('nearby') || location.pathname.includes('diet') || location.pathname.includes('garden') || (!!user && location.pathname.includes('profile'));
   
   const [sidebarContent, setSidebarContent] = useState(null);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -153,6 +156,8 @@ function AppContent({ user, login, logout }) {
                     setPersistedRadius={setMapRadius}
                   />
                 } />
+                <Route path="/diet" element={user && user.role === 'Patient' ? <DietPlanner user={user} /> : <Navigate to="/" />} />
+                <Route path="/garden" element={user && user.role === 'Patient' ? <HealthGarden user={user} /> : <Navigate to="/" />} />
                 <Route path="/vault" element={<Navigate to="/profile" />} />
                 <Route path="/profile" element={user ? <Profile user={user} onUserUpdate={login} /> : <RedirectToHomeAndOpenAuth openAuth={openAuth} />} />
                 
@@ -204,7 +209,7 @@ function Sidebar({ user, logout, sidebarContent, isOpen, toggleSidebar, openAuth
 
   return (
     <aside className={`app-sidebar ${isOpen ? 'open' : ''}`}>
-      <button className="btn-icon d-md-none text-white position-absolute end-0 top-0 m-3 z-index-1000" onClick={toggleSidebar}>
+      <button className="btn-icon d-md-none text-white position-absolute end-0 top-0 m-3 z-index-1000" onClick={toggleSidebar} aria-label="Close sidebar">
         <X size={24} />
       </button>
       <div className="sidebar-menu flex-grow-1 overflow-visible py-2 mt-4 mt-md-0">
@@ -212,7 +217,7 @@ function Sidebar({ user, logout, sidebarContent, isOpen, toggleSidebar, openAuth
       </div>
 
       {user && user.role === 'Patient' && navbarHealthScore && (
-        <div className="mb-4 d-flex align-items-center gap-3 bg-white-5 p-3 rounded-4 border border-white-5 hover-border-theme-accent-glow transition-all" style={{ background: 'linear-gradient(135deg, rgba(0,245,212,0.04) 0%, rgba(0,4,45,0.45) 100%)' }}>
+        <div className="mb-4 d-flex align-items-center gap-3 bg-white-5 p-3 rounded-4 border border-white-5 transition-all">
           <div className="position-relative d-flex align-items-center justify-content-center" style={{ width: '56px', height: '56px' }}>
             <svg className="position-absolute" style={{ transform: 'rotate(-90deg)', width: '100%', height: '100%' }} viewBox="0 0 36 36">
               <path strokeWidth="3" stroke="rgba(255, 255, 255, 0.08)" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
@@ -252,7 +257,7 @@ function Sidebar({ user, logout, sidebarContent, isOpen, toggleSidebar, openAuth
                 </span>
               </div>
             </div>
-            <button onClick={logout} className="btn-icon p-2 border-0 bg-transparent text-white opacity-70 hover-opacity-100 transition-all">
+            <button onClick={logout} className="btn-icon p-2 border-0 bg-transparent text-white opacity-70 hover-opacity-100 transition-all" aria-label="Log out">
               <LogOut size={24} />
             </button>
           </div>
@@ -273,8 +278,9 @@ function Sidebar({ user, logout, sidebarContent, isOpen, toggleSidebar, openAuth
             </div>
             <button 
               onClick={() => openAuth('patient')} 
-              className="primary px-3 py-1.5 rounded-pill text-decoration-none text-white font-monospace text-uppercase cursor-pointer" 
-              style={{ fontSize: '0.72rem', width: 'auto', border: '1px solid var(--theme-accent)' }}
+              aria-label="Log in"
+              className="btn-clinical primary px-3 py-1.5 text-decoration-none text-white font-monospace text-uppercase cursor-pointer w-auto-override" 
+              style={{ fontSize: '0.72rem' }}
             >
               Login
             </button>
@@ -300,77 +306,78 @@ function Navbar({ user, logout, toggleSidebar, isSidebarPage, openAuth, navbarHe
   const { theme, toggleTheme } = useTheme();
 
   return (
-    <nav className="border-bottom border-white-10 py-4 bg-glass backdrop-blur w-100">
-      <div className="container d-flex justify-content-between align-items-center">
-        <div className="d-flex align-items-center gap-2">
+    <nav className="border-bottom border-white-10 bg-glass backdrop-blur w-100">
+      <div className="container d-flex justify-content-between align-items-center" style={{ height: '56px' }}>
+        <div className="d-flex align-items-center gap-2 flex-shrink-0">
           {isSidebarPage && (
-            <button className="btn-icon d-md-none text-white p-1" onClick={toggleSidebar}>
+            <button className="btn-icon d-md-none p-1" style={{ color: 'var(--text-primary)' }} onClick={toggleSidebar} aria-label="Toggle sidebar">
               <PanelLeft size={24} />
             </button>
           )}
           <Link to="/" className="text-decoration-none">
-            <h1 className="m-0 fs-3 fw-bolder letter-spacing-tight">
+            <h1 className="m-0 fw-bolder text-nowrap" style={{ fontSize: '1.35rem', letterSpacing: '-0.02em' }}>
               <span className="brand-logo-blue">MEDFUSION</span><span className="brand-logo-orange">AI</span>
             </h1>
           </Link>
         </div>
 
         {/* Desktop Nav */}
-        <div className="d-none d-md-flex align-items-center gap-4">
-          <NavLink to="/" icon={<Home size={18} />} label="Home" />
+        <div className="d-none d-md-flex align-items-center gap-3">
+          <NavLink to="/" icon={<Home size={16} />} label="Home" />
           {user && user.role === 'Doctor' && (
             <>
-              <NavLink to="/dashboard" icon={<Activity size={18} />} label="Patient Registry" />
-              <NavLink to="/upload" icon={<FileUp size={18} />} label="Clinical Ingestion" />
-              <NavLink to="/nearby" icon={<MapPin size={18} />} label="Nearby Facilities" />
+              <NavLink to="/dashboard" icon={<Activity size={16} />} label="Patients" />
+              <NavLink to="/upload" icon={<FileUp size={16} />} label="Scanner" />
+              <NavLink to="/nearby" icon={<MapPin size={16} />} label="Nearby" />
             </>
           )}
           {user && user.role === 'Patient' && (
             <>
-              <NavLink to="/dashboard" icon={<Activity size={18} />} label="AI Health Check" />
-              <NavLink to="/upload" icon={<FileUp size={18} />} label="AI Report Scanner" />
-              <NavLink to="/nearby" icon={<MapPin size={18} />} label="Nearby Facilities" />
+              <NavLink to="/dashboard" icon={<Activity size={16} />} label="Health Check" />
+              <NavLink to="/upload" icon={<FileUp size={16} />} label="Scanner" />
+              <NavLink to="/diet" icon={<Salad size={16} />} label="Diet" />
+              <NavLink to="/garden" icon={<Flower2 size={16} />} label="Garden" />
+              <NavLink to="/nearby" icon={<MapPin size={16} />} label="Nearby" />
             </>
           )}
           {!user && (
             <>
-              <NavLink to="/dashboard" icon={<Activity size={18} />} label="AI Health Check" />
-              <NavLink to="/upload" icon={<FileUp size={18} />} label="AI Report Scanner" />
-              <NavLink to="/nearby" icon={<MapPin size={18} />} label="Nearby" />
+              <NavLink to="/dashboard" icon={<Activity size={16} />} label="Health Check" />
+              <NavLink to="/upload" icon={<FileUp size={16} />} label="Scanner" />
+              <NavLink to="/nearby" icon={<MapPin size={16} />} label="Nearby" />
             </>
           )}
           {user ? (
             <>
-              <div className="d-flex align-items-center gap-3">
-                <NavLink to="/profile" icon={<User size={18} />} label={isDoctor ? "Credentials Vault" : "My Profile"} />
-              </div>
+              <NavLink to="/profile" icon={<User size={16} />} label={isDoctor ? "Vault" : "Profile"} />
               {!isSidebarPage && (
                 <button onClick={logout} className="btn-icon p-2 border-0 bg-transparent text-white opacity-70 hover-opacity-100">
-                  <LogOut size={20} />
+                  <LogOut size={18} />
                 </button>
               )}
             </>
           ) : (
-            <button 
-              onClick={() => openAuth('patient')} 
+            <button
+              onClick={() => openAuth('patient')}
               className="primary px-4 py-2 rounded-pill text-decoration-none font-monospace text-uppercase cursor-pointer"
-              style={{ width: 'auto', fontSize: '0.88rem' }}
+              style={{ width: 'auto', fontSize: '0.82rem' }}
             >
               Login
             </button>
           )}
           <button
             onClick={toggleTheme}
-            className="btn-icon p-2 border-0 bg-transparent text-white opacity-70 hover-opacity-100"
+            className="btn-icon p-2 border-0 bg-transparent opacity-70 hover-opacity-100"
+            style={{ color: 'var(--text-primary)' }}
             title={theme === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
             aria-label={theme === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
           >
-            {theme === 'dark' ? <Sun size={20} /> : <Moon size={20} />}
+            {theme === 'dark' ? <Sun size={18} /> : <Moon size={18} />}
           </button>
         </div>
 
         {/* Mobile menu toggle */}
-        <button className="btn-icon d-md-none text-white" onClick={() => setIsOpen(!isOpen)}>
+        <button className="btn-icon d-md-none text-white" onClick={() => setIsOpen(!isOpen)} aria-label={isOpen ? 'Close menu' : 'Open menu'} aria-expanded={isOpen}>
           {isOpen ? <X size={24} /> : <Menu size={24} />}
         </button>
       </div>
@@ -397,6 +404,8 @@ function Navbar({ user, logout, toggleSidebar, isSidebarPage, openAuth, navbarHe
                   <>
                     <MobileNavLink to="/dashboard" label="AI Health Check" onClick={() => setIsOpen(false)} />
                     <MobileNavLink to="/upload" label="AI Report Scanner" onClick={() => setIsOpen(false)} />
+                    <MobileNavLink to="/diet" label="Diet Planner" onClick={() => setIsOpen(false)} />
+                    <MobileNavLink to="/garden" label="Health Garden" onClick={() => setIsOpen(false)} />
                     <MobileNavLink to="/nearby" label="Nearby Facilities" onClick={() => setIsOpen(false)} />
                   </>
                 )}
@@ -442,18 +451,30 @@ function Navbar({ user, logout, toggleSidebar, isSidebarPage, openAuth, navbarHe
 
 function NavLink({ to, icon, label }) {
   return (
-    <Link to={to} className="text-secondary text-decoration-none d-flex align-items-center gap-2 hover-white transition-all">
+    <RouterNavLink
+      to={to}
+      className={({ isActive }) =>
+        `text-decoration-none d-flex align-items-center gap-2 transition-all ${isActive ? 'text-white' : 'text-secondary hover-white'}`
+      }
+      style={({ isActive }) => isActive ? { fontWeight: 600 } : {}}
+    >
       {icon}
       <span>{label}</span>
-    </Link>
+    </RouterNavLink>
   );
 }
 
 function MobileNavLink({ to, label, onClick }) {
   return (
-    <Link to={to} className="text-white text-decoration-none fs-5 py-2 border-bottom border-white-5" onClick={onClick}>
+    <RouterNavLink
+      to={to}
+      className={({ isActive }) =>
+        `text-decoration-none fs-5 py-2 border-bottom border-white-5 d-block ${isActive ? 'text-white fw-bold' : 'text-secondary'}`
+      }
+      onClick={onClick}
+    >
       {label}
-    </Link>
+    </RouterNavLink>
   );
 }
 

@@ -269,7 +269,7 @@ function MedicalVault({
           </div>
         ) : archive.length === 0 ? (
           <div className="text-center py-5 bg-white-5 rounded border border-white-5 font-monospace text-secondary">
-            <FileText size={32} className="mx-auto mb-3 opacity-40 text-theme-accent animate-pulse" />
+            <FileText size={32} className="mx-auto mb-3 opacity-40 text-theme-accent" />
             <p className="m-0 italic">No medical records archived in this profile.</p>
             <small className="d-block mt-1 mb-4 opacity-70">Upload reports using the AI scanner tool to log them permanently here.</small>
             <Link to="/upload" className="btn-clinical primary mx-auto py-2.5 px-4 d-inline-flex align-items-center gap-2 font-monospace text-uppercase text-decoration-none" style={{ fontSize: '0.85rem', width: 'auto' }}>

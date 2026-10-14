@@ -71,6 +71,7 @@ function GardenVisual({ stage, totalPoints, nextAt }) {
 function ActivityButton({ type, label, icon: Icon, points, color, onClick, loading }) {
   return (
     <button onClick={() => onClick(type)} disabled={loading}
+      aria-label={`Log activity: ${label} (+${points} points)`}
       className="activity-btn d-flex flex-column align-items-center gap-1 p-3 rounded font-monospace"
       style={{
         border: `1px solid ${color}40`, background: `${color}10`, color, cursor: loading ? 'not-allowed' : 'pointer',
@@ -88,6 +89,7 @@ function ActivityButton({ type, label, icon: Icon, points, color, onClick, loadi
 function AchievementBadge({ achievement }) {
   return (
     <div className="achievement-badge text-center p-3 rounded"
+      aria-disabled={!achievement.earned}
       style={{
         border: `1px solid ${achievement.earned ? 'rgba(0,245,212,0.35)' : 'var(--border-color)'}`,
         background: achievement.earned ? 'rgba(0,245,212,0.06)' : 'var(--bg-card)',

@@ -633,7 +633,7 @@ function DoctorDashboard({ user }) {
                         {patientDetails.predictions.map((pred, idx) => (
                           <div key={idx} className="p-3 bg-white-5 border border-white-5 rounded">
                             <div className="d-flex justify-content-between align-items-baseline">
-                              <span className="text-white fw-bold" style={{ fontSize: '0.85rem' }}>🔮 {pred.disease_type} prediction</span>
+                              <span className="text-white fw-bold" style={{ fontSize: '0.85rem' }}>{pred.disease_type} prediction</span>
                               <span className="text-secondary small" style={{ fontSize: '0.75rem' }}>{new Date(pred.created_at).toLocaleDateString()}</span>
                             </div>
                             <div className="d-flex align-items-baseline gap-2 mt-2" style={{ fontSize: '0.8rem' }}>
@@ -667,7 +667,7 @@ function DoctorDashboard({ user }) {
               
               <div>
                 <h4 className="fw-bold text-white font-monospace d-flex align-items-center gap-2 mb-2" style={{ fontSize: '1.15rem' }}>
-                  <Sparkles className="text-theme-accent animate-pulse" size={20} />
+                  <Sparkles className="text-theme-accent" size={20} />
                   Issue Clinical Guidance
                 </h4>
                 <p className="text-secondary font-monospace m-0" style={{ fontSize: '0.82rem' }}>

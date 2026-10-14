@@ -328,7 +328,7 @@ function GuestUpload({ openAuth }) {
         {/* Sleek Medical Header Console inside Sidebar */}
         <div className="glass-card p-4 mb-2 reveal border-theme-accent border-opacity-15 bg-white-5" style={{ borderRadius: '12px' }}>
           <h2 className="fw-bolder fs-6 m-0 text-white" style={{ letterSpacing: '-0.02em', fontSize: '1.25rem' }}>
-            AI Report <span className="text-theme-accent" style={{ textShadow: '0 0 20px var(--theme-accent-glow)' }}>Scanner</span>
+            AI Report <span className="text-theme-accent">Scanner</span>
           </h2>
           <p className="text-secondary m-0 mt-2" style={{ fontSize: '0.88rem', lineHeight: '1.4' }}>
             Select your report category and ingest documents to extract medical parameters.

@@ -180,7 +180,7 @@ function PillBox({
         {allMeds.length === 0 ? (
           <div className="d-flex flex-column align-items-center justify-content-center text-center py-5 flex-grow-1 font-monospace text-secondary border border-dashed border-white-10 rounded-4 m-2" style={{ background: 'rgba(255,255,255,0.01)' }}>
             <div className="p-3 bg-white-5 rounded-circle text-theme-accent border border-theme-accent border-opacity-20 mb-3 shadow-lg">
-              <Pill size={28} className="animate-pulse" />
+              <Pill size={28} />
             </div>
             <strong className="text-white d-block mb-1" style={{ fontSize: '0.9rem', letterSpacing: '0.02em' }}>PILL BOX IS EMPTY</strong>
             <p className="small m-0 px-4" style={{ maxWidth: '360px', fontSize: '0.78rem', lineHeight: '1.4', opacity: 0.7 }}>

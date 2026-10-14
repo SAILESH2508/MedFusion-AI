@@ -31,7 +31,7 @@ function RiskAssessments({
           </div>
         ) : history.length === 0 ? (
           <div className="text-center py-5 bg-white-5 rounded border border-white-5 font-monospace text-secondary">
-            <Clock size={32} className="mx-auto mb-3 opacity-40 text-theme-accent animate-pulse" />
+            <Clock size={32} className="mx-auto mb-3 opacity-40 text-theme-accent" />
             <p className="m-0 italic">No past risk screens logged in your medical vault.</p>
             <small className="d-block mt-1 mb-4 opacity-70">Calculations run in the public portal are not auto-saved unless logged into a session.</small>
             <Link to="/dashboard" className="btn-clinical primary mx-auto py-2.5 px-4 d-inline-flex align-items-center gap-2 font-monospace text-uppercase text-decoration-none" style={{ fontSize: '0.85rem', width: 'auto' }}>
