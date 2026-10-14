@@ -1,0 +1,26 @@
+{
+  "id": "FEAT-001",
+  "type": "chore",
+  "description": "Remove Health Garden from the frontend and backend URL routing. Delete HealthGarden.jsx, strip all garden nav items and the /garden route from App.jsx, remove the /garden path from the api.js 401 interceptor exclusion list, and remove the garden URL patterns from backend/medical/urls.py (keeping garden_views.py and models intact to avoid destructive migrations).",
+  "status": "completed",
+  "steps": [
+    "1. In frontend/src/App.jsx: (a) Delete line 'import HealthGarden from ./pages/HealthGarden'. (b) Remove 'Flower2' from the lucide-react import (keep all other icons). (c) Delete <Route path='/garden' element={...} /> from the Routes block. (d) Delete <NavLink to='/garden' icon={<Flower2 size={16} />} label='Garden' /> from the Patient desktop nav block. (e) Delete <MobileNavLink to='/garden' label='Health Garden' ... /> from the Patient mobile nav block. (f) Remove '|| location.pathname.includes(garden)' from the isSidebarPage string.",
+    "2. In frontend/src/services/api.js: Remove '/garden' from the 401 interceptor path exclusion list (the list of pathnames that won't trigger a forced redirect to /auth on 401).",
+    "3. Delete the file frontend/src/pages/HealthGarden.jsx entirely.",
+    "4. In backend/medical/urls.py: (a) Remove the line 'from . import garden_views'. (b) Delete the four re_path entries under the '# Health Garden' comment block (garden_status, garden_activity, garden_history, garden_achievements). Do NOT modify garden_views.py or models.py."
+  ],
+  "acceptance_criteria": [
+    "npm run build in frontend/ exits 0 with no errors.",
+    "python manage.py check in backend/ exits 0 with no errors.",
+    "No file in frontend/src/ contains any reference to HealthGarden, /garden route, or Flower2 icon used for garden nav.",
+    "backend/medical/urls.py no longer imports garden_views.",
+    "backend/medical/garden_views.py still exists and is unchanged.",
+    "backend/medical/models.py HealthActivity and GardenProgress models still exist unchanged."
+  ],
+  "verification": [
+    "cd d:\\MEDICAL_PROJECT\\medfusion-ai\\frontend && npm run build",
+    "cd d:\\MEDICAL_PROJECT\\medfusion-ai\\backend && python manage.py check"
+  ],
+  "blocked_reason": null,
+  "findings": "HealthGarden.jsx deleted. App.jsx: removed HealthGarden import, Flower2 icon, /garden Route, Patient desktop NavLink, Patient mobile MobileNavLink, and 'garden' from isSidebarPage. api.js: removed '/garden' from 401 interceptor exclusion list. backend/medical/urls.py: removed garden_views import and four garden re_path entries. garden_views.py and models.py (HealthActivity, GardenProgress) left intact to avoid destructive migrations. npm run build exits 0; python manage.py check reports 0 issues."
+}

@@ -1,5 +1,7 @@
 import axios from 'axios';
 
+// Backend runs on port 8000 (manage.py runserver default).
+// If you use start.ps1 which launches on 8001, update this to 8001.
 export const API_BASE_URL = "http://127.0.0.1:8000/api";
 
 // Create authenticated axios instance
@@ -51,7 +53,8 @@ api.interceptors.response.use(
           window.location.pathname !== '/' &&
           window.location.pathname !== '/dashboard' &&
           window.location.pathname !== '/upload' &&
-          window.location.pathname !== '/nearby'
+          window.location.pathname !== '/nearby' &&
+          window.location.pathname !== '/diet'
         ) {
           window.location.href = '/auth';
         }

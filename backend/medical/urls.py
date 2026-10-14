@@ -1,5 +1,6 @@
 from django.urls import path, re_path
 from . import views
+from . import diet_views
 
 urlpatterns = [
     # Chat endpoint
@@ -48,4 +49,14 @@ urlpatterns = [
 
     # AI explain/translate route
     re_path(r'^ai/explain/?$', views.explain_result, name='explain_result'),
+
+    # ── Diet Planner ──────────────────────────────────────────────────────
+    re_path(r'^diet/preferences/?$', diet_views.diet_preferences, name='diet_preferences'),
+    re_path(r'^diet/generate/?$', diet_views.generate_meal_plan, name='diet_generate'),
+    re_path(r'^diet/plan/?$', diet_views.get_meal_plan, name='diet_plan'),
+    re_path(r'^diet/swap/?$', diet_views.swap_meal, name='diet_swap'),
+    re_path(r'^diet/meal-complete/?$', diet_views.meal_complete, name='diet_meal_complete'),
+    re_path(r'^diet/favorites/?$', diet_views.favorites, name='diet_favorites'),
+    re_path(r'^diet/shopping-list/(?P<item_id>\d+)/?$', diet_views.shopping_list_item, name='diet_shopping_item'),
+    re_path(r'^diet/shopping-list/?$', diet_views.shopping_list, name='diet_shopping_list'),
 ]

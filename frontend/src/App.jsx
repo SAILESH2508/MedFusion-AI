@@ -1,6 +1,6 @@
 import React, { useState, useEffect, createContext, useCallback } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate, Link, useLocation, NavLink as RouterNavLink } from 'react-router-dom';
-import { Activity, FileUp, Database, User, LogOut, Menu, X, Home, PanelLeft, Pill, Smile, Calendar, MessageSquare, MapPin, Sun, Moon, Salad, Flower2 } from 'lucide-react';
+import { Activity, FileUp, Database, User, LogOut, Menu, X, Home, PanelLeft, Pill, Smile, Calendar, MessageSquare, MapPin, Sun, Moon, Salad } from 'lucide-react';
 import { AnimatePresence, motion } from 'framer-motion';
 
 // Pages
@@ -14,7 +14,6 @@ import Landing from './pages/Landing';
 import NearbyMap from './pages/NearbyMap';
 import EmergencyCard from './pages/EmergencyCard';
 import DietPlanner from './pages/DietPlanner';
-import HealthGarden from './pages/HealthGarden';
 import AIChatbot from './components/AIChatbot';
 import { removeAuthToken } from './services/api';
 
@@ -66,7 +65,7 @@ function RedirectToHomeAndOpenAuth({ openAuth }) {
 function AppContent({ user, login, logout }) {
   const location = useLocation();
   const isAuthPage = location.pathname.startsWith('/auth');
-  const isSidebarPage = location.pathname.includes('dashboard') || location.pathname.includes('upload') || location.pathname.includes('nearby') || location.pathname.includes('diet') || location.pathname.includes('garden') || (!!user && location.pathname.includes('profile'));
+  const isSidebarPage = location.pathname.includes('dashboard') || location.pathname.includes('upload') || location.pathname.includes('nearby') || location.pathname.includes('diet') || (!!user && location.pathname.includes('profile'));
   
   const [sidebarContent, setSidebarContent] = useState(null);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -157,7 +156,6 @@ function AppContent({ user, login, logout }) {
                   />
                 } />
                 <Route path="/diet" element={user && user.role === 'Patient' ? <DietPlanner user={user} /> : <Navigate to="/" />} />
-                <Route path="/garden" element={user && user.role === 'Patient' ? <HealthGarden user={user} /> : <Navigate to="/" />} />
                 <Route path="/vault" element={<Navigate to="/profile" />} />
                 <Route path="/profile" element={user ? <Profile user={user} onUserUpdate={login} /> : <RedirectToHomeAndOpenAuth openAuth={openAuth} />} />
                 
@@ -336,7 +334,6 @@ function Navbar({ user, logout, toggleSidebar, isSidebarPage, openAuth, navbarHe
               <NavLink to="/dashboard" icon={<Activity size={16} />} label="Health Check" />
               <NavLink to="/upload" icon={<FileUp size={16} />} label="Scanner" />
               <NavLink to="/diet" icon={<Salad size={16} />} label="Diet" />
-              <NavLink to="/garden" icon={<Flower2 size={16} />} label="Garden" />
               <NavLink to="/nearby" icon={<MapPin size={16} />} label="Nearby" />
             </>
           )}
@@ -405,7 +402,6 @@ function Navbar({ user, logout, toggleSidebar, isSidebarPage, openAuth, navbarHe
                     <MobileNavLink to="/dashboard" label="AI Health Check" onClick={() => setIsOpen(false)} />
                     <MobileNavLink to="/upload" label="AI Report Scanner" onClick={() => setIsOpen(false)} />
                     <MobileNavLink to="/diet" label="Diet Planner" onClick={() => setIsOpen(false)} />
-                    <MobileNavLink to="/garden" label="Health Garden" onClick={() => setIsOpen(false)} />
                     <MobileNavLink to="/nearby" label="Nearby Facilities" onClick={() => setIsOpen(false)} />
                   </>
                 )}
