@@ -32,10 +32,10 @@ function getBiomarkerStatus(biomarkerKey, latest, previous) {
 }
 
 const STATUS_COLORS = {
-  Improving: '#00c896',
-  Worsening: '#ff4d6d',
-  Stable: '#64748b',
-  Changed: '#f59e0b',
+  Improving: '#39745B',
+  Worsening: '#B91C1C',
+  Stable: 'var(--text-secondary)',
+  Changed: '#B45309',
 };
 
 // ─── Pure SVG line chart ──────────────────────────────────────────────────────
@@ -92,8 +92,8 @@ function BiomarkerChart({ data }) {
     >
       <defs>
         <linearGradient id="bioAreaGrad" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor="var(--theme-accent, #00f5d4)" stopOpacity="0.18" />
-          <stop offset="100%" stopColor="var(--theme-accent, #00f5d4)" stopOpacity="0" />
+          <stop offset="0%" stopColor="var(--primary-accent)" stopOpacity="0.18" />
+          <stop offset="100%" stopColor="var(--primary-accent)" stopOpacity="0" />
         </linearGradient>
       </defs>
 
@@ -132,7 +132,7 @@ function BiomarkerChart({ data }) {
       <polyline
         points={polyPoints}
         fill="none"
-        stroke="var(--theme-accent, #00f5d4)"
+        stroke="var(--primary-accent)"
         strokeWidth="2"
         strokeLinejoin="round"
         strokeLinecap="round"
@@ -145,7 +145,7 @@ function BiomarkerChart({ data }) {
           cx={toX(i)}
           cy={toY(d.value)}
           r="3.5"
-          fill="var(--theme-accent, #00f5d4)"
+          fill="var(--primary-accent)"
           stroke="rgba(0,0,0,0.5)"
           strokeWidth="1"
         />
@@ -494,11 +494,11 @@ function MedicalVault({
 
                 {/* Trend panel */}
                 {selectedBiomarker && selectedData && (
-                  <div className="glass-card p-3" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '12px' }}>
+                  <div className="glass-card p-3" style={{ background: 'var(--bg-card-hover)', border: '1px solid var(--border-color)', borderRadius: '12px' }}>
 
                     {/* Header row */}
                     <div className="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
-                      <strong className="text-white font-monospace" style={{ fontSize: '1rem' }}>{selectedBiomarker}</strong>
+                      <strong className="font-monospace" style={{ fontSize: '1rem', color: 'var(--text-primary)' }}>{selectedBiomarker}</strong>
                       {status && (
                         <span
                           className="badge font-monospace px-2 py-1"
@@ -518,31 +518,31 @@ function MedicalVault({
                     {/* Stats row */}
                     <div className="row g-2 mb-3 font-monospace" style={{ fontSize: '0.8rem' }}>
                       <div className="col-6 col-sm-3">
-                        <div className="p-2 rounded" style={{ background: 'rgba(255,255,255,0.04)' }}>
+                        <div className="p-2 rounded" style={{ background: 'var(--bg-card)' }}>
                           <span className="text-secondary d-block" style={{ fontSize: '0.62rem', letterSpacing: '0.04em' }}>LATEST</span>
-                          <strong className="text-white">{latest?.value} <span className="text-secondary" style={{ fontWeight: 400 }}>{selectedData.unit}</span></strong>
+                          <strong style={{ color: 'var(--text-primary)' }}>{latest?.value} <span className="text-secondary" style={{ fontWeight: 400 }}>{selectedData.unit}</span></strong>
                           <span className="text-secondary d-block" style={{ fontSize: '0.62rem' }}>{latest?.date}</span>
                         </div>
                       </div>
                       <div className="col-6 col-sm-3">
-                        <div className="p-2 rounded" style={{ background: 'rgba(255,255,255,0.04)' }}>
+                        <div className="p-2 rounded" style={{ background: 'var(--bg-card)' }}>
                           <span className="text-secondary d-block" style={{ fontSize: '0.62rem', letterSpacing: '0.04em' }}>PREVIOUS</span>
-                          <strong className="text-white">{previous ? `${previous.value}` : '—'} <span className="text-secondary" style={{ fontWeight: 400 }}>{previous ? selectedData.unit : ''}</span></strong>
+                          <strong style={{ color: 'var(--text-primary)' }}>{previous ? `${previous.value}` : '—'} <span className="text-secondary" style={{ fontWeight: 400 }}>{previous ? selectedData.unit : ''}</span></strong>
                           <span className="text-secondary d-block" style={{ fontSize: '0.62rem' }}>{previous?.date || '—'}</span>
                         </div>
                       </div>
                       <div className="col-6 col-sm-3">
-                        <div className="p-2 rounded" style={{ background: 'rgba(255,255,255,0.04)' }}>
+                        <div className="p-2 rounded" style={{ background: 'var(--bg-card)' }}>
                           <span className="text-secondary d-block" style={{ fontSize: '0.62rem', letterSpacing: '0.04em' }}>CHANGE</span>
-                          <strong style={{ color: absChange === null ? 'inherit' : absChange > 0 ? '#f59e0b' : absChange < 0 ? '#00c896' : '#64748b' }}>
+                          <strong style={{ color: absChange === null ? 'inherit' : absChange > 0 ? '#B45309' : absChange < 0 ? '#39745B' : 'var(--text-secondary)' }}>
                             {absChange !== null ? `${absChange > 0 ? '+' : ''}${absChange.toFixed(2)}` : '—'}
                           </strong>
                         </div>
                       </div>
                       <div className="col-6 col-sm-3">
-                        <div className="p-2 rounded" style={{ background: 'rgba(255,255,255,0.04)' }}>
+                        <div className="p-2 rounded" style={{ background: 'var(--bg-card)' }}>
                           <span className="text-secondary d-block" style={{ fontSize: '0.62rem', letterSpacing: '0.04em' }}>% CHANGE</span>
-                          <strong style={{ color: pctChange === null ? 'inherit' : pctChange > 0 ? '#f59e0b' : pctChange < 0 ? '#00c896' : '#64748b' }}>
+                          <strong style={{ color: pctChange === null ? 'inherit' : pctChange > 0 ? '#B45309' : pctChange < 0 ? '#39745B' : 'var(--text-secondary)' }}>
                             {pctChange !== null ? `${pctChange > 0 ? '+' : ''}${pctChange.toFixed(2)}%` : '—'}
                           </strong>
                         </div>
@@ -551,11 +551,11 @@ function MedicalVault({
 
                     {/* SVG chart or single-point note */}
                     {trendPoints.length >= 2 ? (
-                      <div className="mb-3 p-2 rounded" style={{ background: 'rgba(0,0,0,0.2)' }}>
+                      <div className="mb-3 p-2 rounded" style={{ background: 'var(--bg-deep)' }}>
                         <BiomarkerChart data={trendPoints} />
                       </div>
                     ) : (
-                      <div className="mb-3 text-center text-secondary font-monospace py-3" style={{ fontSize: '0.78rem', background: 'rgba(255,255,255,0.02)', borderRadius: '8px' }}>
+                      <div className="mb-3 text-center text-secondary font-monospace py-3" style={{ fontSize: '0.78rem', background: 'var(--bg-card)', borderRadius: '8px' }}>
                         Only one data point recorded. Upload another lab report to see a trend chart.
                       </div>
                     )}
@@ -563,7 +563,7 @@ function MedicalVault({
                     {/* Medical disclaimer */}
                     <div className="mb-3 px-2 py-2 rounded" style={{ background: 'rgba(255,193,7,0.05)', border: '1px solid rgba(255,193,7,0.15)', fontSize: '0.72rem' }}>
                       <span className="text-secondary font-monospace" style={{ lineHeight: '1.5' }}>
-                        ⚕ Recorded values shown in chronological order. Direction labels reflect typical clinical conventions and do not constitute a diagnosis.
+                        Recorded values shown in chronological order. Direction labels reflect typical clinical conventions and do not constitute a diagnosis.
                       </span>
                     </div>
 
@@ -571,7 +571,7 @@ function MedicalVault({
                     <div style={{ overflowX: 'auto' }}>
                       <table className="w-100 font-monospace" style={{ fontSize: '0.78rem', borderCollapse: 'collapse' }}>
                         <thead>
-                          <tr style={{ borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
+                          <tr style={{ borderBottom: '1px solid var(--border-color)' }}>
                             <th className="text-secondary text-start pb-1 pe-3" style={{ fontWeight: 600, letterSpacing: '0.04em', fontSize: '0.68rem' }}>DATE</th>
                             <th className="text-secondary text-start pb-1 pe-3" style={{ fontWeight: 600, letterSpacing: '0.04em', fontSize: '0.68rem' }}>VALUE</th>
                             <th className="text-secondary text-start pb-1" style={{ fontWeight: 600, letterSpacing: '0.04em', fontSize: '0.68rem' }}>UNIT</th>
@@ -579,9 +579,9 @@ function MedicalVault({
                         </thead>
                         <tbody>
                           {[...trendPoints].reverse().map((pt, idx) => (
-                            <tr key={idx} style={{ borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
+                            <tr key={idx} style={{ borderBottom: '1px solid var(--border-color)' }}>
                               <td className="text-secondary py-1 pe-3">{pt.date}</td>
-                              <td className="text-white py-1 pe-3">{pt.value}</td>
+                              <td className="py-1 pe-3" style={{ color: 'var(--text-primary)' }}>{pt.value}</td>
                               <td className="text-secondary py-1">{selectedData.unit}</td>
                             </tr>
                           ))}

@@ -623,22 +623,22 @@ function Profile({ user, onUserUpdate }) {
   const activeTheme = tabThemes[activeTab] || 'theme-general';
 
   return (
-    <div className={`reveal px-1 ${activeTheme} transition-all duration-300 vault-tab-active-layout`}>
+    <div className={`reveal px-1 ${activeTheme} transition-all duration-300 ${activeTab === 'vault' ? 'vault-tab-active-layout' : ''}`}>
 
       {/* Global save success / error toast */}
       {saveSuccess && (
-        <div className="alert alert-success d-flex align-items-center gap-2 py-2 px-3 mb-3 rounded-3 font-monospace" style={{ fontSize: '0.8rem', background: 'rgba(0,200,130,0.12)', border: '1px solid rgba(0,200,130,0.3)', color: '#00f5a0', letterSpacing: '0.02em' }}>
+        <div className="alert alert-success d-flex align-items-center gap-2 py-2 px-3 mb-3 rounded-3 font-monospace" style={{ fontSize: '0.8rem', background: 'rgba(57, 116, 91, 0.15)', border: '1px solid var(--primary-accent)', color: 'var(--primary-accent)', letterSpacing: '0.02em' }}>
           <CheckCircle2 size={14} /> {saveSuccess}
         </div>
       )}
       {saveError && (
-        <div className="alert alert-danger d-flex align-items-center gap-2 py-2 px-3 mb-3 rounded-3 font-monospace" style={{ fontSize: '0.8rem', background: 'rgba(255,50,80,0.1)', border: '1px solid rgba(255,50,80,0.3)', color: '#ff6080', letterSpacing: '0.02em' }}>
+        <div className="alert alert-danger d-flex align-items-center gap-2 py-2 px-3 mb-3 rounded-3 font-monospace" style={{ fontSize: '0.8rem', background: 'rgba(185, 28, 28, 0.12)', border: '1px solid var(--accent-red)', color: 'var(--accent-red)', letterSpacing: '0.02em' }}>
           <AlertTriangle size={14} /> {saveError}
         </div>
       )}
 
       {/* Holographic Segmented Tab Switcher */}
-      <div className="mb-4 tab-selector-container p-1 bg-glass d-md-none" style={{ borderRadius: '12px', border: '1.5px solid var(--theme-accent, rgba(0, 245, 212, 0.25))' }}>
+      <div className="mb-4 tab-selector-container p-1 bg-glass d-md-none" style={{ borderRadius: '12px', border: '1px solid var(--border-color)' }}>
         <div className="row g-1 w-100 m-0">
           {[
             { id: 'identity', label: 'Identity & Vitals', icon: <User size={16} /> },

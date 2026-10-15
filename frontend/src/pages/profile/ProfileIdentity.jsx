@@ -1,5 +1,5 @@
-import React from 'react';
-import { User, Activity, Phone, Edit3, Save, X, ShieldAlert, Heart, Calendar, ShieldCheck, Info, CheckCircle2, Dna, Gift, HeartPulse, AlertCircle, Droplet, Scale, Ruler, Flame, Sparkles, Clock } from 'lucide-react';
+import React, { useState } from 'react';
+import { User, Activity, Phone, Edit3, Save, X, ShieldAlert, Heart, Calendar, ShieldCheck, Info, CheckCircle2, Dna, Gift, HeartPulse, AlertCircle, Droplet, Scale, Ruler, Flame, Sparkles, Clock, QrCode } from 'lucide-react';
 import { getAge } from '../../services/utils';
 
 function ProfileIdentity({ 
@@ -19,16 +19,17 @@ function ProfileIdentity({
   onGenerateToken,
   onRevokeToken
 }) {
+  const [generatingQR, setGeneratingQR] = useState(false);
 
   return (
-    <div className="reveal flex-grow-1 d-flex flex-column gap-4 text-start">
+    <div className="reveal flex-grow-1 d-flex flex-column gap-4 text-start" style={{ paddingBottom: '40px' }}>
       
       {/* 2. Main Profile Content Grid */}
-      <div className="row g-4 mt-1 align-items-stretch vault-tab-row">
+      <div className="row g-4 mt-1 align-items-stretch">
         
         {/* Left Column - Holographic emergency ID smartcard & Health status Ledger */}
         <div className="col-lg-5 d-flex flex-column gap-4">
-          <div className="smartcard-hologram p-4 text-start w-100 d-flex flex-column justify-content-between position-relative" style={{ minHeight: '420px' }}>
+          <div className="smartcard-hologram p-4 text-start w-100 d-flex flex-column justify-content-between position-relative">
             
             <div>
               <div className="d-flex justify-content-between align-items-center pb-3 mb-4 border-bottom border-white-10">
@@ -111,7 +112,7 @@ function ProfileIdentity({
                   </div>
 
                   {/* Allergic Contraindications */}
-                  <div className="p-3.5 rounded-4 text-start mt-1" style={{ borderTop: '1px solid rgba(255, 51, 102, 0.15)', borderRight: '1px solid rgba(255, 51, 102, 0.15)', borderBottom: '1px solid rgba(255, 51, 102, 0.15)', borderLeft: '4px solid #ff3366', background: 'rgba(255, 51, 102, 0.02)' }}>
+                  <div className="p-3.5 rounded-4 text-start mt-1" style={{ borderTop: '1px solid var(--border-color)', borderRight: '1px solid var(--border-color)', borderBottom: '1px solid var(--border-color)', borderLeft: '4px solid var(--accent-red)', background: 'rgba(185, 28, 28, 0.05)' }}>
                     <span className="small text-danger d-block text-uppercase mb-2.5 fw-bold font-monospace" style={{ fontSize: '0.64rem', letterSpacing: '0.06em' }}>DRUG & FOOD ALLERGIES</span>
                     <div className="d-flex flex-wrap gap-2">
                       {profile.allergies?.length > 0 ? (
@@ -188,7 +189,7 @@ function ProfileIdentity({
               {/* ---- EMERGENCY QR CARD — always visible, not hidden in edit mode ---- */}
               <div className="p-3.5 rounded-4 text-start mt-3" style={{ border: '1px solid rgba(0,245,212,0.15)', background: 'rgba(0,245,212,0.03)' }}>
                 <span className="small text-theme-accent d-block text-uppercase mb-2 fw-bold font-monospace" style={{ fontSize: '0.64rem', letterSpacing: '0.06em' }}>
-                  🔑 Emergency QR Card
+                  Emergency QR Card
                 </span>
                 <p className="text-secondary m-0 mb-2" style={{ fontSize: '0.72rem', lineHeight: '1.5' }}>
                   Scan to access emergency medical information without login required.
@@ -196,11 +197,30 @@ function ProfileIdentity({
 
                 {!emergencyToken ? (
                   <button
-                    onClick={onGenerateToken}
-                    className="px-3 py-1.5 bg-theme-accent border-0 text-white rounded-3 font-monospace text-uppercase hover-white"
-                    style={{ fontSize: '0.74rem', cursor: 'pointer', width: '100%', marginTop: '4px' }}
+                    onClick={async () => {
+                      setGeneratingQR(true);
+                      try {
+                        await onGenerateToken();
+                      } finally {
+                        setGeneratingQR(false);
+                      }
+                    }}
+                    disabled={generatingQR}
+                    className="px-3 py-2 border-0 rounded-3 font-monospace text-uppercase fw-bold d-flex align-items-center justify-content-center gap-2"
+                    style={{
+                      fontSize: '0.76rem',
+                      cursor: generatingQR ? 'not-allowed' : 'pointer',
+                      width: '100%',
+                      marginTop: '6px',
+                      background: 'var(--btn-primary)',
+                      color: 'var(--btn-primary-text)',
+                      boxShadow: '0 1px 3px rgba(0,0,0,0.15)',
+                      opacity: generatingQR ? 0.7 : 1,
+                      transition: 'all 0.2s ease',
+                    }}
                   >
-                    Generate Emergency QR
+                    <QrCode size={15} />
+                    {generatingQR ? 'Generating QR...' : 'Generate Emergency QR'}
                   </button>
                 ) : (
                   <div className="d-flex flex-column align-items-center gap-3">
@@ -250,15 +270,15 @@ function ProfileIdentity({
                               body { font-family: monospace; text-align: center; background: #fff; color: #111; padding: 40px 24px; }
                               h2 { font-size: 1.1rem; letter-spacing: 0.08em; margin-bottom: 4px; }
                               p { font-size: 0.72rem; color: #555; margin: 4px 0 20px; }
-                              img { border: 2px solid #00c2a0; border-radius: 8px; }
+                              img { border: 2px solid #39745b; border-radius: 8px; }
                               .url { font-size: 0.6rem; color: #888; word-break: break-all; margin-top: 12px; }
-                              .warn { font-size: 0.62rem; color: #c00; margin-top: 14px; }
+                              .warn { font-size: 0.62rem; color: #b91c1c; margin-top: 14px; }
                             </style></head><body>
-                            <h2>🚨 MEDFUSION AI — EMERGENCY QR</h2>
+                            <h2>MEDFUSION AI — EMERGENCY QR</h2>
                             <p>Scan this QR code to access the patient's emergency medical information</p>
                             <img src="${qrUrl}" width="260" height="260" />
                             <div class="url">${emergencyUrl}</div>
-                            <div class="warn">⚕ For emergency responders only. Always confirm patient identity.</div>
+                            <div class="warn">For emergency responders only. Always confirm patient identity.</div>
                             <script>window.onload = function(){ window.print(); }</script>
                             </body></html>
                           `);
@@ -441,10 +461,10 @@ function ProfileIdentity({
                   <div className="target-node target-node-hydration p-3 h-100 d-flex flex-column justify-content-between" style={{ minHeight: '102px' }}>
                     <div className="d-flex align-items-center justify-content-between mb-1.5">
                       <span className="text-secondary d-block small" style={{ fontSize: '0.6rem', letterSpacing: '0.04em' }}>HYDRATION</span>
-                      <Droplet size={14} className="text-info" style={{ color: 'var(--accent-teal)' }} />
+                      <Droplet size={14} style={{ color: 'var(--primary-accent)' }} />
                     </div>
                     <div>
-                      <strong className="text-white fs-6 d-block mt-0.5">
+                      <strong className="fs-6 d-block mt-0.5" style={{ color: 'var(--text-primary)' }}>
                         {profile.weight ? (parseFloat(profile.weight) * 35 / 1000).toFixed(1) : '2.5'} L
                       </strong>
                       <span className="text-muted d-block" style={{ fontSize: '0.55rem', opacity: 0.6 }}>35ml/kg baseline</span>
@@ -460,7 +480,7 @@ function ProfileIdentity({
                       <Flame size={14} style={{ color: 'var(--accent-orange)' }} />
                     </div>
                     <div>
-                      <strong className="text-white fs-6 d-block mt-0.5">
+                      <strong className="fs-6 d-block mt-0.5" style={{ color: 'var(--text-primary)' }}>
                         {profile.weight && profile.height && profile.dob ? 
                           Math.round(10 * parseFloat(profile.weight) + 6.25 * parseFloat(profile.height) - 5 * getAge(profile.dob) + (profile.gender === 'M' ? 5 : -161))
                           : '1,800'} kcal
@@ -475,10 +495,10 @@ function ProfileIdentity({
                   <div className="target-node target-node-sleep p-3 h-100 d-flex flex-column justify-content-between" style={{ minHeight: '102px' }}>
                     <div className="d-flex align-items-center justify-content-between mb-1.5">
                       <span className="text-secondary d-block small" style={{ fontSize: '0.6rem', letterSpacing: '0.04em' }}>OPTIMAL SLEEP</span>
-                      <Clock size={14} style={{ color: '#df40ff' }} />
+                      <Clock size={14} style={{ color: 'var(--primary-accent)' }} />
                     </div>
                     <div>
-                      <strong className="text-white fs-6 d-block mt-0.5">7.5 - 8.5 Hrs</strong>
+                      <strong className="fs-6 d-block mt-0.5" style={{ color: 'var(--text-primary)' }}>7.5 - 8.5 Hrs</strong>
                       <span className="text-muted d-block" style={{ fontSize: '0.55rem', opacity: 0.6 }}>Circadian cycle</span>
                     </div>
                   </div>
@@ -492,7 +512,7 @@ function ProfileIdentity({
                       <Activity size={14} style={{ color: 'var(--accent-red)' }} />
                     </div>
                     <div>
-                      <strong className="text-white fs-6 d-block mt-0.5">150 Min / Wk</strong>
+                      <strong className="fs-6 d-block mt-0.5" style={{ color: 'var(--text-primary)' }}>150 Min / Wk</strong>
                       <span className="text-muted d-block" style={{ fontSize: '0.55rem', opacity: 0.6 }}>AHA standard</span>
                     </div>
                   </div>

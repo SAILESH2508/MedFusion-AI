@@ -1,4 +1,5 @@
 import React, { useState, useMemo } from 'react';
+import { AlertTriangle, Search, CheckCircle2 } from 'lucide-react';
 import { api } from '../../services/api';
 
 function extractMedications(prescriptions) {
@@ -137,8 +138,9 @@ export default function MedicationSafetyPanel({ patientData }) {
               padding: '8px 12px',
               marginBottom: '12px',
             }}>
-              <p style={{ margin: '0 0 4px', fontSize: '0.75rem', fontWeight: 700, color: '#ff6b6b' }}>
-                ⚠️ Allergy Alert
+              <p style={{ margin: '0 0 4px', fontSize: '0.75rem', fontWeight: 700, color: '#ff6b6b', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <AlertTriangle size={13} />
+                Allergy Alert
               </p>
               {allergyHits.map((hit, i) => (
                 <p key={i} style={{ margin: '2px 0', fontSize: '0.78rem', color: '#ff6b6b' }}>
@@ -156,10 +158,10 @@ export default function MedicationSafetyPanel({ patientData }) {
               style={{
                 width: '100%',
                 padding: '8px',
-                background: loading ? 'rgba(0,245,212,0.1)' : 'rgba(0,245,212,0.15)',
-                border: '1px solid rgba(0,245,212,0.4)',
+                background: loading ? 'rgba(56,189,248,0.1)' : 'rgba(56,189,248,0.15)',
+                border: '1px solid rgba(56,189,248,0.35)',
                 borderRadius: '8px',
-                color: '#00f5d4',
+                color: '#38bdf8',
                 fontFamily: 'monospace',
                 fontSize: '0.82rem',
                 cursor: loading ? 'not-allowed' : 'pointer',
@@ -176,7 +178,10 @@ export default function MedicationSafetyPanel({ patientData }) {
                   Checking…
                 </>
               ) : (
-                '🔍 Run Safety Check'
+                <>
+                  <Search size={13} />
+                  <span>Run Safety Check</span>
+                </>
               )}
             </button>
           )}
@@ -228,8 +233,12 @@ export default function MedicationSafetyPanel({ patientData }) {
                   marginBottom: '10px',
                   fontSize: '0.82rem',
                   color: '#2dc98e',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '6px',
                 }}>
-                  ✓ No known interactions detected.
+                  <CheckCircle2 size={15} />
+                  <span>No known interactions detected.</span>
                 </div>
               ) : null}
 
@@ -242,8 +251,9 @@ export default function MedicationSafetyPanel({ patientData }) {
                   padding: '8px 12px',
                   marginBottom: '10px',
                 }}>
-                  <p style={{ margin: '0 0 4px', fontSize: '0.75rem', fontWeight: 700, color: '#ffa94d' }}>
-                    ⚠️ Critical Warnings
+                  <p style={{ margin: '0 0 4px', fontSize: '0.75rem', fontWeight: 700, color: '#ffa94d', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                    <AlertTriangle size={13} />
+                    Critical Warnings
                   </p>
                   <ul style={{ margin: 0, paddingLeft: '16px' }}>
                     {safetyReport.critical_warnings.map((w, i) => (

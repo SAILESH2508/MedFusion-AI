@@ -12,7 +12,13 @@ import {
   Activity,
   Sparkles,
   RefreshCw,
-  Search
+  Search,
+  X,
+  CheckCircle2,
+  AlertTriangle,
+  Pill,
+  FlaskConical,
+  Stethoscope
 } from 'lucide-react';
 import { api } from '../../services/api';
 import { SidebarContext } from '../../context/SidebarContext';
@@ -85,7 +91,7 @@ function DoctorDashboard({ user }) {
     currentFormulating.forEach(med => {
       patientAllergies.forEach(allergen => {
         if (med.includes(allergen.toLowerCase()) || allergen.toLowerCase().includes(med)) {
-          warnings.push(`⚠️ ALLERGY HAZARD: Patient is allergic to "${allergen}" which matches "${med}"!`);
+          warnings.push(`ALLERGY HAZARD: Patient is allergic to "${allergen}" which matches "${med}"!`);
         }
       });
     });
@@ -102,7 +108,7 @@ function DoctorDashboard({ user }) {
             (m1.includes(item.drug2) && m2.includes(item.drug1))
           );
           if (matches) {
-            warnings.push(`⚠️ DRUG-DRUG INTERACTION: ${item.warning}`);
+            warnings.push(`DRUG-DRUG INTERACTION: ${item.warning}`);
           }
         });
       }
@@ -344,7 +350,6 @@ function DoctorDashboard({ user }) {
                       key={p.id} 
                       className="d-flex align-items-center justify-content-between p-3 rounded border border-white-5 patient-row"
                       style={{ 
-                        background: 'rgba(255, 255, 255, 0.03)',
                         transition: 'all 0.2s ease',
                       }}
                     >
@@ -375,7 +380,7 @@ function DoctorDashboard({ user }) {
           {/* Sidebar Calculator Tools Column */}
           <div className="col-lg-4 d-flex flex-column justify-content-start gap-3" style={{ height: 'calc(100% - 24px)', overflow: 'hidden' }}>
             {/* Quick Diagnostic Calculator widget */}
-            <details className="glass-card" style={{ borderRadius: '16px' }}>
+            <details className="panel-form" style={{ borderRadius: '16px' }}>
               <summary className="d-flex align-items-center gap-2 p-3 border-bottom border-white-10 font-monospace text-white text-uppercase" style={{ fontSize: '0.95rem', letterSpacing: '0.02em', listStyle: 'none', cursor: 'pointer' }}>
                 <Calculator className="text-theme-accent" size={18} />
                 Clinical Calculators
@@ -387,7 +392,7 @@ function DoctorDashboard({ user }) {
                     onClick={() => setCalcTab('bmi')} 
                     aria-pressed={calcTab === 'bmi'}
                     className="px-2 py-0.5 rounded font-monospace text-uppercase" 
-                    style={{ fontSize: '0.7rem', width: 'auto', background: calcTab === 'bmi' ? 'rgba(0,245,212,0.15)' : 'transparent', color: calcTab === 'bmi' ? '#00f5d4' : '#6c757d', border: calcTab === 'bmi' ? '1px solid rgba(0,245,212,0.3)' : '1px solid transparent' }}
+                    style={{ fontSize: '0.7rem', width: 'auto', background: calcTab === 'bmi' ? 'var(--bg-upload)' : 'transparent', color: calcTab === 'bmi' ? 'var(--primary-accent)' : 'var(--text-secondary)', border: calcTab === 'bmi' ? '1px solid var(--primary-accent)' : '1px solid transparent' }}
                   >
                     BMI
                   </button>
@@ -395,7 +400,7 @@ function DoctorDashboard({ user }) {
                     onClick={() => setCalcTab('thr')} 
                     aria-pressed={calcTab === 'thr'}
                     className="px-2 py-0.5 rounded font-monospace text-uppercase" 
-                    style={{ fontSize: '0.7rem', width: 'auto', background: calcTab === 'thr' ? 'rgba(0,245,212,0.15)' : 'transparent', color: calcTab === 'thr' ? '#00f5d4' : '#6c757d', border: calcTab === 'thr' ? '1px solid rgba(0,245,212,0.3)' : '1px solid transparent' }}
+                    style={{ fontSize: '0.7rem', width: 'auto', background: calcTab === 'thr' ? 'var(--bg-upload)' : 'transparent', color: calcTab === 'thr' ? 'var(--primary-accent)' : 'var(--text-secondary)', border: calcTab === 'thr' ? '1px solid var(--primary-accent)' : '1px solid transparent' }}
                   >
                     THR
                   </button>
@@ -436,20 +441,20 @@ function DoctorDashboard({ user }) {
                     const hMet = calcHeight / 100;
                     const calculatedBmi = parseFloat((calcWeight / (hMet * hMet)).toFixed(1));
                     let category = 'Normal';
-                    let color = '#00f5d4';
-                    let bg = 'rgba(0, 245, 212, 0.1)';
+                    let color = 'var(--status-normal)';
+                    let bg = 'var(--status-normal-bg)';
                     if (calculatedBmi < 18.5) {
                       category = 'Underweight';
-                      color = '#60a5fa';
-                      bg = 'rgba(96, 165, 250, 0.1)';
+                      color = 'var(--status-info)';
+                      bg = 'var(--status-info-bg)';
                     } else if (calculatedBmi >= 25 && calculatedBmi < 30) {
                       category = 'Overweight';
-                      color = '#facc15';
-                      bg = 'rgba(250, 204, 21, 0.1)';
+                      color = 'var(--status-warning)';
+                      bg = 'var(--status-warning-bg)';
                     } else if (calculatedBmi >= 30) {
                       category = 'Obese';
-                      color = '#f87171';
-                      bg = 'rgba(248, 113, 113, 0.1)';
+                      color = 'var(--status-danger)';
+                      bg = 'var(--status-danger-bg)';
                     }
                     return (
                       <div className="p-2.5 rounded border text-center font-monospace d-flex align-items-center justify-content-around" style={{ borderColor: color, background: bg }}>
@@ -514,7 +519,7 @@ function DoctorDashboard({ user }) {
           <div className="col-lg-6 col-md-6 d-flex flex-column gap-4 reveal" style={{ height: 'calc(100% - 24px)', overflow: 'hidden' }}>
             
             {/* Profile Card */}
-            <div id="section-profile" className="glass-card p-4">
+            <div id="section-profile" className="card-secondary p-4">
               <div className="d-flex align-items-center gap-3 mb-3 border-bottom border-white-10 pb-3">
                 <div className="rounded-circle bg-theme-accent bg-opacity-10 border border-theme-accent border-opacity-35 d-flex align-items-center justify-content-center fw-bold text-theme-accent" style={{ width: '48px', height: '48px', fontSize: '1.1rem' }}>
                   {selectedPatient.name ? selectedPatient.name.split(' ').map(n => n[0]).join('').toUpperCase() : 'P'}
@@ -581,13 +586,13 @@ function DoctorDashboard({ user }) {
                           return (
                             <div key={idx} className="p-3 bg-white-5 border border-white-5 rounded">
                               <div className="d-flex justify-content-between align-items-baseline">
-                                <span className="text-white fw-bold" style={{ fontSize: '0.85rem' }}>👨‍⚕️ {ext?.physician || 'Physician'}</span>
+                                <span className="text-white fw-bold d-inline-flex align-items-center gap-1.5" style={{ fontSize: '0.85rem' }}><Stethoscope size={13} className="text-info" /> {ext?.physician || 'Physician'}</span>
                                 <span className="text-secondary small" style={{ fontSize: '0.75rem' }}>{new Date(rx.created_at).toLocaleDateString()}</span>
                               </div>
                               <div className="mt-2 border-start border-theme-accent border-opacity-30 ps-2">
                                 {ext?.medicines?.map((m, mIdx) => (
-                                  <span key={mIdx} className="badge bg-white-5 text-secondary border border-white-10 me-1 mb-1" style={{ fontSize: '0.75rem' }}>
-                                    💊 {m.name} ({m.dosage}) - {m.frequency}
+                                  <span key={mIdx} className="badge bg-white-5 text-secondary border border-white-10 me-1 mb-1 d-inline-flex align-items-center gap-1" style={{ fontSize: '0.75rem' }}>
+                                    <Pill size={11} /> {m.name} ({m.dosage}) - {m.frequency}
                                   </span>
                                 ))}
                               </div>
@@ -611,7 +616,7 @@ function DoctorDashboard({ user }) {
                           return (
                             <div key={idx} className="p-3 bg-white-5 border border-white-5 rounded">
                               <div className="d-flex justify-content-between align-items-baseline">
-                                <span className="text-white fw-bold" style={{ fontSize: '0.85rem' }}>🧪 Pathology Panel</span>
+                                <span className="text-white fw-bold d-inline-flex align-items-center gap-1.5" style={{ fontSize: '0.85rem' }}><FlaskConical size={13} className="text-success" /> Pathology Panel</span>
                                 <span className="text-secondary small" style={{ fontSize: '0.75rem' }}>{new Date(report.created_at).toLocaleDateString()}</span>
                               </div>
                               <div className="mt-2 text-secondary" style={{ fontSize: '0.8rem' }}>
@@ -665,7 +670,7 @@ function DoctorDashboard({ user }) {
 
           {/* RIGHT STAGE: Clinical Notes & Prescription Issuer */}
           <div className="col-lg-6 col-md-6 d-flex flex-column reveal" style={{ height: 'calc(100% - 24px)', overflow: 'hidden' }}>
-            <div id="section-formulate" className="glass-card p-4 flex-grow-1 d-flex flex-column gap-3" style={{ overflow: 'hidden', borderRadius: '16px' }}>
+            <div id="section-formulate" className="panel-form p-4 flex-grow-1 d-flex flex-column gap-3" style={{ overflow: 'hidden', borderRadius: '16px' }}>
               
               <div>
                 <h4 className="fw-bold text-white font-monospace d-flex align-items-center gap-2 mb-2" style={{ fontSize: '1.15rem' }}>
@@ -735,14 +740,14 @@ function DoctorDashboard({ user }) {
                     <div className="d-flex flex-column gap-2">
                       {doctorMeds.map((med, idx) => (
                         <div key={idx} className="d-flex align-items-center justify-content-between p-2 bg-white-5 rounded border border-white-5">
-                          <span className="text-white small" style={{ fontSize: '0.8rem' }}>💊 {med.name} ({med.dosage}) — {med.frequency}</span>
+                          <span className="text-white small d-inline-flex align-items-center gap-1.5" style={{ fontSize: '0.8rem' }}><Pill size={12} /> {med.name} ({med.dosage}) — {med.frequency}</span>
                           <button 
                             type="button" 
                             onClick={() => removeMedicine(idx)}
-                            className="px-2 py-1 bg-transparent border-0 text-danger hover-white"
+                            className="px-2 py-1 bg-transparent border-0 text-danger hover-white d-flex align-items-center"
                             style={{ fontSize: '0.75rem' }}
                           >
-                            ✕
+                            <X size={12} />
                           </button>
                         </div>
                       ))}
@@ -759,7 +764,7 @@ function DoctorDashboard({ user }) {
                     onChange={(e) => setDoctorNotes(e.target.value)} 
                     rows={5}
                     className="flex-grow-1"
-                    style={{ resize: 'none', background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '8px', padding: '12px', fontSize: '0.85rem', color: 'white' }}
+                    style={{ resize: 'none', background: 'var(--input-bg)', border: '1px solid var(--input-border)', borderRadius: '8px', padding: '12px', fontSize: '0.85rem', color: 'var(--text-primary)' }}
                   />
                 </div>
 
@@ -798,7 +803,7 @@ function DoctorDashboard({ user }) {
                     border: `1px solid ${rxStatus.type === 'success' ? 'rgba(0,245,212,0.3)' : 'rgba(255,51,102,0.3)'}`,
                     color: rxStatus.type === 'success' ? 'var(--accent-teal)' : 'var(--accent-red)',
                   }}>
-                    <span>{rxStatus.type === 'success' ? '✓' : '✕'}</span>
+                    <span>{rxStatus.type === 'success' ? <CheckCircle2 size={14} /> : <AlertTriangle size={14} />}</span>
                     <span>{rxStatus.message}</span>
                   </div>
                 )}

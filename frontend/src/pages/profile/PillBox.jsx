@@ -112,7 +112,7 @@ function PillBox({
           <span className="text-secondary small d-block mb-0.5 text-uppercase" style={{ fontSize: '0.68rem', letterSpacing: '0.04em' }}>Daily Compliance</span>
           <div className="d-flex align-items-center gap-2">
             <strong className="text-white" style={{ fontSize: '1.05rem' }}>{totalTaken} / {totalScheduled} Taken</strong>
-            <span className="text-secondary small">({adherencePercent === 100 ? '✓ Excellent work!' : 'Remaining'})</span>
+            <span className="text-secondary small">({adherencePercent === 100 ? 'All completed' : 'Remaining'})</span>
           </div>
         </div>
       </div>

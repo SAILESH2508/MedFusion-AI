@@ -127,7 +127,7 @@ function Auth({ login, initialPortal: propInitialPortal = 'patient', onClose, me
 
   return (
     <div className={`d-flex justify-content-center align-items-center font-monospace ${currentTheme}`} style={typeof onClose === 'function' ? { width: '100%' } : { minHeight: '70vh' }}>
-      <div className="glass-card reveal w-100 position-relative overflow-hidden" style={{ 
+      <div className="glass-card panel-form float-subtle reveal w-100 position-relative overflow-hidden" style={{ 
         maxWidth: '520px'
       }}>
         
@@ -139,15 +139,15 @@ function Auth({ login, initialPortal: propInitialPortal = 'patient', onClose, me
         </div>
 
         {/* Switcher Tab */}
-        <div className="d-flex bg-white-10 p-1 border border-white-10 rounded mb-4">
+        <div className="d-flex bg-white-10 p-1 border rounded mb-4" style={{ borderColor: 'var(--border-color)' }}>
           <button 
             type="button"
             onClick={() => {
               setPortal('patient');
               setError('');
             }}
-            className={`flex-fill px-3 py-2 text-uppercase text-xs font-bold font-monospace d-flex align-items-center justify-content-center gap-2 ${portal === 'patient' ? 'primary' : 'bg-transparent text-secondary hover-white'}`}
-            style={{ borderRadius: '4px', width: 'auto', fontSize: '0.82rem' }}
+            className={`flex-fill px-3 py-2 text-uppercase text-xs font-bold font-monospace d-flex align-items-center justify-content-center gap-2 ${portal === 'patient' ? 'btn-clinical primary text-white' : 'bg-transparent text-secondary'}`}
+            style={{ borderRadius: '6px', width: 'auto', fontSize: '0.82rem', border: 'none' }}
           >
             <User size={14} />
             Patient Portal
@@ -158,8 +158,8 @@ function Auth({ login, initialPortal: propInitialPortal = 'patient', onClose, me
               setPortal('doctor');
               setError('');
             }}
-            className={`flex-fill px-3 py-2 text-uppercase text-xs font-bold font-monospace d-flex align-items-center justify-content-center gap-2 ${portal === 'doctor' ? 'primary' : 'bg-transparent text-secondary hover-white'}`}
-            style={{ borderRadius: '4px', width: 'auto', fontSize: '0.82rem' }}
+            className={`flex-fill px-3 py-2 text-uppercase text-xs font-bold font-monospace d-flex align-items-center justify-content-center gap-2 ${portal === 'doctor' ? 'btn-clinical primary text-white' : 'bg-transparent text-secondary'}`}
+            style={{ borderRadius: '6px', width: 'auto', fontSize: '0.82rem', border: 'none' }}
           >
             <Heart size={14} />
             Doctor Portal

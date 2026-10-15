@@ -31,19 +31,19 @@ export const getInitials = (name, email) => {
 
 export const getRiskColor = (level) => {
   switch (level?.toUpperCase()) {
-    case 'CRITICAL': return '#ff0055'; // Vibrant Pink Red
-    case 'HIGH': return '#ff8c00';     // Amber Orange
-    case 'MODERATE': return '#ffd700'; // Pure Yellow
-    default: return '#00f5d4';         // Neon Mint Green
+    case 'CRITICAL': return 'var(--status-danger)';
+    case 'HIGH': return 'var(--status-danger)';
+    case 'MODERATE': return 'var(--status-warning)';
+    default: return 'var(--status-normal)';
   }
 };
 
 export const getRiskBg = (level) => {
   switch (level?.toUpperCase()) {
-    case 'CRITICAL': return 'rgba(255, 0, 85, 0.2)';
-    case 'HIGH': return 'rgba(255, 140, 0, 0.2)';
-    case 'MODERATE': return 'rgba(255, 215, 0, 0.2)';
-    default: return 'rgba(0, 245, 212, 0.2)';
+    case 'CRITICAL': return 'var(--status-danger-bg)';
+    case 'HIGH': return 'var(--status-danger-bg)';
+    case 'MODERATE': return 'var(--status-warning-bg)';
+    default: return 'var(--status-normal-bg)';
   }
 };
 

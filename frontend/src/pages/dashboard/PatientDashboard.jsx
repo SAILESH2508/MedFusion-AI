@@ -735,7 +735,7 @@ function PatientDashboard({ user }) {
       ...(result.remedies?.clinical_recommendations || []).map(g => `• ${g}`),
       '',
       '--- URGENT WARNING SIGNS ---',
-      ...(result.remedies?.urgent_warning_signs || []).map(g => `⚠ ${g}`),
+      ...(result.remedies?.urgent_warning_signs || []).map(g => g),
       '',
       '==============================================',
       'DISCLAIMER: AI-generated analysis only.',
@@ -1488,7 +1488,7 @@ function PatientDashboard({ user }) {
                 className="d-flex flex-column gap-4"
               >
                 {/* AI Lab Report Auto-Fill Scanner Dropzone */}
-                <div className="glass-card p-4">
+                <div className="panel-upload-lab p-4">
                   <h4 className="fw-bold mb-3 text-white d-flex align-items-center gap-2" style={{ fontSize: '1rem' }}>
                     <ScanLine size={18} style={{ color: 'var(--theme-accent)' }} />
                     <span style={{ color: 'var(--theme-accent)' }}>AI Pathology Scanner & Auto-Fill</span>
@@ -1666,12 +1666,12 @@ function PatientDashboard({ user }) {
                 </div>
 
                 {/* Container 2: Dynamic Vitals Form */}
-                <div className="glass-card p-4">
+                <div className="panel-form float-subtle p-4">
                   {renderDiseaseVitals()}
                 </div>
 
                 {/* Container 3: Dynamic Symptoms Checklist */}
-                <div className="glass-card p-4">
+                <div className="card-secondary p-4">
                   {renderDiseaseSymptoms()}
                 </div>
 
@@ -1832,7 +1832,7 @@ function PatientDashboard({ user }) {
                 </div>
 
                 {/* PRESCRIBED PREVENTATIVE REMEDY MATRIX */}
-                <div className="glass-card p-4">
+                <div className="panel-alt p-4">
                   <h4 className="fw-bold mb-4 text-white d-flex align-items-center gap-2" style={{ fontSize: '1.35rem' }}>
                     <BookOpen className="text-theme-accent" size={20} />
                     Prescribed Preventative Remedies
@@ -1959,7 +1959,7 @@ function PatientDashboard({ user }) {
                     style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px', padding: '12px 16px', color: 'var(--theme-accent)', fontSize: '0.9rem', cursor: 'pointer', width: '100%' }}
                   >
                     <span>Why this score?</span>
-                    <span style={{ fontSize: '0.75rem', opacity: 0.7 }}>{showFactors ? '▲ Hide' : '▼ Show'} Key Risk Factors</span>
+                    <span style={{ fontSize: '0.75rem', opacity: 0.7 }}>{showFactors ? 'Hide' : 'Show'} Key Risk Factors</span>
                   </button>
 
                   {showFactors && (
@@ -2023,15 +2023,15 @@ function PatientDashboard({ user }) {
                     className="btn-icon d-flex align-items-center gap-2 font-monospace text-uppercase w-100 justify-content-between"
                     style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px', padding: '12px 16px', color: '#60a5fa', fontSize: '0.9rem', cursor: 'pointer', width: '100%' }}
                   >
-                    <span>⚗️ What If?</span>
-                    <span style={{ fontSize: '0.75rem', opacity: 0.7 }}>{showSimulator ? '▲ Close' : '▼ Open'} Simulator</span>
+                    <span>What-If Simulator</span>
+                    <span style={{ fontSize: '0.75rem', opacity: 0.7 }}>{showSimulator ? 'Close' : 'Open'} Simulator</span>
                   </button>
 
                   {showSimulator && (
                     <div className="mt-3">
                       <h6 className="fw-bold text-white font-monospace mb-2" style={{ fontSize: '0.95rem' }}>What-If Risk Simulator</h6>
                       <p className="text-secondary font-monospace mb-3" style={{ fontSize: '0.78rem', lineHeight: '1.5', padding: '10px 14px', background: 'rgba(96,165,250,0.06)', borderRadius: '6px', border: '1px solid rgba(96,165,250,0.2)' }}>
-                        ⚗️ This is a model simulation, not a medical prediction or treatment recommendation. Changing a value does not guarantee a real-world health outcome.
+                        This is a model simulation, not a medical prediction or treatment recommendation. Changing a value does not guarantee a real-world health outcome.
                       </p>
 
                       <div className="row g-3 mb-3">
@@ -2041,28 +2041,28 @@ function PatientDashboard({ user }) {
                               <label className="small text-secondary fw-semibold mb-1 font-monospace d-block">Systolic BP (mmHg)</label>
                               <div className="d-flex gap-2 align-items-center">
                                 <span className="text-secondary font-monospace" style={{ fontSize: '0.78rem', minWidth: '60px' }}>Current: {systolicBp}</span>
-                                <input type="number" value={simParams.systolic_bp ?? systolicBp} onChange={(e) => setSimParams(p => ({ ...p, systolic_bp: Number(e.target.value) }))} min="80" max="220" style={{ flex: 1, background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.15)', borderRadius: '6px', color: '#60a5fa', padding: '8px 12px', fontSize: '0.88rem', outline: 'none' }} />
+                                <input type="number" value={simParams.systolic_bp ?? systolicBp} onChange={(e) => setSimParams(p => ({ ...p, systolic_bp: Number(e.target.value) }))} min="80" max="220" style={{ flex: 1, background: 'var(--input-bg)', border: '1px solid var(--input-border)', borderRadius: '6px', color: 'var(--theme-accent)', padding: '8px 12px', fontSize: '0.88rem', outline: 'none' }} />
                               </div>
                             </div>
                             <div className="col-md-6">
                               <label className="small text-secondary fw-semibold mb-1 font-monospace d-block">Diastolic BP (mmHg)</label>
                               <div className="d-flex gap-2 align-items-center">
                                 <span className="text-secondary font-monospace" style={{ fontSize: '0.78rem', minWidth: '60px' }}>Current: {diastolicBp}</span>
-                                <input type="number" value={simParams.diastolic_bp ?? diastolicBp} onChange={(e) => setSimParams(p => ({ ...p, diastolic_bp: Number(e.target.value) }))} min="40" max="130" style={{ flex: 1, background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.15)', borderRadius: '6px', color: '#60a5fa', padding: '8px 12px', fontSize: '0.88rem', outline: 'none' }} />
+                                <input type="number" value={simParams.diastolic_bp ?? diastolicBp} onChange={(e) => setSimParams(p => ({ ...p, diastolic_bp: Number(e.target.value) }))} min="40" max="130" style={{ flex: 1, background: 'var(--input-bg)', border: '1px solid var(--input-border)', borderRadius: '6px', color: 'var(--theme-accent)', padding: '8px 12px', fontSize: '0.88rem', outline: 'none' }} />
                               </div>
                             </div>
                             <div className="col-md-6">
                               <label className="small text-secondary fw-semibold mb-1 font-monospace d-block">Cholesterol (mg/dL)</label>
                               <div className="d-flex gap-2 align-items-center">
                                 <span className="text-secondary font-monospace" style={{ fontSize: '0.78rem', minWidth: '60px' }}>Current: {cholesterol}</span>
-                                <input type="number" value={simParams.cholesterol ?? cholesterol} onChange={(e) => setSimParams(p => ({ ...p, cholesterol: Number(e.target.value) }))} min="100" max="400" style={{ flex: 1, background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.15)', borderRadius: '6px', color: '#60a5fa', padding: '8px 12px', fontSize: '0.88rem', outline: 'none' }} />
+                                <input type="number" value={simParams.cholesterol ?? cholesterol} onChange={(e) => setSimParams(p => ({ ...p, cholesterol: Number(e.target.value) }))} min="100" max="400" style={{ flex: 1, background: 'var(--input-bg)', border: '1px solid var(--input-border)', borderRadius: '6px', color: 'var(--theme-accent)', padding: '8px 12px', fontSize: '0.88rem', outline: 'none' }} />
                               </div>
                             </div>
                             <div className="col-md-6">
                               <label className="small text-secondary fw-semibold mb-1 font-monospace d-block">Max Heart Rate (BPM)</label>
                               <div className="d-flex gap-2 align-items-center">
                                 <span className="text-secondary font-monospace" style={{ fontSize: '0.78rem', minWidth: '60px' }}>Current: {maxHeartRate}</span>
-                                <input type="number" value={simParams.max_heart_rate ?? maxHeartRate} onChange={(e) => setSimParams(p => ({ ...p, max_heart_rate: Number(e.target.value) }))} min="60" max="220" style={{ flex: 1, background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.15)', borderRadius: '6px', color: '#60a5fa', padding: '8px 12px', fontSize: '0.88rem', outline: 'none' }} />
+                                <input type="number" value={simParams.max_heart_rate ?? maxHeartRate} onChange={(e) => setSimParams(p => ({ ...p, max_heart_rate: Number(e.target.value) }))} min="60" max="220" style={{ flex: 1, background: 'var(--input-bg)', border: '1px solid var(--input-border)', borderRadius: '6px', color: 'var(--theme-accent)', padding: '8px 12px', fontSize: '0.88rem', outline: 'none' }} />
                               </div>
                             </div>
                           </>
@@ -2073,21 +2073,21 @@ function PatientDashboard({ user }) {
                               <label className="small text-secondary fw-semibold mb-1 font-monospace d-block">Glucose (mg/dL)</label>
                               <div className="d-flex gap-2 align-items-center">
                                 <span className="text-secondary font-monospace" style={{ fontSize: '0.78rem', minWidth: '60px' }}>Current: {glucose}</span>
-                                <input type="number" value={simParams.glucose ?? glucose} onChange={(e) => setSimParams(p => ({ ...p, glucose: Number(e.target.value) }))} min="50" max="400" style={{ flex: 1, background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.15)', borderRadius: '6px', color: '#60a5fa', padding: '8px 12px', fontSize: '0.88rem', outline: 'none' }} />
+                                <input type="number" value={simParams.glucose ?? glucose} onChange={(e) => setSimParams(p => ({ ...p, glucose: Number(e.target.value) }))} min="50" max="400" style={{ flex: 1, background: 'var(--input-bg)', border: '1px solid var(--input-border)', borderRadius: '6px', color: 'var(--theme-accent)', padding: '8px 12px', fontSize: '0.88rem', outline: 'none' }} />
                               </div>
                             </div>
                             <div className="col-md-4">
                               <label className="small text-secondary fw-semibold mb-1 font-monospace d-block">HbA1c (%)</label>
                               <div className="d-flex gap-2 align-items-center">
                                 <span className="text-secondary font-monospace" style={{ fontSize: '0.78rem', minWidth: '60px' }}>Current: {hba1c}</span>
-                                <input type="number" step="0.1" value={simParams.hba1c ?? hba1c} onChange={(e) => setSimParams(p => ({ ...p, hba1c: Number(e.target.value) }))} min="3.0" max="16.0" style={{ flex: 1, background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.15)', borderRadius: '6px', color: '#60a5fa', padding: '8px 12px', fontSize: '0.88rem', outline: 'none' }} />
+                                <input type="number" step="0.1" value={simParams.hba1c ?? hba1c} onChange={(e) => setSimParams(p => ({ ...p, hba1c: Number(e.target.value) }))} min="3.0" max="16.0" style={{ flex: 1, background: 'var(--input-bg)', border: '1px solid var(--input-border)', borderRadius: '6px', color: 'var(--theme-accent)', padding: '8px 12px', fontSize: '0.88rem', outline: 'none' }} />
                               </div>
                             </div>
                             <div className="col-md-4">
                               <label className="small text-secondary fw-semibold mb-1 font-monospace d-block">BMI (kg/m²)</label>
                               <div className="d-flex gap-2 align-items-center">
                                 <span className="text-secondary font-monospace" style={{ fontSize: '0.78rem', minWidth: '60px' }}>Current: {bmi}</span>
-                                <input type="number" step="0.1" value={simParams.bmi ?? bmi} onChange={(e) => setSimParams(p => ({ ...p, bmi: Number(e.target.value) }))} min="10" max="70" style={{ flex: 1, background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.15)', borderRadius: '6px', color: '#60a5fa', padding: '8px 12px', fontSize: '0.88rem', outline: 'none' }} />
+                                <input type="number" step="0.1" value={simParams.bmi ?? bmi} onChange={(e) => setSimParams(p => ({ ...p, bmi: Number(e.target.value) }))} min="10" max="70" style={{ flex: 1, background: 'var(--input-bg)', border: '1px solid var(--input-border)', borderRadius: '6px', color: 'var(--theme-accent)', padding: '8px 12px', fontSize: '0.88rem', outline: 'none' }} />
                               </div>
                             </div>
                           </>
@@ -2096,7 +2096,7 @@ function PatientDashboard({ user }) {
                           <>
                             <div className="col-md-4">
                               <label className="small text-secondary fw-semibold mb-1 font-monospace d-block">Alcohol</label>
-                              <select value={simParams.alcohol ?? alcohol} onChange={(e) => setSimParams(p => ({ ...p, alcohol: e.target.value }))} style={{ width: '100%', background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.15)', borderRadius: '6px', color: '#60a5fa', padding: '8px 12px', fontSize: '0.88rem', outline: 'none' }}>
+                              <select value={simParams.alcohol ?? alcohol} onChange={(e) => setSimParams(p => ({ ...p, alcohol: e.target.value }))} style={{ width: '100%', background: 'var(--input-bg)', border: '1px solid var(--input-border)', borderRadius: '6px', color: 'var(--text-primary)', padding: '8px 12px', fontSize: '0.88rem', outline: 'none' }}>
                                 <option value="no">None / Rare</option>
                                 <option value="mild">Occasional</option>
                                 <option value="yes">Moderate / Heavy</option>
@@ -2104,7 +2104,7 @@ function PatientDashboard({ user }) {
                             </div>
                             <div className="col-md-4">
                               <label className="small text-secondary fw-semibold mb-1 font-monospace d-block">Toxin Exposure</label>
-                              <select value={simParams.exposure ?? toxinExposure} onChange={(e) => setSimParams(p => ({ ...p, exposure: e.target.value }))} style={{ width: '100%', background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.15)', borderRadius: '6px', color: '#60a5fa', padding: '8px 12px', fontSize: '0.88rem', outline: 'none' }}>
+                              <select value={simParams.exposure ?? toxinExposure} onChange={(e) => setSimParams(p => ({ ...p, exposure: e.target.value }))} style={{ width: '100%', background: 'var(--input-bg)', border: '1px solid var(--input-border)', borderRadius: '6px', color: 'var(--text-primary)', padding: '8px 12px', fontSize: '0.88rem', outline: 'none' }}>
                                 <option value="no">None</option>
                                 <option value="mild">Intermittent</option>
                                 <option value="yes">High Exposure</option>
@@ -2112,7 +2112,7 @@ function PatientDashboard({ user }) {
                             </div>
                             <div className="col-md-4">
                               <label className="small text-secondary fw-semibold mb-1 font-monospace d-block">Smoking</label>
-                              <select value={simParams.smoking ?? smoking} onChange={(e) => setSimParams(p => ({ ...p, smoking: e.target.value }))} style={{ width: '100%', background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.15)', borderRadius: '6px', color: '#60a5fa', padding: '8px 12px', fontSize: '0.88rem', outline: 'none' }}>
+                              <select value={simParams.smoking ?? smoking} onChange={(e) => setSimParams(p => ({ ...p, smoking: e.target.value }))} style={{ width: '100%', background: 'var(--input-bg)', border: '1px solid var(--input-border)', borderRadius: '6px', color: 'var(--text-primary)', padding: '8px 12px', fontSize: '0.88rem', outline: 'none' }}>
                                 <option value="no">Never / Non-Smoker</option>
                                 <option value="former">Former Smoker</option>
                                 <option value="yes">Active Smoker</option>
@@ -2131,7 +2131,7 @@ function PatientDashboard({ user }) {
                         {simLoading ? (
                           <><span className="spinner-border spinner-border-sm" role="status" />&nbsp;Calculating...</>
                         ) : (
-                          <>⚗️ Recalculate Simulation</>
+                          <>Recalculate Simulation</>
                         )}
                       </button>
 

@@ -1,7 +1,9 @@
 import React, { useState, useEffect, useContext, useCallback, useRef } from 'react';
 import {
   MapPin, Search, Navigation, Phone, Clock, Filter, RefreshCw,
-  AlertCircle, Download, ExternalLink, Share2, ChevronDown, ChevronUp
+  AlertCircle, Download, ExternalLink, Share2, ChevronDown, ChevronUp,
+  Building2, Stethoscope, Pill, Sparkles, FlaskConical, ShieldAlert,
+  CheckCircle2, Accessibility, Radio, Lock
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { SidebarContext } from '../context/SidebarContext';
@@ -35,11 +37,11 @@ function isOpenNow(opening_hours) {
 }
 
 const TYPE_CONFIG = {
-  hospital:  { label: 'Hospitals',   emoji: '🏥', color: 'var(--accent-red)',    glow: 'rgba(255,51,102,0.2)',  tags: ['hospital'] },
-  clinic:    { label: 'Clinics',     emoji: '🩺', color: 'var(--accent-teal)',   glow: 'rgba(0,245,212,0.2)',   tags: ['clinic', 'doctors'] },
-  pharmacy:  { label: 'Pharmacies',  emoji: '💊', color: 'var(--accent-orange)', glow: 'rgba(255,143,0,0.2)',   tags: ['pharmacy', 'chemist'] },
-  dentist:   { label: 'Dentists',    emoji: '🦷', color: 'var(--accent-purple)', glow: 'rgba(223,64,255,0.2)',  tags: ['dentist'] },
-  lab:       { label: 'Labs',        emoji: '🔬', color: 'var(--accent-yellow)', glow: 'rgba(255,214,0,0.2)',   tags: ['laboratory'] },
+  hospital:  { label: 'Hospitals',   icon: Building2,    color: 'var(--status-danger)',     glow: 'var(--status-danger-bg)',   tags: ['hospital'] },
+  clinic:    { label: 'Clinics',     icon: Stethoscope,  color: 'var(--primary-accent)',    glow: 'var(--bg-upload-rx)',       tags: ['clinic', 'doctors'] },
+  pharmacy:  { label: 'Pharmacies',  icon: Pill,         color: 'var(--secondary-accent)',  glow: 'var(--bg-form)',            tags: ['pharmacy', 'chemist'] },
+  dentist:   { label: 'Dentists',    icon: Sparkles,     color: 'var(--accent-purple)',     glow: 'var(--bg-alt)',             tags: ['dentist'] },
+  lab:       { label: 'Labs',        icon: FlaskConical, color: 'var(--status-info)',       glow: 'var(--status-info-bg)',     tags: ['laboratory'] },
 };
 
 // ── Build Overpass query ───────────────────────────────────────────────────
@@ -106,20 +108,20 @@ function SOSPanel({ places, location, isPatient }) {
       animate={{ opacity: 1, scale: 1 }}
       className="p-4 rounded mb-4"
       style={{
-        background: 'linear-gradient(135deg, rgba(255,0,85,0.08), rgba(0,4,45,0.6))',
-        border: activated ? '1.5px solid #ff0055' : '1px solid rgba(255,0,85,0.3)',
+        background: 'var(--bg-card)',
+        border: activated ? '1.5px solid var(--accent-red)' : '1px solid rgba(185, 28, 28, 0.35)',
         transition: 'all 0.3s ease',
       }}
     >
       <div className="d-flex align-items-center justify-content-between flex-wrap gap-3">
         <div>
           <div className="d-flex align-items-center gap-2 mb-1">
-            <span style={{ fontSize: '1.1rem' }}>🚨</span>
-            <span className="fw-bold font-monospace text-uppercase" style={{ fontSize: '0.78rem', color: '#ff3366', letterSpacing: '0.1em' }}>
+            <ShieldAlert size={18} color="var(--accent-red)" />
+            <span className="fw-bold font-monospace text-uppercase" style={{ fontSize: '0.78rem', color: 'var(--accent-red)', letterSpacing: '0.1em' }}>
               Emergency Fast Route
             </span>
           </div>
-          <p className="text-white fw-bold m-0" style={{ fontSize: '0.92rem' }}>{nearest.name}</p>
+          <p className="fw-bold m-0" style={{ fontSize: '0.92rem', color: 'var(--text-primary)' }}>{nearest.name}</p>
           <p className="text-secondary m-0 mt-1" style={{ fontSize: '0.75rem' }}>
             {nearest.distance < 1
               ? `${Math.round(nearest.distance * 1000)} m away`
@@ -134,7 +136,7 @@ function SOSPanel({ places, location, isPatient }) {
             rel="noopener noreferrer"
             onClick={() => setActivated(true)}
             className="px-4 py-2 rounded fw-bold font-monospace text-uppercase text-decoration-none d-flex align-items-center gap-2"
-            style={{ fontSize: '0.75rem', background: 'rgba(255,0,85,0.2)', border: '1px solid #ff3366', color: '#ff3366' }}
+            style={{ fontSize: '0.75rem', background: 'rgba(185, 28, 28, 0.15)', border: '1px solid var(--accent-red)', color: 'var(--accent-red)' }}
           >
             <Navigation size={13} /> Navigate Now
           </a>
@@ -142,7 +144,7 @@ function SOSPanel({ places, location, isPatient }) {
             <a
               href={`tel:${nearest.phone}`}
               className="px-4 py-2 rounded fw-bold font-monospace text-uppercase text-decoration-none d-flex align-items-center gap-2"
-              style={{ fontSize: '0.75rem', background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.15)', color: '#fff' }}
+              style={{ fontSize: '0.75rem', background: 'var(--bg-card-hover)', border: '1px solid var(--border-color)', color: 'var(--text-primary)' }}
             >
               <Phone size={13} /> Call
             </a>
@@ -216,43 +218,45 @@ function PlaceCard({ place, isPatient, expanded, onToggle }) {
       animate={{ opacity: 1, y: 0 }}
       className="p-3 rounded border cursor-pointer transition-all"
       style={{
-        background: expanded ? 'rgba(0,4,45,0.75)' : 'rgba(0,4,45,0.4)',
-        borderColor: expanded ? cfg.color : 'rgba(255,255,255,0.07)',
-        boxShadow: expanded ? '0 4px 16px rgba(0,0,0,0.4)' : 'none',
+        background: expanded ? 'var(--bg-card-hover)' : 'var(--bg-card)',
+        borderColor: expanded ? cfg.color : 'var(--border-color)',
+        boxShadow: expanded ? '0 4px 16px rgba(0,0,0,0.1)' : 'none',
       }}
       onClick={onToggle}
     >
       <div className="d-flex align-items-start justify-content-between gap-2">
         <div className="d-flex align-items-start gap-2 flex-grow-1">
-          <span style={{ fontSize: '1.25rem', lineHeight: 1, flexShrink: 0, marginTop: '2px' }}>{cfg.emoji}</span>
+          <div style={{ color: cfg.color, flexShrink: 0, marginTop: '2px', display: 'flex', alignItems: 'center' }}>
+            {cfg.icon ? <cfg.icon size={20} /> : <Building2 size={20} />}
+          </div>
           <div className="flex-grow-1">
-            <p className="text-white fw-bold m-0" style={{ fontSize: '0.88rem', lineHeight: 1.3 }}>{place.name}</p>
+            <p className="fw-bold m-0" style={{ fontSize: '0.88rem', lineHeight: 1.3, color: 'var(--text-primary)' }}>{place.name}</p>
             <div className="d-flex flex-wrap gap-1 mt-1">
               <span className="badge px-2 py-1" style={{ fontSize: '0.6rem', background: cfg.glow, border: `1px solid ${cfg.color}`, color: cfg.color, letterSpacing: '0.05em' }}>
                 {cfg.label.slice(0, -1).toUpperCase()}
               </span>
               {place.emergency && (
-                <span className="badge px-2 py-1" style={{ fontSize: '0.6rem', background: 'rgba(255,0,85,0.15)', border: '1px solid #ff0055', color: '#ff0055' }}>
-                  🚨 24H EMERGENCY
+                <span className="badge px-2 py-1 d-inline-flex align-items-center gap-1" style={{ fontSize: '0.6rem', background: 'rgba(185, 28, 28, 0.12)', border: '1px solid var(--accent-red)', color: 'var(--accent-red)' }}>
+                  <ShieldAlert size={10} /> 24H EMERGENCY
                 </span>
               )}
               {openStatus === true && (
-                <span className="badge px-2 py-1" style={{ fontSize: '0.6rem', background: 'rgba(0,255,170,0.1)', border: '1px solid var(--accent-green)', color: 'var(--accent-green)' }}>
-                  ✅ OPEN NOW
+                <span className="badge px-2 py-1 d-inline-flex align-items-center gap-1" style={{ fontSize: '0.6rem', background: 'rgba(57, 116, 91, 0.15)', border: '1px solid var(--primary-accent)', color: 'var(--primary-accent)' }}>
+                  <CheckCircle2 size={10} /> OPEN NOW
                 </span>
               )}
               {openStatus === false && (
-                <span className="badge px-2 py-1" style={{ fontSize: '0.6rem', background: 'rgba(255,0,0,0.08)', border: '1px solid rgba(255,100,100,0.3)', color: 'rgba(255,120,120,0.8)' }}>
+                <span className="badge px-2 py-1 d-inline-flex align-items-center gap-1" style={{ fontSize: '0.6rem', background: 'rgba(185, 28, 28, 0.08)', border: '1px solid rgba(185, 28, 28, 0.3)', color: 'var(--accent-red)' }}>
                   CLOSED
                 </span>
               )}
               {place.wheelchair === 'yes' && (
-                <span className="badge px-2 py-1" style={{ fontSize: '0.6rem', background: 'rgba(0,191,255,0.1)', border: '1px solid rgba(0,191,255,0.3)', color: '#00bfff' }}>
-                  ♿ ACCESSIBLE
+                <span className="badge px-2 py-1 d-inline-flex align-items-center gap-1" style={{ fontSize: '0.6rem', background: 'rgba(57, 116, 91, 0.1)', border: '1px solid var(--border-color)', color: 'var(--text-secondary)' }}>
+                  <Accessibility size={10} /> ACCESSIBLE
                 </span>
               )}
               {place.speciality && (
-                <span className="badge px-2 py-1" style={{ fontSize: '0.6rem', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: 'rgba(255,255,255,0.6)' }}>
+                <span className="badge px-2 py-1" style={{ fontSize: '0.6rem', background: 'var(--bg-card-hover)', border: '1px solid var(--border-color)', color: 'var(--text-secondary)' }}>
                   {place.speciality}
                 </span>
               )}
@@ -274,7 +278,7 @@ function PlaceCard({ place, isPatient, expanded, onToggle }) {
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
             className="mt-3 pt-3 border-top"
-            style={{ borderColor: 'rgba(255,255,255,0.07)', overflow: 'hidden' }}
+            style={{ borderColor: 'var(--border-color)', overflow: 'hidden' }}
           >
             <div className="d-flex flex-column gap-2" style={{ fontSize: '0.78rem' }}>
               {place.address && (
@@ -297,7 +301,7 @@ function PlaceCard({ place, isPatient, expanded, onToggle }) {
               )}
               {place.operator && (
                 <div className="d-flex align-items-center gap-2 text-secondary">
-                  <span style={{ color: cfg.color, flexShrink: 0, fontSize: '0.7rem' }}>🏢</span>
+                  <Building2 size={12} style={{ color: cfg.color, flexShrink: 0 }} />
                   <span>{place.operator}</span>
                 </div>
               )}
@@ -328,7 +332,7 @@ function PlaceCard({ place, isPatient, expanded, onToggle }) {
                     href={place.website}
                     target="_blank" rel="noopener noreferrer"
                     className="px-3 py-1 rounded font-monospace text-uppercase fw-bold text-decoration-none d-flex align-items-center gap-1"
-                    style={{ fontSize: '0.65rem', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.15)', color: '#fff' }}
+                    style={{ fontSize: '0.65rem', background: 'var(--bg-card-hover)', border: '1px solid var(--border-color)', color: 'var(--text-primary)' }}
                     onClick={(e) => e.stopPropagation()}
                   >
                     <ExternalLink size={10} /> Website
@@ -475,8 +479,10 @@ export default function NearbyMap({
         <div className="d-flex flex-column gap-2">
           <p className="text-secondary font-monospace text-uppercase mb-1" style={{ fontSize: '0.62rem', letterSpacing: '0.1em' }}>Live Counts</p>
           {Object.entries(TYPE_CONFIG).map(([key, cfg]) => (
-            <div key={key} className="d-flex align-items-center justify-content-between p-2 rounded" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)' }}>
-              <span style={{ fontSize: '0.78rem', color: cfg.color }}>{cfg.emoji} {cfg.label}</span>
+            <div key={key} className="d-flex align-items-center justify-content-between p-2 rounded" style={{ background: 'var(--bg-card-hover)', border: '1px solid var(--border-color)' }}>
+              <span className="d-flex align-items-center gap-2" style={{ fontSize: '0.78rem', color: cfg.color }}>
+                {cfg.icon ? <cfg.icon size={14} /> : null} {cfg.label}
+              </span>
               <span className="fw-bold font-monospace" style={{ color: cfg.color, fontSize: '0.8rem' }}>
                 {places.filter((p) => p.type === key).length}
               </span>
@@ -487,15 +493,15 @@ export default function NearbyMap({
           <div className="d-flex flex-column gap-2">
             <p className="text-secondary font-monospace text-uppercase mb-1" style={{ fontSize: '0.62rem', letterSpacing: '0.1em' }}>Nearest Hospital</p>
             {places.filter((p) => p.type === 'hospital').slice(0, 1).map((p) => (
-              <div key={p.id} className="p-3 rounded" style={{ background: 'rgba(255,0,85,0.07)', border: '1px solid rgba(255,0,85,0.22)' }}>
-                <p className="text-white fw-bold m-0" style={{ fontSize: '0.82rem' }}>{p.name}</p>
+              <div key={p.id} className="p-3 rounded" style={{ background: 'rgba(185, 28, 28, 0.08)', border: '1px solid rgba(185, 28, 28, 0.25)' }}>
+                <p className="fw-bold m-0" style={{ fontSize: '0.82rem', color: 'var(--text-primary)' }}>{p.name}</p>
                 <p className="text-secondary m-0 mt-1" style={{ fontSize: '0.7rem' }}>
                   {p.distance < 1 ? `${Math.round(p.distance * 1000)}m` : `${p.distance.toFixed(1)}km`} away
                 </p>
                 <a href={`https://www.google.com/maps/dir/?api=1&destination=${p.lat},${p.lon}`} target="_blank" rel="noopener noreferrer"
-                  className="d-block mt-2 text-center py-1 rounded font-monospace text-uppercase text-decoration-none"
-                  style={{ fontSize: '0.62rem', background: 'rgba(255,0,85,0.14)', border: '1px solid rgba(255,0,85,0.3)', color: '#ff3366' }}>
-                  🚨 Get Directions
+                  className="d-flex align-items-center justify-content-center gap-1 mt-2 text-center py-1 rounded font-monospace text-uppercase text-decoration-none"
+                  style={{ fontSize: '0.62rem', background: 'rgba(185, 28, 28, 0.15)', border: '1px solid var(--accent-red)', color: 'var(--accent-red)' }}>
+                  <Navigation size={10} /> Get Directions
                 </a>
               </div>
             ))}
@@ -561,8 +567,8 @@ export default function NearbyMap({
               transition: 'all 0.3s',
             }}
           >
-            <Download size={14} />
-            {exportDone ? '✅ Saved!' : 'Export Emergency Sheet'}
+            {exportDone ? <CheckCircle2 size={14} /> : <Download size={14} />}
+            {exportDone ? 'Saved!' : 'Export Emergency Sheet'}
           </button>
         )}
       </div>
@@ -586,10 +592,14 @@ export default function NearbyMap({
 
             {/* Location */}
             <div className="glass-card p-4" style={{ borderRadius: '12px' }}>
-              <h5 className="text-white fw-bold font-monospace mb-3" style={{ fontSize: '0.85rem', letterSpacing: '0.06em' }}>📍 YOUR LOCATION</h5>
+              <h5 className="text-white fw-bold font-monospace mb-3 d-flex align-items-center gap-2" style={{ fontSize: '0.85rem', letterSpacing: '0.06em' }}>
+                <MapPin size={14} className="text-info" /> YOUR LOCATION
+              </h5>
               {location ? (
                 <>
-                  <p className="text-success small font-monospace mb-1">✅ GPS acquired</p>
+                  <p className="text-success small font-monospace mb-1 d-flex align-items-center gap-1">
+                    <CheckCircle2 size={12} /> GPS acquired
+                  </p>
                   <p className="text-secondary mb-3" style={{ fontSize: '0.7rem' }}>{location.lat.toFixed(5)}°N, {location.lon.toFixed(5)}°E</p>
                   <button onClick={getLocation} className="btn-clinical py-2 d-flex align-items-center gap-2 font-monospace text-uppercase" style={{ fontSize: '0.7rem' }} disabled={locLoading}>
                     <RefreshCw size={12} className={locLoading ? 'spin' : ''} /> Refresh
@@ -611,7 +621,7 @@ export default function NearbyMap({
 
             {/* Facility types */}
             <div className="glass-card p-4" style={{ borderRadius: '12px' }}>
-              <h5 className="text-white fw-bold font-monospace mb-3" style={{ fontSize: '0.85rem', letterSpacing: '0.06em' }}>
+              <h5 className="fw-bold font-monospace mb-3" style={{ fontSize: '0.85rem', letterSpacing: '0.06em', color: 'var(--text-primary)' }}>
                 <Filter size={13} className="me-2" />FACILITY TYPE
               </h5>
               <div className="d-flex flex-column gap-2">
@@ -622,28 +632,34 @@ export default function NearbyMap({
                       onClick={() => toggleType(key)}
                       className="d-flex align-items-center justify-content-between px-3 py-2 rounded font-monospace"
                       style={{
-                        background: activeTypes.includes(key) ? cfg.glow : 'rgba(255,255,255,0.02)',
-                        border: `1px solid ${activeTypes.includes(key) ? cfg.color : 'rgba(255,255,255,0.07)'}`,
-                        color: activeTypes.includes(key) ? cfg.color : 'rgba(255,255,255,0.35)',
+                        background: activeTypes.includes(key) ? cfg.glow : 'var(--bg-card-hover)',
+                        border: `1px solid ${activeTypes.includes(key) ? cfg.color : 'var(--border-color)'}`,
+                        color: activeTypes.includes(key) ? cfg.color : 'var(--text-secondary)',
                         fontSize: '0.72rem', letterSpacing: '0.06em', width: '100%', transition: 'all 0.2s',
                       }}
                     >
-                      <span>{cfg.emoji} {cfg.label.toUpperCase()}</span>
-                      <span className="badge" style={{ background: activeTypes.includes(key) ? cfg.glow : 'transparent', border: `1px solid ${activeTypes.includes(key) ? cfg.color : 'rgba(255,255,255,0.08)'}`, color: activeTypes.includes(key) ? cfg.color : 'rgba(255,255,255,0.25)', fontSize: '0.6rem' }}>
+                      <span className="d-flex align-items-center gap-2">
+                        {cfg.icon ? <cfg.icon size={13} /> : null} {cfg.label.toUpperCase()}
+                      </span>
+                      <span className="badge" style={{ background: activeTypes.includes(key) ? cfg.glow : 'transparent', border: `1px solid ${activeTypes.includes(key) ? cfg.color : 'var(--border-color)'}`, color: activeTypes.includes(key) ? cfg.color : 'var(--text-muted)', fontSize: '0.6rem' }}>
                         {counts[key] || 0}
                       </span>
                     </button>
                   ) : null
                 ))}
                 {!isPatient && (
-                  <p className="text-secondary mt-1 mb-0" style={{ fontSize: '0.65rem' }}>🔒 Sign in for Dentists & Labs</p>
+                  <p className="text-secondary mt-1 mb-0 d-flex align-items-center gap-1" style={{ fontSize: '0.65rem' }}>
+                    <Lock size={11} /> Sign in for Dentists & Labs
+                  </p>
                 )}
               </div>
             </div>
 
             {/* Radius */}
             <div className="glass-card p-4" style={{ borderRadius: '12px' }}>
-              <h5 className="text-white fw-bold font-monospace mb-3" style={{ fontSize: '0.85rem', letterSpacing: '0.06em' }}>📡 SEARCH RADIUS</h5>
+              <h5 className="fw-bold font-monospace mb-3 d-flex align-items-center gap-2" style={{ fontSize: '0.85rem', letterSpacing: '0.06em', color: 'var(--text-primary)' }}>
+                <Radio size={14} className="text-info" /> SEARCH RADIUS
+              </h5>
               <div className="d-flex align-items-center gap-3">
                 <input type="range" min={500} max={isPatient ? 15000 : 5000} step={500} value={radius} onChange={(e) => setRadius(Number(e.target.value))} style={{ margin: 0 }} aria-label="Search radius" />
                 <span className="text-info fw-bold font-monospace" style={{ minWidth: '52px', fontSize: '0.8rem' }}>
@@ -672,35 +688,35 @@ export default function NearbyMap({
           <div className="glass-card p-4" style={{ borderRadius: '12px' }}>
             {/* Search + filters row */}
             <div className="d-flex align-items-center gap-2 mb-3 flex-wrap">
-              <div className="d-flex align-items-center gap-2 flex-grow-1" style={{ background: 'rgba(0,4,45,0.55)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: '8px', padding: '8px 12px' }}>
+              <div className="d-flex align-items-center gap-2 flex-grow-1" style={{ background: 'var(--input-bg)', border: '1px solid var(--input-border)', borderRadius: '8px', padding: '8px 12px' }}>
                 <Search size={14} className="text-secondary" />
                 <input
                   type="text" placeholder="Search facilities..."
                   value={search} onChange={(e) => setSearch(e.target.value)}
-                  style={{ background: 'transparent', border: 'none', color: '#fff', outline: 'none', width: '100%', fontSize: '0.83rem', padding: 0, marginBottom: 0 }}
+                  style={{ background: 'transparent', border: 'none', color: 'var(--text-primary)', outline: 'none', width: '100%', fontSize: '0.83rem', padding: 0, marginBottom: 0 }}
                 />
               </div>
               {isPatient && (
                 <>
                   <select
                     value={sortBy} onChange={(e) => setSortBy(e.target.value)}
-                    style={{ background: 'rgba(0,4,45,0.55)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: '8px', color: '#fff', padding: '8px 10px', fontSize: '0.75rem', marginBottom: 0 }}
+                    style={{ background: 'var(--input-bg)', border: '1px solid var(--input-border)', borderRadius: '8px', color: 'var(--text-primary)', padding: '8px 10px', fontSize: '0.75rem', marginBottom: 0 }}
                   >
                     <option value="distance">Nearest first</option>
                     <option value="name">Name A–Z</option>
                   </select>
                   <button
                     onClick={() => setShowOpenOnly((v) => !v)}
-                    className="px-3 py-2 rounded font-monospace text-uppercase"
+                    className="px-3 py-2 rounded font-monospace text-uppercase d-flex align-items-center gap-1"
                     style={{
                       fontSize: '0.68rem', letterSpacing: '0.05em',
-                      background: showOpenOnly ? 'rgba(0,255,170,0.1)' : 'rgba(255,255,255,0.03)',
-                      border: `1px solid ${showOpenOnly ? 'var(--accent-green)' : 'rgba(255,255,255,0.07)'}`,
-                      color: showOpenOnly ? 'var(--accent-green)' : 'rgba(255,255,255,0.35)',
+                      background: showOpenOnly ? 'rgba(0,255,170,0.1)' : 'var(--bg-card-hover)',
+                      border: `1px solid ${showOpenOnly ? 'var(--accent-green)' : 'var(--border-color)'}`,
+                      color: showOpenOnly ? 'var(--accent-green)' : 'var(--text-secondary)',
                       cursor: 'pointer', transition: 'all 0.2s',
                     }}
                   >
-                    ✅ Open Now
+                    <CheckCircle2 size={12} /> Open Now
                   </button>
                 </>
               )}
@@ -757,9 +773,10 @@ export default function NearbyMap({
 
             {/* Guest upsell */}
             {!isPatient && !loading && filtered.length > 0 && (
-              <div className="mt-4 p-3 rounded" style={{ background: 'rgba(0,245,212,0.05)', border: '1px solid rgba(0,245,212,0.18)', fontSize: '0.75rem' }}>
+              <div className="mt-4 p-3 rounded d-flex align-items-start gap-2" style={{ background: 'rgba(0,245,212,0.05)', border: '1px solid rgba(0,245,212,0.18)', fontSize: '0.75rem' }}>
+                <Lock size={14} className="text-info mt-1 flex-shrink-0" />
                 <p className="text-info font-monospace m-0">
-                  🔒 Sign in to unlock phone numbers, one-tap calling, Dentist & Lab search, Open Now filter, 15km radius, and Emergency Sheet export.
+                  Sign in to unlock phone numbers, one-tap calling, Dentist & Lab search, Open Now filter, 15km radius, and Emergency Sheet export.
                 </p>
               </div>
             )}

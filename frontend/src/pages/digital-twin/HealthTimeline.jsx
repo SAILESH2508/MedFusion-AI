@@ -2,9 +2,9 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 
 const TYPE_COLORS = {
-  prediction: '#ff8c00',
-  pathology: '#00f5d4',
-  prescription: '#df40ff',
+  prediction: '#f59e0b',
+  pathology: '#38bdf8',
+  prescription: '#a855f7',
 };
 
 function flattenRecords(patientData) {
@@ -59,12 +59,12 @@ function RecordDetails({ item }) {
     return (
       <div style={{ marginTop: '8px', fontSize: '0.78rem' }}>
         <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
-          <span style={{ color: 'rgba(255,255,255,0.6)' }}>Disease: <strong style={{ color: '#fff' }}>{item.disease_type}</strong></span>
-          <span style={{ color: 'rgba(255,255,255,0.6)' }}>Score: <strong style={{ color: TYPE_COLORS.prediction }}>{item.risk_score}%</strong></span>
-          <span style={{ color: 'rgba(255,255,255,0.6)' }}>Level: <strong style={{ color: '#fff' }}>{item.risk_level}</strong></span>
+          <span style={{ color: 'var(--text-secondary)' }}>Disease: <strong style={{ color: 'var(--text-primary)' }}>{item.disease_type}</strong></span>
+          <span style={{ color: 'var(--text-secondary)' }}>Score: <strong style={{ color: TYPE_COLORS.prediction }}>{item.risk_score}%</strong></span>
+          <span style={{ color: 'var(--text-secondary)' }}>Level: <strong style={{ color: 'var(--text-primary)' }}>{item.risk_level}</strong></span>
         </div>
         {item.clinical_reasoning && (
-          <p style={{ marginTop: '6px', color: 'rgba(255,255,255,0.5)', fontStyle: 'italic', lineHeight: '1.4' }}>
+          <p style={{ marginTop: '6px', color: 'var(--text-secondary)', fontStyle: 'italic', lineHeight: '1.4' }}>
             {item.clinical_reasoning}
           </p>
         )}
@@ -77,9 +77,9 @@ function RecordDetails({ item }) {
     return (
       <div style={{ marginTop: '8px', fontSize: '0.78rem' }}>
         {biomarkers.length === 0 ? (
-          <span style={{ color: 'rgba(255,255,255,0.4)', fontStyle: 'italic' }}>No biomarker details available.</span>
+          <span style={{ color: 'var(--text-muted)', fontStyle: 'italic' }}>No biomarker details available.</span>
         ) : (
-          <ul style={{ margin: 0, padding: '0 0 0 16px', color: 'rgba(255,255,255,0.65)' }}>
+          <ul style={{ margin: 0, padding: '0 0 0 16px', color: 'var(--text-secondary)' }}>
             {biomarkers.map((b, i) => (
               <li key={i}>
                 {b.name}: <strong style={{ color: TYPE_COLORS.pathology, fontFamily: 'monospace' }}>{b.value}</strong>
@@ -97,9 +97,9 @@ function RecordDetails({ item }) {
     return (
       <div style={{ marginTop: '8px', fontSize: '0.78rem' }}>
         {!Array.isArray(meds) || meds.length === 0 ? (
-          <span style={{ color: 'rgba(255,255,255,0.4)', fontStyle: 'italic' }}>No medication details available.</span>
+          <span style={{ color: 'var(--text-muted)', fontStyle: 'italic' }}>No medication details available.</span>
         ) : (
-          <ul style={{ margin: 0, padding: '0 0 0 16px', color: 'rgba(255,255,255,0.65)' }}>
+          <ul style={{ margin: 0, padding: '0 0 0 16px', color: 'var(--text-secondary)' }}>
             {meds.map((m, i) => (
               <li key={i}>
                 <strong style={{ color: TYPE_COLORS.prescription }}>{m.name || m}</strong>
@@ -151,7 +151,7 @@ export default function HealthTimeline({ patientData, loading }) {
         top: 0,
         bottom: 0,
         width: '2px',
-        background: 'rgba(255,255,255,0.1)',
+        background: 'var(--border-color, rgba(255,255,255,0.1))',
         borderRadius: '1px',
       }} />
 
@@ -179,8 +179,8 @@ export default function HealthTimeline({ patientData, loading }) {
             <div
               onClick={() => setExpandedId(isExpanded ? null : key)}
               style={{
-                background: 'rgba(255,255,255,0.04)',
-                border: `1px solid rgba(255,255,255,${isExpanded ? '0.12' : '0.07'})`,
+                background: 'var(--bg-card-hover, rgba(255,255,255,0.04))',
+                border: `1px solid var(--border-color, rgba(255,255,255,${isExpanded ? '0.12' : '0.07'}))`,
                 borderRadius: '8px',
                 padding: '8px 12px',
                 cursor: 'pointer',
@@ -200,12 +200,12 @@ export default function HealthTimeline({ patientData, loading }) {
                   }}>
                     {item._type}
                   </span>
-                  <p style={{ margin: 0, fontSize: '0.82rem', color: '#fff', fontWeight: 500, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                  <p style={{ margin: 0, fontSize: '0.82rem', color: 'var(--text-primary)', fontWeight: 500, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                     {item._title}
                   </p>
                 </div>
                 <div style={{ textAlign: 'right', flexShrink: 0 }}>
-                  <span style={{ fontSize: '0.7rem', color: 'rgba(255,255,255,0.4)', fontFamily: 'monospace', display: 'block' }}>{date}</span>
+                  <span style={{ fontSize: '0.7rem', color: 'var(--text-secondary)', fontFamily: 'monospace', display: 'block' }}>{date}</span>
                   <span style={{ fontSize: '0.72rem', color, fontFamily: 'monospace' }}>{item._summary}</span>
                 </div>
               </div>
@@ -213,8 +213,8 @@ export default function HealthTimeline({ patientData, loading }) {
               {isExpanded && <RecordDetails item={item} />}
 
               {isExpanded && (
-                <div style={{ marginTop: '8px', borderTop: '1px solid rgba(255,255,255,0.07)', paddingTop: '6px' }}>
-                  <Link to="/profile?tab=vault" style={{ fontSize: '0.72rem', color: 'var(--accent-teal, #00f5d4)', textDecoration: 'none' }}>
+                <div style={{ marginTop: '8px', borderTop: '1px solid var(--border-color, rgba(255,255,255,0.07))', paddingTop: '6px' }}>
+                  <Link to="/profile?tab=vault" style={{ fontSize: '0.72rem', color: 'var(--accent-teal, #38bdf8)', textDecoration: 'none' }}>
                     View full record →
                   </Link>
                 </div>

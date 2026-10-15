@@ -1,4 +1,5 @@
 import React, { useState, useMemo } from 'react';
+import { AlertTriangle } from 'lucide-react';
 
 function buildBiomarkerList(patientData) {
   const seen = new Map(); // name (lowercase) -> item
@@ -135,9 +136,12 @@ export default function HealthChangeExplorer({ patientData }) {
         marginBottom: '14px',
         fontSize: '0.75rem',
         color: '#ffc107',
-        lineHeight: '1.4',
+        display: 'flex',
+        alignItems: 'center',
+        gap: '8px',
       }}>
-        ⚠️ This is an educational comparison tool only. Hypothetical values are never saved to your records.
+        <AlertTriangle size={14} style={{ flexShrink: 0 }} />
+        <span>This is an educational comparison tool only. Hypothetical values are never saved to your records.</span>
       </div>
 
       {/* Biomarker selector */}
@@ -170,15 +174,15 @@ export default function HealthChangeExplorer({ patientData }) {
       {/* Recorded value display */}
       {selectedBiomarker && (
         <div style={{
-          background: 'rgba(0,245,212,0.07)',
-          border: '1px solid rgba(0,245,212,0.2)',
+          background: 'rgba(56,189,248,0.08)',
+          border: '1px solid rgba(56,189,248,0.25)',
           borderRadius: '8px',
           padding: '8px 12px',
           marginBottom: '12px',
           fontSize: '0.82rem',
         }}>
           <span style={{ color: 'rgba(255,255,255,0.5)' }}>Recorded value: </span>
-          <strong style={{ color: '#00f5d4', fontFamily: 'monospace' }}>{selectedBiomarker.value} {selectedBiomarker.unit}</strong>
+          <strong style={{ color: '#38bdf8', fontFamily: 'monospace' }}>{selectedBiomarker.value} {selectedBiomarker.unit}</strong>
           <span style={{ color: 'rgba(255,255,255,0.35)', fontSize: '0.72rem', marginLeft: '8px' }}>({selectedBiomarker.date})</span>
         </div>
       )}
@@ -223,17 +227,17 @@ export default function HealthChangeExplorer({ patientData }) {
           <div style={{ marginBottom: '10px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.7rem', color: 'rgba(255,255,255,0.5)', marginBottom: '3px' }}>
               <span>Recorded</span>
-              <span style={{ fontFamily: 'monospace', color: '#00f5d4' }}>{recordedNum} {selectedBiomarker.unit}</span>
+              <span style={{ fontFamily: 'monospace', color: '#38bdf8' }}>{recordedNum} {selectedBiomarker.unit}</span>
             </div>
             <div style={{ height: '10px', background: 'rgba(255,255,255,0.08)', borderRadius: '5px', overflow: 'hidden', marginBottom: '6px' }}>
-              <div style={{ height: '100%', width: `${recordedPct}%`, background: '#00f5d4', borderRadius: '5px', transition: 'width 0.3s' }} />
+              <div style={{ height: '100%', width: `${recordedPct}%`, background: '#38bdf8', borderRadius: '5px', transition: 'width 0.3s' }} />
             </div>
             <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.7rem', color: 'rgba(255,255,255,0.5)', marginBottom: '3px' }}>
               <span>Hypothetical</span>
-              <span style={{ fontFamily: 'monospace', color: '#df40ff' }}>{hypotheticalNum} {selectedBiomarker.unit}</span>
+              <span style={{ fontFamily: 'monospace', color: '#a855f7' }}>{hypotheticalNum} {selectedBiomarker.unit}</span>
             </div>
             <div style={{ height: '10px', background: 'rgba(255,255,255,0.08)', borderRadius: '5px', overflow: 'hidden' }}>
-              <div style={{ height: '100%', width: `${hypotheticalPct}%`, background: '#df40ff', borderRadius: '5px', transition: 'width 0.3s' }} />
+              <div style={{ height: '100%', width: `${hypotheticalPct}%`, background: '#a855f7', borderRadius: '5px', transition: 'width 0.3s' }} />
             </div>
           </div>
 
@@ -247,13 +251,13 @@ export default function HealthChangeExplorer({ patientData }) {
             color: 'rgba(255,255,255,0.75)',
             lineHeight: '1.5',
           }}>
-            Your hypothetical value of <strong style={{ color: '#df40ff' }}>{hypotheticalNum} {selectedBiomarker.unit}</strong> is{' '}
+            Your hypothetical value of <strong style={{ color: '#a855f7' }}>{hypotheticalNum} {selectedBiomarker.unit}</strong> is{' '}
             {direction === 'equal to' ? (
               'equal to your recorded value.'
             ) : (
               <>
                 <strong style={{ color: direction === 'higher' ? '#ff6b6b' : '#2dc98e' }}>{absDiff?.toFixed(2)} {selectedBiomarker.unit}</strong> {direction} than your recorded value of{' '}
-                <strong style={{ color: '#00f5d4' }}>{recordedNum} {selectedBiomarker.unit}</strong>.
+                <strong style={{ color: '#38bdf8' }}>{recordedNum} {selectedBiomarker.unit}</strong>.
                 {pctChange !== null && (
                   <> That is a <strong>{Math.abs(pctChange).toFixed(1)}%</strong> {direction === 'higher' ? 'increase' : 'decrease'}.</>
                 )}

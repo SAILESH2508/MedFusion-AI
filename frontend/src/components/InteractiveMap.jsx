@@ -24,14 +24,14 @@ function ensureLeafletCSS() {
 
 const TILE_LAYERS = {
   street: {
-    label: '🗺 Street',
+    label: 'Street',
     url: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
     attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
     maxZoom: 21,
     maxNativeZoom: 19,
   },
   satellite: {
-    label: '🛰 Satellite',
+    label: 'Satellite',
     url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
     attribution: '© Esri, DigitalGlobe, GeoEye, i-cubed',
     maxZoom: 21,
@@ -47,18 +47,18 @@ const TYPE_COLORS = {
   lab:      '#ffd600',
 };
 
-const TYPE_EMOJI = {
-  hospital: '🏥',
-  clinic:   '🩺',
-  pharmacy: '💊',
-  dentist:  '🦷',
-  lab:      '🔬',
+const TYPE_SVGS = {
+  hospital: `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 6v12M6 12h12"/></svg>`,
+  clinic: `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4.8 2.3A.3.3 0 1 0 5 2H4a2 2 0 0 0-2 2v5a6 6 0 0 0 6 6v0a6 6 0 0 0 6-6V4a2 2 0 0 0-2-2h-1a.2.2 0 1 0 .3.3"/><path d="M8 15v1a6 6 0 0 0 6 6v0a6 6 0 0 0 6-6v-4"/><circle cx="20" cy="10" r="2"/></svg>`,
+  pharmacy: `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m10.5 20.5 10-10a4.95 4.95 0 1 0-7-7l-10 10a4.95 4.95 0 1 0 7 7Z"/><path d="m8.5 8.5 7 7"/></svg>`,
+  dentist: `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v8M8 12h8"/></svg>`,
+  lab: `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10 2v7.31L4.1 19.5A2 2 0 0 0 5.8 22h12.4a2 2 0 0 0 1.7-2.5L14 9.31V2"/></svg>`,
 };
 
 // Build a custom div icon for each place type
 function createIcon(L, type, isSelected) {
   const color = TYPE_COLORS[type] || '#00f5d4';
-  const emoji = TYPE_EMOJI[type] || '📍';
+  const svg = TYPE_SVGS[type] || `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>`;
   const size  = isSelected ? 44 : 36;
   const html  = `
     <div style="
@@ -70,7 +70,7 @@ function createIcon(L, type, isSelected) {
       box-shadow:0 4px 14px rgba(0,0,0,0.55);
       display:flex;align-items:center;justify-content:center;
     ">
-      <span style="transform:rotate(45deg);font-size:${isSelected ? 18 : 15}px;line-height:1">${emoji}</span>
+      <span style="transform:rotate(45deg);display:flex;align-items:center;justify-content:center">${svg}</span>
     </div>`;
   return L.divIcon({ html, className: '', iconSize: [size, size], iconAnchor: [size / 2, size], popupAnchor: [0, -size] });
 }
@@ -141,7 +141,7 @@ export default function InteractiveMap({ location, places, isPatient }) {
       const userIcon = createUserIcon(L);
       userMarkerRef.current = L.marker([location.lat, location.lon], { icon: userIcon, zIndexOffset: 1000 })
         .addTo(map)
-        .bindPopup('<div style="font-family:monospace;font-size:0.78rem;color:#000;font-weight:bold">📍 Your Location</div>');
+        .bindPopup('<div style="font-family:monospace;font-size:0.78rem;color:#000;font-weight:bold">Your Location</div>');
     });
 
     return () => {
@@ -187,22 +187,22 @@ export default function InteractiveMap({ location, places, isPatient }) {
 
         const popup = L.popup({ maxWidth: 260, className: 'medfusion-popup' }).setContent(`
           <div style="font-family:'Outfit',sans-serif;padding:4px 2px;min-width:200px">
-            <div style="font-weight:700;font-size:0.9rem;color:#111;margin-bottom:4px">${TYPE_EMOJI[place.type] || '📍'} ${place.name}</div>
-            ${place.address ? `<div style="font-size:0.75rem;color:#555;margin-bottom:3px">📍 ${place.address}</div>` : ''}
-            ${place.phone   ? `<div style="font-size:0.75rem;color:#555;margin-bottom:3px">📞 ${place.phone}</div>` : ''}
-            ${place.opening_hours ? `<div style="font-size:0.75rem;color:#555;margin-bottom:6px">🕐 ${place.opening_hours}</div>` : ''}
+            <div style="font-weight:700;font-size:0.9rem;color:#111;margin-bottom:4px">${place.name}</div>
+            ${place.address ? `<div style="font-size:0.75rem;color:#555;margin-bottom:3px">${place.address}</div>` : ''}
+            ${place.phone   ? `<div style="font-size:0.75rem;color:#555;margin-bottom:3px">Tel: ${place.phone}</div>` : ''}
+            ${place.opening_hours ? `<div style="font-size:0.75rem;color:#555;margin-bottom:6px">Hours: ${place.opening_hours}</div>` : ''}
             <div style="font-size:0.72rem;font-weight:600;color:${color};margin-bottom:8px">
               ${place.distance < 1 ? Math.round(place.distance * 1000) + ' m away' : place.distance.toFixed(1) + ' km away'}
-              ${place.emergency ? ' • 🚨 24H EMERGENCY' : ''}
+              ${place.emergency ? ' • 24H EMERGENCY' : ''}
             </div>
             <div style="display:flex;gap:6px;flex-wrap:wrap">
               <a href="https://www.google.com/maps/dir/?api=1&destination=${place.lat},${place.lon}&travelmode=driving"
                 target="_blank"
                 style="padding:5px 10px;background:${color};color:#fff;border-radius:6px;font-size:0.68rem;font-weight:700;text-decoration:none;font-family:monospace;text-transform:uppercase">
-                🧭 Directions
+                Directions
               </a>
-              ${place.phone ? `<a href="tel:${place.phone}" style="padding:5px 10px;background:#f0f0f0;color:#333;border-radius:6px;font-size:0.68rem;font-weight:700;text-decoration:none;font-family:monospace;text-transform:uppercase">📞 Call</a>` : ''}
-              ${place.website ? `<a href="${place.website}" target="_blank" style="padding:5px 10px;background:#f0f0f0;color:#333;border-radius:6px;font-size:0.68rem;font-weight:700;text-decoration:none;font-family:monospace;text-transform:uppercase">🌐 Web</a>` : ''}
+              ${place.phone ? `<a href="tel:${place.phone}" style="padding:5px 10px;background:#f0f0f0;color:#333;border-radius:6px;font-size:0.68rem;font-weight:700;text-decoration:none;font-family:monospace;text-transform:uppercase">Call</a>` : ''}
+              ${place.website ? `<a href="${place.website}" target="_blank" style="padding:5px 10px;background:#f0f0f0;color:#333;border-radius:6px;font-size:0.68rem;font-weight:700;text-decoration:none;font-family:monospace;text-transform:uppercase">Web</a>` : ''}
             </div>
           </div>
         `);
@@ -329,14 +329,14 @@ export default function InteractiveMap({ location, places, isPatient }) {
       {/* Route info bar */}
       {routeInfo && (
         <div className="d-flex align-items-center gap-3 mb-2 px-3 py-2 rounded" style={{ background: 'rgba(0,245,212,0.08)', border: '1px solid rgba(0,245,212,0.2)', fontSize: '0.78rem' }}>
-          <span className="text-info font-monospace fw-bold">🧭 Route calculated</span>
-          <span className="text-secondary">📏 {routeInfo.distance} km</span>
-          <span className="text-secondary">⏱ ~{routeInfo.duration} min drive</span>
+          <span className="text-info font-monospace fw-bold">Route calculated</span>
+          <span className="text-secondary">{routeInfo.distance} km</span>
+          <span className="text-secondary">~{routeInfo.duration} min drive</span>
         </div>
       )}
 
       {routing && (
-        <div className="d-flex align-items-center gap-2 mb-2 px-3 py-2 rounded" style={{ background: 'rgba(0,4,45,0.5)', border: '1px solid rgba(255,255,255,0.08)', fontSize: '0.75rem' }}>
+        <div className="d-flex align-items-center gap-2 mb-2 px-3 py-2 rounded" style={{ background: 'var(--bg-card-hover)', border: '1px solid var(--border-color)', fontSize: '0.75rem' }}>
           <div className="spinner-border text-info" style={{ width: '14px', height: '14px', borderWidth: '2px' }} />
           <span className="text-secondary font-monospace">Calculating route via OSRM...</span>
         </div>
@@ -361,10 +361,10 @@ export default function InteractiveMap({ location, places, isPatient }) {
       {/* Selected place quick panel */}
       {selectedPlace && !routeInfo && (
         <div className="mt-3 p-3 rounded d-flex align-items-center justify-content-between flex-wrap gap-2"
-          style={{ background: 'rgba(0,4,45,0.6)', border: `1px solid ${TYPE_COLORS[selectedPlace.type] || 'rgba(255,255,255,0.1)'}30` }}>
+          style={{ background: 'var(--bg-card-hover)', border: `1px solid ${TYPE_COLORS[selectedPlace.type] || 'var(--border-color)'}` }}>
           <div>
-            <p className="text-white fw-bold m-0" style={{ fontSize: '0.88rem' }}>
-              {TYPE_EMOJI[selectedPlace.type]} {selectedPlace.name}
+            <p className="fw-bold m-0" style={{ fontSize: '0.88rem', color: 'var(--text-primary)' }}>
+              {selectedPlace.name}
             </p>
             <p className="text-secondary m-0 mt-1" style={{ fontSize: '0.72rem' }}>
               {selectedPlace.distance < 1 ? `${Math.round(selectedPlace.distance * 1000)} m` : `${selectedPlace.distance.toFixed(1)} km`} away
@@ -390,7 +390,7 @@ export default function InteractiveMap({ location, places, isPatient }) {
               href={`https://www.google.com/maps/dir/?api=1&destination=${selectedPlace.lat},${selectedPlace.lon}&travelmode=driving`}
               target="_blank" rel="noopener noreferrer"
               className="d-flex align-items-center gap-2 px-3 py-2 rounded font-monospace text-uppercase fw-bold text-decoration-none"
-              style={{ fontSize: '0.68rem', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.12)', color: '#fff' }}
+              style={{ fontSize: '0.68rem', background: 'var(--bg-card-hover)', border: '1px solid var(--border-color)', color: 'var(--text-primary)' }}
             >
               Google Maps
             </a>
@@ -403,12 +403,12 @@ export default function InteractiveMap({ location, places, isPatient }) {
         {Object.entries(TYPE_COLORS).map(([type, color]) => (
           <div key={type} className="d-flex align-items-center gap-1" style={{ fontSize: '0.65rem', color: 'rgba(255,255,255,0.5)' }}>
             <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: color, display: 'inline-block' }} />
-            {TYPE_EMOJI[type]} {type.charAt(0).toUpperCase() + type.slice(1)}
+            {type.charAt(0).toUpperCase() + type.slice(1)}
           </div>
         ))}
         <div className="d-flex align-items-center gap-1" style={{ fontSize: '0.65rem', color: 'rgba(255,255,255,0.5)' }}>
           <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#00f5d4', border: '1px solid #fff', display: 'inline-block' }} />
-          📍 You
+          You
         </div>
       </div>
 

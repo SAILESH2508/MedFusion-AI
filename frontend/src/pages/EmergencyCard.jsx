@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import axios from 'axios';
+import { AlertTriangle, ShieldAlert } from 'lucide-react';
 import { API_BASE_URL } from '../services/api';
 
 function EmergencyCard() {
@@ -47,9 +48,9 @@ function EmergencyCard() {
   if (error) {
     return (
       <div style={styles.page}>
-        <div style={{ ...styles.card, borderColor: 'rgba(255,60,60,0.4)' }}>
-          <div style={styles.errorBadge}>⚠ NOT FOUND</div>
-          <p style={{ color: '#ff6b6b', fontFamily: 'monospace', textAlign: 'center', marginTop: '1rem' }}>
+        <div style={{ ...styles.card, borderColor: 'var(--accent-red)' }}>
+          <div style={styles.errorBadge}>NOT FOUND</div>
+          <p style={{ color: 'var(--accent-red)', fontFamily: 'monospace', textAlign: 'center', marginTop: '1rem' }}>
             {error}
           </p>
         </div>
@@ -73,7 +74,7 @@ function EmergencyCard() {
 
         {/* Emergency header */}
         <div style={styles.emergencyHeader}>
-          <span style={styles.emergencyIcon}>🚨</span>
+          <ShieldAlert size={16} style={{ marginRight: '6px', flexShrink: 0 }} />
           EMERGENCY MEDICAL INFORMATION
         </div>
 
@@ -92,7 +93,7 @@ function EmergencyCard() {
         {/* Blood group */}
         <div style={styles.section}>
           <span style={styles.label}>BLOOD GROUP</span>
-          <span style={{ ...styles.valueLarge, color: '#ff6b6b', fontSize: '2rem' }}>
+          <span style={{ ...styles.valueLarge, color: 'var(--accent-red)', fontSize: '2rem' }}>
             {data.blood_group || 'Unknown'}
           </span>
         </div>
@@ -133,7 +134,7 @@ function EmergencyCard() {
         {/* Emergency contact */}
         <div style={styles.section}>
           <span style={styles.label}>EMERGENCY CONTACT</span>
-          <span style={{ ...styles.valueLarge, color: '#4fc3f7' }}>
+          <span style={{ ...styles.valueLarge, color: 'var(--primary-accent)' }}>
             {data.emergency_contact || 'Not provided'}
           </span>
         </div>
@@ -149,7 +150,7 @@ function EmergencyCard() {
 
         {/* Disclaimer */}
         <p style={styles.disclaimer}>
-          ⚕ This card is for emergency reference only. Always consult a qualified healthcare provider.
+          This card is for emergency reference only. Always consult a qualified healthcare provider.
           Information reflects the patient's last recorded profile update.
         </p>
       </div>
@@ -162,7 +163,9 @@ function EmergencyCard() {
 const styles = {
   page: {
     minHeight: '100vh',
-    background: '#0a0a14',
+    backgroundColor: 'var(--bg-main, #193C32)',
+    backgroundImage: 'linear-gradient(to right, var(--grid-color, rgba(195, 219, 195, 0.15)) 1px, transparent 1px), linear-gradient(to bottom, var(--grid-color, rgba(195, 219, 195, 0.15)) 1px, transparent 1px)',
+    backgroundSize: '30px 30px',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
@@ -170,13 +173,13 @@ const styles = {
     fontFamily: 'monospace',
   },
   card: {
-    background: 'rgba(13,17,40,0.95)',
-    border: '1px solid rgba(255,255,255,0.1)',
-    borderRadius: '16px',
+    background: 'var(--bg-card, #294F41)',
+    border: '1px solid var(--border-color, #3E6250)',
+    borderRadius: '10px',
     padding: '2rem',
     maxWidth: '480px',
     width: '100%',
-    backdropFilter: 'blur(4px)',
+    boxShadow: 'var(--card-shadow, 0 1px 3px rgba(0,0,0,0.25))',
   },
   brandRow: {
     textAlign: 'center',
@@ -184,28 +187,28 @@ const styles = {
     letterSpacing: '0.02em',
   },
   brandBlue: {
-    color: '#4fc3f7',
-    fontWeight: 900,
-    fontSize: '1.4rem',
+    color: 'var(--text-primary, #EDF2E8)',
+    fontWeight: 800,
+    fontSize: '1.35rem',
   },
   brandOrange: {
-    color: '#ff9f43',
-    fontWeight: 900,
-    fontSize: '1.4rem',
+    color: 'var(--primary-accent, #83B394)',
+    fontWeight: 800,
+    fontSize: '1.35rem',
     marginLeft: '2px',
   },
   brandSub: {
     display: 'block',
-    color: 'rgba(255,255,255,0.4)',
+    color: 'var(--text-secondary, #C0D0C1)',
     fontSize: '0.72rem',
     letterSpacing: '0.12em',
     marginTop: '2px',
   },
   emergencyHeader: {
-    background: 'rgba(255,50,50,0.12)',
-    border: '1px solid rgba(255,50,50,0.35)',
+    background: 'rgba(185, 28, 28, 0.15)',
+    border: '1px solid var(--accent-red, #991B1B)',
     borderRadius: '8px',
-    color: '#ff6b6b',
+    color: 'var(--accent-red, #FCA5A5)',
     fontWeight: 700,
     fontSize: '0.85rem',
     letterSpacing: '0.06em',
@@ -221,26 +224,27 @@ const styles = {
   },
   label: {
     display: 'block',
-    color: 'rgba(255,255,255,0.35)',
-    fontSize: '0.62rem',
+    color: 'var(--text-muted, #8FA892)',
+    fontSize: '0.65rem',
     letterSpacing: '0.08em',
     marginBottom: '4px',
+    textTransform: 'uppercase',
   },
   valueLarge: {
     display: 'block',
-    color: '#ffffff',
+    color: 'var(--text-primary, #EDF2E8)',
     fontWeight: 700,
     fontSize: '1.15rem',
   },
   valueAccent: {
     display: 'block',
-    color: '#00f5d4',
+    color: 'var(--primary-accent, #83B394)',
     fontWeight: 700,
     fontSize: '1rem',
   },
   valueSecondary: {
     display: 'block',
-    color: 'rgba(255,255,255,0.4)',
+    color: 'var(--text-secondary, #C0D0C1)',
     fontSize: '0.88rem',
     fontStyle: 'italic',
   },
@@ -251,10 +255,10 @@ const styles = {
     marginTop: '4px',
   },
   allergyBadge: {
-    background: 'rgba(255,60,60,0.12)',
-    border: '1px solid rgba(255,60,60,0.35)',
-    color: '#ff6b6b',
-    borderRadius: '20px',
+    background: 'rgba(185, 28, 28, 0.12)',
+    border: '1px solid var(--accent-red, #991B1B)',
+    color: 'var(--accent-red, #FCA5A5)',
+    borderRadius: '6px',
     padding: '3px 10px',
     fontSize: '0.76rem',
     fontWeight: 700,
@@ -271,40 +275,41 @@ const styles = {
     display: 'flex',
     justifyContent: 'space-between',
     alignItems: 'center',
-    background: 'rgba(255,255,255,0.04)',
+    background: 'var(--bg-upload, #244A3D)',
+    border: '1px solid var(--border-color, #3E6250)',
     borderRadius: '6px',
-    padding: '5px 10px',
+    padding: '6px 12px',
   },
   medName: {
-    color: '#e0e0e0',
+    color: 'var(--text-primary, #EDF2E8)',
     fontSize: '0.85rem',
     fontWeight: 600,
   },
   medDosage: {
-    color: 'rgba(255,255,255,0.4)',
+    color: 'var(--text-secondary, #C0D0C1)',
     fontSize: '0.76rem',
   },
   divider: {
-    borderTop: '1px solid rgba(255,255,255,0.08)',
+    borderTop: '1px solid var(--border-color, #3E6250)',
     margin: '1.25rem 0',
   },
   disclaimer: {
-    color: 'rgba(255,255,255,0.3)',
+    color: 'var(--text-muted, #8FA892)',
     fontSize: '0.7rem',
     lineHeight: '1.55',
     textAlign: 'center',
     margin: 0,
   },
   loadingText: {
-    color: 'rgba(255,255,255,0.5)',
+    color: 'var(--text-secondary, #C0D0C1)',
     textAlign: 'center',
     fontFamily: 'monospace',
     fontSize: '0.9rem',
   },
   errorBadge: {
-    background: 'rgba(255,60,60,0.12)',
-    border: '1px solid rgba(255,60,60,0.35)',
-    color: '#ff6b6b',
+    background: 'rgba(185, 28, 28, 0.15)',
+    border: '1px solid var(--accent-red, #991B1B)',
+    color: 'var(--accent-red, #FCA5A5)',
     borderRadius: '8px',
     padding: '0.5rem 1rem',
     textAlign: 'center',

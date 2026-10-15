@@ -120,10 +120,10 @@ function VoiceExplainer({ text, label }) {
       {/* Header row: label + language buttons */}
       <div className="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-2">
         <span
-          className="text-secondary font-monospace text-uppercase"
+          className="text-secondary font-monospace text-uppercase d-flex align-items-center gap-1"
           style={{ fontSize: '0.68rem', letterSpacing: '0.06em' }}
         >
-          {label ? `🔊 ${label}` : '🔊 Voice'}
+          <Volume2 size={12} /> {label || 'Voice'}
         </span>
 
         {/* Language selector */}
