@@ -133,13 +133,13 @@ function Auth({ login, initialPortal: propInitialPortal = 'patient', onClose, me
         
         {/* Terminal Header */}
         <div className="text-center mb-4 mt-2">
-          <h2 className="fw-bolder text-white text-uppercase" style={{ fontSize: '1.25rem', letterSpacing: '0.04em' }}>
+          <h2 className="fw-bolder text-uppercase" style={{ fontSize: '1.25rem', letterSpacing: '0.04em', color: 'var(--text-primary)' }}>
             {isLogin ? `${portal} Login` : `Register ${portal}`}
           </h2>
         </div>
 
         {/* Switcher Tab */}
-        <div className="d-flex bg-white-10 p-1 border rounded mb-4" style={{ borderColor: 'var(--border-color)' }}>
+        <div className="d-flex bg-white-10 p-1 border rounded mb-4" style={{ borderColor: 'var(--border)' }}>
           <button 
             type="button"
             onClick={() => {
@@ -272,7 +272,7 @@ function Auth({ login, initialPortal: propInitialPortal = 'patient', onClose, me
                     <div 
                       className="p-3 border border-dashed border-white-10 rounded text-center cursor-pointer position-relative" 
                       onClick={() => document.getElementById('proofFileInput').click()} 
-                      style={{ background: 'rgba(255,255,255,0.03)' }}
+                      style={{ background: 'var(--bg-card-tinted)' }}
                     >
                       <input 
                         id="proofFileInput"

@@ -13,7 +13,7 @@ function Landing() {
 
       {/* Hero Header Panel */}
       <div className="glass-card text-center p-5 mb-4 position-relative">
-        <div className="d-inline-flex align-items-center gap-2 px-3 py-1.5 rounded-pill mb-3 font-monospace text-uppercase" style={{ fontSize: '0.72rem', letterSpacing: '0.06em', background: 'var(--bg-upload)', border: '1px solid var(--border-color)', color: 'var(--primary-accent)' }}>
+        <div className="d-inline-flex align-items-center gap-2 px-3 py-1.5 rounded-pill mb-3 font-monospace text-uppercase" style={{ fontSize: '0.72rem', letterSpacing: '0.06em', background: 'var(--bg-card-tinted)', border: '1px solid var(--border)', color: 'var(--brand-orange)' }}>
           <Activity size={12} /> Clinical Predictive Intelligence
         </div>
 
@@ -47,7 +47,7 @@ function Landing() {
       <div className="row g-4 mt-2">
         {features.map((f, i) => {
           const cardClass = i === 0 ? 'card-secondary' : i === 1 ? 'panel-form' : 'panel-upload-rx';
-          const iconColor = i === 0 ? 'var(--primary-accent)' : i === 1 ? 'var(--secondary-accent)' : 'var(--primary-accent)';
+          const iconColor = i === 0 ? 'var(--brand-orange)' : i === 1 ? 'var(--brand-blue)' : 'var(--accent-teal)';
           return (
             <div className="col-md-4" key={i}>
               <div className={`${cardClass} text-center h-100 p-4 d-flex flex-column justify-content-between`}>

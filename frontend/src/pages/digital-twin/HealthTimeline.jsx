@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 
+// Use CSS custom property strings — evaluated at paint time, theme-aware
 const TYPE_COLORS = {
-  prediction: '#f59e0b',
-  pathology: '#38bdf8',
-  prescription: '#a855f7',
+  prediction:   'var(--brand-orange)',
+  pathology:    'var(--brand-blue)',
+  prescription: 'var(--accent-emerald)',
 };
 
 function flattenRecords(patientData) {
@@ -172,7 +173,7 @@ export default function HealthTimeline({ patientData, loading }) {
               height: '10px',
               borderRadius: '50%',
               background: color,
-              boxShadow: `0 0 6px ${color}`,
+              border: '2px solid var(--bg-card)',
             }} />
 
             {/* Card */}
@@ -214,7 +215,7 @@ export default function HealthTimeline({ patientData, loading }) {
 
               {isExpanded && (
                 <div style={{ marginTop: '8px', borderTop: '1px solid var(--border-color, rgba(255,255,255,0.07))', paddingTop: '6px' }}>
-                  <Link to="/profile?tab=vault" style={{ fontSize: '0.72rem', color: 'var(--accent-teal, #38bdf8)', textDecoration: 'none' }}>
+                  <Link to="/profile?tab=vault" style={{ fontSize: '0.72rem', color: 'var(--accent-teal)', textDecoration: 'none' }}>
                     View full record →
                   </Link>
                 </div>

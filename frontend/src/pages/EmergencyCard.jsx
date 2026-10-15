@@ -134,7 +134,7 @@ function EmergencyCard() {
         {/* Emergency contact */}
         <div style={styles.section}>
           <span style={styles.label}>EMERGENCY CONTACT</span>
-          <span style={{ ...styles.valueLarge, color: 'var(--primary-accent)' }}>
+          <span style={{ ...styles.valueLarge, color: 'var(--brand-orange)' }}>
             {data.emergency_contact || 'Not provided'}
           </span>
         </div>
@@ -163,8 +163,8 @@ function EmergencyCard() {
 const styles = {
   page: {
     minHeight: '100vh',
-    backgroundColor: 'var(--bg-main, #193C32)',
-    backgroundImage: 'linear-gradient(to right, var(--grid-color, rgba(195, 219, 195, 0.15)) 1px, transparent 1px), linear-gradient(to bottom, var(--grid-color, rgba(195, 219, 195, 0.15)) 1px, transparent 1px)',
+    backgroundColor: 'var(--bg-page, #F4F1EC)',
+    backgroundImage: 'linear-gradient(to right, var(--grid-color, rgba(44,111,181,0.07)) 1px, transparent 1px), linear-gradient(to bottom, var(--grid-color, rgba(44,111,181,0.07)) 1px, transparent 1px)',
     backgroundSize: '30px 30px',
     display: 'flex',
     alignItems: 'center',
@@ -173,13 +173,13 @@ const styles = {
     fontFamily: 'monospace',
   },
   card: {
-    background: 'var(--bg-card, #294F41)',
-    border: '1px solid var(--border-color, #3E6250)',
+    background: '#FFFFFF',
+    border: '1px solid var(--border, #D1C8BC)',
     borderRadius: '10px',
     padding: '2rem',
     maxWidth: '480px',
     width: '100%',
-    boxShadow: 'var(--card-shadow, 0 1px 3px rgba(0,0,0,0.25))',
+    boxShadow: 'var(--shadow-md, 0 4px 12px rgba(0,0,0,0.12))',
   },
   brandRow: {
     textAlign: 'center',
@@ -187,19 +187,19 @@ const styles = {
     letterSpacing: '0.02em',
   },
   brandBlue: {
-    color: 'var(--text-primary, #EDF2E8)',
+    color: '#1A2333',
     fontWeight: 800,
     fontSize: '1.35rem',
   },
   brandOrange: {
-    color: 'var(--primary-accent, #83B394)',
+    color: 'var(--brand-orange, #E07B39)',
     fontWeight: 800,
     fontSize: '1.35rem',
     marginLeft: '2px',
   },
   brandSub: {
     display: 'block',
-    color: 'var(--text-secondary, #C0D0C1)',
+    color: '#4A5568',
     fontSize: '0.72rem',
     letterSpacing: '0.12em',
     marginTop: '2px',
@@ -224,7 +224,7 @@ const styles = {
   },
   label: {
     display: 'block',
-    color: 'var(--text-muted, #8FA892)',
+    color: '#718096',
     fontSize: '0.65rem',
     letterSpacing: '0.08em',
     marginBottom: '4px',
@@ -232,19 +232,19 @@ const styles = {
   },
   valueLarge: {
     display: 'block',
-    color: 'var(--text-primary, #EDF2E8)',
+    color: '#1A2333',
     fontWeight: 700,
     fontSize: '1.15rem',
   },
   valueAccent: {
     display: 'block',
-    color: 'var(--primary-accent, #83B394)',
+    color: 'var(--brand-orange, #E07B39)',
     fontWeight: 700,
     fontSize: '1rem',
   },
   valueSecondary: {
     display: 'block',
-    color: 'var(--text-secondary, #C0D0C1)',
+    color: '#4A5568',
     fontSize: '0.88rem',
     fontStyle: 'italic',
   },
@@ -275,41 +275,41 @@ const styles = {
     display: 'flex',
     justifyContent: 'space-between',
     alignItems: 'center',
-    background: 'var(--bg-upload, #244A3D)',
-    border: '1px solid var(--border-color, #3E6250)',
+    background: '#F7F5F1',
+    border: '1px solid #D1C8BC',
     borderRadius: '6px',
     padding: '6px 12px',
   },
   medName: {
-    color: 'var(--text-primary, #EDF2E8)',
+    color: '#1A2333',
     fontSize: '0.85rem',
     fontWeight: 600,
   },
   medDosage: {
-    color: 'var(--text-secondary, #C0D0C1)',
+    color: '#4A5568',
     fontSize: '0.76rem',
   },
   divider: {
-    borderTop: '1px solid var(--border-color, #3E6250)',
+    borderTop: '1px solid #D1C8BC',
     margin: '1.25rem 0',
   },
   disclaimer: {
-    color: 'var(--text-muted, #8FA892)',
+    color: '#718096',
     fontSize: '0.7rem',
     lineHeight: '1.55',
     textAlign: 'center',
     margin: 0,
   },
   loadingText: {
-    color: 'var(--text-secondary, #C0D0C1)',
+    color: '#4A5568',
     textAlign: 'center',
     fontFamily: 'monospace',
     fontSize: '0.9rem',
   },
   errorBadge: {
-    background: 'rgba(185, 28, 28, 0.15)',
-    border: '1px solid var(--accent-red, #991B1B)',
-    color: 'var(--accent-red, #FCA5A5)',
+    background: 'rgba(185, 28, 28, 0.12)',
+    border: '1px solid var(--accent-red, #C0392B)',
+    color: 'var(--accent-red, #C0392B)',
     borderRadius: '8px',
     padding: '0.5rem 1rem',
     textAlign: 'center',

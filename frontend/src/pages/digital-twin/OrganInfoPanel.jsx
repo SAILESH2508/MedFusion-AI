@@ -83,10 +83,10 @@ function RiskBar({ score, level }) {
   return (
     <div>
       <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '5px' }}>
-        <span style={{ fontSize: '0.7rem', fontFamily: 'monospace', color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Risk Score</span>
+        <span style={{ fontSize: '0.7rem', fontFamily: 'monospace', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Risk Score</span>
         <span style={{ fontSize: '0.78rem', fontFamily: 'monospace', color, fontWeight: 700 }}>{pct.toFixed(0)}% — {level}</span>
       </div>
-      <div style={{ height: '6px', background: 'rgba(255,255,255,0.08)', borderRadius: '3px', overflow: 'hidden' }}>
+      <div style={{ height: '6px', background: 'var(--grad-track)', borderRadius: '3px', overflow: 'hidden' }}>
         <div style={{ height: '100%', width: `${pct}%`, background: `linear-gradient(90deg, ${color}88, ${color})`, borderRadius: '3px', transition: 'width 0.6s ease' }} />
       </div>
     </div>
@@ -96,8 +96,8 @@ function RiskBar({ score, level }) {
 export default function OrganInfoPanel({ selectedOrgan, patientData }) {
   if (!selectedOrgan) {
     return (
-      <div style={{ background: 'rgba(255,255,255,0.025)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: '12px', padding: '20px', textAlign: 'center' }}>
-        <p style={{ color: 'rgba(255,255,255,0.35)', margin: 0, fontSize: '0.85rem', fontFamily: 'monospace' }}>
+      <div style={{ background: 'var(--bg-card)', border: '1px solid var(--border-card)', borderRadius: '12px', padding: '20px', textAlign: 'center' }}>
+        <p style={{ color: 'var(--text-muted)', margin: 0, fontSize: '0.85rem', fontFamily: 'monospace' }}>
           Select an organ in the viewer to explore health data
         </p>
       </div>
@@ -136,9 +136,9 @@ export default function OrganInfoPanel({ selectedOrgan, patientData }) {
       <div style={{ height: '1px', background: `linear-gradient(90deg, ${info.accent}40, transparent)`, margin: '12px 0' }} />
 
       {!hasData ? (
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 12px', background: 'var(--bg-card-hover, rgba(255,255,255,0.03))', borderRadius: '8px' }}>
-          <ClipboardList size={16} style={{ color: 'var(--text-secondary, rgba(255,255,255,0.4))', flexShrink: 0 }} />
-          <p style={{ color: 'var(--text-muted, rgba(255,255,255,0.35))', margin: 0, fontSize: '0.78rem', fontStyle: 'italic' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 12px', background: 'var(--bg-card-tinted)', borderRadius: '8px' }}>
+          <ClipboardList size={16} style={{ color: 'var(--text-secondary)', flexShrink: 0 }} />
+          <p style={{ color: 'var(--text-muted)', margin: 0, fontSize: '0.78rem', fontStyle: 'italic' }}>
             No recorded data for this organ yet. Upload a pathology report or run a health assessment to see data here.
           </p>
         </div>
@@ -149,7 +149,7 @@ export default function OrganInfoPanel({ selectedOrgan, patientData }) {
             <div style={{ marginBottom: '14px' }}>
               <RiskBar score={risk.risk_score} level={risk.risk_level} />
               {risk.created_at && (
-                <p style={{ margin: '4px 0 0', fontSize: '0.68rem', color: 'var(--text-muted, rgba(255,255,255,0.3))', fontFamily: 'monospace' }}>
+                <p style={{ margin: '4px 0 0', fontSize: '0.68rem', color: 'var(--text-muted)', fontFamily: 'monospace' }}>
                   Assessment date: {new Date(risk.created_at).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })}
                 </p>
               )}
@@ -159,18 +159,18 @@ export default function OrganInfoPanel({ selectedOrgan, patientData }) {
           {/* Biomarkers */}
           {biomarkers.length > 0 && (
             <div style={{ marginBottom: '12px' }}>
-              <p style={{ fontSize: '0.65rem', fontFamily: 'monospace', color: 'var(--text-secondary, rgba(255,255,255,0.35))', textTransform: 'uppercase', letterSpacing: '0.07em', margin: '0 0 8px' }}>
+              <p style={{ fontSize: '0.65rem', fontFamily: 'monospace', color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.07em', margin: '0 0 8px' }}>
                 Recorded Biomarkers
               </p>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
                 {biomarkers.map((b, i) => (
-                  <div key={i} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '6px 10px', background: 'var(--bg-card-hover, rgba(255,255,255,0.04))', borderRadius: '6px', border: '1px solid var(--border-color, rgba(255,255,255,0.06))' }}>
-                    <span style={{ color: 'var(--text-primary, rgba(255,255,255,0.75))', fontSize: '0.78rem' }}>{b.name}</span>
+                  <div key={i} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '6px 10px', background: 'var(--bg-card-tinted)', borderRadius: '6px', border: '1px solid var(--border-card)' }}>
+                    <span style={{ color: 'var(--text-primary)', fontSize: '0.78rem' }}>{b.name}</span>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                       <span style={{ color: info.accent, fontFamily: 'monospace', fontSize: '0.82rem', fontWeight: 600 }}>
-                        {b.value} {b.unit && <span style={{ color: 'var(--text-secondary, rgba(255,255,255,0.35))', fontSize: '0.7rem' }}>{b.unit}</span>}
+                        {b.value} {b.unit && <span style={{ color: 'var(--text-secondary)', fontSize: '0.7rem' }}>{b.unit}</span>}
                       </span>
-                      <span style={{ color: 'var(--text-muted, rgba(255,255,255,0.25))', fontSize: '0.68rem', fontFamily: 'monospace' }}>{b.date}</span>
+                      <span style={{ color: 'var(--text-muted)', fontSize: '0.68rem', fontFamily: 'monospace' }}>{b.date}</span>
                     </div>
                   </div>
                 ))}
@@ -181,7 +181,7 @@ export default function OrganInfoPanel({ selectedOrgan, patientData }) {
           {/* Link to vault */}
           <Link
             to="/profile?tab=vault"
-            style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', fontSize: '0.72rem', color: '#38bdf8', textDecoration: 'none', fontFamily: 'monospace', opacity: 0.8 }}
+            style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', fontSize: '0.72rem', color: 'var(--accent-teal)', textDecoration: 'none', fontFamily: 'monospace', opacity: 0.8 }}
           >
             View full records in Medical Vault <ExternalLink size={10} />
           </Link>

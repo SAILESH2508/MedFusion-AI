@@ -206,8 +206,8 @@ function DoctorDashboard({ user }) {
       <div className="d-flex flex-column gap-4 pt-2">
         {/* Header Console */}
         <div className="glass-card p-4 mb-2 reveal border-theme-accent border-opacity-15 bg-white-5" style={{ borderRadius: '12px' }}>
-          <h2 className="fw-bolder fs-6 m-0 text-white" style={{ letterSpacing: '-0.02em', fontSize: '1.25rem' }}>
-            Clinical <span className="text-theme-accent">Examiner</span>
+          <h2 className="fw-bolder fs-6 m-0" style={{ letterSpacing: '-0.02em', fontSize: '1.25rem', color: 'var(--text-primary)' }}>
+            Clinical <span style={{ color: 'var(--brand-orange)' }}>Examiner</span>
           </h2>
           <p className="text-secondary m-0 mt-2" style={{ fontSize: '0.88rem', lineHeight: '1.4' }}>
             Logged in as Dr. {user.full_name || "Examiner"}. Select patients to review diagnostics, pathology and write clinical recommendations.
@@ -218,23 +218,23 @@ function DoctorDashboard({ user }) {
           /* DIRECTORY VIEW: Practice Analytics */
           <div className="reveal d-flex flex-column gap-4">
             <div>
-              <h4 className="fw-bold mb-3 text-white font-monospace text-uppercase" style={{ fontSize: '0.9rem', letterSpacing: '0.05em' }}>
-                <span className="text-theme-accent">Practice Overview</span>
+              <h4 className="fw-bold mb-3 font-monospace text-uppercase" style={{ fontSize: '0.9rem', letterSpacing: '0.05em', color: 'var(--text-primary)' }}>
+                <span style={{ color: 'var(--brand-orange)' }}>Practice Overview</span>
               </h4>
               <div className="d-flex flex-column gap-2">
                 <div className="p-3 bg-white-5 rounded border border-white-5 d-flex justify-content-between align-items-center font-monospace">
                   <span className="text-secondary small" style={{ fontSize: '0.72rem' }}>REGISTERED PATIENTS</span>
-                  <span className="text-white fw-bold">{patients.length}</span>
+                  <span className="fw-bold" style={{ color: 'var(--text-primary)' }}>{patients.length}</span>
                 </div>
                 <div className="p-3 bg-white-5 rounded border border-white-5 d-flex justify-content-between align-items-center font-monospace">
                   <span className="text-secondary small" style={{ fontSize: '0.72rem' }}>PATHOLOGY REPORTS</span>
-                  <span className="text-white fw-bold">
+                  <span className="fw-bold" style={{ color: 'var(--text-primary)' }}>
                     {patients.reduce((acc, p) => acc + (p.pathology_count || 0), 0)}
                   </span>
                 </div>
                 <div className="p-3 bg-white-5 rounded border border-white-5 d-flex justify-content-between align-items-center font-monospace">
                   <span className="text-secondary small" style={{ fontSize: '0.72rem' }}>AI DISEASE RUNS</span>
-                  <span className="text-white fw-bold">
+                  <span className="fw-bold" style={{ color: 'var(--text-primary)' }}>
                     {patients.reduce((acc, p) => acc + (p.prediction_count || 0), 0)}
                   </span>
                 </div>
@@ -253,14 +253,14 @@ function DoctorDashboard({ user }) {
             </button>
 
             <div className="p-3 bg-white-5 border border-theme-accent border-opacity-15 rounded bg-opacity-20 font-monospace">
-              <span className="fw-bold text-theme-accent font-monospace text-uppercase d-block mb-1.5" style={{ fontSize: '0.72rem' }}>Active Session Case</span>
-              <span className="text-white fw-bold d-block" style={{ fontSize: '0.88rem' }}>{selectedPatient.name.toUpperCase()}</span>
+              <span className="fw-bold font-monospace text-uppercase d-block mb-1.5" style={{ fontSize: '0.72rem', color: 'var(--brand-orange)' }}>Active Session Case</span>
+              <span className="fw-bold d-block" style={{ fontSize: '0.88rem', color: 'var(--text-primary)' }}>{selectedPatient.name.toUpperCase()}</span>
               <span className="text-secondary small d-block">ID: MF-P-{selectedPatient.id} // DOB: {selectedPatient.dob || '1995-08-12'}</span>
             </div>
 
             <div>
-              <h4 className="fw-bold mb-3 text-white font-monospace text-uppercase" style={{ fontSize: '0.9rem', letterSpacing: '0.05em' }}>
-                <span className="text-theme-accent">EHR Navigation Map</span>
+              <h4 className="fw-bold mb-3 font-monospace text-uppercase" style={{ fontSize: '0.9rem', letterSpacing: '0.05em', color: 'var(--text-primary)' }}>
+                <span style={{ color: 'var(--brand-orange)' }}>EHR Navigation Map</span>
               </h4>
               <div className="d-flex flex-column gap-2">
                 {[
@@ -304,8 +304,8 @@ function DoctorDashboard({ user }) {
             <div className="glass-card p-4 flex-grow-1 d-flex flex-column" style={{ borderRadius: '16px', overflow: 'hidden' }}>
               <div className="d-flex align-items-center justify-content-between mb-4 border-bottom border-white-10 pb-3 flex-wrap gap-2">
                 <div>
-                  <h3 className="fw-bold m-0 text-white text-uppercase d-flex align-items-center gap-2" style={{ fontSize: '1.25rem' }}>
-                    <Cpu className="text-theme-accent" size={24} />
+                  <h3 className="fw-bold m-0 text-uppercase d-flex align-items-center gap-2" style={{ fontSize: '1.25rem', color: 'var(--text-primary)' }}>
+                    <Cpu style={{ color: 'var(--brand-orange)' }} size={24} />
                     Patient Directory Console
                   </h3>
                   <span className="text-secondary small font-monospace">Synchronized clinical registry database</span>
@@ -318,7 +318,7 @@ function DoctorDashboard({ user }) {
 
               {loadingPatients ? (
                 <div className="d-flex flex-column align-items-center justify-content-center flex-grow-1 py-5">
-                  <div className="spinner-border text-theme-accent mb-3" style={{ width: '40px', height: '40px' }} role="status"></div>
+                  <div className="spinner-border mb-3" style={{ width: '40px', height: '40px', color: 'var(--brand-orange)' }} role="status"></div>
                   <p className="text-secondary small font-monospace">Syncing medical directories...</p>
                 </div>
               ) : patients.length === 0 ? (
@@ -336,14 +336,14 @@ function DoctorDashboard({ user }) {
                       onChange={e => setPatientSearch(e.target.value)}
                       placeholder="Search by name, email or ID..."
                       aria-label="Search patients by name, email or ID"
-                      className="w-100 font-monospace text-white bg-transparent rounded border border-white-10"
-                      style={{ padding: '10px 12px 10px 34px', fontSize: '0.82rem', outline: 'none' }}
+                      className="w-100 font-monospace bg-transparent rounded border border-white-10"
+                      style={{ padding: '10px 12px 10px 34px', fontSize: '0.82rem', outline: 'none', color: 'var(--text-primary)' }}
                     />
                   </div>
 
                   {filteredPatients.length === 0 ? (
                     <div className="text-center py-4 text-secondary font-monospace" style={{ fontSize: '0.82rem' }}>
-                      No patients match "<strong className="text-white">{patientSearch}</strong>"
+                      No patients match "<strong style={{ color: 'var(--text-primary)' }}>{patientSearch}</strong>"
                     </div>
                   ) : filteredPatients.map((p) => (
                     <div 
@@ -358,7 +358,7 @@ function DoctorDashboard({ user }) {
                           {p.name ? p.name.split(' ').map(n => n[0]).join('').toUpperCase() : 'P'}
                         </div>
                         <div className="text-truncate">
-                          <span className="text-white fw-bold d-block text-truncate mb-1" style={{ fontSize: '1.05rem', letterSpacing: '0.02em' }} title={p.name}>{p.name}</span>
+                          <span className="fw-bold d-block text-truncate mb-1" style={{ fontSize: '1.05rem', letterSpacing: '0.02em', color: 'var(--text-primary)' }} title={p.name}>{p.name}</span>
                           <span className="text-secondary font-monospace d-block text-truncate" style={{ fontSize: '0.8rem', opacity: 0.7 }} title={p.email}>{p.email}</span>
                         </div>
                       </div>
@@ -381,8 +381,8 @@ function DoctorDashboard({ user }) {
           <div className="col-lg-4 d-flex flex-column justify-content-start gap-3" style={{ height: 'calc(100% - 24px)', overflow: 'hidden' }}>
             {/* Quick Diagnostic Calculator widget */}
             <details className="panel-form" style={{ borderRadius: '16px' }}>
-              <summary className="d-flex align-items-center gap-2 p-3 border-bottom border-white-10 font-monospace text-white text-uppercase" style={{ fontSize: '0.95rem', letterSpacing: '0.02em', listStyle: 'none', cursor: 'pointer' }}>
-                <Calculator className="text-theme-accent" size={18} />
+              <summary className="d-flex align-items-center gap-2 p-3 border-bottom border-white-10 font-monospace text-uppercase" style={{ fontSize: '0.95rem', letterSpacing: '0.02em', listStyle: 'none', cursor: 'pointer', color: 'var(--text-primary)' }}>
+                <Calculator style={{ color: 'var(--brand-orange)' }} size={18} />
                 Clinical Calculators
               </summary>
             <div className="p-3 d-flex flex-column gap-2.5" style={{ }}>
@@ -392,7 +392,7 @@ function DoctorDashboard({ user }) {
                     onClick={() => setCalcTab('bmi')} 
                     aria-pressed={calcTab === 'bmi'}
                     className="px-2 py-0.5 rounded font-monospace text-uppercase" 
-                    style={{ fontSize: '0.7rem', width: 'auto', background: calcTab === 'bmi' ? 'var(--bg-upload)' : 'transparent', color: calcTab === 'bmi' ? 'var(--primary-accent)' : 'var(--text-secondary)', border: calcTab === 'bmi' ? '1px solid var(--primary-accent)' : '1px solid transparent' }}
+                    style={{ fontSize: '0.7rem', width: 'auto', background: calcTab === 'bmi' ? 'var(--bg-upload)' : 'transparent', color: calcTab === 'bmi' ? 'var(--brand-orange)' : 'var(--text-secondary)', border: calcTab === 'bmi' ? '1px solid var(--brand-orange)' : '1px solid transparent' }}
                   >
                     BMI
                   </button>
@@ -400,7 +400,7 @@ function DoctorDashboard({ user }) {
                     onClick={() => setCalcTab('thr')} 
                     aria-pressed={calcTab === 'thr'}
                     className="px-2 py-0.5 rounded font-monospace text-uppercase" 
-                    style={{ fontSize: '0.7rem', width: 'auto', background: calcTab === 'thr' ? 'var(--bg-upload)' : 'transparent', color: calcTab === 'thr' ? 'var(--primary-accent)' : 'var(--text-secondary)', border: calcTab === 'thr' ? '1px solid var(--primary-accent)' : '1px solid transparent' }}
+                    style={{ fontSize: '0.7rem', width: 'auto', background: calcTab === 'thr' ? 'var(--bg-upload)' : 'transparent', color: calcTab === 'thr' ? 'var(--brand-orange)' : 'var(--text-secondary)', border: calcTab === 'thr' ? '1px solid var(--brand-orange)' : '1px solid transparent' }}
                   >
                     THR
                   </button>
@@ -411,7 +411,7 @@ function DoctorDashboard({ user }) {
                   <div>
                     <label className="text-secondary small font-monospace d-flex justify-content-between">
                       <span>Weight (kg)</span>
-                      <span className="text-white fw-bold">{calcWeight} kg</span>
+                      <span className="fw-bold" style={{ color: 'var(--text-primary)' }}>{calcWeight} kg</span>
                     </label>
                     <input 
                       type="range" 
@@ -425,7 +425,7 @@ function DoctorDashboard({ user }) {
                   <div>
                     <label className="text-secondary small font-monospace d-flex justify-content-between">
                       <span>Height (cm)</span>
-                      <span className="text-white fw-bold">{calcHeight} cm</span>
+                      <span className="fw-bold" style={{ color: 'var(--text-primary)' }}>{calcHeight} cm</span>
                     </label>
                     <input 
                       type="range" 
@@ -460,7 +460,7 @@ function DoctorDashboard({ user }) {
                       <div className="p-2.5 rounded border text-center font-monospace d-flex align-items-center justify-content-around" style={{ borderColor: color, background: bg }}>
                         <div>
                           <span className="text-secondary d-block" style={{ fontSize: '0.72rem' }}>BMI Value</span>
-                          <span className="fw-bold fs-5 text-white">{calculatedBmi}</span>
+                          <span className="fw-bold fs-5" style={{ color: 'var(--text-primary)' }}>{calculatedBmi}</span>
                         </div>
                         <div className="border-end border-white-10 h-75" style={{ minHeight: '30px' }}></div>
                         <div>
@@ -476,7 +476,7 @@ function DoctorDashboard({ user }) {
                   <div>
                     <label className="text-secondary small font-monospace d-flex justify-content-between">
                       <span>Patient Age (Years)</span>
-                      <span className="text-white fw-bold">{calcAge} yrs</span>
+                      <span className="fw-bold" style={{ color: 'var(--text-primary)' }}>{calcAge} yrs</span>
                     </label>
                     <input 
                       type="range" 
@@ -496,11 +496,11 @@ function DoctorDashboard({ user }) {
                       <div className="p-2.5 rounded border border-white-5 bg-white-5 font-monospace d-flex flex-column gap-2 text-start">
                         <div className="d-flex justify-content-between text-secondary" style={{ fontSize: '0.75rem' }}>
                           <span>EST. MAX HEART RATE:</span>
-                          <span className="text-white fw-bold">{maxHr} BPM</span>
+                          <span className="fw-bold" style={{ color: 'var(--text-primary)' }}>{maxHr} BPM</span>
                         </div>
                         <div className="d-flex justify-content-between text-secondary" style={{ fontSize: '0.75rem' }}>
                           <span>AEROBIC ZONE (60-85%):</span>
-                          <span className="text-theme-accent fw-bold">{zoneMin} - {zoneMax} BPM</span>
+                          <span className="fw-bold" style={{ color: 'var(--brand-orange)' }}>{zoneMin} - {zoneMax} BPM</span>
                         </div>
                       </div>
                     );
@@ -525,7 +525,7 @@ function DoctorDashboard({ user }) {
                   {selectedPatient.name ? selectedPatient.name.split(' ').map(n => n[0]).join('').toUpperCase() : 'P'}
                 </div>
                 <div>
-                  <h4 className="text-white fw-bold m-0" style={{ fontSize: '1.15rem' }}>{selectedPatient.name}</h4>
+                  <h4 className="fw-bold m-0" style={{ fontSize: '1.15rem', color: 'var(--text-primary)' }}>{selectedPatient.name}</h4>
                   <span className="text-secondary small font-monospace">{selectedPatient.email} // ID: MF-P-{selectedPatient.id}</span>
                 </div>
               </div>
@@ -533,41 +533,41 @@ function DoctorDashboard({ user }) {
               <div className="row g-3 font-monospace" style={{ fontSize: '0.85rem' }}>
                 <div className="col-4">
                   <span className="text-secondary d-block">Gender</span>
-                  <span className="text-white fw-bold">{selectedPatient.gender === 'M' ? 'Male' : 'Female'}</span>
+                  <span className="fw-bold" style={{ color: 'var(--text-primary)' }}>{selectedPatient.gender === 'M' ? 'Male' : 'Female'}</span>
                 </div>
                 <div className="col-4">
                   <span className="text-secondary d-block">Blood Group</span>
-                  <span className="text-white fw-bold">{selectedPatient.blood_group || '--'}</span>
+                  <span className="fw-bold" style={{ color: 'var(--text-primary)' }}>{selectedPatient.blood_group || '--'}</span>
                 </div>
                 <div className="col-4">
                   <span className="text-secondary d-block">Emergency</span>
-                  <span className="text-white fw-bold">{selectedPatient.emergency_contact || '--'}</span>
+                  <span className="fw-bold" style={{ color: 'var(--text-primary)' }}>{selectedPatient.emergency_contact || '--'}</span>
                 </div>
                 <div className="col-4">
                   <span className="text-secondary d-block">Weight</span>
-                  <span className="text-white fw-bold">{selectedPatient.weight || '--'} kg</span>
+                  <span className="fw-bold" style={{ color: 'var(--text-primary)' }}>{selectedPatient.weight || '--'} kg</span>
                 </div>
                 <div className="col-4">
                   <span className="text-secondary d-block">Height</span>
-                  <span className="text-white fw-bold">{selectedPatient.height || '--'} cm</span>
+                  <span className="fw-bold" style={{ color: 'var(--text-primary)' }}>{selectedPatient.height || '--'} cm</span>
                 </div>
                 <div className="col-4">
                   <span className="text-secondary d-block">DOB</span>
-                  <span className="text-white fw-bold">{selectedPatient.dob || '--'}</span>
+                  <span className="fw-bold" style={{ color: 'var(--text-primary)' }}>{selectedPatient.dob || '--'}</span>
                 </div>
               </div>
             </div>
 
             {/* Ingested Medical History Records */}
             <div className="glass-card p-4 flex-grow-1 d-flex flex-column gap-3 overflow-auto" style={{ minHeight: 0 }}>
-              <h4 className="fw-bold text-white font-monospace d-flex align-items-center gap-2 mb-2 pb-2 border-bottom border-white-10" style={{ fontSize: '1.1rem' }}>
-                <FileText className="text-theme-accent" size={18} />
+              <h4 className="fw-bold font-monospace d-flex align-items-center gap-2 mb-2 pb-2 border-bottom border-white-10" style={{ fontSize: '1.1rem', color: 'var(--text-primary)' }}>
+                <FileText style={{ color: 'var(--brand-orange)' }} size={18} />
                 Clinical History Logs
               </h4>
 
               {loadingDetails ? (
                 <div className="d-flex flex-column align-items-center justify-content-center py-5 my-auto">
-                  <div className="spinner-border text-theme-accent mb-2" style={{ width: '30px', height: '30px' }} role="status"></div>
+                  <div className="spinner-border mb-2" style={{ width: '30px', height: '30px', color: 'var(--brand-orange)' }} role="status"></div>
                   <span className="text-secondary small font-monospace">Fetching patient history logs...</span>
                 </div>
               ) : (
@@ -575,7 +575,7 @@ function DoctorDashboard({ user }) {
                   
                   {/* Prescriptions */}
                   <div id="section-prescriptions">
-                    <span className="text-theme-accent fw-bold d-block border-bottom border-white-5 pb-1 mb-2 text-uppercase" style={{ fontSize: '0.8rem', letterSpacing: '0.05em' }}>Issued Prescriptions ({patientDetails.prescriptions.length})</span>
+                    <span className="fw-bold d-block border-bottom border-white-5 pb-1 mb-2 text-uppercase" style={{ fontSize: '0.8rem', letterSpacing: '0.05em', color: 'var(--brand-orange)' }}>Issued Prescriptions ({patientDetails.prescriptions.length})</span>
                     {patientDetails.prescriptions.length === 0 ? (
                       <p className="text-secondary small m-0 italic">No prescription logs recorded.</p>
                     ) : (
@@ -586,7 +586,7 @@ function DoctorDashboard({ user }) {
                           return (
                             <div key={idx} className="p-3 bg-white-5 border border-white-5 rounded">
                               <div className="d-flex justify-content-between align-items-baseline">
-                                <span className="text-white fw-bold d-inline-flex align-items-center gap-1.5" style={{ fontSize: '0.85rem' }}><Stethoscope size={13} className="text-info" /> {ext?.physician || 'Physician'}</span>
+                                <span className="fw-bold d-inline-flex align-items-center gap-1.5" style={{ fontSize: '0.85rem', color: 'var(--text-primary)' }}><Stethoscope size={13} style={{ color: 'var(--brand-blue)' }} /> {ext?.physician || 'Physician'}</span>
                                 <span className="text-secondary small" style={{ fontSize: '0.75rem' }}>{new Date(rx.created_at).toLocaleDateString()}</span>
                               </div>
                               <div className="mt-2 border-start border-theme-accent border-opacity-30 ps-2">
@@ -616,11 +616,11 @@ function DoctorDashboard({ user }) {
                           return (
                             <div key={idx} className="p-3 bg-white-5 border border-white-5 rounded">
                               <div className="d-flex justify-content-between align-items-baseline">
-                                <span className="text-white fw-bold d-inline-flex align-items-center gap-1.5" style={{ fontSize: '0.85rem' }}><FlaskConical size={13} className="text-success" /> Pathology Panel</span>
+                                <span className="fw-bold d-inline-flex align-items-center gap-1.5" style={{ fontSize: '0.85rem', color: 'var(--text-primary)' }}><FlaskConical size={13} style={{ color: 'var(--accent-emerald)' }} /> Pathology Panel</span>
                                 <span className="text-secondary small" style={{ fontSize: '0.75rem' }}>{new Date(report.created_at).toLocaleDateString()}</span>
                               </div>
                               <div className="mt-2 text-secondary" style={{ fontSize: '0.8rem' }}>
-                                <span className="d-block text-white fw-bold mb-1">Normalcy: <span className="text-theme-accent">{analysis?.normalcy_level || 'NORMAL'}</span></span>
+                                <span className="d-block fw-bold mb-1" style={{ color: 'var(--text-primary)' }}>Normalcy: <span style={{ color: 'var(--brand-orange)' }}>{analysis?.normalcy_level || 'NORMAL'}</span></span>
                                 <p className="m-0 italic">{analysis?.summary}</p>
                               </div>
                             </div>
@@ -640,12 +640,12 @@ function DoctorDashboard({ user }) {
                         {patientDetails.predictions.map((pred, idx) => (
                           <div key={idx} className="p-3 bg-white-5 border border-white-5 rounded">
                             <div className="d-flex justify-content-between align-items-baseline">
-                              <span className="text-white fw-bold" style={{ fontSize: '0.85rem' }}>{pred.disease_type} prediction</span>
+                              <span className="fw-bold" style={{ fontSize: '0.85rem', color: 'var(--text-primary)' }}>{pred.disease_type} prediction</span>
                               <span className="text-secondary small" style={{ fontSize: '0.75rem' }}>{new Date(pred.created_at).toLocaleDateString()}</span>
                             </div>
                             <div className="d-flex align-items-baseline gap-2 mt-2" style={{ fontSize: '0.8rem' }}>
                               <span className="text-secondary">Risk Score:</span>
-                              <span className="text-white fw-bold">{pred.risk_score}%</span>
+                              <span className="fw-bold" style={{ color: 'var(--text-primary)' }}>{pred.risk_score}%</span>
                               <span className={`badge px-2.5 py-1 ${
                                 pred.risk_level === 'HIGH' || pred.risk_level === 'CRITICAL' 
                                   ? 'badge-clinical-danger' 
@@ -673,8 +673,8 @@ function DoctorDashboard({ user }) {
             <div id="section-formulate" className="panel-form p-4 flex-grow-1 d-flex flex-column gap-3" style={{ overflow: 'hidden', borderRadius: '16px' }}>
               
               <div>
-                <h4 className="fw-bold text-white font-monospace d-flex align-items-center gap-2 mb-2" style={{ fontSize: '1.15rem' }}>
-                  <Sparkles className="text-theme-accent" size={20} />
+                <h4 className="fw-bold font-monospace d-flex align-items-center gap-2 mb-2" style={{ fontSize: '1.15rem', color: 'var(--text-primary)' }}>
+                  <Sparkles style={{ color: 'var(--brand-orange)' }} size={20} />
                   Issue Clinical Guidance
                 </h4>
                 <p className="text-secondary font-monospace m-0" style={{ fontSize: '0.82rem' }}>
@@ -686,7 +686,7 @@ function DoctorDashboard({ user }) {
                 
                 {/* Medicine Builder Row */}
                 <div className="border border-white-5 p-3 rounded bg-white-5">
-                  <span className="small text-theme-accent fw-bold d-block mb-3 text-uppercase" style={{ fontSize: '0.78rem' }}>Regimen Builder</span>
+                  <span className="small fw-bold d-block mb-3 text-uppercase" style={{ fontSize: '0.78rem', color: 'var(--brand-orange)' }}>Regimen Builder</span>
                   <div className="row g-2">
                     <div className="col-5">
                       <label className="small text-secondary mb-1">Medication Name</label>
@@ -726,8 +726,8 @@ function DoctorDashboard({ user }) {
                   <button 
                     type="button" 
                     onClick={addMedicine}
-                    className="btn-clinical border border-theme-accent border-opacity-30 text-theme-accent mt-3 py-2 w-100 font-monospace text-uppercase"
-                    style={{ fontSize: '0.8rem' }}
+                    className="btn-clinical mt-3 py-2 w-100 font-monospace text-uppercase"
+                    style={{ fontSize: '0.8rem', borderColor: 'var(--brand-orange)', color: 'var(--brand-orange)' }}
                   >
                     + Add to Prescribed List
                   </button>
@@ -736,11 +736,11 @@ function DoctorDashboard({ user }) {
                 {/* Added Medicines List */}
                 {doctorMeds.length > 0 && (
                   <div className="border border-white-5 p-3 rounded bg-white-5" style={{ maxHeight: '150px', overflowY: 'auto' }}>
-                    <span className="small text-white fw-bold d-block mb-2 text-uppercase" style={{ fontSize: '0.78rem' }}>Current Prescribed Regimen</span>
+                    <span className="small fw-bold d-block mb-2 text-uppercase" style={{ fontSize: '0.78rem', color: 'var(--text-primary)' }}>Current Prescribed Regimen</span>
                     <div className="d-flex flex-column gap-2">
                       {doctorMeds.map((med, idx) => (
                         <div key={idx} className="d-flex align-items-center justify-content-between p-2 bg-white-5 rounded border border-white-5">
-                          <span className="text-white small d-inline-flex align-items-center gap-1.5" style={{ fontSize: '0.8rem' }}><Pill size={12} /> {med.name} ({med.dosage}) — {med.frequency}</span>
+                          <span className="small d-inline-flex align-items-center gap-1.5" style={{ fontSize: '0.8rem', color: 'var(--text-primary)' }}><Pill size={12} /> {med.name} ({med.dosage}) — {med.frequency}</span>
                           <button 
                             type="button" 
                             onClick={() => removeMedicine(idx)}
@@ -799,9 +799,9 @@ function DoctorDashboard({ user }) {
                 {rxStatus && (
                   <div className="d-flex align-items-center gap-2 px-3 py-2 rounded font-monospace" style={{
                     fontSize: '0.78rem',
-                    background: rxStatus.type === 'success' ? 'rgba(0,245,212,0.08)' : 'rgba(255,51,102,0.08)',
-                    border: `1px solid ${rxStatus.type === 'success' ? 'rgba(0,245,212,0.3)' : 'rgba(255,51,102,0.3)'}`,
-                    color: rxStatus.type === 'success' ? 'var(--accent-teal)' : 'var(--accent-red)',
+                    background: rxStatus.type === 'success' ? 'rgba(30,122,74,0.1)' : 'rgba(192,57,43,0.1)',
+                    border: `1px solid ${rxStatus.type === 'success' ? 'rgba(30,122,74,0.35)' : 'rgba(192,57,43,0.35)'}`,
+                    color: rxStatus.type === 'success' ? 'var(--accent-emerald)' : 'var(--accent-red)',
                   }}>
                     <span>{rxStatus.type === 'success' ? <CheckCircle2 size={14} /> : <AlertTriangle size={14} />}</span>
                     <span>{rxStatus.message}</span>

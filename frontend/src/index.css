@@ -1288,3 +1288,57 @@ button.btn-icon:hover {
 [data-theme='light'] .app-sidebar {
   color: var(--text-on-dark);
 }
+
+/* ── Accent utility classes (FEAT-004) ─────────────────────────────────────── */
+.accent-orange  { color: var(--brand-orange)   !important; }
+.accent-blue    { color: var(--brand-blue)     !important; }
+.accent-cyan    { color: var(--accent-cyan)    !important; }
+.accent-teal    { color: var(--accent-teal)    !important; }
+.accent-violet  { color: var(--accent-violet)  !important; }
+.accent-emerald { color: var(--accent-emerald) !important; }
+.accent-amber   { color: var(--accent-amber)   !important; }
+.accent-coral   { color: var(--accent-coral)   !important; }
+
+/* ── Emergency QR Dropdown — mobile ────────────────────────────────────────── */
+@media (max-width: 767px) {
+  .emergency-qr-dropdown {
+    width: calc(100vw - 32px) !important;
+    right: 16px !important;
+    left: 16px !important;
+  }
+}
+
+/* ── Chatbot panel + FAB — mobile ───────────────────────────────────────────── */
+@media (max-width: 480px) {
+  .ai-chat-panel {
+    width: calc(100vw - 24px) !important;
+    right: 12px !important;
+    bottom: 88px !important;
+  }
+  .ai-chat-fab {
+    bottom: 16px !important;
+    right: 16px !important;
+  }
+}
+
+/* ── Predictor cards — mobile stack ────────────────────────────────────────── */
+@media (max-width: 575px) {
+  .predictor-card {
+    min-width: 0 !important;
+    width: 100% !important;
+  }
+  .upload-dropzone {
+    flex-direction: column !important;
+  }
+}
+
+/* ── Health Twin anatomy panel — mobile stack ───────────────────────────────── */
+@media (max-width: 767px) {
+  .anatomy-viewer-card,
+  .organ-info-card {
+    width: 100% !important;
+    max-width: 100% !important;
+    flex: 0 0 100% !important;
+  }
+}
+

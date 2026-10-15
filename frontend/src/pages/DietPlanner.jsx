@@ -22,7 +22,7 @@ function TagInput({ label, value, onChange, placeholder }) {
       <div className="d-flex gap-2 flex-wrap mb-2">
         {value.map((v, i) => (
           <span key={i} className="badge d-flex align-items-center gap-1 px-2 py-1"
-            style={{ background: 'var(--bg-upload)', border: '1px solid var(--border-color)', color: 'var(--primary-accent)', fontSize: '0.78rem' }}>
+            style={{ background: 'var(--bg-card-tinted)', border: '1px solid var(--border)', color: 'var(--brand-orange)', fontSize: '0.78rem' }}>
             {v}
             <X size={10} className="cursor-pointer" onClick={() => onChange(value.filter((_, j) => j !== i))} />
           </span>
@@ -50,14 +50,14 @@ function MealCard({ meal, dayKey, slotKey, completions, onComplete, onSwap, onFa
   if (!meal) return null;
   return (
     <div className="p-3 rounded mb-2 font-monospace"
-      style={{ background: isDone ? 'var(--bg-upload)' : 'var(--bg-card)', border: `1px solid ${isDone ? 'var(--primary-accent)' : 'var(--border-color)'}`, transition: 'all 0.2s' }}>
+      style={{ background: isDone ? 'var(--bg-card-tinted)' : 'var(--bg-card)', border: `1px solid ${isDone ? 'var(--brand-orange)' : 'var(--border)'}`, transition: 'all 0.2s' }}>
       <div className="d-flex justify-content-between align-items-start gap-2">
         <div className="flex-grow-1">
           <div className="d-flex align-items-center gap-2 mb-1">
             <span className="fw-bold" style={{ color: 'var(--text-primary)', fontSize: '0.92rem', textDecoration: isDone ? 'line-through' : 'none', opacity: isDone ? 0.6 : 1 }}>
               {meal.name}
             </span>
-            {isDone && <Check size={14} style={{ color: 'var(--primary-accent)' }} />}
+            {isDone && <Check size={14} style={{ color: 'var(--brand-orange)' }} />}
           </div>
           <span className="text-secondary" style={{ fontSize: '0.78rem' }}>{meal.portion} · {meal.calories} kcal</span>
         </div>
@@ -71,7 +71,7 @@ function MealCard({ meal, dayKey, slotKey, completions, onComplete, onSwap, onFa
             <Shuffle size={14} />
           </button>
           <button title="Save to favorites" onClick={() => onFavorite(meal)}
-            className="btn-icon p-1" style={{ width: '28px', height: '28px', color: 'rgba(255,143,0,0.7)', background: 'transparent', border: 'none' }}>
+            className="btn-icon p-1" style={{ width: '28px', height: '28px', color: 'var(--accent-amber)', background: 'transparent', border: 'none' }}>
             <Star size={14} />
           </button>
           <button title="Show nutrition" onClick={() => setShowNutrition(v => !v)}
@@ -323,7 +323,7 @@ export default function DietPlanner({ user }) {
                       style={{ borderBottom: isExpanded ? '1px solid var(--border-color)' : 'none' }}>
                       <div className="d-flex align-items-center gap-3">
                         <span className="fw-bold font-monospace text-uppercase" style={{ color: 'var(--text-primary)', fontSize: '1rem' }}>{DAY_LABELS[day]}</span>
-                        <span className="badge font-monospace" style={{ background: dayCompletedCount === dayTotal && dayTotal > 0 ? 'rgba(0,245,212,0.12)' : 'rgba(255,255,255,0.06)', border: `1px solid ${dayCompletedCount === dayTotal && dayTotal > 0 ? 'rgba(0,245,212,0.4)' : 'var(--border-color)'}`, color: dayCompletedCount === dayTotal && dayTotal > 0 ? 'var(--accent-teal)' : 'var(--text-secondary)', fontSize: '0.72rem', padding: '3px 8px' }}>
+                        <span className="badge font-monospace" style={{ background: dayCompletedCount === dayTotal && dayTotal > 0 ? 'rgba(45,184,176,0.12)' : 'var(--bg-card-tinted)', border: `1px solid ${dayCompletedCount === dayTotal && dayTotal > 0 ? 'var(--accent-teal)' : 'var(--border)'}`, color: dayCompletedCount === dayTotal && dayTotal > 0 ? 'var(--accent-teal)' : 'var(--text-secondary)', fontSize: '0.72rem', padding: '3px 8px' }}>
                           {dayCompletedCount}/{dayTotal}
                         </span>
                       </div>
@@ -372,7 +372,7 @@ export default function DietPlanner({ user }) {
               {[['vegetarian', 'Vegetarian'], ['non_vegetarian', 'Non-Veg'], ['vegan', 'Vegan']].map(([v, l]) => (
                 <button key={v} onClick={() => setPrefDraft(p => ({ ...p, diet_type: v }))}
                   className="px-3 py-2 rounded font-monospace text-uppercase fw-bold"
-                  style={{ fontSize: '0.78rem', flex: 1, border: `1px solid ${prefDraft.diet_type === v ? 'var(--accent-teal)' : 'var(--border-color)'}`, background: prefDraft.diet_type === v ? 'rgba(0,245,212,0.1)' : 'transparent', color: prefDraft.diet_type === v ? 'var(--accent-teal)' : 'var(--text-secondary)', cursor: 'pointer' }}>
+                  style={{ fontSize: '0.78rem', flex: 1, border: `1px solid ${prefDraft.diet_type === v ? 'var(--accent-teal)' : 'var(--border)'}`, background: prefDraft.diet_type === v ? 'rgba(45,184,176,0.1)' : 'transparent', color: prefDraft.diet_type === v ? 'var(--accent-teal)' : 'var(--text-secondary)', cursor: 'pointer' }}>
                   {l}
                 </button>
               ))}
@@ -385,7 +385,7 @@ export default function DietPlanner({ user }) {
               {[1, 2, 3, 4, 5].map(n => (
                 <button key={n} onClick={() => setPrefDraft(p => ({ ...p, meals_per_day: n }))}
                   className="rounded font-monospace fw-bold"
-                  style={{ width: '44px', height: '44px', border: `1px solid ${prefDraft.meals_per_day === n ? 'var(--accent-teal)' : 'var(--border-color)'}`, background: prefDraft.meals_per_day === n ? 'rgba(0,245,212,0.1)' : 'transparent', color: prefDraft.meals_per_day === n ? 'var(--accent-teal)' : 'var(--text-secondary)', cursor: 'pointer', fontSize: '0.9rem' }}>
+                  style={{ width: '44px', height: '44px', border: `1px solid ${prefDraft.meals_per_day === n ? 'var(--accent-teal)' : 'var(--border)'}`, background: prefDraft.meals_per_day === n ? 'rgba(45,184,176,0.1)' : 'transparent', color: prefDraft.meals_per_day === n ? 'var(--accent-teal)' : 'var(--text-secondary)', cursor: 'pointer', fontSize: '0.9rem' }}>
                   {n}
                 </button>
               ))}
@@ -457,7 +457,7 @@ export default function DietPlanner({ user }) {
       {activeTab === 'fav' && (
         <div className="glass-card p-4" style={{ borderRadius: '16px' }}>
           <h3 className="fw-bold mb-4 d-flex align-items-center gap-2" style={{ color: 'var(--text-primary)', fontSize: '1.25rem' }}>
-            <Star size={20} style={{ color: '#ff8f00' }} /> Favourite Meals
+            <Star size={20} style={{ color: 'var(--accent-amber)' }} /> Favourite Meals
           </h3>
           {favorites.length === 0
             ? <p className="text-secondary font-monospace text-center py-4" style={{ fontSize: '0.85rem' }}>No favourites yet. Star meals from your plan to save them here.</p>
