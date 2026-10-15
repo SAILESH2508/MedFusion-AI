@@ -118,7 +118,7 @@ function GuestUpload({ openAuth }) {
           <span>Max: {maxVal}</span>
         </div>
         
-        <div className="position-relative w-100 mt-1.5 rounded" style={{ height: '6px', background: 'rgba(255,255,255,0.08)' }}>
+        <div className="position-relative w-100 mt-1.5 rounded" style={{ height: '6px', background: 'var(--grad-track)' }}>
           <div 
             className="position-absolute h-100 bg-success bg-opacity-30 rounded" 
             style={{ 
@@ -133,7 +133,7 @@ function GuestUpload({ openAuth }) {
               left: `${percentOfVal}%`, 
               width: '10px', 
               height: '10px', 
-              background: val > normalMax || val < normalMin ? 'var(--accent-orange)' : 'var(--primary-accent)', 
+              background: val > normalMax || val < normalMin ? 'var(--brand-orange)' : 'var(--brand-blue)', 
               top: '-2px',
               transform: 'translateX(-50%)'
             }}
@@ -326,8 +326,8 @@ function GuestUpload({ openAuth }) {
       <div className="d-flex flex-column gap-4 pt-2">
         {/* Sleek Medical Header Console inside Sidebar */}
         <div className="glass-card p-4 mb-2 reveal border-theme-accent border-opacity-15 bg-white-5" style={{ borderRadius: '12px' }}>
-          <h2 className="fw-bolder fs-6 m-0 text-white" style={{ letterSpacing: '-0.02em', fontSize: '1.25rem' }}>
-            AI Report <span className="text-theme-accent">Scanner</span>
+          <h2 className="fw-bolder fs-6 m-0" style={{ letterSpacing: '-0.02em', fontSize: '1.25rem', color: 'var(--text-primary)' }}>
+            AI Report <span style={{ color: 'var(--brand-orange)' }}>Scanner</span>
           </h2>
           <p className="text-secondary m-0 mt-2" style={{ fontSize: '0.88rem', lineHeight: '1.4' }}>
             Select your report category and ingest documents to extract medical parameters.
@@ -336,7 +336,7 @@ function GuestUpload({ openAuth }) {
 
         {/* Ingest category selection switcher */}
         <div className="mt-2">
-          <h4 className="fw-bold mb-3 text-white" style={{ fontSize: '1.05rem', letterSpacing: '0.05em' }}>
+          <h4 className="fw-bold mb-3" style={{ fontSize: '1.05rem', letterSpacing: '0.05em', color: 'var(--text-primary)' }}>
             <span className="text-theme-accent font-monospace text-uppercase" style={{ letterSpacing: '0.06em' }}>Document Category</span>
           </h4>
           <div className="d-flex flex-column gap-3 mt-3">
@@ -376,14 +376,14 @@ function GuestUpload({ openAuth }) {
         <div className="col-lg-4 col-md-4 reveal d-flex">
           <div className="glass-card p-4 d-flex flex-column gap-4 w-100 justify-content-between" style={{ borderRadius: '16px' }}>
             <div className="d-flex flex-column gap-3 w-100">
-              <h4 className="fw-bold text-white font-monospace d-flex align-items-center gap-3 mb-2" style={{ fontSize: '1.25rem' }}>
+              <h4 className="fw-bold font-monospace d-flex align-items-center gap-3 mb-2" style={{ fontSize: '1.25rem', color: 'var(--text-primary)' }}>
                 <Database size={24} className="text-theme-accent" />
                 Ingestion Controls
               </h4>
 
               {/* Guest Profile Identification Card */}
               <div className="glass-card p-3 mb-1 bg-white-5" style={{ borderRadius: '10px', border: '1px solid rgba(255, 255, 255, 0.08)' }}>
-                <h5 className="fw-bold mb-2 text-white d-flex align-items-center gap-2" style={{ fontSize: '0.85rem' }}>
+                <h5 className="fw-bold mb-2 d-flex align-items-center gap-2" style={{ fontSize: '0.85rem', color: 'var(--text-primary)' }}>
                   <Activity size={14} style={{ color: 'var(--theme-accent)' }} />
                   <span style={{ color: 'var(--theme-accent)' }}>Guest Identification Info</span>
                 </h5>
@@ -438,9 +438,11 @@ function GuestUpload({ openAuth }) {
                 onDrop={handleDrop}
                 style={{
                   minHeight: '260px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
-                  background: docType.includes('Rx') ? 'var(--bg-upload-rx)' : 'var(--bg-upload-lab)',
-                  borderColor: isDragging ? 'var(--primary-accent)' : 'var(--border-color)',
+                  background: 'var(--bg-card-tinted)',
+                  borderColor: isDragging ? 'var(--brand-orange)' : 'var(--brand-orange)',
                   transition: 'border-color 0.2s ease',
+                  borderStyle: 'dashed',
+                  borderWidth: '1.5px',
                 }}
               >
                 <UploadIcon size={52} className="mb-3" style={{ color: 'var(--primary-accent)' }} />
@@ -481,7 +483,7 @@ function GuestUpload({ openAuth }) {
             {/* Simulated Scanning status ticker in left panel */}
             {loading && (
               <div className="border-top border-white-10 pt-4 mt-auto reveal">
-                <h4 className="fw-bold mb-2 text-white font-monospace d-flex align-items-center gap-2" style={{ fontSize: '1.05rem' }}>
+                <h4 className="fw-bold mb-2 font-monospace d-flex align-items-center gap-2" style={{ fontSize: '1.05rem', color: 'var(--text-primary)' }}>
                   <Cpu size={20} style={{ color: 'var(--primary-accent)' }} />
                   Scanner Sensor Feed
                 </h4>
@@ -520,7 +522,7 @@ function GuestUpload({ openAuth }) {
                   <Database size={60} className="text-success" />
                 )}
               </div>
-              <h4 className="fw-bold text-white font-monospace text-uppercase mb-2" style={{ fontSize: '1.35rem', letterSpacing: '0.04em' }}>
+              <h4 className="fw-bold font-monospace text-uppercase mb-2" style={{ fontSize: '1.35rem', letterSpacing: '0.04em', color: 'var(--text-primary)' }}>
                 {docType.includes('Rx') ? 'Prescription OCR Ingestor' : 'Pathology Vector Engine'}
               </h4>
               <p className="text-secondary font-monospace mt-2 px-4 m-0" style={{ maxWidth: '580px', fontSize: '0.95rem', lineHeight: '1.6' }}>

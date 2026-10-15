@@ -37,11 +37,11 @@ function isOpenNow(opening_hours) {
 }
 
 const TYPE_CONFIG = {
-  hospital:  { label: 'Hospitals',   icon: Building2,    color: 'var(--status-danger)',     glow: 'var(--status-danger-bg)',   tags: ['hospital'] },
-  clinic:    { label: 'Clinics',     icon: Stethoscope,  color: 'var(--primary-accent)',    glow: 'var(--bg-upload-rx)',       tags: ['clinic', 'doctors'] },
-  pharmacy:  { label: 'Pharmacies',  icon: Pill,         color: 'var(--secondary-accent)',  glow: 'var(--bg-form)',            tags: ['pharmacy', 'chemist'] },
-  dentist:   { label: 'Dentists',    icon: Sparkles,     color: 'var(--accent-purple)',     glow: 'var(--bg-alt)',             tags: ['dentist'] },
-  lab:       { label: 'Labs',        icon: FlaskConical, color: 'var(--status-info)',       glow: 'var(--status-info-bg)',     tags: ['laboratory'] },
+  hospital:  { label: 'Hospitals',   icon: Building2,    color: 'var(--brand-blue)',      glow: 'var(--status-info-bg)',     tags: ['hospital'] },
+  clinic:    { label: 'Clinics',     icon: Stethoscope,  color: 'var(--accent-teal)',     glow: 'var(--bg-card-tinted)',     tags: ['clinic', 'doctors'] },
+  pharmacy:  { label: 'Pharmacies',  icon: Pill,         color: 'var(--accent-emerald)',  glow: 'var(--bg-card-tinted)',     tags: ['pharmacy', 'chemist'] },
+  dentist:   { label: 'Dentists',    icon: Sparkles,     color: 'var(--accent-violet)',   glow: 'var(--bg-card-tinted)',     tags: ['dentist'] },
+  lab:       { label: 'Labs',        icon: FlaskConical, color: 'var(--accent-cyan)',     glow: 'var(--status-info-bg)',     tags: ['laboratory'] },
 };
 
 // ── Build Overpass query ───────────────────────────────────────────────────
@@ -469,8 +469,8 @@ export default function NearbyMap({
     setSidebarContent(
       <div className="d-flex flex-column gap-4 pt-2">
         <div className="glass-card p-4 reveal" style={{ borderRadius: '12px' }}>
-          <h2 className="fw-bolder m-0 text-white" style={{ fontSize: '1.15rem' }}>
-            Medical <span className="text-info">Facility Radar</span>
+          <h2 className="fw-bolder m-0" style={{ fontSize: '1.15rem', color: 'var(--text-primary)' }}>
+            Medical <span style={{ color: 'var(--brand-blue)' }}>Facility Radar</span>
           </h2>
           <p className="text-secondary m-0 mt-2" style={{ fontSize: '0.8rem', lineHeight: '1.5' }}>
             {isPatient ? 'Full details, one-tap call, directions and emergency sheet export.' : 'Sign in for phone numbers, call buttons and 15km radius.'}
@@ -543,8 +543,8 @@ export default function NearbyMap({
             <MapPin size={14} />
             <span>MEDICAL FACILITY RADAR • {location ? `${filtered.length} RESULTS` : 'OFFLINE'}</span>
           </div>
-          <h1 className="fw-bolder fs-2 m-0 text-white" style={{ letterSpacing: '-0.03em' }}>
-            Nearby <span className="text-info">Hospitals & Pharmacies</span>
+          <h1 className="fw-bolder fs-2 m-0" style={{ letterSpacing: '-0.03em', color: 'var(--text-primary)' }}>
+            Nearby <span style={{ color: 'var(--brand-blue)' }}>Hospitals & Pharmacies</span>
           </h1>
           <p className="text-secondary m-0 mt-1 small">
             {isPatient
@@ -592,8 +592,8 @@ export default function NearbyMap({
 
             {/* Location */}
             <div className="glass-card p-4" style={{ borderRadius: '12px' }}>
-              <h5 className="text-white fw-bold font-monospace mb-3 d-flex align-items-center gap-2" style={{ fontSize: '0.85rem', letterSpacing: '0.06em' }}>
-                <MapPin size={14} className="text-info" /> YOUR LOCATION
+              <h5 className="fw-bold font-monospace mb-3 d-flex align-items-center gap-2" style={{ fontSize: '0.85rem', letterSpacing: '0.06em', color: 'var(--text-primary)' }}>
+                <MapPin size={14} style={{ color: 'var(--brand-blue)' }} /> YOUR LOCATION
               </h5>
               {location ? (
                 <>

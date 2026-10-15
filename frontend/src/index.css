@@ -342,9 +342,9 @@ nav.bg-glass .text-secondary:hover {
   width: 44px;
   height: 44px;
   border-radius: 50%;
-  background: var(--bg-upload);
+  background: var(--brand-orange);
   border: 1px solid var(--border-color);
-  color: var(--primary-accent);
+  color: var(--text-on-brand);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -808,6 +808,17 @@ button.btn-icon:hover {
   color: var(--text-primary) !important;
 }
 
+/* Per-disease active border accent colors */
+.disease-select-tile.active.heart {
+  border-color: var(--brand-orange) !important;
+}
+.disease-select-tile.active.diabetes {
+  border-color: var(--brand-blue) !important;
+}
+.disease-select-tile.active.cancer {
+  border-color: var(--accent-violet) !important;
+}
+
 .disease-select-tile.active *,
 .disease-select-tile.active.heart *,
 .disease-select-tile.active.diabetes *,
@@ -1068,7 +1079,7 @@ button.btn-icon:hover {
   width: 12px;
   height: 12px;
   border-radius: 50%;
-  background: var(--primary-accent);
+  background: var(--brand-orange);
   border: 2px solid var(--bg-card);
   z-index: 10;
 }
@@ -1242,4 +1253,38 @@ button.btn-icon:hover {
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
   }
+}
+
+/* -- Chatbot Responsive Rules ----------------------------------------------- */
+
+@media (max-width: 480px) {
+  div[style*="bottom: 94px"] {
+    right: 8px !important;
+    left: 8px !important;
+    width: auto !important;
+    max-width: calc(100vw - 16px) !important;
+  }
+}
+
+/* -- Accent Utility Classes -------------------------------------------------- */
+
+.text-brand-orange  { color: var(--brand-orange)   !important; }
+.text-brand-blue    { color: var(--brand-blue)     !important; }
+.text-accent-cyan   { color: var(--accent-cyan)    !important; }
+.text-accent-teal   { color: var(--accent-teal)    !important; }
+.text-accent-violet { color: var(--accent-violet)  !important; }
+.text-accent-emerald{ color: var(--accent-emerald) !important; }
+.text-accent-amber  { color: var(--accent-amber)   !important; }
+.text-accent-coral  { color: var(--accent-coral)   !important; }
+.text-accent-red    { color: var(--accent-red)     !important; }
+
+.bg-brand-orange    { background-color: var(--brand-orange) !important; }
+.bg-brand-blue      { background-color: var(--brand-blue)   !important; }
+
+.border-brand-orange { border-color: var(--brand-orange) !important; }
+.border-brand-blue   { border-color: var(--brand-blue)   !important; }
+
+/* Sidebar text: sidebar is always dark bg in both themes */
+[data-theme='light'] .app-sidebar {
+  color: var(--text-on-dark);
 }

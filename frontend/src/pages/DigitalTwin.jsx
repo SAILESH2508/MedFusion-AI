@@ -117,8 +117,8 @@ export default function DigitalTwin({ user }) {
                 alignItems: 'center',
                 gap: '10px',
                 width: '100%',
-                background: isActive ? 'var(--bg-upload)' : 'transparent',
-                border: isActive ? '1px solid var(--primary-accent)' : '1px solid transparent',
+                background: isActive ? 'var(--bg-card-tinted)' : 'transparent',
+                border: isActive ? '1px solid var(--brand-orange)' : '1px solid transparent',
                 borderRadius: '8px',
                 color: isActive ? 'var(--text-primary)' : 'var(--text-secondary)',
                 padding: '7px 10px',
@@ -133,7 +133,7 @@ export default function DigitalTwin({ user }) {
               <span style={{ color: isActive ? organ.color : 'rgba(255,255,255,0.3)', lineHeight: 0 }}>{organ.icon}</span>
               <span>{organ.label}</span>
               {isActive && (
-                <span style={{ marginLeft: 'auto', width: '6px', height: '6px', borderRadius: '50%', background: organ.color, flexShrink: 0 }} />
+                <span style={{ marginLeft: 'auto', width: '6px', height: '6px', borderRadius: '50%', background: 'var(--brand-orange)', flexShrink: 0 }} />
               )}
             </button>
           );
@@ -177,7 +177,7 @@ export default function DigitalTwin({ user }) {
           <h2 style={{ fontSize: '1.25rem', fontWeight: 700, color: 'var(--text-primary)', margin: 0, fontFamily: 'monospace', letterSpacing: '0.02em' }}>
             PERSONAL HEALTH TWIN
           </h2>
-          <span style={{ background: 'var(--theme-accent-glow, rgba(56,189,248,0.1))', border: '1px solid var(--theme-accent, rgba(56,189,248,0.25))', color: 'var(--theme-accent, #38bdf8)', fontSize: '0.58rem', padding: '2px 8px', borderRadius: '4px', fontFamily: 'monospace', letterSpacing: '0.06em', textTransform: 'uppercase', fontWeight: 600 }}>
+          <span style={{ background: 'rgba(91,159,224,0.12)', border: '1px solid var(--brand-blue)', color: 'var(--brand-blue)', fontSize: '0.58rem', padding: '2px 8px', borderRadius: '4px', fontFamily: 'monospace', letterSpacing: '0.06em', textTransform: 'uppercase', fontWeight: 600 }}>
             Interactive
           </span>
         </div>
@@ -193,7 +193,7 @@ export default function DigitalTwin({ user }) {
 
           {/* Viewer card */}
           <div style={{
-            background: 'var(--bg-card)',
+            background: '#1C2333',
             border: '1px solid var(--border-color)',
             borderRadius: '16px',
             overflow: 'hidden',
@@ -241,7 +241,7 @@ export default function DigitalTwin({ user }) {
                   alignItems: 'center',
                   gap: '5px',
                 }}
-                onMouseEnter={e => { e.currentTarget.style.color = 'var(--text-primary)'; e.currentTarget.style.borderColor = 'var(--primary-accent)'; }}
+                onMouseEnter={e => { e.currentTarget.style.color = 'var(--text-primary)'; e.currentTarget.style.borderColor = 'var(--brand-orange)'; }}
                 onMouseLeave={e => { e.currentTarget.style.color = 'var(--text-secondary)'; e.currentTarget.style.borderColor = 'var(--border-color)'; }}
               >
                 <RotateCcw size={11} /> Reset
@@ -281,10 +281,10 @@ export default function DigitalTwin({ user }) {
                     alignItems: 'center',
                     gap: '6px',
                     padding: '6px 14px',
-                    background: activeTab === tab.id ? 'var(--theme-accent-glow, rgba(13, 148, 136, 0.15))' : 'transparent',
-                    border: activeTab === tab.id ? '1px solid var(--theme-accent, #0d9488)' : '1px solid var(--border-color, rgba(255, 255, 255, 0.1))',
+                    background: activeTab === tab.id ? 'rgba(244,149,74,0.15)' : 'transparent',
+                    border: activeTab === tab.id ? '1px solid var(--brand-orange)' : '1px solid var(--border-color, rgba(255, 255, 255, 0.1))',
                     borderRadius: '20px',
-                    color: activeTab === tab.id ? 'var(--theme-accent, #0d9488)' : 'var(--text-secondary, #64748b)',
+                    color: activeTab === tab.id ? 'var(--brand-orange)' : 'var(--text-secondary, #64748b)',
                     cursor: 'pointer',
                     fontSize: '0.76rem',
                     fontFamily: 'monospace',
@@ -328,7 +328,7 @@ function AboutTab() {
         { label: 'Health Change Explorer', text: 'An educational comparison tool. Hypothetical values you enter are never saved to your records, and no clinical predictions are made.' },
       ].map(({ label, text }) => (
         <div key={label} style={{ marginBottom: '14px' }}>
-          <p style={{ color: 'var(--theme-accent, #0d9488)', fontFamily: 'monospace', fontSize: '0.72rem', textTransform: 'uppercase', letterSpacing: '0.07em', margin: '0 0 3px' }}>{label}</p>
+          <p style={{ color: 'var(--brand-orange)', fontFamily: 'monospace', fontSize: '0.72rem', textTransform: 'uppercase', letterSpacing: '0.07em', margin: '0 0 3px' }}>{label}</p>
           <p style={{ margin: 0, color: 'var(--text-secondary)' }}>{text}</p>
         </div>
       ))}

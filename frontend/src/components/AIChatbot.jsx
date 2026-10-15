@@ -25,10 +25,10 @@ const SYMPTOM_STEPS = [
 // ── Format markdown-like content ──────────────────────────────────────────
 function renderContent(content, isLight) {
   return content.split('\n').filter((l) => l.trim() !== '').map((line, i) => {
-    if (/^\*\*(.+)\*\*$/.test(line)) return <p key={i} className="fw-bold m-0 mb-1" style={{ color: isLight ? 'var(--theme-accent, #0d9488)' : 'var(--accent-teal)' }}>{line.slice(2, -2)}</p>;
-    if (line.startsWith('• ') || line.startsWith('- ') || line.startsWith('* ')) return <p key={i} className="m-0 mb-1" style={{ paddingLeft: '10px', color: isLight ? '#1e293b' : 'rgba(255,255,255,0.8)' }}>{line}</p>;
-    if (/^\d+\./.test(line)) return <p key={i} className="m-0 mb-1" style={{ paddingLeft: '10px', color: isLight ? '#1e293b' : 'rgba(255,255,255,0.85)' }}>{line}</p>;
-    return <p key={i} className="m-0 mb-1" style={{ color: isLight ? '#0a0a23' : '#ffffff' }}>{line}</p>;
+    if (/^\*\*(.+)\*\*$/.test(line)) return <p key={i} className="fw-bold m-0 mb-1" style={{ color: 'var(--brand-blue)' }}>{line.slice(2, -2)}</p>;
+    if (line.startsWith('• ') || line.startsWith('- ') || line.startsWith('* ')) return <p key={i} className="m-0 mb-1" style={{ paddingLeft: '10px', color: 'var(--text-secondary)' }}>{line}</p>;
+    if (/^\d+\./.test(line)) return <p key={i} className="m-0 mb-1" style={{ paddingLeft: '10px', color: 'var(--text-secondary)' }}>{line}</p>;
+    return <p key={i} className="m-0 mb-1" style={{ color: 'var(--text-primary)' }}>{line}</p>;
   });
 }
 
@@ -69,14 +69,14 @@ function MessageBubble({ msg, onFollowUp }) {
 
         <div style={{
           background: isUser
-            ? (isLight ? 'linear-gradient(135deg,rgba(0,200,180,0.15),rgba(220,235,255,0.8))' : 'linear-gradient(135deg,rgba(0,245,212,0.12),rgba(0,4,45,0.5))')
-            : (isLight ? 'rgba(240,244,255,0.9)' : 'rgba(0,4,45,0.55)'),
+            ? (isLight ? 'var(--bg-card-tinted)' : 'rgba(44,111,181,0.15)')
+            : 'var(--bg-surface)',
           border: isUser
-            ? `1px solid ${urgency === 'critical' ? 'rgba(255,0,85,0.5)' : (isLight ? 'rgba(0,180,160,0.35)' : 'rgba(0,245,212,0.22)')}`
-            : `1px solid ${isLight ? 'rgba(0,80,200,0.12)' : 'rgba(255,255,255,0.07)'}`,
+            ? `1px solid ${urgency === 'critical' ? 'rgba(255,0,85,0.5)' : 'var(--border-card)'}`
+            : `1px solid var(--border)`,
           borderRadius: isUser ? '14px 14px 4px 14px' : '14px 14px 14px 4px',
           padding: '10px 14px', fontSize: '0.82rem', lineHeight: '1.55',
-          color: isLight ? '#0a0a23' : '#fff',
+          color: 'var(--text-primary)',
         }}>
           {renderContent(msg.content, isLight)}
           <span className="d-block mt-1" style={{ fontSize: '0.58rem', opacity: 0.4 }}>{msg.time}</span>
@@ -130,34 +130,33 @@ function SymptomChecker({ onComplete, onCancel }) {
   return (
     <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="px-3 pb-3" style={{ flexShrink: 0 }}>
       <div className="p-3 rounded" style={{
-        background: isLight ? 'rgba(240,245,255,0.95)' : 'rgba(0,4,45,0.65)',
-        border: isLight ? '1px solid rgba(0,120,200,0.25)' : '1px solid rgba(0,245,212,0.2)'
+        background: 'var(--bg-surface)',
+        border: '1px solid var(--border-card)'
       }}>
         <div className="d-flex align-items-center justify-content-between mb-2">
-          <span className="text-info font-monospace" style={{ fontSize: '0.65rem', letterSpacing: '0.08em' }}>
+          <span className="font-monospace" style={{ fontSize: '0.65rem', letterSpacing: '0.08em', color: 'var(--brand-blue)' }}>
             SYMPTOM CHECK • STEP {step + 1}/{SYMPTOM_STEPS.length}
           </span>
-          <button onClick={onCancel} style={{ background: 'transparent', border: 'none', color: isLight ? 'rgba(0,0,0,0.45)' : 'rgba(255,255,255,0.35)', cursor: 'pointer', padding: 0 }} aria-label="Cancel symptom check">
+          <button onClick={onCancel} style={{ background: 'transparent', border: 'none', color: 'var(--text-muted)', cursor: 'pointer', padding: 0 }} aria-label="Cancel symptom check">
             <X size={14} />
           </button>
         </div>
-        <p className="fw-bold mb-3" style={{ fontSize: '0.82rem', color: isLight ? '#0f172a' : '#ffffff' }}>{s.q}</p>
+        <p className="fw-bold mb-3" style={{ fontSize: '0.82rem', color: 'var(--text-primary)' }}>{s.q}</p>
         <div className="d-flex flex-wrap gap-2">
           {s.options.map((opt, i) => (
             <button
               key={i}
               onClick={() => pick(opt)}
               style={{
-                background: isLight ? '#ffffff' : 'rgba(255,255,255,0.04)',
-                border: isLight ? '1px solid rgba(0,180,160,0.35)' : '1px solid rgba(0,245,212,0.25)',
+                background: 'var(--bg-card)',
+                border: '1px solid var(--border)',
                 borderRadius: '8px',
-                color: isLight ? '#0f172a' : 'rgba(200,240,255,0.85)',
+                color: 'var(--text-secondary)',
                 fontSize: '0.72rem',
                 padding: '6px 12px', cursor: 'pointer', transition: 'all 0.15s',
-                boxShadow: isLight ? '0 1px 3px rgba(0,0,0,0.05)' : 'none',
               }}
-              onMouseEnter={(e) => { e.currentTarget.style.background = isLight ? 'rgba(0,180,160,0.1)' : 'rgba(0,245,212,0.12)'; }}
-              onMouseLeave={(e) => { e.currentTarget.style.background = isLight ? '#ffffff' : 'rgba(255,255,255,0.04)'; }}
+              onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--bg-card-tinted)'; e.currentTarget.style.borderColor = 'var(--brand-orange)'; }}
+              onMouseLeave={(e) => { e.currentTarget.style.background = 'var(--bg-card)'; e.currentTarget.style.borderColor = 'var(--border)'; }}
             >
               {opt}
             </button>
@@ -174,41 +173,22 @@ export default function AIChatbot({ user }) {
   const { theme } = useTheme();
   const isLight = theme === 'light';
 
-  // Theme-aware colour palette — Multi-Color Medical Design System
-  const C = isLight ? {
-    panelBg:      '#F4E7BD', // pale buttery cream
-    panelBorder:  '#C8B8A5', // soft earthy taupe
-    panelShadow:  '0 8px 24px rgba(56, 47, 42, 0.18)',
-    headerBg:     '#DED8EC', // muted lavender
-    headerBorder: '#C8B8A5',
-    msgBg:        '#C5E0DC', // muted aqua
-    msgBorder:    '#C8B8A5',
-    inputBg:      '#E8D9BF', // warm pale sand
-    inputBorder:  '#C8B8A5',
-    inputColor:   '#382F2A', // deep earthy brown
-    quickBg:      '#C5E0DC', // muted aqua
-    quickBorder:  '#C8B8A5',
-    quickColor:   '#287767', // botanical teal
-    divider:      '#C8B8A5',
-    btnColor:     '#6B6255', // muted olive-brown
-    dotsBg:       '#EAC7AE', // soft apricot
-  } : {
-    panelBg:      '#31574B', // deep botanical green
-    panelBorder:  '#587368', // muted eucalyptus
-    panelShadow:  '0 8px 24px rgba(0, 0, 0, 0.45)',
-    headerBg:     '#44374D', // muted plum
-    headerBorder: '#587368',
-    msgBg:        '#315B5A', // deep desaturated teal
-    msgBorder:    '#587368',
-    inputBg:      '#304941', // deep sage
-    inputBorder:  '#587368',
-    inputColor:   '#F3EBDD', // warm ivory
-    quickBg:      '#315B5A', // deep desaturated teal
-    quickBorder:  '#587368',
-    quickColor:   '#67B6A0', // natural teal
-    divider:      '#587368',
-    btnColor:     '#C8D5C6', // soft sage
-    dotsBg:       '#493E51', // muted aubergine
+  // Theme-aware colour palette — Token-based system
+  const C = {
+    panelBg:      'var(--bg-card)',
+    panelBorder:  'var(--border-card)',
+    panelShadow:  'var(--shadow-md)',
+    headerBg:     'var(--bg-surface)',
+    headerBorder: 'var(--border)',
+    inputBg:      'var(--bg-input)',
+    inputBorder:  'var(--border)',
+    inputColor:   'var(--text-primary)',
+    divider:      'var(--border)',
+    btnColor:     'var(--text-secondary)',
+    dotsBg:       'var(--bg-card-tinted)',
+    quickBg:      'var(--bg-card-tinted)',
+    quickBorder:  'var(--border)',
+    quickColor:   'var(--brand-blue)',
   };
   const [isOpen, setIsOpen]   = useState(false);
   const [messages, setMessages] = useState([{
@@ -358,16 +338,16 @@ export default function AIChatbot({ user }) {
         style={{
           position: 'fixed', bottom: '28px', right: '28px',
           width: '54px', height: '54px', borderRadius: '50%',
-          background: isLight ? '#287767' : '#67B6A0',
-          border: `1.5px solid ${isLight ? '#1F5F52' : '#587368'}`,
-          boxShadow: isLight ? '0 4px 12px rgba(40, 119, 103, 0.35)' : '0 4px 12px rgba(0, 0, 0, 0.35)',
+          background: 'var(--brand-orange)',
+          border: 'none',
+          boxShadow: 'var(--shadow-md)',
           cursor: 'pointer', zIndex: 9999,
         }}
       >
-        {isOpen ? <ChevronDown size={20} color={isLight ? '#fff' : '#132B25'} /> : <MessageSquare size={20} color={isLight ? '#fff' : '#132B25'} />}
+        {isOpen ? <ChevronDown size={20} color="#FFFFFF" /> : <MessageSquare size={20} color="#FFFFFF" />}
         {!isOpen && unread > 0 && (
           <span className="position-absolute d-flex align-items-center justify-content-center"
-            style={{ top: '-4px', right: '-4px', width: '20px', height: '20px', borderRadius: '50%', background: isLight ? '#A52A2A' : '#F16F6F', fontSize: '0.62rem', fontWeight: 700, color: '#fff' }}>
+            style={{ top: '-4px', right: '-4px', width: '20px', height: '20px', borderRadius: '50%', background: 'var(--accent-red)', fontSize: '0.62rem', fontWeight: 700, color: '#fff' }}>
             {unread}
           </span>
         )}
@@ -395,14 +375,14 @@ export default function AIChatbot({ user }) {
             {/* Header */}
             <div className="d-flex align-items-center justify-content-between px-4 py-3" style={{ background: C.headerBg, borderBottom: `1px solid ${C.headerBorder}`, flexShrink: 0 }}>
               <div className="d-flex align-items-center gap-2">
-                <div className="d-flex align-items-center justify-content-center rounded-circle" style={{ width: '32px', height: '32px', background: isLight ? 'rgba(57,116,91,0.15)' : 'rgba(131,179,148,0.15)', border: `1px solid ${isLight ? 'rgba(57,116,91,0.3)' : 'rgba(131,179,148,0.3)'}` }}>
-                  <Bot size={15} style={{ color: isLight ? '#39745B' : '#83B394' }} />
+                <div className="d-flex align-items-center justify-content-center rounded-circle" style={{ width: '32px', height: '32px', background: isLight ? 'rgba(44,111,181,0.12)' : 'rgba(91,159,224,0.12)', border: `1px solid ${isLight ? 'rgba(44,111,181,0.3)' : 'rgba(91,159,224,0.3)'}` }}>
+                  <Bot size={15} style={{ color: isLight ? 'var(--brand-blue)' : 'var(--brand-blue)' }} />
                 </div>
                 <div>
-                  <p className="fw-bold m-0" style={{ fontSize: '0.88rem', color: isLight ? '#293A2E' : '#EDF2E8' }}>MedFusion AI</p>
+                  <p className="fw-bold m-0" style={{ fontSize: '0.88rem', color: 'var(--text-primary)' }}>MedFusion AI</p>
                   <div className="d-flex align-items-center gap-1">
-                    <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: isLight ? '#39745B' : '#83B394', display: 'inline-block' }} />
-                    <p className="m-0" style={{ fontSize: '0.62rem', color: isLight ? '#596B5D' : '#C0D0C1' }}>
+                    <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: 'var(--status-success)', display: 'inline-block' }} />
+                    <p className="m-0" style={{ fontSize: '0.62rem', color: 'var(--text-secondary)' }}>
                       {isPatient ? `${user?.full_name?.split(' ')[0]}'s Health Assistant` : 'General Health Assistant'}
                     </p>
                   </div>
@@ -413,7 +393,7 @@ export default function AIChatbot({ user }) {
                 <button
                   onClick={() => setShowSymptomChecker((v) => !v)}
                   title="Symptom Checker"
-                  style={{ background: showSymptomChecker ? 'rgba(0,245,212,0.12)' : 'transparent', border: showSymptomChecker ? '1px solid rgba(0,245,212,0.3)' : 'none', borderRadius: '6px', color: showSymptomChecker ? 'var(--accent-teal)' : 'rgba(255,255,255,0.4)', cursor: 'pointer', padding: '5px 7px', fontSize: '0.7rem', display: 'flex', alignItems: 'center' }}
+                  style={{ background: showSymptomChecker ? 'rgba(244,149,74,0.12)' : 'transparent', border: showSymptomChecker ? '1px solid var(--brand-orange)' : 'none', borderRadius: '6px', color: showSymptomChecker ? 'var(--brand-orange)' : 'var(--text-secondary)', cursor: 'pointer', padding: '5px 7px', fontSize: '0.7rem', display: 'flex', alignItems: 'center' }}
                 >
                   <Stethoscope size={14} />
                 </button>
@@ -519,18 +499,18 @@ export default function AIChatbot({ user }) {
                   aria-label="Send message"
                   style={{
                     width: '38px', height: '38px', borderRadius: '8px', flexShrink: 0,
-                    background: input.trim() && !loading ? (isLight ? '#32694F' : '#39745B') : (isLight ? '#DFE8DA' : '#244A3D'),
-                    border: `1px solid ${isLight ? '#CBD7C8' : '#3E6250'}`,
+                    background: input.trim() && !loading ? 'var(--brand-orange)' : 'var(--bg-card-tinted)',
+                    border: `1px solid var(--border)`,
                     cursor: input.trim() && !loading ? 'pointer' : 'not-allowed',
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
                   }}
                 >
-                  <Send size={15} color={input.trim() && !loading ? '#fff' : (isLight ? '#7A8E7E' : '#8FA892')} />
+                  <Send size={15} color={input.trim() && !loading ? '#fff' : 'var(--text-muted)'} />
                 </button>
               </div>
             )}
 
-            <p className="text-center m-0 pb-2" style={{ fontSize: '0.62rem', color: isLight ? '#7A8E7E' : '#8FA892', letterSpacing: '0.02em', flexShrink: 0 }}>
+            <p className="text-center m-0 pb-2" style={{ fontSize: '0.62rem', color: 'var(--text-muted)', letterSpacing: '0.02em', flexShrink: 0 }}>
               Not a substitute for professional medical advice
             </p>
           </motion.div>

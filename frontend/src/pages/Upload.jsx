@@ -124,7 +124,7 @@ function Upload({ user }) {
           <span>Max: {maxVal}</span>
         </div>
         
-        <div className="position-relative w-100 mt-1.5 rounded" style={{ height: '6px', background: 'rgba(255,255,255,0.08)' }}>
+        <div className="position-relative w-100 mt-1.5 rounded" style={{ height: '6px', background: 'var(--grad-track)' }}>
           <div 
             className="position-absolute h-100 bg-success bg-opacity-30 rounded" 
             style={{ 
@@ -139,7 +139,7 @@ function Upload({ user }) {
               left: `${percentOfVal}%`, 
               width: '10px', 
               height: '10px', 
-              background: val > normalMax || val < normalMin ? 'var(--accent-orange)' : 'var(--primary-accent)', 
+              background: val > normalMax || val < normalMin ? 'var(--brand-orange)' : 'var(--brand-blue)', 
               top: '-2px',
               transform: 'translateX(-50%)',
               boxShadow: '0 1px 3px rgba(0,0,0,0.3)'
@@ -332,8 +332,8 @@ function Upload({ user }) {
       setSidebarContent(
         <div className="d-flex flex-column gap-4 pt-2">
           <div className="glass-card p-4 mb-2 reveal border-theme-accent border-opacity-15 bg-white-5" style={{ borderRadius: '12px' }}>
-            <h2 className="fw-bolder fs-6 m-0 text-white" style={{ letterSpacing: '-0.02em', fontSize: '1.25rem' }}>
-              Clinical <span className="text-theme-accent">Scanner</span>
+            <h2 className="fw-bolder fs-6 m-0" style={{ letterSpacing: '-0.02em', fontSize: '1.25rem', color: 'var(--text-primary)' }}>
+              Clinical <span style={{ color: 'var(--brand-orange)' }}>Scanner</span>
             </h2>
             <p className="text-secondary m-0 mt-2" style={{ fontSize: '0.88rem', lineHeight: '1.4' }}>
               Upload lab reports or prescriptions to extract clinical values directly into patient records.
@@ -452,7 +452,7 @@ function Upload({ user }) {
         <div className="col-lg-4 col-md-4 reveal d-flex">
           <div className="glass-card p-4 d-flex flex-column gap-4 w-100 justify-content-between" style={{ borderRadius: '16px' }}>
             <div className="d-flex flex-column gap-3 w-100">
-              <h4 className="fw-bold text-white font-monospace d-flex align-items-center gap-3 mb-2" style={{ fontSize: '1.25rem' }}>
+              <h4 className="fw-bold font-monospace d-flex align-items-center gap-3 mb-2" style={{ fontSize: '1.25rem', color: 'var(--text-primary)' }}>
                 <Database size={24} className="text-theme-accent" />
                 {user && user.role === 'Doctor' ? 'Clinical Ingestion suite' : 'Ingestion Controls'}
               </h4>
@@ -529,9 +529,11 @@ function Upload({ user }) {
                 onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); document.getElementById('fileInput').click(); } }}
                 style={{
                   minHeight: '260px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
-                  background: docType.includes('Rx') ? 'var(--bg-upload-rx)' : 'var(--bg-upload-lab)',
-                  borderColor: isDragging ? 'var(--primary-accent)' : 'var(--border-color)',
+                  background: 'var(--bg-card-tinted)',
+                  borderColor: isDragging ? 'var(--brand-orange)' : 'var(--brand-orange)',
                   transition: 'border-color 0.2s ease',
+                  borderStyle: 'dashed',
+                  borderWidth: '1.5px',
                 }}
               >
                 <UploadIcon size={52} className="mb-3" style={{ color: 'var(--primary-accent)' }} />
@@ -575,7 +577,7 @@ function Upload({ user }) {
             {/* Simulated Scanning status ticker in left panel */}
             {loading && (
               <div className="border-top border-white-10 pt-4 mt-auto reveal">
-                <h4 className="fw-bold mb-2 text-white font-monospace d-flex align-items-center gap-2" style={{ fontSize: '1.05rem' }}>
+                <h4 className="fw-bold mb-2 font-monospace d-flex align-items-center gap-2" style={{ fontSize: '1.05rem', color: 'var(--text-primary)' }}>
                   <Cpu size={20} style={{ color: 'var(--primary-accent)' }} />
                   Scanner Sensor Feed
                 </h4>
@@ -614,7 +616,7 @@ function Upload({ user }) {
                   <Database size={60} className="text-success" />
                 )}
               </div>
-              <h4 className="fw-bold text-white font-monospace text-uppercase mb-2" style={{ fontSize: '1.35rem', letterSpacing: '0.04em' }}>
+              <h4 className="fw-bold font-monospace text-uppercase mb-2" style={{ fontSize: '1.35rem', letterSpacing: '0.04em', color: 'var(--text-primary)' }}>
                 {docType.includes('Rx') ? 'Prescription OCR Ingestor' : 'Pathology Vector Engine'}
               </h4>
               <p className="text-secondary font-monospace mt-2 px-4 m-0" style={{ maxWidth: '580px', fontSize: '0.95rem', lineHeight: '1.6' }}>

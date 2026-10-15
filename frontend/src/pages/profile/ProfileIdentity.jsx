@@ -32,7 +32,7 @@ function ProfileIdentity({
             <div>
               <div className="d-flex justify-content-between align-items-center pb-3 mb-4 border-bottom border-white-10">
                 <div className="d-flex align-items-center gap-2.5">
-                  <h4 className="fw-bold text-white d-flex align-items-center gap-2 m-0 font-monospace" style={{ fontSize: '1.05rem', letterSpacing: '0.02em' }}>
+                  <h4 className="fw-bold d-flex align-items-center gap-2 m-0 font-monospace" style={{ fontSize: '1.05rem', letterSpacing: '0.02em', color: 'var(--text-primary)' }}>
                     <ShieldCheck className="text-success" size={18} />
                     EMERGENCY MEDICAL ID
                   </h4>
@@ -90,7 +90,7 @@ function ProfileIdentity({
                   {/* Patient Name Visual representation */}
                   <div className="p-3 bg-white-5 rounded-4 border border-white-5 text-start mt-2">
                     <span className="text-secondary font-monospace d-block text-uppercase" style={{ fontSize: '0.62rem', letterSpacing: '0.06em' }}>PATIENT NAME</span>
-                    <h2 className="text-white fw-bolder mt-1 text-uppercase text-truncate" style={{ fontSize: '1.6rem', letterSpacing: '0.02em' }}>
+                    <h2 className="fw-bolder mt-1 text-uppercase text-truncate" style={{ fontSize: '1.6rem', letterSpacing: '0.02em', color: 'var(--text-primary)' }}>
                       {profile.first_name || profile.last_name ? `${profile.first_name} ${profile.last_name}` : user?.full_name || 'Anonymous Patient'}
                     </h2>
                     <span className="text-secondary font-monospace small" style={{ fontSize: '0.74rem', opacity: 0.8 }}>
@@ -102,7 +102,7 @@ function ProfileIdentity({
                   <div className="bg-white-5 p-3.5 rounded-4 border border-white-5 d-flex justify-content-between align-items-center hover-border-theme-accent-glow transition-all mt-1">
                     <div>
                       <span className="small text-secondary d-block text-uppercase mb-1" style={{ fontSize: '0.62rem', letterSpacing: '0.06em' }}>EMERGENCY CONTACT</span>
-                      <strong className="text-white fs-5 font-monospace">{profile.emergency_contact || 'None registered'}</strong>
+                      <strong className="fs-5 font-monospace" style={{ color: 'var(--text-primary)' }}>{profile.emergency_contact || 'None registered'}</strong>
                     </div>
                     <div className="p-3 bg-theme-accent bg-opacity-10 rounded-circle text-theme-accent border border-theme-accent border-opacity-20 shadow-lg">
                       <Phone size={18} />
@@ -153,7 +153,8 @@ function ProfileIdentity({
                     <select
                       value={editData.blood_group || ''}
                       onChange={(e) => setEditData({...editData, blood_group: e.target.value})}
-                      className="w-100 bg-dark text-white border border-white-10 rounded p-2 font-monospace"
+                      className="w-100 border border-white-10 rounded p-2 font-monospace"
+                      style={{ background: 'var(--bg-input)', color: 'var(--text-primary)' }}
                     >
                       <option value="">Select Blood Group</option>
                       {['A+','A-','B+','B-','AB+','AB-','O+','O-'].map(bg => (
@@ -198,7 +199,7 @@ function ProfileIdentity({
             
             {/* A. Clinical Demographics Grid */}
             <div className="glass-card p-3.5 text-start w-100 border-theme-accent border-opacity-15 bg-white-5" style={{ borderRadius: '16px' }}>
-              <h4 className="fw-bold text-white d-flex align-items-center gap-2 mb-3.5 font-monospace" style={{ fontSize: '1.05rem', letterSpacing: '0.02em' }}>
+              <h4 className="fw-bold d-flex align-items-center gap-2 mb-3.5 font-monospace" style={{ fontSize: '1.05rem', letterSpacing: '0.02em', color: 'var(--text-primary)' }}>
                 <Activity className="text-theme-accent" size={18} />
                 CLINICAL DEMOGRAPHICS
               </h4>
@@ -210,7 +211,7 @@ function ProfileIdentity({
                   <div className="col-sm-4">
                     <div className="telemetry-node telemetry-node-age h-100">
                       <div className="d-flex align-items-center gap-2 mb-1.5">
-                        <Calendar size={14} className="text-secondary" style={{ color: 'rgb(186, 104, 200)' }} />
+                        <Calendar size={14} className="text-secondary" style={{ color: 'var(--accent-violet)' }} />
                         <span className="text-secondary font-monospace" style={{ fontSize: '0.58rem', letterSpacing: '0.04em' }}>AGE</span>
                       </div>
                       <strong className="text-white fs-5 font-monospace">
@@ -223,7 +224,7 @@ function ProfileIdentity({
                   <div className="col-sm-4">
                     <div className="telemetry-node telemetry-node-sex h-100">
                       <div className="d-flex align-items-center gap-2 mb-1.5">
-                        <Dna size={14} className="text-secondary" style={{ color: 'rgb(240, 98, 146)' }} />
+                        <Dna size={14} className="text-secondary" style={{ color: 'var(--accent-coral)' }} />
                         <span className="text-secondary font-monospace" style={{ fontSize: '0.58rem', letterSpacing: '0.04em' }}>GENDER</span>
                       </div>
                       <strong className="text-white fs-5 font-monospace">
@@ -236,7 +237,7 @@ function ProfileIdentity({
                   <div className="col-sm-4">
                     <div className="telemetry-node telemetry-node-dob h-100">
                       <div className="d-flex align-items-center gap-2 mb-1.5">
-                        <Gift size={14} className="text-secondary" style={{ color: 'rgb(79, 195, 247)' }} />
+                        <Gift size={14} className="text-secondary" style={{ color: 'var(--accent-cyan)' }} />
                         <span className="text-secondary font-monospace" style={{ fontSize: '0.58rem', letterSpacing: '0.04em' }}>DATE OF BIRTH</span>
                       </div>
                       <strong className="text-white small font-monospace" style={{ fontSize: '0.88rem' }}>
@@ -249,7 +250,7 @@ function ProfileIdentity({
                   <div className="col-sm-4">
                     <div className="telemetry-node telemetry-node-blood h-100">
                       <div className="d-flex align-items-center gap-2 mb-1.5">
-                        <Droplet size={14} className="text-secondary" style={{ color: 'rgb(255, 143, 0)' }} />
+                        <Droplet size={14} className="text-secondary" style={{ color: 'var(--brand-orange)' }} />
                         <span className="text-secondary font-monospace" style={{ fontSize: '0.58rem', letterSpacing: '0.04em' }}>BLOOD GROUP</span>
                       </div>
                       <strong className="text-white fs-5 font-monospace">
@@ -262,7 +263,7 @@ function ProfileIdentity({
                   <div className="col-sm-4">
                     <div className="telemetry-node telemetry-node-height h-100">
                       <div className="d-flex align-items-center gap-2 mb-1.5">
-                        <Ruler size={14} className="text-secondary" style={{ color: 'rgb(0, 245, 212)' }} />
+                        <Ruler size={14} className="text-secondary" style={{ color: 'var(--accent-teal)' }} />
                         <span className="text-secondary font-monospace" style={{ fontSize: '0.58rem', letterSpacing: '0.04em' }}>HEIGHT</span>
                       </div>
                       <strong className="text-white fs-5 font-monospace">
@@ -275,7 +276,7 @@ function ProfileIdentity({
                   <div className="col-sm-4">
                     <div className="telemetry-node telemetry-node-weight h-100">
                       <div className="d-flex align-items-center gap-2 mb-1.5">
-                        <Scale size={14} className="text-secondary" style={{ color: 'rgb(78, 205, 196)' }} />
+                        <Scale size={14} className="text-secondary" style={{ color: 'var(--accent-teal)' }} />
                         <span className="text-secondary font-monospace" style={{ fontSize: '0.58rem', letterSpacing: '0.04em' }}>WEIGHT</span>
                       </div>
                       <strong className="text-white fs-5 font-monospace">
@@ -322,7 +323,8 @@ function ProfileIdentity({
                     <select 
                       value={editData.gender || ''} 
                       onChange={(e) => setEditData({...editData, gender: e.target.value})}
-                      className="w-100 bg-dark text-white border border-white-10 rounded p-2 font-monospace"
+                      className="w-100 border border-white-10 rounded p-2 font-monospace"
+                      style={{ background: 'var(--bg-input)', color: 'var(--text-primary)' }}
                     >
                       <option value="">Select Gender</option>
                       <option value="M">Male</option>
@@ -348,7 +350,7 @@ function ProfileIdentity({
                   <div className="target-node target-node-hydration p-3 h-100 d-flex flex-column justify-content-between" style={{ minHeight: '102px' }}>
                     <div className="d-flex align-items-center justify-content-between mb-1.5">
                       <span className="text-secondary d-block small" style={{ fontSize: '0.6rem', letterSpacing: '0.04em' }}>HYDRATION</span>
-                      <Droplet size={14} style={{ color: 'var(--primary-accent)' }} />
+                      <Droplet size={14} style={{ color: 'var(--brand-blue)' }} />
                     </div>
                     <div>
                       <strong className="fs-6 d-block mt-0.5" style={{ color: 'var(--text-primary)' }}>
@@ -364,7 +366,7 @@ function ProfileIdentity({
                   <div className="target-node target-node-bmr p-3 h-100 d-flex flex-column justify-content-between" style={{ minHeight: '102px' }}>
                     <div className="d-flex align-items-center justify-content-between mb-1.5">
                       <span className="text-secondary d-block small" style={{ fontSize: '0.6rem', letterSpacing: '0.04em' }}>METABOLIC BMR</span>
-                      <Flame size={14} style={{ color: 'var(--accent-orange)' }} />
+                      <Flame size={14} style={{ color: 'var(--brand-orange)' }} />
                     </div>
                     <div>
                       <strong className="fs-6 d-block mt-0.5" style={{ color: 'var(--text-primary)' }}>
@@ -382,7 +384,7 @@ function ProfileIdentity({
                   <div className="target-node target-node-sleep p-3 h-100 d-flex flex-column justify-content-between" style={{ minHeight: '102px' }}>
                     <div className="d-flex align-items-center justify-content-between mb-1.5">
                       <span className="text-secondary d-block small" style={{ fontSize: '0.6rem', letterSpacing: '0.04em' }}>OPTIMAL SLEEP</span>
-                      <Clock size={14} style={{ color: 'var(--primary-accent)' }} />
+                      <Clock size={14} style={{ color: 'var(--accent-teal)' }} />
                     </div>
                     <div>
                       <strong className="fs-6 d-block mt-0.5" style={{ color: 'var(--text-primary)' }}>7.5 - 8.5 Hrs</strong>

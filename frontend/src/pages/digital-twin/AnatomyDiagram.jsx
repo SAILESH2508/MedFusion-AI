@@ -351,6 +351,7 @@ export default function AnatomyDiagram({ selectedOrgan, onOrganSelect, patientDa
       {/* SVG anatomical diagram */}
       <motion.svg
         viewBox="58 0 224 430"
+        aria-hidden="true"
         style={{
           height: '100%',
           maxHeight: '460px',

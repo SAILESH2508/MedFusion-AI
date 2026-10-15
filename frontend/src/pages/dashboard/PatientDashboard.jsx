@@ -468,8 +468,8 @@ function PatientDashboard({ user }) {
       <div className="d-flex flex-column gap-4 pt-2">
         {/* Sleek Medical Header Console inside Sidebar */}
         <div className="glass-card p-4 mb-2 reveal border-theme-accent border-opacity-15 bg-white-5" style={{ borderRadius: '12px' }}>
-          <h2 className="fw-bolder fs-6 m-0 text-white" style={{ letterSpacing: '-0.02em', fontSize: '1.25rem' }}>
-            AI Health <span className="text-theme-accent">Diagnostics</span>
+          <h2 className="fw-bolder fs-6 m-0" style={{ letterSpacing: '-0.02em', fontSize: '1.25rem', color: 'var(--text-primary)' }}>
+            AI Health <span style={{ color: 'var(--brand-orange)' }}>Diagnostics</span>
           </h2>
           <p className="text-secondary m-0 mt-2" style={{ fontSize: '0.88rem', lineHeight: '1.4' }}>
             Enter your medical numbers and symptoms to check your health risks instantly.
@@ -478,7 +478,7 @@ function PatientDashboard({ user }) {
 
         {/* Screening Profile selector */}
         <div className="mt-2">
-          <h4 className="fw-bold mb-3 text-white" style={{ fontSize: '1.05rem', letterSpacing: '0.05em' }}>
+          <h4 className="fw-bold mb-3" style={{ fontSize: '1.05rem', letterSpacing: '0.05em', color: 'var(--text-primary)' }}>
             <span className="text-theme-accent font-monospace text-uppercase" style={{ letterSpacing: '0.06em' }}>Screening Profile</span>
           </h4>
           <div className="d-flex flex-column gap-3 mt-3">
@@ -757,16 +757,16 @@ function PatientDashboard({ user }) {
         return (
           <div className="reveal">
             <div className="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
-              <h4 className="fw-bold text-white d-flex align-items-center gap-2 m-0" style={{ fontSize: '1.05rem', letterSpacing: '0.05em' }}>
-                <Heart size={18} style={{ color: 'var(--theme-accent)' }} />
-                <span style={{ color: 'var(--theme-accent)' }}>Cardiovascular Vitals</span>
+              <h4 className="fw-bold d-flex align-items-center gap-2 m-0" style={{ fontSize: '1.05rem', letterSpacing: '0.05em', color: 'var(--brand-orange)' }}>
+                <Heart size={18} style={{ color: 'var(--brand-orange)' }} />
+                <span>Cardiovascular Vitals</span>
               </h4>
               <div className="d-flex gap-2">
                 <button 
                   type="button" 
                   onClick={() => applyHeartPreset('healthy')}
                   className="btn border rounded font-monospace hover-white px-3 py-1.5"
-                  style={{ fontSize: '0.78rem', width: 'auto', backgroundColor: 'rgba(25, 135, 84, 0.2)', color: '#4ade80', borderColor: 'rgba(25, 135, 84, 0.5)' }}
+                  style={{ fontSize: '0.78rem', width: 'auto', backgroundColor: 'rgba(30,122,74,0.15)', color: 'var(--status-success)', borderColor: 'var(--status-success)' }}
                 >
                   Healthy Preset
                 </button>
@@ -774,7 +774,7 @@ function PatientDashboard({ user }) {
                   type="button" 
                   onClick={() => applyHeartPreset('risk')}
                   className="btn border rounded font-monospace hover-white px-3 py-1.5"
-                  style={{ fontSize: '0.78rem', width: 'auto', backgroundColor: 'rgba(220, 53, 69, 0.2)', color: '#f87171', borderColor: 'rgba(220, 53, 69, 0.5)' }}
+                  style={{ fontSize: '0.78rem', width: 'auto', backgroundColor: 'rgba(192,57,43,0.15)', color: 'var(--accent-red)', borderColor: 'var(--accent-red)' }}
                 >
                   High Risk Preset
                 </button>
@@ -1018,16 +1018,16 @@ function PatientDashboard({ user }) {
         return (
           <div className="reveal">
             <div className="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
-              <h4 className="fw-bold text-white d-flex align-items-center gap-2 m-0" style={{ fontSize: '1.05rem', letterSpacing: '0.05em' }}>
-                <Activity size={18} style={{ color: 'var(--theme-accent)' }} />
-                <span style={{ color: 'var(--theme-accent)' }}>Metabolic & Glycemic Parameters</span>
+              <h4 className="fw-bold d-flex align-items-center gap-2 m-0" style={{ fontSize: '1.05rem', letterSpacing: '0.05em', color: 'var(--brand-blue)' }}>
+                <Activity size={18} style={{ color: 'var(--brand-blue)' }} />
+                <span>Metabolic & Glycemic Parameters</span>
               </h4>
               <div className="d-flex gap-2">
                 <button 
                   type="button" 
                   onClick={() => applyDiabetesPreset('healthy')}
                   className="btn border rounded font-monospace hover-white px-3 py-1.5"
-                  style={{ fontSize: '0.78rem', width: 'auto', backgroundColor: 'rgba(25, 135, 84, 0.2)', color: '#4ade80', borderColor: 'rgba(25, 135, 84, 0.5)' }}
+                  style={{ fontSize: '0.78rem', width: 'auto', backgroundColor: 'rgba(30,122,74,0.15)', color: 'var(--status-success)', borderColor: 'var(--status-success)' }}
                 >
                   Healthy Preset
                 </button>
@@ -1035,7 +1035,7 @@ function PatientDashboard({ user }) {
                   type="button" 
                   onClick={() => applyDiabetesPreset('risk')}
                   className="btn border rounded font-monospace hover-white px-3 py-1.5"
-                  style={{ fontSize: '0.78rem', width: 'auto', backgroundColor: 'rgba(220, 53, 69, 0.2)', color: '#f87171', borderColor: 'rgba(220, 53, 69, 0.5)' }}
+                  style={{ fontSize: '0.78rem', width: 'auto', backgroundColor: 'rgba(192,57,43,0.15)', color: 'var(--accent-red)', borderColor: 'var(--accent-red)' }}
                 >
                   High Risk Preset
                 </button>
@@ -1265,16 +1265,16 @@ function PatientDashboard({ user }) {
         return (
           <div className="reveal">
             <div className="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
-              <h4 className="fw-bold text-white d-flex align-items-center gap-2 m-0" style={{ fontSize: '1.05rem', letterSpacing: '0.05em' }}>
-                <Compass size={18} style={{ color: 'var(--theme-accent)' }} />
-                <span style={{ color: 'var(--theme-accent)' }}>Oncological Surveillance Parameters</span>
+              <h4 className="fw-bold d-flex align-items-center gap-2 m-0" style={{ fontSize: '1.05rem', letterSpacing: '0.05em', color: 'var(--accent-violet)' }}>
+                <Compass size={18} style={{ color: 'var(--accent-violet)' }} />
+                <span>Oncological Surveillance Parameters</span>
               </h4>
               <div className="d-flex gap-2">
                 <button 
                   type="button" 
                   onClick={() => applyCancerPreset('healthy')}
                   className="btn border rounded font-monospace hover-white px-3 py-1.5"
-                  style={{ fontSize: '0.78rem', width: 'auto', backgroundColor: 'rgba(25, 135, 84, 0.2)', color: '#4ade80', borderColor: 'rgba(25, 135, 84, 0.5)' }}
+                  style={{ fontSize: '0.78rem', width: 'auto', backgroundColor: 'rgba(30,122,74,0.15)', color: 'var(--status-success)', borderColor: 'var(--status-success)' }}
                 >
                   Healthy Preset
                 </button>
@@ -1282,7 +1282,7 @@ function PatientDashboard({ user }) {
                   type="button" 
                   onClick={() => applyCancerPreset('risk')}
                   className="btn border rounded font-monospace hover-white px-3 py-1.5"
-                  style={{ fontSize: '0.78rem', width: 'auto', backgroundColor: 'rgba(220, 53, 69, 0.2)', color: '#f87171', borderColor: 'rgba(220, 53, 69, 0.5)' }}
+                  style={{ fontSize: '0.78rem', width: 'auto', backgroundColor: 'rgba(192,57,43,0.15)', color: 'var(--accent-red)', borderColor: 'var(--accent-red)' }}
                 >
                   High Risk Preset
                 </button>
