@@ -10,177 +10,157 @@
 
 :root,
 [data-theme='dark'] {
-  /* Dark Mode — Blue-Dominant Multi-Color */
-  --bg-main: #263D60;
-  --bg-alt: #2D465F;
-  --bg-secondary: #294F4B;
-  --bg-surface: #354F79;          /* sidebar / nav use card-blue */
-  --bg-card: #354F79;             /* card-blue */
-  --bg-card-secondary: #51466C;   /* card-lavender */
-  --bg-upload: #315B60;           /* card-teal */
-  --bg-upload-rx: #315B60;
-  --bg-upload-lab: #294F4B;       /* bg-secondary */
-  --bg-form: #334B6D;             /* form-surface */
-  --bg-input: #3A5070;            /* input-surface */
-  --bg-preview: #355A48;          /* card-green */
-  --bg-card-hover: #3D5E8A;
-
-  /* New card tokens */
-  --card-blue: #354F79;
-  --card-teal: #315B60;
-  --card-green: #355A48;
-  --card-lavender: #51466C;
-  --card-peach: #664A46;
-  --card-coral: #67464F;
-  --card-amber: #635536;
-  --form-surface: #334B6D;
-  --input-surface: #3A5070;
-
-  --text-primary: #F1EBDD;
-  --text-secondary: #CCD8E8;
-  --text-muted: #8FA5BF;
-
-  --border-color: #587397;
-  --card-border: #587397;
-  --input-border: #587397;
-  --border-subtle: rgba(88, 115, 151, 0.20);
-
-  --primary-accent: #8DB8F0;
-  --btn-primary: #8DB8F0;
-  --btn-primary-hover: #A5C8F5;
-  --btn-primary-text: #162840;
-
-  --secondary-accent: #E3A0A0;
-  --btn-secondary: #E3A0A0;
-  --btn-secondary-hover: #EDADAD;
-  --btn-secondary-text: #2A1616;
-
-  --card-shadow: 0 1px 3px rgba(0, 0, 0, 0.30);
-  --card-shadow-hover: 0 4px 12px rgba(0, 0, 0, 0.45);
-
-  /* Medical Status Colors */
-  --status-normal: #91C69B;
-  --status-normal-bg: #263D35;
-  --status-normal-border: #4A7F5A;
-  --status-warning: #E3C078;
-  --status-warning-bg: #3D3220;
-  --status-warning-border: #7A6030;
-  --status-danger: #E3A0A0;
-  --status-danger-bg: #3D2428;
-  --status-danger-border: #7A4448;
-  --status-info: #7FC8BD;
-  --status-info-bg: #1F3840;
-  --status-info-border: #3A6870;
-
-  /* Backwards compatibility aliases */
-  --bg-deep: var(--bg-main);
-  --bg-glow: var(--bg-surface);
-  --nav-bg: var(--bg-surface);
-  --input-bg: var(--bg-input);
-  --input-text: var(--text-primary);
-  --accent: var(--primary-accent);
-  --theme-accent: var(--primary-accent);
-  --theme-accent-glow: rgba(141, 184, 240, 0.15);
-
-  --accent-blue: #8DB8F0;
-  --accent-teal: #7FC8BD;
-  --accent-green: #91C69B;
-  --accent-purple: #B9A1E3;
-  --accent-coral: #E3A0A0;
-  --accent-amber: #E3C078;
-  /* Legacy aliases — keep for any component using old names */
-  --accent-red: #E3A0A0;
-  --accent-orange: #E3C078;
-
+  /* Dark Mode — Warm-Neutral Orange+Blue */
+  --bg-page: #1C2333;
+  --bg-surface: #242D40;
+  --bg-card: #2D3748;
+  --bg-card-tinted: #2A3A52;
+  --bg-sidebar: #1A2535;
+  --bg-nav: #111827;
+  --bg-input: #374151;
+  --bg-modal: #2D3748;
+  --text-primary: #E8E3DA;
+  --text-secondary: #B0BED4;
+  --text-muted: #7A90A8;
+  --text-disabled: #4A5568;
+  --text-on-dark: #E8E3DA;
+  --text-on-brand: #FFFFFF;
+  --border: #3D4F68;
+  --border-focus: #F4954A;
+  --border-card: #374155;
+  --brand-orange: #F4954A;
+  --brand-blue: #5B9FE0;
+  --accent-cyan: #22C5E0;
+  --accent-teal: #2DB8B0;
+  --accent-violet: #9B7FD4;
+  --accent-emerald: #34C97A;
+  --accent-amber: #E8B84B;
+  --accent-coral: #F08080;
+  --accent-red: #F56565;
+  --status-success: #34C97A;
+  --status-warning: #E8B84B;
+  --status-error: #F56565;
+  --status-info: #5B9FE0;
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.25);
+  --shadow-md: 0 4px 12px rgba(0,0,0,0.35);
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+  --grad-track: #3D4F68;
   --font-main: 'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   --font-mono: 'JetBrains Mono', monospace;
 }
 
 [data-theme='light'] {
-  /* Light Mode — Blue-Dominant Multi-Color */
-  --bg-main: #D5E3F5;
-  --bg-alt: #D9E8F2;
-  --bg-secondary: #D9E8DC;
-  --bg-surface: #BED4F0;          /* card-blue for nav/sidebar */
-  --bg-card: #BED4F0;             /* card-blue */
-  --bg-card-secondary: #D8CEF0;   /* card-lavender */
-  --bg-upload: #B9DFDA;           /* card-teal */
-  --bg-upload-rx: #B9DFDA;
-  --bg-upload-lab: #D9E8DC;       /* bg-secondary */
-  --bg-form: #C8D9EF;             /* form-surface */
-  --bg-input: #DCE6F5;            /* input-surface */
-  --bg-preview: #C8E2CD;          /* card-green */
-  --bg-card-hover: #AAC5E5;
-
-  /* New card tokens */
-  --card-blue: #BED4F0;
-  --card-teal: #B9DFDA;
-  --card-green: #C8E2CD;
-  --card-lavender: #D8CEF0;
-  --card-peach: #F0D0BB;
-  --card-coral: #EAC2C0;
-  --card-amber: #F0DDAA;
-  --form-surface: #C8D9EF;
-  --input-surface: #DCE6F5;
-
-  --text-primary: #243651;
-  --text-secondary: #4B607A;
-  --text-muted: #7090A8;
-
-  --border-color: #A9BED9;
-  --card-border: #A9BED9;
-  --input-border: #A9BED9;
-  --border-subtle: rgba(169, 190, 217, 0.30);
-
-  --primary-accent: #356CC0;
-  --btn-primary: #356CC0;
-  --btn-primary-hover: #2A5AA8;
-  --btn-primary-text: #FFFFFF;
-
-  --secondary-accent: #B95759;
-  --btn-secondary: #B95759;
-  --btn-secondary-hover: #A04648;
-  --btn-secondary-text: #FFFFFF;
-
-  --card-shadow: 0 1px 3px rgba(36, 54, 81, 0.10);
-  --card-shadow-hover: 0 4px 12px rgba(36, 54, 81, 0.18);
-
-  /* Medical Status Colors */
-  --status-normal: #397B58;
-  --status-normal-bg: #D3EAD9;
-  --status-normal-border: #88C5A0;
-  --status-warning: #A87321;
-  --status-warning-bg: #F5E8CC;
-  --status-warning-border: #DDB870;
-  --status-danger: #B95759;
-  --status-danger-bg: #F5D8D8;
-  --status-danger-border: #D98A8C;
-  --status-info: #267F80;
-  --status-info-bg: #D0EBF0;
-  --status-info-border: #78C0C8;
-
-  /* Backwards compatibility aliases */
-  --bg-deep: var(--bg-main);
-  --bg-glow: var(--bg-surface);
-  --nav-bg: var(--bg-surface);
-  --input-bg: var(--bg-input);
-  --input-text: var(--text-primary);
-  --accent: var(--primary-accent);
-  --theme-accent: var(--primary-accent);
-  --theme-accent-glow: rgba(53, 108, 192, 0.15);
-
-  --accent-blue: #356CC0;
-  --accent-teal: #267F80;
-  --accent-green: #397B58;
-  --accent-purple: #7758AA;
-  --accent-coral: #B95759;
-  --accent-amber: #A87321;
-  /* Legacy aliases */
-  --accent-red: #B95759;
-  --accent-orange: #A87321;
-
+  /* Light Mode — Warm-Neutral Orange+Blue */
+  --bg-page: #F4F1EC;
+  --bg-surface: #EDE9E3;
+  --bg-card: #FFFFFF;
+  --bg-card-tinted: #EEF4FB;
+  --bg-sidebar: #1E3A5F;
+  --bg-nav: #1E3A5F;
+  --bg-input: #F7F5F1;
+  --bg-modal: #F0EDE8;
+  --text-primary: #1A2333;
+  --text-secondary: #4A5568;
+  --text-muted: #718096;
+  --text-disabled: #A0AEC0;
+  --text-on-dark: #F7F5F1;
+  --text-on-brand: #FFFFFF;
+  --border: #D1C8BC;
+  --border-focus: #E07B39;
+  --border-card: #D9D3CC;
+  --brand-orange: #E07B39;
+  --brand-blue: #2C6FB5;
+  --accent-cyan: #0E8FAA;
+  --accent-teal: #1A7A74;
+  --accent-violet: #6B4FA3;
+  --accent-emerald: #1E7A4A;
+  --accent-amber: #B87B1A;
+  --accent-coral: #D45C5C;
+  --accent-red: #C0392B;
+  --status-success: #1E7A4A;
+  --status-warning: #B87B1A;
+  --status-error: #C0392B;
+  --status-info: #2C6FB5;
+  --shadow-sm: 0 1px 3px rgba(26,35,51,0.08);
+  --shadow-md: 0 4px 12px rgba(26,35,51,0.12);
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+  --grad-track: #D1C8BC;
   --font-main: 'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   --font-mono: 'JetBrains Mono', monospace;
+}
+
+/* ── Backward-compat aliases (old var names → new tokens) ─────────────────── */
+
+:root, [data-theme='light'] {
+  --bg-main: var(--bg-page);
+  --bg-alt: var(--bg-surface);
+  --bg-secondary: var(--bg-surface);
+  --bg-upload: var(--bg-card-tinted);
+  --bg-upload-rx: var(--bg-card-tinted);
+  --bg-upload-lab: var(--bg-surface);
+  --bg-form: var(--bg-surface);
+  --bg-preview: var(--bg-card);
+  --bg-card-hover: var(--bg-card-tinted);
+  --bg-card-secondary: var(--bg-card-tinted);
+  --card-blue: var(--bg-card);
+  --card-teal: var(--bg-card-tinted);
+  --card-green: var(--bg-card-tinted);
+  --card-lavender: var(--bg-card-tinted);
+  --card-peach: var(--bg-card-tinted);
+  --card-coral: var(--bg-card-tinted);
+  --card-amber: var(--bg-card-tinted);
+  --form-surface: var(--bg-surface);
+  --input-surface: var(--bg-input);
+  --bg-deep: var(--bg-page);
+  --bg-glow: var(--bg-surface);
+  --nav-bg: var(--bg-nav);
+  --input-bg: var(--bg-input);
+  --input-text: var(--text-primary);
+  --accent: var(--brand-orange);
+  --theme-accent: var(--brand-orange);
+  --theme-accent-glow: rgba(224,123,57,0.15);
+  --primary-accent: var(--brand-orange);
+  --btn-primary: var(--brand-orange);
+  --btn-primary-hover: #C96E30;
+  --btn-primary-text: var(--text-on-brand);
+  --secondary-accent: var(--brand-blue);
+  --btn-secondary: var(--brand-blue);
+  --btn-secondary-hover: #245FA0;
+  --btn-secondary-text: var(--text-on-brand);
+  --card-shadow: var(--shadow-sm);
+  --card-shadow-hover: var(--shadow-md);
+  --border-color: var(--border);
+  --card-border: var(--border-card);
+  --input-border: var(--border);
+  --border-subtle: rgba(61,79,104,0.25);
+  --accent-blue: var(--brand-blue);
+  --accent-green: var(--accent-emerald);
+  --accent-purple: var(--accent-violet);
+  --accent-orange: var(--brand-orange);
+  /* Status compat */
+  --status-normal: var(--status-success);
+  --status-normal-bg: rgba(30,122,74,0.15);
+  --status-normal-border: var(--status-success);
+  --status-warning-bg: rgba(184,123,26,0.15);
+  --status-warning-border: var(--status-warning);
+  --status-danger: var(--accent-red);
+  --status-danger-bg: rgba(192,57,43,0.15);
+  --status-danger-border: var(--accent-red);
+  --status-info-bg: rgba(44,111,181,0.15);
+  --status-info-border: var(--status-info);
+}
+
+[data-theme='light'] {
+  --theme-accent-glow: rgba(224,123,57,0.15);
+  --border-subtle: rgba(209,200,188,0.25);
+  --status-normal-bg: #E6F5EC;
+  --status-warning-bg: #FDF3DC;
+  --status-danger-bg: #FDECEA;
+  --status-info-bg: #E8F1FC;
 }
 
 /* ── Reset & Body ─────────────────────────────────────────────────────────── */
@@ -193,10 +173,10 @@
 
 /* 4. Background Grid — Subtle, Full-Page Grid Lines in Both Themes */
 body {
-  background-color: var(--bg-main) !important;
+  background-color: var(--bg-page) !important;
   background-image:
-    linear-gradient(rgba(53, 108, 192, 0.10) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(53, 108, 192, 0.10) 1px, transparent 1px) !important;
+    linear-gradient(rgba(44,111,181,0.07) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(44,111,181,0.07) 1px, transparent 1px) !important;
   background-size: 30px 30px !important;
   background-position: 0 0 !important;
   background-attachment: fixed !important;
@@ -209,15 +189,15 @@ body {
 
 [data-theme="dark"] body {
   background-image:
-    linear-gradient(rgba(141, 184, 240, 0.08) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(141, 184, 240, 0.08) 1px, transparent 1px) !important;
+    linear-gradient(rgba(91,159,224,0.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(91,159,224,0.06) 1px, transparent 1px) !important;
   background-size: 30px 30px !important;
 }
 
 /* ── Clean Healthcare Navigation Bar ─────────────────────────────────────── */
 
 nav.bg-glass {
-  background: var(--bg-surface) !important;
+  background: var(--bg-nav) !important;
   backdrop-filter: none !important;
   -webkit-backdrop-filter: none !important;
   border-bottom: 1px solid var(--border-color) !important;
@@ -260,7 +240,7 @@ nav.bg-glass .text-secondary:hover {
 
 /* Brand Logo: Clean, solid, medical authority */
 .brand-logo-blue {
-  color: var(--text-primary) !important;
+  color: var(--text-on-dark) !important;
   background: none !important;
   -webkit-background-clip: unset !important;
   background-clip: unset !important;
@@ -270,7 +250,7 @@ nav.bg-glass .text-secondary:hover {
 }
 
 .brand-logo-orange {
-  color: var(--secondary-accent) !important;
+  color: var(--brand-orange) !important;
   background: none !important;
   -webkit-background-clip: unset !important;
   background-clip: unset !important;
@@ -286,7 +266,7 @@ nav.bg-glass .text-secondary:hover {
   height: calc(100vh - 56px);
   position: sticky;
   top: 56px;
-  background: var(--bg-surface) !important;
+  background: var(--bg-sidebar) !important;
   backdrop-filter: none !important;
   -webkit-backdrop-filter: none !important;
   border-right: 1px solid var(--border-color) !important;
@@ -297,6 +277,7 @@ nav.bg-glass .text-secondary:hover {
   flex-shrink: 0;
   overflow-y: auto;
   box-shadow: none !important;
+  color: var(--text-on-dark);
 }
 
 .main-content-wrapper {
@@ -330,8 +311,8 @@ nav.bg-glass .text-secondary:hover {
 }
 
 .sidebar-link:hover {
-  color: var(--text-primary) !important;
-  background: var(--bg-upload) !important;
+  color: var(--text-on-dark) !important;
+  background: var(--bg-card-tinted) !important;
   border-color: var(--border-color) !important;
 }
 
@@ -340,15 +321,15 @@ nav.bg-glass .text-secondary:hover {
 }
 
 .sidebar-link.active {
-  color: var(--text-primary) !important;
+  color: var(--text-on-dark) !important;
   background: var(--bg-card) !important;
-  border-color: var(--primary-accent) !important;
+  border-color: var(--brand-orange) !important;
   font-weight: 700;
 }
 
 .sidebar-link.active svg {
   opacity: 1;
-  color: var(--primary-accent) !important;
+  color: var(--brand-orange) !important;
 }
 
 .sidebar-footer {
@@ -615,17 +596,17 @@ option {
 [data-theme='light'] input:-webkit-autofill,
 [data-theme='light'] input:-webkit-autofill:hover,
 [data-theme='light'] input:-webkit-autofill:focus {
-  -webkit-box-shadow: 0 0 0 1000px #DCE6F5 inset !important;
-  -webkit-text-fill-color: #243651 !important;
-  caret-color: #243651 !important;
+  -webkit-box-shadow: 0 0 0 1000px #F7F5F1 inset !important;
+  -webkit-text-fill-color: #1A2333 !important;
+  caret-color: #1A2333 !important;
 }
 
 [data-theme='dark'] input:-webkit-autofill,
 [data-theme='dark'] input:-webkit-autofill:hover,
 [data-theme='dark'] input:-webkit-autofill:focus {
-  -webkit-box-shadow: 0 0 0 1000px #3A5070 inset !important;
-  -webkit-text-fill-color: #F1EBDD !important;
-  caret-color: #F1EBDD !important;
+  -webkit-box-shadow: 0 0 0 1000px #374151 inset !important;
+  -webkit-text-fill-color: #E8E3DA !important;
+  caret-color: #E8E3DA !important;
 }
 
 /* Range input track & thumb styling */
@@ -1094,9 +1075,9 @@ button.btn-icon:hover {
 
 /* Scrollbars: restrained and subtle */
 ::-webkit-scrollbar { width: 5px; height: 5px; }
-::-webkit-scrollbar-track { background: var(--bg-main); }
+::-webkit-scrollbar-track { background: var(--bg-page); }
 ::-webkit-scrollbar-thumb { background: var(--border-color); border-radius: 4px; }
-::-webkit-scrollbar-thumb:hover { background: var(--primary-accent); }
+::-webkit-scrollbar-thumb:hover { background: var(--brand-orange); }
 
 /* ── Bootstrap Grid & Layout Utilities ───────────────────────────────────── */
 
