@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { User, Activity, Phone, Edit3, Save, X, ShieldAlert, Heart, Calendar, ShieldCheck, Info, CheckCircle2, Dna, Gift, HeartPulse, AlertCircle, Droplet, Scale, Ruler, Flame, Sparkles, Clock, QrCode } from 'lucide-react';
+import React from 'react';
+import { User, Activity, Phone, Edit3, Save, X, ShieldAlert, Heart, Calendar, ShieldCheck, Info, CheckCircle2, Dna, Gift, HeartPulse, AlertCircle, Droplet, Scale, Ruler, Flame, Sparkles, Clock } from 'lucide-react';
 import { getAge } from '../../services/utils';
 
 function ProfileIdentity({ 
@@ -19,8 +19,6 @@ function ProfileIdentity({
   onGenerateToken,
   onRevokeToken
 }) {
-  const [generatingQR, setGeneratingQR] = useState(false);
-
   return (
     <div className="reveal flex-grow-1 d-flex flex-column gap-4 text-start" style={{ paddingBottom: '40px' }}>
       
@@ -186,117 +184,6 @@ function ProfileIdentity({
                 </div>
               )}
 
-              {/* ---- EMERGENCY QR CARD — always visible, not hidden in edit mode ---- */}
-              <div className="p-3.5 rounded-4 text-start mt-3" style={{ border: '1px solid rgba(0,245,212,0.15)', background: 'rgba(0,245,212,0.03)' }}>
-                <span className="small text-theme-accent d-block text-uppercase mb-2 fw-bold font-monospace" style={{ fontSize: '0.64rem', letterSpacing: '0.06em' }}>
-                  Emergency QR Card
-                </span>
-                <p className="text-secondary m-0 mb-2" style={{ fontSize: '0.72rem', lineHeight: '1.5' }}>
-                  Scan to access emergency medical information without login required.
-                </p>
-
-                {!emergencyToken ? (
-                  <button
-                    onClick={async () => {
-                      setGeneratingQR(true);
-                      try {
-                        await onGenerateToken();
-                      } finally {
-                        setGeneratingQR(false);
-                      }
-                    }}
-                    disabled={generatingQR}
-                    className="px-3 py-2 border-0 rounded-3 font-monospace text-uppercase fw-bold d-flex align-items-center justify-content-center gap-2"
-                    style={{
-                      fontSize: '0.76rem',
-                      cursor: generatingQR ? 'not-allowed' : 'pointer',
-                      width: '100%',
-                      marginTop: '6px',
-                      background: 'var(--btn-primary)',
-                      color: 'var(--btn-primary-text)',
-                      boxShadow: '0 1px 3px rgba(0,0,0,0.15)',
-                      opacity: generatingQR ? 0.7 : 1,
-                      transition: 'all 0.2s ease',
-                    }}
-                  >
-                    <QrCode size={15} />
-                    {generatingQR ? 'Generating QR...' : 'Generate Emergency QR'}
-                  </button>
-                ) : (
-                  <div className="d-flex flex-column align-items-center gap-3">
-                    <img
-                      src={`https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodeURIComponent(window.location.origin + '/emergency/' + emergencyToken)}`}
-                      alt="Emergency QR Code"
-                      style={{ width: '180px', height: '180px', borderRadius: '8px', border: '2px solid rgba(0,245,212,0.25)', display: 'block' }}
-                    />
-                    <p className="text-secondary m-0" style={{ fontSize: '0.62rem', wordBreak: 'break-all', textAlign: 'center', opacity: 0.5 }}>
-                      {window.location.origin}/emergency/{emergencyToken}
-                    </p>
-                    <div className="d-flex gap-2 flex-wrap justify-content-center w-100">
-                      <button
-                        onClick={onGenerateToken}
-                        className="px-3 py-1.5 border border-white-10 bg-transparent text-theme-accent rounded-3 font-monospace text-uppercase hover-white"
-                        style={{ fontSize: '0.72rem', cursor: 'pointer' }}
-                        title="Generate a new token (old QR will be invalidated)"
-                      >
-                        Regenerate
-                      </button>
-                      <button
-                        onClick={onRevokeToken}
-                        className="px-3 py-1.5 border border-white-10 bg-transparent text-danger rounded-3 font-monospace text-uppercase"
-                        style={{ fontSize: '0.72rem', cursor: 'pointer' }}
-                      >
-                        Revoke
-                      </button>
-                      <a
-                        href={`https://api.qrserver.com/v1/create-qr-code/?size=400x400&data=${encodeURIComponent(window.location.origin + '/emergency/' + emergencyToken)}`}
-                        download="MedFusion_Emergency_QR.png"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="px-3 py-1.5 border border-white-10 bg-transparent text-secondary rounded-3 font-monospace text-uppercase text-decoration-none"
-                        style={{ fontSize: '0.72rem' }}
-                      >
-                        Download
-                      </a>
-                      <button
-                        onClick={() => {
-                          const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(window.location.origin + '/emergency/' + emergencyToken)}`;
-                          const emergencyUrl = `${window.location.origin}/emergency/${emergencyToken}`;
-                          const printWin = window.open('', '_blank', 'width=500,height=620');
-                          if (!printWin) return;
-                          printWin.document.write(`
-                            <!DOCTYPE html><html><head><title>MedFusion Emergency QR</title>
-                            <style>
-                              body { font-family: monospace; text-align: center; background: #fff; color: #111; padding: 40px 24px; }
-                              h2 { font-size: 1.1rem; letter-spacing: 0.08em; margin-bottom: 4px; }
-                              p { font-size: 0.72rem; color: #555; margin: 4px 0 20px; }
-                              img { border: 2px solid #39745b; border-radius: 8px; }
-                              .url { font-size: 0.6rem; color: #888; word-break: break-all; margin-top: 12px; }
-                              .warn { font-size: 0.62rem; color: #b91c1c; margin-top: 14px; }
-                            </style></head><body>
-                            <h2>MEDFUSION AI — EMERGENCY QR</h2>
-                            <p>Scan this QR code to access the patient's emergency medical information</p>
-                            <img src="${qrUrl}" width="260" height="260" />
-                            <div class="url">${emergencyUrl}</div>
-                            <div class="warn">For emergency responders only. Always confirm patient identity.</div>
-                            <script>window.onload = function(){ window.print(); }</script>
-                            </body></html>
-                          `);
-                          printWin.document.close();
-                        }}
-                        className="px-3 py-1.5 border border-white-10 bg-transparent text-theme-accent rounded-3 font-monospace text-uppercase"
-                        style={{ fontSize: '0.72rem', cursor: 'pointer' }}
-                        title="Print QR code for physical card"
-                      >
-                        Print
-                      </button>
-                    </div>
-                    <p className="text-secondary m-0" style={{ fontSize: '0.65rem', opacity: 0.5, textAlign: 'center' }}>
-                      Revoke at any time to invalidate the QR code.
-                    </p>
-                  </div>
-                )}
-              </div>
             </div>
 
             <div className="border-top border-white-10 pt-3 mt-4 d-flex justify-content-between align-items-center">

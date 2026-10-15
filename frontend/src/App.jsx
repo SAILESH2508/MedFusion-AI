@@ -1,6 +1,6 @@
-import React, { useState, useEffect, createContext, useCallback } from 'react';
+import React, { useState, useEffect, useRef, createContext, useCallback } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate, Link, useLocation, NavLink as RouterNavLink } from 'react-router-dom';
-import { Activity, FileUp, Database, User, LogOut, Menu, X, Home, PanelLeft, Pill, Smile, Calendar, MessageSquare, MapPin, Sun, Moon, Salad, Cpu } from 'lucide-react';
+import { Activity, FileUp, Database, User, LogOut, Menu, X, Home, PanelLeft, Pill, Smile, Calendar, MessageSquare, MapPin, Sun, Moon, Salad, Cpu, QrCode } from 'lucide-react';
 import { AnimatePresence, motion } from 'framer-motion';
 
 // Pages
@@ -16,7 +16,7 @@ import EmergencyCard from './pages/EmergencyCard';
 import DietPlanner from './pages/DietPlanner';
 import DigitalTwin from './pages/DigitalTwin';
 import AIChatbot from './components/AIChatbot';
-import { removeAuthToken } from './services/api';
+import { removeAuthToken, api } from './services/api';
 
 import { SidebarContext } from './context/SidebarContext';
 import { ThemeProvider } from './context/ThemeContext';
@@ -230,7 +230,7 @@ function Sidebar({ user, logout, sidebarContent, isOpen, toggleSidebar, openAuth
                 d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" 
               />
             </svg>
-            <strong className="text-white fs-6">{scoreNum}</strong>
+            <strong className="fs-6" style={{ color: 'var(--text-on-dark)' }}>{scoreNum}</strong>
           </div>
           <div className="text-start">
             <span className="text-secondary d-block" style={{ fontSize: '0.62rem', letterSpacing: '0.04em' }}>VITALS INDEX</span>
@@ -249,7 +249,7 @@ function Sidebar({ user, logout, sidebarContent, isOpen, toggleSidebar, openAuth
                 {getInitials(user.full_name, user.email)}
               </div>
               <div className="user-details overflow-hidden" style={{ maxWidth: '175px' }}>
-                <span className="text-white fw-bold d-block text-truncate" style={{ fontSize: '1.05rem' }}>
+                <span className="fw-bold d-block text-truncate" style={{ fontSize: '1.05rem', color: 'var(--text-on-dark)' }}>
                   {user.full_name || user.email}
                 </span>
                 <span className="text-secondary d-block text-truncate" style={{ fontSize: '0.82rem', opacity: 0.7 }}>
@@ -264,14 +264,14 @@ function Sidebar({ user, logout, sidebarContent, isOpen, toggleSidebar, openAuth
         ) : (
           <div className="d-flex align-items-center justify-content-between w-100">
             <div className="d-flex align-items-center gap-3">
-              <div className="avatar-circle" style={{ background: 'rgba(255,255,255,0.08)', border: '1px dashed rgba(255,255,255,0.2)' }}>
+              <div className="avatar-circle" style={{ background: 'rgba(255,255,255,0.1)', border: '1px dashed var(--border)' }}>
                 GS
               </div>
               <div className="user-details overflow-hidden" style={{ maxWidth: '140px' }}>
                 <span className="text-secondary d-block font-monospace" style={{ fontSize: '0.75rem', letterSpacing: '0.05em' }}>
                   GUEST PORTAL
                 </span>
-                <span className="text-white fw-bold d-block text-truncate" style={{ fontSize: '0.88rem' }}>
+                <span className="fw-bold d-block text-truncate" style={{ fontSize: '0.88rem', color: 'var(--text-on-dark)' }}>
                   Anonymous Mode
                 </span>
               </div>
@@ -297,6 +297,137 @@ function SidebarLink({ to, icon, label, active }) {
       {icon}
       <span>{label}</span>
     </Link>
+  );
+}
+
+function EmergencyQRDropdown({ user }) {
+  const userId = user?.id || user?.user_id || user?.pk || 'guest';
+  const [token, setToken] = useState(() => {
+    try { return localStorage.getItem(`medfusion_emergency_token_${userId}`) || ''; }
+    catch { return ''; }
+  });
+  const [isOpen, setIsOpen] = useState(false);
+  const [profile, setProfile] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const btnRef = useRef(null);
+  const panelRef = useRef(null);
+
+  if (!user || user.role !== 'Patient') return null;
+
+  // Fetch profile summary on first open
+  useEffect(() => {
+    if (isOpen && !profile) {
+      api.get('/telemetry/emergency').then(r => setProfile(r.data)).catch(() => {});
+    }
+  }, [isOpen]);
+
+  // Close on outside click or Escape
+  useEffect(() => {
+    if (!isOpen) return;
+    const handleKey = (e) => { if (e.key === 'Escape') setIsOpen(false); };
+    const handleClick = (e) => {
+      if (panelRef.current && !panelRef.current.contains(e.target) &&
+          btnRef.current && !btnRef.current.contains(e.target)) {
+        setIsOpen(false);
+      }
+    };
+    document.addEventListener('keydown', handleKey);
+    document.addEventListener('mousedown', handleClick);
+    return () => {
+      document.removeEventListener('keydown', handleKey);
+      document.removeEventListener('mousedown', handleClick);
+    };
+  }, [isOpen]);
+
+  const handleGenerate = async () => {
+    setLoading(true);
+    try {
+      const res = await api.post('/emergency/generate/');
+      const t = res.data.token || '';
+      setToken(t);
+      localStorage.setItem(`medfusion_emergency_token_${userId}`, t);
+    } catch(e) { console.error(e); }
+    finally { setLoading(false); }
+  };
+
+  const handleRevoke = async () => {
+    try { await api.delete('/emergency/revoke/'); } catch {}
+    setToken('');
+    localStorage.removeItem(`medfusion_emergency_token_${userId}`);
+  };
+
+  const qrUrl = token
+    ? `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(window.location.origin + '/emergency/' + token)}`
+    : null;
+
+  return (
+    <div style={{ position: 'relative' }}>
+      <button
+        ref={btnRef}
+        onClick={() => setIsOpen(o => !o)}
+        aria-label="Emergency QR"
+        aria-expanded={isOpen}
+        className="btn-icon p-2"
+        style={{ color: isOpen ? 'var(--brand-orange)' : 'var(--text-secondary)', position: 'relative' }}
+      >
+        <QrCode size={18} />
+        {token && (
+          <span style={{
+            position: 'absolute', top: 0, right: 0,
+            width: '8px', height: '8px', borderRadius: '50%',
+            background: 'var(--status-success)', border: '1.5px solid var(--bg-nav)'
+          }} />
+        )}
+      </button>
+
+      {isOpen && (
+        <div
+          ref={panelRef}
+          style={{
+            position: 'fixed',
+            top: '60px',
+            right: '16px',
+            width: '280px',
+            background: '#FFFFFF',
+            border: '1px solid var(--border)',
+            borderRadius: 'var(--radius-md)',
+            boxShadow: '0 8px 24px rgba(0,0,0,0.18)',
+            zIndex: 2100,
+            padding: '16px',
+            color: '#1A2333',
+            fontFamily: 'var(--font-mono)',
+          }}
+        >
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px', borderBottom: '1px solid #D1C8BC', paddingBottom: '10px' }}>
+            <span style={{ fontSize: '0.72rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: '#E07B39' }}>Emergency QR Card</span>
+            <button onClick={() => setIsOpen(false)} style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: '#718096', padding: 0 }} aria-label="Close QR panel"><X size={14} /></button>
+          </div>
+
+          {profile && (
+            <div style={{ marginBottom: '10px', fontSize: '0.72rem', color: '#4A5568' }}>
+              <strong style={{ color: '#1A2333', display: 'block' }}>{profile.first_name} {profile.last_name}</strong>
+              {profile.blood_group && <span style={{ background: 'rgba(192,57,43,0.12)', color: '#C0392B', border: '1px solid #C0392B', borderRadius: '4px', padding: '1px 6px', marginRight: '6px', fontSize: '0.65rem' }}>{profile.blood_group}</span>}
+              {profile.allergies?.length > 0 && <span style={{ fontSize: '0.65rem', color: '#718096' }}>Allergies: {profile.allergies.join(', ')}</span>}
+            </div>
+          )}
+
+          {qrUrl ? (
+            <>
+              <img src={qrUrl} alt="Emergency QR Code" style={{ width: '100%', borderRadius: '6px', border: '1px solid #D1C8BC', display: 'block' }} />
+              <div style={{ display: 'flex', gap: '6px', marginTop: '10px', flexWrap: 'wrap' }}>
+                <button onClick={handleGenerate} disabled={loading} style={{ flex: 1, padding: '5px 8px', background: 'transparent', border: '1px solid #D1C8BC', borderRadius: '4px', fontSize: '0.64rem', cursor: 'pointer', color: '#4A5568' }}>Regenerate</button>
+                <button onClick={handleRevoke} style={{ flex: 1, padding: '5px 8px', background: 'transparent', border: '1px solid #C0392B', borderRadius: '4px', fontSize: '0.64rem', cursor: 'pointer', color: '#C0392B' }}>Revoke</button>
+                <a href={qrUrl.replace('200x200', '400x400')} download="MedFusion_QR.png" target="_blank" rel="noopener noreferrer" style={{ flex: 1, padding: '5px 8px', background: 'transparent', border: '1px solid #D1C8BC', borderRadius: '4px', fontSize: '0.64rem', color: '#4A5568', textDecoration: 'none', textAlign: 'center' }}>Download</a>
+              </div>
+            </>
+          ) : (
+            <button onClick={handleGenerate} disabled={loading} style={{ width: '100%', padding: '10px', background: '#E07B39', color: '#fff', border: 'none', borderRadius: '6px', fontSize: '0.78rem', fontWeight: 700, cursor: loading ? 'not-allowed' : 'pointer', opacity: loading ? 0.7 : 1 }}>
+              {loading ? 'Generating…' : 'Generate Emergency QR'}
+            </button>
+          )}
+        </div>
+      )}
+    </div>
   );
 }
 
@@ -365,6 +496,7 @@ function Navbar({ user, logout, toggleSidebar, isSidebarPage, openAuth, navbarHe
               Login
             </button>
           )}
+          <EmergencyQRDropdown user={user} />
           <button
             onClick={toggleTheme}
             className="btn-icon p-2 border-0 bg-transparent opacity-70 hover-opacity-100"
@@ -390,7 +522,7 @@ function Navbar({ user, logout, toggleSidebar, isSidebarPage, openAuth, navbarHe
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
             className="d-md-none position-absolute w-100 border-bottom p-4 z-index-1000"
-            style={{ background: 'var(--bg-form)', borderColor: 'var(--border-color)' }}
+            style={{ background: 'var(--bg-surface)', borderColor: 'var(--border)' }}
           >
              <div className="d-flex flex-column gap-3">
                <MobileNavLink to="/" label="Home" onClick={() => setIsOpen(false)} />
