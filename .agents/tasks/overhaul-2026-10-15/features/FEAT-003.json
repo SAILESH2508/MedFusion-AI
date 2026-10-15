@@ -1,0 +1,33 @@
+{
+  "id": "FEAT-003",
+  "type": "refactor",
+  "description": "Simplify the Health Twin (DigitalTwin.jsx) to use only the 2D SVG front-facing human body map (AnatomyDiagram). Remove the 3D WebGL viewer (OrganViewer3D) and BioDigital cloud iframe viewer (BioDigitalViewer) from the UI. The AnatomyDiagram component is already excellent — it has detailed SVG organ paths, hover/click interactivity, risk-based color overrides, and medical labels. The 3D and BioDigital modes add complexity without clinical value. This FEAT can be implemented after or alongside FEAT-002 (they touch the same file but different sections).",
+  "status": "completed",
+  "steps": [
+    "Read frontend/src/pages/DigitalTwin.jsx before editing.",
+    "Remove the two lazy-import lines: 'const OrganViewer3D = React.lazy(() => import(\"./digital-twin/OrganViewer3D\"))' and 'const BioDigitalViewer = React.lazy(() => import(\"./digital-twin/BioDigitalViewer\"))'.",
+    "Remove the 'Box' and 'Globe' imports from the lucide-react import line at the top of the file. The remaining imports should be: Cpu, Activity, Shield, Zap, Info, Heart, Wind, Droplet, Brain as BrainIcon, FlaskConical, RotateCcw, AlertTriangle.",
+    "Remove the 'viewMode' state: 'const [viewMode, setViewMode] = useState(\"diagram\")' — delete this line.",
+    "In the JSX return, locate the viewer card div. Remove the entire view-mode toolbar (the div with position:'absolute', top:'12px', left:'12px', right:'12px' containing the 3 mode buttons, organ badge, and reset button). Keep the organ badge and reset functionality accessible — move the reset button to a simple inline row above the anatomy diagram, or simply keep the sidebar organ selector as the only selection mechanism.",
+    "Replace the complex multi-viewer area (the div with height:'460px' containing 3 absolutely-positioned divs for diagram/3d/biodigital) with a single clean render: <div style={{ height:'460px', position:'relative' }}><AnatomyDiagram selectedOrgan={selectedOrgan} onOrganSelect={setSelectedOrgan} patientData={patientData} /></div>",
+    "Update the AboutTab component: remove the '3D Models & Licensed Datasets' section (it describes Three.js GLB models and BioDigital integration which are now removed). Replace it with a single paragraph explaining the 2D anatomy illustration: 'A front-facing human anatomy diagram with interactive SVG organ regions. Click any organ to explore your recorded health data for that system. The diagram is illustrative and not anatomically certified for clinical diagnosis.'",
+    "Ensure no runtime import errors remain. The OrganViewer3D.jsx and BioDigitalViewer.jsx files can stay on disk — they are simply no longer imported, so they will not affect the bundle.",
+    "Run npm run build to verify zero import errors and no references to removed lazy components."
+  ],
+  "acceptance_criteria": [
+    "Navigating to /digital-twin shows only the 2D SVG anatomy diagram — no view mode selector buttons",
+    "Clicking organs (heart, lungs, liver, kidneys, brain) still works and updates OrganInfoPanel on the right",
+    "The Timeline, Safety, Explorer, About tabs still function correctly",
+    "The About tab no longer mentions Three.js, GLTF, BioDigital, or OrganViewer3D",
+    "`npm run build` completes with zero errors"
+  ],
+  "verification": [
+    "cd d:\\MEDICAL_PROJECT\\medfusion-ai\\frontend && npm run dev",
+    "Navigate to /digital-twin — confirm only the 2D anatomy SVG is shown, no '3D WebGL' or 'BioDigital' buttons",
+    "Click heart, lungs, liver, kidney, brain — confirm organ selection and OrganInfoPanel content updates",
+    "Click each right-panel tab (Timeline, Safety, Explorer, About) — confirm they all render",
+    "cd d:\\MEDICAL_PROJECT\\medfusion-ai\\frontend && npm run build — confirm zero errors"
+  ],
+  "blocked_reason": null,
+  "findings": "Removed OrganViewer3D and BioDigitalViewer lazy imports, removed Box and Globe lucide icons, removed viewMode state, removed the 3-button view-mode toolbar. Replaced the multi-viewer area with a simple <div style={{height:'460px',position:'relative'}}><AnatomyDiagram .../></div>. Added a compact reset/organ-badge row above the diagram. Updated AboutTab: replaced '3D Models & Licensed Datasets' section with 'Anatomy Diagram' section describing the 2D SVG interactive diagram. Build completed successfully with zero errors (22.68s)."
+}

@@ -1,14 +1,11 @@
 import React, { useState, useEffect, useContext, useCallback } from 'react';
-import { Cpu, Activity, Shield, Zap, Info, Heart, Wind, Droplet, Brain as BrainIcon, FlaskConical, RotateCcw, AlertTriangle, Globe, Box } from 'lucide-react';
+import { Cpu, Activity, Shield, Zap, Info, Heart, Wind, Droplet, Brain as BrainIcon, FlaskConical, RotateCcw, AlertTriangle } from 'lucide-react';
 import { api } from '../services/api';
 import { SidebarContext } from '../context/SidebarContext';
 import OrganInfoPanel from './digital-twin/OrganInfoPanel';
 import HealthTimeline from './digital-twin/HealthTimeline';
 import HealthChangeExplorer from './digital-twin/HealthChangeExplorer';
 import MedicationSafetyPanel from './digital-twin/MedicationSafetyPanel';
-
-const OrganViewer3D = React.lazy(() => import('./digital-twin/OrganViewer3D'));
-const BioDigitalViewer = React.lazy(() => import('./digital-twin/BioDigitalViewer'));
 import AnatomyDiagram from './digital-twin/AnatomyDiagram';
 
 const ORGAN_BUTTONS = [
@@ -34,7 +31,6 @@ export default function DigitalTwin({ user }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [activeTab, setActiveTab] = useState('timeline');
-  const [viewMode, setViewMode] = useState('diagram'); // 'diagram' | '3d'
 
   const fetchData = useCallback(async () => {
     setLoading(true);
@@ -192,7 +188,7 @@ export default function DigitalTwin({ user }) {
 
       <div className="row g-4">
 
-        {/* ── Left: 3D viewer + organ info ───────────────────────────── */}
+        {/* ── Left: anatomy diagram + organ info ─────────────────────── */}
         <div className="col-lg-7">
 
           {/* Viewer card */}
@@ -203,140 +199,58 @@ export default function DigitalTwin({ user }) {
             overflow: 'hidden',
             position: 'relative',
           }}>
-            {/* Unified Top Toolbar: View Mode Selector + Active Organ + Reset */}
+            {/* Reset row */}
             <div style={{
-              position: 'absolute',
-              top: '12px',
-              left: '12px',
-              right: '12px',
-              zIndex: 50,
               display: 'flex',
               alignItems: 'center',
-              justifyContent: 'space-between',
+              justifyContent: 'flex-end',
               gap: '8px',
-              pointerEvents: 'none',
+              padding: '10px 14px 0',
             }}>
-              {/* View mode toggle */}
-              <div style={{
-                display: 'flex',
-                gap: '4px',
-                background: 'var(--bg-form)',
-                border: '1px solid var(--border-color)',
-                borderRadius: '8px',
-                padding: '3px',
-                pointerEvents: 'auto',
-              }}>
-                {[
-                  { id: 'diagram',    label: 'Anatomy',    icon: <Activity size={12} /> },
-                  { id: '3d',         label: '3D WebGL',   icon: <Box size={12} /> },
-                  { id: 'biodigital', label: 'BioDigital', icon: <Globe size={12} /> },
-                ].map(mode => (
-                  <button
-                    key={mode.id}
-                    onClick={() => setViewMode(mode.id)}
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '5px',
-                      background: viewMode === mode.id ? 'var(--bg-upload)' : 'transparent',
-                      border: viewMode === mode.id ? '1px solid var(--primary-accent)' : '1px solid transparent',
-                      borderRadius: '6px',
-                      color: viewMode === mode.id ? 'var(--text-primary)' : 'var(--text-secondary)',
-                      padding: '4px 10px',
-                      cursor: 'pointer',
-                      fontSize: '0.68rem',
-                      fontFamily: 'monospace',
-                      letterSpacing: '0.04em',
-                      textTransform: 'uppercase',
-                      fontWeight: viewMode === mode.id ? 700 : 500,
-                      transition: 'all 0.15s ease',
-                    }}
-                  >
-                    <span style={{ display: 'inline-flex', alignItems: 'center' }}>{mode.icon}</span>
-                    {mode.label}
-                  </button>
-                ))}
-              </div>
-
-              {/* Right side: Organ Badge & Reset */}
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', pointerEvents: 'auto' }}>
-                {selectedOrgan && (
-                  <div style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '6px',
-                    background: 'var(--bg-card)',
-                    border: '1px solid var(--border-color)',
-                    borderRadius: '6px',
-                    padding: '4px 10px',
-                  }}>
-                    <span style={{ width: '7px', height: '7px', borderRadius: '50%', background: ORGAN_BUTTONS.find(o => o.id === selectedOrgan)?.color || 'var(--primary-accent)', flexShrink: 0 }} />
-                    <span style={{ fontSize: '0.65rem', fontFamily: 'monospace', color: 'var(--text-primary)', letterSpacing: '0.06em', textTransform: 'uppercase' }}>
-                      {ORGAN_BUTTONS.find(o => o.id === selectedOrgan)?.label}
-                    </span>
-                  </div>
-                )}
-
-                <button
-                  onClick={() => setSelectedOrgan(null)}
-                  style={{
-                    background: 'var(--bg-card)',
-                    color: 'var(--text-secondary)',
-                    border: '1px solid var(--border-color)',
-                    borderRadius: '6px',
-                    padding: '4px 10px',
-                    fontSize: '0.65rem',
-                    fontFamily: 'monospace',
-                    letterSpacing: '0.04em',
-                    cursor: 'pointer',
-                    textTransform: 'uppercase',
-                    transition: 'all 0.15s ease',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '5px',
-                  }}
-                  onMouseEnter={e => { e.currentTarget.style.color = 'var(--text-primary)'; e.currentTarget.style.borderColor = 'var(--primary-accent)'; }}
-                  onMouseLeave={e => { e.currentTarget.style.color = 'var(--text-secondary)'; e.currentTarget.style.borderColor = 'var(--border-color)'; }}
-                >
-                  <RotateCcw size={11} /> Reset
-                </button>
-              </div>
+              {selectedOrgan && (
+                <div style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '6px',
+                  background: 'var(--bg-form)',
+                  border: '1px solid var(--border-color)',
+                  borderRadius: '6px',
+                  padding: '4px 10px',
+                }}>
+                  <span style={{ width: '7px', height: '7px', borderRadius: '50%', background: ORGAN_BUTTONS.find(o => o.id === selectedOrgan)?.color || 'var(--primary-accent)', flexShrink: 0 }} />
+                  <span style={{ fontSize: '0.65rem', fontFamily: 'monospace', color: 'var(--text-primary)', letterSpacing: '0.06em', textTransform: 'uppercase' }}>
+                    {ORGAN_BUTTONS.find(o => o.id === selectedOrgan)?.label}
+                  </span>
+                </div>
+              )}
+              <button
+                onClick={() => setSelectedOrgan(null)}
+                style={{
+                  background: 'var(--bg-form)',
+                  color: 'var(--text-secondary)',
+                  border: '1px solid var(--border-color)',
+                  borderRadius: '6px',
+                  padding: '4px 10px',
+                  fontSize: '0.65rem',
+                  fontFamily: 'monospace',
+                  letterSpacing: '0.04em',
+                  cursor: 'pointer',
+                  textTransform: 'uppercase',
+                  transition: 'all 0.15s ease',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '5px',
+                }}
+                onMouseEnter={e => { e.currentTarget.style.color = 'var(--text-primary)'; e.currentTarget.style.borderColor = 'var(--primary-accent)'; }}
+                onMouseLeave={e => { e.currentTarget.style.color = 'var(--text-secondary)'; e.currentTarget.style.borderColor = 'var(--border-color)'; }}
+              >
+                <RotateCcw size={11} /> Reset
+              </button>
             </div>
 
-            {/* Viewers */}
-            <div style={{ height:'460px', position:'relative' }}>
-              {/* SVG anatomy diagram */}
-              <div style={{ position:'absolute', inset:0, opacity: viewMode==='diagram' ? 1 : 0, transition:'opacity 0.3s', pointerEvents: viewMode==='diagram' ? 'auto' : 'none' }}>
-                <AnatomyDiagram selectedOrgan={selectedOrgan} onOrganSelect={setSelectedOrgan} patientData={patientData}/>
-              </div>
-
-              {/* Three.js 3D viewer — lazy loaded */}
-              <div style={{ position:'absolute', inset:0, opacity: viewMode==='3d' ? 1 : 0, transition:'opacity 0.3s', pointerEvents: viewMode==='3d' ? 'auto' : 'none' }}>
-                <React.Suspense fallback={
-                  <div style={{ height:'100%', display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', gap:'12px' }}>
-                    <div style={{ width:'36px', height:'36px', border:'2px solid var(--border-color)', borderTopColor:'var(--primary-accent)', borderRadius:'50%', animation:'spin 0.9s linear infinite' }}/>
-                    <p style={{ fontFamily:'monospace', color:'var(--text-secondary)', fontSize:'0.72rem', margin:0, textTransform:'uppercase', letterSpacing:'0.08em' }}>Loading 3D viewer…</p>
-                  </div>
-                }>
-                  {viewMode === '3d' && (
-                    <OrganViewer3D selectedOrgan={selectedOrgan} onOrganSelect={setSelectedOrgan} patientData={patientData}/>
-                  )}
-                </React.Suspense>
-              </div>
-
-              {/* BioDigital interactive cloud viewer — lazy loaded */}
-              <div style={{ position:'absolute', inset:0, opacity: viewMode==='biodigital' ? 1 : 0, transition:'opacity 0.3s', pointerEvents: viewMode==='biodigital' ? 'auto' : 'none' }}>
-                <React.Suspense fallback={
-                  <div style={{ height:'100%', display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', gap:'12px', background: 'var(--bg-upload)' }}>
-                    <div style={{ width:'36px', height:'36px', border:'2px solid var(--border-color)', borderTopColor:'var(--primary-accent)', borderRadius:'50%', animation:'spin 0.9s linear infinite' }}/>
-                    <p style={{ fontFamily:'monospace', color:'var(--text-secondary)', fontSize:'0.72rem', margin:0, textTransform:'uppercase', letterSpacing:'0.08em' }}>Loading BioDigital Cloud…</p>
-                  </div>
-                }>
-                  {viewMode === 'biodigital' && (
-                    <BioDigitalViewer selectedOrgan={selectedOrgan} onOrganSelect={setSelectedOrgan} />
-                  )}
-                </React.Suspense>
-              </div>
+            {/* 2D anatomy diagram */}
+            <div style={{ height: '460px', position: 'relative' }}>
+              <AnatomyDiagram selectedOrgan={selectedOrgan} onOrganSelect={setSelectedOrgan} patientData={patientData} />
             </div>
           </div>
 
@@ -408,7 +322,7 @@ function AboutTab() {
       </h6>
 
       {[
-        { label: '3D Models & Licensed Datasets', text: 'Supports high-fidelity 3D GLTF/GLB models from licensed medical datasets (Zygote CAD solid anatomy, NIH 3D Print Exchange, BodyParts3D) with Draco geometry compression, alongside interactive cloud streaming via the BioDigital Human platform and real-time procedural WebGL fallbacks.' },
+        { label: 'Anatomy Diagram', text: 'A front-facing human anatomy diagram with interactive SVG organ regions. Click any organ to explore your recorded health data for that system. The diagram is illustrative and not anatomically certified for clinical diagnosis.' },
         { label: 'Health Timeline', text: 'Displays your existing pathology reports, disease risk assessments, and prescriptions sorted newest first. No data is fabricated or estimated.' },
         { label: 'Medication Safety', text: 'Runs against the same drug safety engine used in the Doctor Dashboard. Results are for awareness only — always consult your prescribing physician.' },
         { label: 'Health Change Explorer', text: 'An educational comparison tool. Hypothetical values you enter are never saved to your records, and no clinical predictions are made.' },
@@ -426,4 +340,3 @@ function AboutTab() {
     </div>
   );
 }
-
