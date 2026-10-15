@@ -685,7 +685,7 @@ function Upload({ user }) {
                     {result.data.medicines?.map((m, i) => {
                       const timesOfDay = Array.isArray(m.times_of_day) ? m.times_of_day : [];
                       return (
-                        <div key={i} className="p-3 rounded border border-white-10 bg-white-5" style={{ borderLeft: '3px solid rgba(0,245,212,0.5)' }}>
+                        <div key={i} className="p-3 rounded border border-white-10 bg-white-5" style={{ borderLeft: '3px solid var(--accent-teal)' }}>
                           {/* Top row: name + frequency badge */}
                           <div className="d-flex align-items-center justify-content-between mb-2">
                             <span className="text-white fw-bold" style={{ fontSize: '1rem' }}>{m.name}</span>
@@ -700,9 +700,9 @@ function Upload({ user }) {
                             {m.timing && (
                               <span className="badge px-2 py-1 fw-bold" style={{
                                 fontSize: '0.72rem',
-                                background: m.timing.toLowerCase().includes('before') ? 'rgba(255,143,0,0.15)' : 'rgba(0,245,212,0.12)',
-                                border: m.timing.toLowerCase().includes('before') ? '1px solid rgba(255,143,0,0.4)' : '1px solid rgba(0,245,212,0.35)',
-                                color: m.timing.toLowerCase().includes('before') ? 'var(--accent-orange)' : 'var(--accent-teal)',
+                                background: m.timing.toLowerCase().includes('before') ? 'rgba(232,184,75,0.15)' : 'rgba(45,184,176,0.12)',
+                                border: m.timing.toLowerCase().includes('before') ? '1px solid rgba(232,184,75,0.4)' : '1px solid rgba(45,184,176,0.35)',
+                                color: m.timing.toLowerCase().includes('before') ? 'var(--accent-amber)' : 'var(--accent-teal)',
                               }}>
                                 {m.timing}
                               </span>

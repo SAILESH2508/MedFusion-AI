@@ -773,7 +773,7 @@ export default function NearbyMap({
 
             {/* Guest upsell */}
             {!isPatient && !loading && filtered.length > 0 && (
-              <div className="mt-4 p-3 rounded d-flex align-items-start gap-2" style={{ background: 'rgba(0,245,212,0.05)', border: '1px solid rgba(0,245,212,0.18)', fontSize: '0.75rem' }}>
+              <div className="mt-4 p-3 rounded d-flex align-items-start gap-2" style={{ background: 'var(--status-info-bg)', border: '1px solid var(--status-info-border)', fontSize: '0.75rem' }}>
                 <Lock size={14} className="text-info mt-1 flex-shrink-0" />
                 <p className="text-info font-monospace m-0">
                   Sign in to unlock phone numbers, one-tap calling, Dentist & Lab search, Open Now filter, 15km radius, and Emergency Sheet export.

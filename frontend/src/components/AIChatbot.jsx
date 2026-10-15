@@ -48,8 +48,8 @@ function MessageBubble({ msg, onFollowUp }) {
     >
       <div className="flex-shrink-0 d-flex align-items-center justify-content-center rounded-circle"
         style={{ width: '28px', height: '28px', flexShrink: 0,
-          background: isUser ? 'rgba(0,245,212,0.15)' : 'rgba(223,64,255,0.15)',
-          border: isUser ? '1px solid rgba(0,245,212,0.3)' : '1px solid rgba(223,64,255,0.3)',
+          background: isUser ? 'rgba(224,123,57,0.15)' : 'rgba(155,127,212,0.15)',
+          border: isUser ? '1px solid rgba(224,123,57,0.3)' : '1px solid rgba(155,127,212,0.3)',
         }}>
         {isUser ? <User size={13} className="text-info" /> : <Bot size={13} style={{ color: 'var(--accent-purple)' }} />}
       </div>

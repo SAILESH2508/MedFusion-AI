@@ -79,8 +79,8 @@ function createIcon(L, type, isSelected) {
 function createUserIcon(L) {
   const html = `
     <div style="position:relative;width:20px;height:20px">
-      <div style="position:absolute;inset:0;border-radius:50%;background:rgba(0,245,212,0.25);animation:userPulse 1.5s infinite"></div>
-      <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:12px;height:12px;border-radius:50%;background:#00f5d4;border:2px solid #fff;box-shadow:0 0 8px rgba(0,245,212,0.8)"></div>
+      <div style="position:absolute;inset:0;border-radius:50%;background:rgba(91,159,224,0.25);animation:userPulse 1.5s infinite"></div>
+      <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:12px;height:12px;border-radius:50%;background:#5B9FE0;border:2px solid #fff;box-shadow:0 0 6px rgba(91,159,224,0.6)"></div>
     </div>`;
   return L.divIcon({ html, className: '', iconSize: [20, 20], iconAnchor: [10, 10] });
 }
@@ -295,7 +295,7 @@ export default function InteractiveMap({ location, places, isPatient }) {
               className="d-flex align-items-center gap-1 px-2 py-1 rounded font-monospace"
               style={{
                 fontSize: '0.65rem', letterSpacing: '0.05em', cursor: 'pointer',
-                background: tileLayer === key ? 'rgba(0,245,212,0.12)' : 'rgba(255,255,255,0.04)',
+                background: tileLayer === key ? 'rgba(45,184,176,0.12)' : 'var(--bg-card-tinted)',
                 border: `1px solid ${tileLayer === key ? 'var(--accent-teal)' : 'rgba(255,255,255,0.08)'}`,
                 color: tileLayer === key ? 'var(--accent-teal)' : 'rgba(255,255,255,0.45)',
                 transition: 'all 0.2s',
@@ -328,7 +328,7 @@ export default function InteractiveMap({ location, places, isPatient }) {
 
       {/* Route info bar */}
       {routeInfo && (
-        <div className="d-flex align-items-center gap-3 mb-2 px-3 py-2 rounded" style={{ background: 'rgba(0,245,212,0.08)', border: '1px solid rgba(0,245,212,0.2)', fontSize: '0.78rem' }}>
+        <div className="d-flex align-items-center gap-3 mb-2 px-3 py-2 rounded" style={{ background: 'var(--status-info-bg)', border: '1px solid var(--status-info-border)', fontSize: '0.78rem' }}>
           <span className="text-info font-monospace fw-bold">Route calculated</span>
           <span className="text-secondary">{routeInfo.distance} km</span>
           <span className="text-secondary">~{routeInfo.duration} min drive</span>

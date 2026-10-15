@@ -144,9 +144,9 @@ function VoiceExplainer({ text, label }) {
                   : '1.5px solid rgba(255,255,255,0.15)',
                 borderRadius: '5px',
                 background: language === code
-                  ? 'rgba(0,245,212,0.10)'
-                  : 'rgba(255,255,255,0.04)',
-                color: language === code ? 'var(--theme-accent, #00f5d4)' : 'rgba(255,255,255,0.55)',
+                  ? 'rgba(45,184,176,0.12)'
+                  : 'var(--bg-card-tinted)',
+                color: language === code ? 'var(--accent-teal)' : 'var(--text-muted)',
                 cursor: translating ? 'not-allowed' : 'pointer',
                 transition: 'all 0.18s ease',
                 width: 'auto',
