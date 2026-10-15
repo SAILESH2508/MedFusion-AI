@@ -139,10 +139,10 @@ function Upload({ user }) {
               left: `${percentOfVal}%`, 
               width: '10px', 
               height: '10px', 
-              background: val > normalMax || val < normalMin ? '#ff8f00' : '#00f5d4', 
+              background: val > normalMax || val < normalMin ? 'var(--accent-orange)' : 'var(--primary-accent)', 
               top: '-2px',
               transform: 'translateX(-50%)',
-              boxShadow: '0 1px 3px rgba(0,0,0,0.4)'
+              boxShadow: '0 1px 3px rgba(0,0,0,0.3)'
             }}
           ></div>
         </div>
@@ -341,16 +341,16 @@ function Upload({ user }) {
           </div>
 
           <div className="mt-2">
-            <h4 className="fw-bold mb-3 text-white" style={{ fontSize: '1.05rem', letterSpacing: '0.05em' }}>
+            <h4 className="fw-bold mb-3" style={{ fontSize: '1.05rem', letterSpacing: '0.05em', color: 'var(--text-primary)' }}>
               <span className="text-theme-accent font-monospace text-uppercase" style={{ letterSpacing: '0.06em' }}>Target Patient Entity</span>
             </h4>
             <select 
               value={selectedPatientId} 
               onChange={(e) => setSelectedPatientId(e.target.value)}
               style={{ 
-                background: 'rgba(255,255,255,0.03)', 
-                color: 'white', 
-                border: '1px solid rgba(255,255,255,0.08)',
+                background: 'var(--input-bg)', 
+                color: 'var(--text-primary)', 
+                border: '1px solid var(--input-border)',
                 borderRadius: '8px',
                 padding: '12px',
                 fontSize: '0.85rem',
@@ -362,13 +362,13 @@ function Upload({ user }) {
             >
               <option value="" disabled>-- Select Registered Patient --</option>
               {patients.map(p => (
-                <option key={p.id} value={p.id} style={{ background: '#000' }}>{(p.name || 'UNKNOWN PATIENT').toUpperCase()} (ID: MF-P-{p.id})</option>
+                <option key={p.id} value={p.id}>{(p.name || 'UNKNOWN PATIENT').toUpperCase()} (ID: MF-P-{p.id})</option>
               ))}
             </select>
           </div>
 
           <div className="mt-2">
-            <h4 className="fw-bold mb-3 text-white" style={{ fontSize: '1.05rem', letterSpacing: '0.05em' }}>
+            <h4 className="fw-bold mb-3" style={{ fontSize: '1.05rem', letterSpacing: '0.05em', color: 'var(--text-primary)' }}>
               <span className="text-theme-accent font-monospace text-uppercase" style={{ letterSpacing: '0.06em' }}>Document Category</span>
             </h4>
             <div className="d-flex flex-column gap-3 mt-3">
@@ -400,7 +400,7 @@ function Upload({ user }) {
         <div className="d-flex flex-column gap-4 pt-2">
           {/* Sleek Medical Header Console inside Sidebar */}
           <div className="glass-card p-4 mb-2 reveal border-theme-accent border-opacity-15 bg-white-5" style={{ borderRadius: '12px' }}>
-            <h2 className="fw-bolder fs-6 m-0 text-white" style={{ letterSpacing: '-0.02em', fontSize: '1.25rem' }}>
+            <h2 className="fw-bolder fs-6 m-0" style={{ letterSpacing: '-0.02em', fontSize: '1.25rem', color: 'var(--text-primary)' }}>
               AI Report <span className="text-theme-accent">Scanner</span>
             </h2>
             <p className="text-secondary m-0 mt-2" style={{ fontSize: '0.88rem', lineHeight: '1.4' }}>
@@ -411,7 +411,7 @@ function Upload({ user }) {
 
           {/* Ingest category selection switcher */}
           <div className="mt-2">
-            <h4 className="fw-bold mb-3 text-white" style={{ fontSize: '1.05rem', letterSpacing: '0.05em' }}>
+            <h4 className="fw-bold mb-3" style={{ fontSize: '1.05rem', letterSpacing: '0.05em', color: 'var(--text-primary)' }}>
               <span className="text-theme-accent font-monospace text-uppercase" style={{ letterSpacing: '0.06em' }}>Document Category</span>
             </h4>
             <div className="d-flex flex-column gap-3 mt-3">
@@ -449,7 +449,7 @@ function Upload({ user }) {
         {/* ============================================================== */}
         {/* LEFT SIDEBAR PANEL: Scanner Ingestion Input Control */}
         {/* ============================================================== */}
-        <div className="col-lg-5 col-md-5 reveal d-flex">
+        <div className="col-lg-4 col-md-4 reveal d-flex">
           <div className="glass-card p-4 d-flex flex-column gap-4 w-100 justify-content-between" style={{ borderRadius: '16px' }}>
             <div className="d-flex flex-column gap-3 w-100">
               <h4 className="fw-bold text-white font-monospace d-flex align-items-center gap-3 mb-2" style={{ fontSize: '1.25rem' }}>
@@ -500,7 +500,7 @@ function Upload({ user }) {
 
                   {activePatient.allergies && activePatient.allergies.length > 0 ? (
                     <div className="mt-1 font-monospace" style={{ fontSize: '0.65rem' }}>
-                      <span className="text-danger d-block fw-bold mb-1" style={{ fontSize: '0.55rem' }}>⚠️ KNOWN ALLERGIES:</span>
+                      <span className="text-danger d-block fw-bold mb-1" style={{ fontSize: '0.55rem' }}>KNOWN ALLERGIES:</span>
                       <div className="d-flex flex-wrap gap-1">
                         {activePatient.allergies.map((allergy, index) => (
                           <span key={index} className="badge bg-danger bg-opacity-10 text-danger border border-danger border-opacity-20" style={{ fontSize: '0.6rem' }}>
@@ -511,14 +511,14 @@ function Upload({ user }) {
                     </div>
                   ) : (
                     <div className="mt-1 font-monospace" style={{ fontSize: '0.65rem' }}>
-                      <span className="text-success d-block fw-bold" style={{ fontSize: '0.55rem' }}>✅ ALLERGIES: NONE LOGGED</span>
+                      <span className="text-success d-block fw-bold" style={{ fontSize: '0.55rem' }}>ALLERGIES: NONE LOGGED</span>
                     </div>
                   )}
                 </div>
               )}
 
               <div 
-                className={`border border-2 border-dashed rounded p-4 text-center mt-3 mb-2 ${docType.includes('Rx') ? 'border-brand-blue' : 'border-brand-orange'} transition-all cursor-pointer position-relative overflow-hidden`}
+                className={`border border-2 border-dashed rounded p-4 text-center mt-3 mb-2 transition-all cursor-pointer position-relative overflow-hidden ${docType.includes('Rx') ? 'panel-upload-rx' : 'panel-upload-lab'}`}
                 onClick={() => document.getElementById('fileInput').click()}
                 onDragOver={handleDragOver}
                 onDragLeave={handleDragLeave}
@@ -528,21 +528,17 @@ function Upload({ user }) {
                 tabIndex={0}
                 onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); document.getElementById('fileInput').click(); } }}
                 style={{
-                  minHeight: '280px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
-                  background: isDragging
-                    ? (docType.includes('Rx') ? 'rgba(0,210,255,0.08)' : 'rgba(255,143,0,0.08)')
-                    : 'rgba(255,255,255,0.02)',
-                  borderColor: isDragging
-                    ? (docType.includes('Rx') ? 'rgba(0,210,255,0.8)' : 'rgba(255,143,0,0.8)')
-                    : undefined,
-                  transition: 'all 0.2s ease',
+                  minHeight: '260px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+                  background: docType.includes('Rx') ? 'var(--bg-upload-rx)' : 'var(--bg-upload-lab)',
+                  borderColor: isDragging ? 'var(--primary-accent)' : 'var(--border-color)',
+                  transition: 'border-color 0.2s ease',
                 }}
               >
-                <UploadIcon size={56} className="mb-3" style={{ color: docType.includes('Rx') ? '#00d2ff' : '#ff8f00' }} />
-                <span className="text-white fw-bold font-monospace d-block text-uppercase" style={{ fontSize: '1.25rem', letterSpacing: '0.04em' }}>
+                <UploadIcon size={52} className="mb-3" style={{ color: 'var(--primary-accent)' }} />
+                <span className="fw-bold font-monospace d-block text-uppercase" style={{ fontSize: '1.15rem', letterSpacing: '0.04em', color: 'var(--text-primary)' }}>
                   {file ? `Ingested: ${file.name.toUpperCase()}` : user && user.role === 'Doctor' ? (docType.includes('Rx') ? 'UPLOAD PATIENT Rx RECORD' : 'UPLOAD PATIENT PATHOLOGY REPORT') : (docType.includes('Rx') ? 'DROP RX PRESCRIPTION HERE' : 'DROP PATHOLOGY LAB REPORT HERE')}
                 </span>
-                <span className="text-secondary d-block font-monospace mt-2" style={{ fontSize: '0.9rem', opacity: 0.85 }}>
+                <span className="text-secondary d-block font-monospace mt-2" style={{ fontSize: '0.88rem' }}>
                   {isDragging ? 'Drop it here!' : (user && user.role === 'Doctor' ? (docType.includes('Rx') ? 'Supports physician Rx sheets or image logs' : 'Supports standard blood chemistry panel metrics') : (docType.includes('Rx') ? 'Supports scanned prescription images or PDFs' : 'Supports blood chemistry or pathology sheets'))}
                 </span>
                 
@@ -559,26 +555,19 @@ function Upload({ user }) {
               <button 
                 onClick={handleUpload} 
                 disabled={!file || loading}
-                className="font-monospace text-uppercase fw-bold w-100 d-flex align-items-center justify-content-center gap-2 mt-2"
+                className="btn-clinical primary font-monospace text-uppercase fw-bold w-100 d-flex align-items-center justify-content-center gap-2 mt-2"
                 style={{
-                  background: docType.includes('Rx') ? 'rgba(0, 210, 255, 0.1)' : 'rgba(255, 143, 0, 0.1)',
-                  border: `2px solid ${docType.includes('Rx') ? 'rgba(0, 210, 255, 0.5)' : 'rgba(255, 143, 0, 0.5)'}`,
-                  borderRadius: '12px',
-                  padding: '14px 20px',
-                  fontSize: '1rem',
-                  letterSpacing: '0.08em',
-                  color: docType.includes('Rx') ? '#00d2ff' : '#ff8f00',
-                  cursor: !file || loading ? 'not-allowed' : 'pointer',
-                  opacity: !file || loading ? 0.45 : 1,
-                  transition: 'all 0.3s ease',
+                  padding: '13px 20px',
+                  fontSize: '0.92rem',
+                  letterSpacing: '0.06em',
                 }}
               >
-                <UploadIcon size={20} style={{ opacity: 0.95 }} />
+                <UploadIcon size={18} />
                 {loading
                   ? 'INGESTING...'
                   : user && user.role === 'Doctor'
                     ? (docType.includes('Rx') ? 'INGEST RX TO PATIENT RECORD' : 'ANALYZE PATHOLOGY TO EHR')
-                    : (docType.includes('Rx') ? 'INGEST RX TO PATIENT RECORD' : 'EXTRACT CLINICAL BIOMARKERS')
+                    : (docType.includes('Rx') ? 'INGEST RX RECORD' : 'ANALYZE PATHOLOGY METRICS')
                 }
               </button>
             </div>
@@ -587,16 +576,16 @@ function Upload({ user }) {
             {loading && (
               <div className="border-top border-white-10 pt-4 mt-auto reveal">
                 <h4 className="fw-bold mb-2 text-white font-monospace d-flex align-items-center gap-2" style={{ fontSize: '1.05rem' }}>
-                  <Cpu size={20} style={{ color: docType.includes('Rx') ? '#00d2ff' : '#ff8f00' }} />
+                  <Cpu size={20} style={{ color: 'var(--primary-accent)' }} />
                   Scanner Sensor Feed
                 </h4>
-                <p className="font-monospace bg-white-10 px-3 py-2 border border-white-5 rounded" style={{ fontSize: '0.85rem', minHeight: '52px', color: docType.includes('Rx') ? '#00d2ff' : '#ff8f00' }}>
+                <p className="font-monospace bg-white-10 px-3 py-2 border border-white-5 rounded" style={{ fontSize: '0.85rem', minHeight: '52px', color: 'var(--primary-accent)' }}>
                   {scanLog}
                 </p>
                 <div className="progress rounded overflow-hidden mt-3" style={{ height: '5px' }}>
                   <div 
                     className="progress-bar" 
-                    style={{ width: `${scanProgress}%`, backgroundColor: docType.includes('Rx') ? '#00d2ff' : '#ff8f00' }}
+                    style={{ width: `${scanProgress}%`, backgroundColor: 'var(--primary-accent)' }}
                   ></div>
                 </div>
               </div>
@@ -607,7 +596,7 @@ function Upload({ user }) {
         {/* ============================================================== */}
         {/* RIGHT STAGE: Telemetry Extractor */}
         {/* ============================================================== */}
-        <div className="col-lg-7 col-md-7 reveal d-flex">
+        <div className="col-lg-8 col-md-8 reveal d-flex">
           {!result && !loading && !error && (
             <div className="glass-card text-center p-5 d-flex flex-column align-items-center justify-content-center w-100" style={{ borderRadius: '16px' }}>
               <div 
@@ -615,8 +604,8 @@ function Upload({ user }) {
                 style={{ 
                   width: '130px', 
                   height: '130px',
-                  background: docType.includes('Rx') ? 'rgba(0, 245, 212, 0.08)' : 'rgba(0, 255, 170, 0.08)',
-                  border: docType.includes('Rx') ? '1px solid rgba(0, 245, 212, 0.2)' : '1px solid rgba(0, 255, 170, 0.2)'
+                  background: docType.includes('Rx') ? 'var(--bg-upload-rx)' : 'var(--bg-upload-lab)',
+                  border: '1px solid var(--border-color)'
                 }}
               >
                 {docType.includes('Rx') ? (
@@ -639,13 +628,13 @@ function Upload({ user }) {
           )}
 
           {loading && (
-            <div className="glass-card text-center p-5 d-flex flex-column align-items-center justify-content-center w-100" style={{ borderRadius: '16px' }}>
-              <div className="mb-5 position-relative d-flex align-items-center justify-content-center" style={{ width: '160px', height: '160px' }}>
-                <div className="spinner-border position-absolute" style={{ width: '100px', height: '100px', borderWidth: '4.5px', borderColor: '#00d2ff transparent #ff8f00 transparent' }} role="status"></div>
-                <Cpu size={42} className="position-absolute brand-logo-orange" />
+            <div className="glass-card text-center p-5 d-flex flex-column align-items-center justify-content-center w-100" style={{ borderRadius: '12px' }}>
+              <div className="mb-4 position-relative d-flex align-items-center justify-content-center" style={{ width: '120px', height: '120px' }}>
+                <div className="spinner-border position-absolute" style={{ width: '80px', height: '80px', borderWidth: '3.5px', borderColor: 'var(--primary-accent) transparent var(--border-color) transparent' }} role="status"></div>
+                <Cpu size={36} className="position-absolute" style={{ color: 'var(--primary-accent)' }} />
               </div>
-              <h3 className="fw-bold mb-2 font-monospace text-brand-gradient-blue" style={{ fontSize: '1.8rem' }}>Extracting Clinical Vectors</h3>
-              <p className="text-brand-gradient-orange font-monospace fw-bold" style={{ fontSize: '1.1rem' }}>Re-mapping handwritten characters onto OCR models...</p>
+              <h3 className="fw-bold mb-2 font-monospace" style={{ fontSize: '1.3rem', color: 'var(--text-primary)' }}>Extracting Clinical Vectors</h3>
+              <p className="font-monospace" style={{ fontSize: '0.92rem', color: 'var(--text-secondary)' }}>Re-mapping handwritten characters onto OCR models...</p>
             </div>
           )}
 
@@ -658,12 +647,12 @@ function Upload({ user }) {
           )}
 
           {result && !loading && (
-            <div className="w-100 p-5 d-flex flex-column panel-brand-gradient" style={{ borderRadius: '16px' }}>
+            <div className="w-100 p-5 d-flex flex-column panel-preview" style={{ borderRadius: '16px' }}>
               <div className="d-flex align-items-center justify-content-between mb-4 border-bottom border-white-10 pb-3 flex-wrap gap-2">
                 <div className="font-monospace">
                   <h3 className="fw-bold m-0 text-uppercase d-flex align-items-center gap-2" style={{ fontSize: '1.35rem' }}>
-                    <CheckCircle className="text-brand-gradient-blue" size={24} />
-                    <span className="text-brand-gradient-blue">Ingestion</span> <span className="text-brand-gradient-orange">Vector Complete</span>
+                    <CheckCircle style={{ color: 'var(--primary-accent)' }} size={24} />
+                    <span style={{ color: 'var(--text-primary)' }}>Ingestion</span> <span style={{ color: 'var(--primary-accent)' }}>Complete</span>
                   </h3>
                   <span className="text-secondary small font-monospace">Extracted: {result.timestamp}</span>
                 </div>
@@ -689,24 +678,22 @@ function Upload({ user }) {
               <div className="w-100">
                 {result.type.includes('Rx') ? (
                 <div className="font-monospace">
-                  <h5 className="text-brand-gradient-blue fw-bold mb-3" style={{ fontSize: '1.05rem' }}>Extracted Pharmacological Agents</h5>
+                  <h5 className="fw-bold mb-3" style={{ fontSize: '1.05rem', color: 'var(--text-primary)' }}>Extracted Pharmacological Agents</h5>
                   <div className="d-flex flex-column gap-3 mb-4">
                     {result.data.medicines?.map((m, i) => {
-                      // Map times_of_day labels to icons
-                      const timeIcons = { morning: '🌅', afternoon: '☀️', evening: '🌇', night: '🌙' };
                       const timesOfDay = Array.isArray(m.times_of_day) ? m.times_of_day : [];
                       return (
                         <div key={i} className="p-3 rounded border border-white-10 bg-white-5" style={{ borderLeft: '3px solid rgba(0,245,212,0.5)' }}>
                           {/* Top row: name + frequency badge */}
                           <div className="d-flex align-items-center justify-content-between mb-2">
-                            <span className="text-white fw-bold" style={{ fontSize: '1rem' }}>💊 {m.name}</span>
+                            <span className="text-white fw-bold" style={{ fontSize: '1rem' }}>{m.name}</span>
                             <span className="badge badge-brand-blue px-2 py-1 font-monospace" style={{ fontSize: '0.72rem', letterSpacing: '0.08em' }}>{m.frequency || m.frequency_number ? `${m.frequency_number || ''}x / day` : '—'}</span>
                           </div>
 
                           {/* Dosage + timing row */}
                           <div className="d-flex flex-wrap gap-2 mb-2">
                             <span className="badge bg-white-5 border border-white-10 text-secondary px-2 py-1" style={{ fontSize: '0.72rem' }}>
-                              💉 {m.dosage}
+                              Dosage: {m.dosage}
                             </span>
                             {m.timing && (
                               <span className="badge px-2 py-1 fw-bold" style={{
@@ -715,7 +702,6 @@ function Upload({ user }) {
                                 border: m.timing.toLowerCase().includes('before') ? '1px solid rgba(255,143,0,0.4)' : '1px solid rgba(0,245,212,0.35)',
                                 color: m.timing.toLowerCase().includes('before') ? 'var(--accent-orange)' : 'var(--accent-teal)',
                               }}>
-                                {m.timing.toLowerCase().includes('before') ? '⏮ ' : m.timing.toLowerCase().includes('after') ? '⏭ ' : '🍽 '}
                                 {m.timing}
                               </span>
                             )}
@@ -727,12 +713,12 @@ function Upload({ user }) {
                               {timesOfDay.map((t, ti) => (
                                 <span key={ti} className="badge px-2 py-1 text-capitalize" style={{
                                   fontSize: '0.72rem',
-                                  background: 'rgba(255,255,255,0.05)',
-                                  border: '1px solid rgba(255,255,255,0.12)',
-                                  color: '#fff',
+                                  background: 'var(--bg-card-hover)',
+                                  border: '1px solid var(--border-color)',
+                                  color: 'var(--text-primary)',
                                   letterSpacing: '0.05em'
                                 }}>
-                                  {timeIcons[t.toLowerCase()] || '🕐'} {t}
+                                  {t}
                                 </span>
                               ))}
                             </div>
@@ -747,16 +733,16 @@ function Upload({ user }) {
                     })}
                   </div>
                   
-                  <h5 className="text-brand-gradient-orange fw-bold mb-3" style={{ fontSize: '1.05rem' }}>Physiological Intent & Recommendations</h5>
-                  <div className="p-4 bg-white-5 rounded border border-white-10 mb-4" style={{ fontSize: '0.92rem', boxShadow: 'inset 0 1px 1px rgba(255,255,255,0.05)' }}>
+                  <h5 className="fw-bold mb-3" style={{ fontSize: '1.05rem', color: 'var(--text-primary)' }}>Physiological Intent & Recommendations</h5>
+                  <div className="p-4 bg-white-5 rounded border border-white-10 mb-4" style={{ fontSize: '0.92rem' }}>
                     <ul className="text-secondary ps-3 mb-0">
                       {result.data.recommendations?.map((r, i) => <li key={i} className="mb-2">{r}</li>)}
                     </ul>
                   </div>
                   
                   {result.data.next_steps && (
-                    <div className="mt-4 p-4 bg-white-5 rounded border border-white-10" style={{ fontSize: '0.92rem', borderLeft: '3px solid #ff8f00 !important' }}>
-                      <h6 className="text-brand-gradient-orange fw-bold mb-2" style={{ fontSize: '0.98rem' }}>Suggested Follow-up Runs</h6>
+                    <div className="mt-4 p-4 bg-white-5 rounded border border-white-10" style={{ fontSize: '0.92rem', borderLeft: '3px solid var(--primary-accent) !important' }}>
+                      <h6 className="fw-bold mb-2" style={{ fontSize: '0.98rem', color: 'var(--text-primary)' }}>Suggested Follow-up Runs</h6>
                       <ul className="text-secondary mb-0 ps-3">
                         {result.data.next_steps.map((step, i) => <li key={i} className="mb-1">{step}</li>)}
                       </ul>
@@ -765,7 +751,7 @@ function Upload({ user }) {
                 </div>
               ) : (
                 <div className="font-monospace">
-                  <h5 className="text-brand-gradient-blue fw-bold mb-3" style={{ fontSize: '1.05rem' }}>Extracted Physiological Biomarkers</h5>
+                  <h5 className="fw-bold mb-3" style={{ fontSize: '1.05rem', color: 'var(--text-primary)' }}>Extracted Physiological Biomarkers</h5>
                   <div className="row g-3 mb-4">
                     {result.data.biomarkers && Object.keys(result.data.biomarkers).map((k, i) => {
                       const bio = result.data.biomarkers[k];
@@ -775,7 +761,7 @@ function Upload({ user }) {
                           <div className={`p-4 rounded h-100 ${isAbnormal ? 'card-biomarker-abnormal' : 'card-biomarker-normal'}`}>
                             <span className="text-secondary d-block text-capitalize" style={{ fontSize: '0.85rem' }}>{k.replace(/_/g, ' ')}</span>
                             <div className="d-flex justify-content-between align-items-baseline mt-2">
-                              <span className="text-white fw-bold" style={{ fontSize: '1.15rem' }}>{bio.value} {bio.unit}</span>
+                              <span className="fw-bold" style={{ fontSize: '1.15rem', color: 'var(--text-primary)' }}>{bio.value} {bio.unit}</span>
                               <span className={`badge ${isAbnormal ? 'badge-brand-orange' : 'badge-brand-blue'} p-1.5 px-2.5`} style={{ fontSize: '0.78rem' }}>
                                 {bio.status}
                               </span>
@@ -790,8 +776,8 @@ function Upload({ user }) {
                     })}
                   </div>
                   
-                  <h5 className="text-brand-gradient-orange fw-bold mb-3" style={{ fontSize: '1.05rem' }}>Pathological Interpretation Digest</h5>
-                  <div className="p-4 bg-white-5 rounded border border-white-10 mb-4" style={{ fontSize: '0.92rem', boxShadow: 'inset 0 1px 1px rgba(255,255,255,0.05)' }}>
+                  <h5 className="fw-bold mb-3" style={{ fontSize: '1.05rem', color: 'var(--text-primary)' }}>Pathological Interpretation Digest</h5>
+                  <div className="p-4 bg-white-5 rounded border border-white-10 mb-4" style={{ fontSize: '0.92rem' }}>
                     <p className="text-secondary small m-0" style={{ lineHeight: 1.6 }}>{result.data.clinical_interpretation}</p>
                   </div>
                 </div>

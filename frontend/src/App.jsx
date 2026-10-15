@@ -205,7 +205,7 @@ function Sidebar({ user, logout, sidebarContent, isOpen, toggleSidebar, openAuth
 
   const scoreNum = navbarHealthScore ? parseInt(navbarHealthScore, 10) : null;
   const healthStatus = scoreNum >= 85 ? 'Optimal' : scoreNum >= 70 ? 'Moderate' : 'Unstable';
-  const themeAccentColor = scoreNum >= 85 ? 'var(--accent-green)' : scoreNum >= 70 ? 'var(--accent-orange)' : 'var(--accent-red)';
+  const themeAccentColor = scoreNum >= 85 ? 'var(--accent-green)' : scoreNum >= 70 ? 'var(--accent-amber)' : 'var(--accent-coral)';
 
   return (
     <aside className={`app-sidebar ${isOpen ? 'open' : ''}`}>
@@ -351,7 +351,7 @@ function Navbar({ user, logout, toggleSidebar, isSidebarPage, openAuth, navbarHe
             <>
               <NavLink to="/profile" icon={<User size={16} />} label={isDoctor ? "Vault" : "Profile"} />
               {!isSidebarPage && (
-                <button onClick={logout} className="btn-icon p-2 border-0 bg-transparent text-white opacity-70 hover-opacity-100" aria-label="Log out">
+                <button onClick={logout} className="btn-icon p-2 border-0 bg-transparent text-secondary" style={{ color: 'var(--text-secondary)' }} aria-label="Log out">
                   <LogOut size={18} />
                 </button>
               )}
@@ -359,8 +359,8 @@ function Navbar({ user, logout, toggleSidebar, isSidebarPage, openAuth, navbarHe
           ) : (
             <button
               onClick={() => openAuth('patient')}
-              className="primary px-4 py-2 rounded-pill text-decoration-none font-monospace text-uppercase cursor-pointer"
-              style={{ width: 'auto', fontSize: '0.82rem' }}
+              className="btn-clinical primary px-3 py-1.5 text-decoration-none font-monospace text-uppercase cursor-pointer"
+              style={{ width: 'auto', fontSize: '0.82rem', borderRadius: '6px' }}
             >
               Login
             </button>
@@ -377,7 +377,7 @@ function Navbar({ user, logout, toggleSidebar, isSidebarPage, openAuth, navbarHe
         </div>
 
         {/* Mobile menu toggle */}
-        <button className="btn-icon d-md-none text-white" onClick={() => setIsOpen(!isOpen)} aria-label={isOpen ? 'Close menu' : 'Open menu'} aria-expanded={isOpen}>
+        <button className="btn-icon d-md-none" style={{ color: 'var(--text-primary)' }} onClick={() => setIsOpen(!isOpen)} aria-label={isOpen ? 'Close menu' : 'Open menu'} aria-expanded={isOpen}>
           {isOpen ? <X size={24} /> : <Menu size={24} />}
         </button>
       </div>
@@ -386,10 +386,11 @@ function Navbar({ user, logout, toggleSidebar, isSidebarPage, openAuth, navbarHe
       <AnimatePresence>
         {isOpen && (
           <motion.div 
-            initial={{ opacity: 0, y: -20 }}
+            initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            className="d-md-none position-absolute w-100 bg-deep border-bottom p-4 z-index-1000"
+            exit={{ opacity: 0, y: -10 }}
+            className="d-md-none position-absolute w-100 border-bottom p-4 z-index-1000"
+            style={{ background: 'var(--bg-form)', borderColor: 'var(--border-color)' }}
           >
              <div className="d-flex flex-column gap-3">
                <MobileNavLink to="/" label="Home" onClick={() => setIsOpen(false)} />
@@ -426,15 +427,16 @@ function Navbar({ user, logout, toggleSidebar, isSidebarPage, openAuth, navbarHe
                 ) : (
                     <button 
                       onClick={() => { setIsOpen(false); openAuth('patient'); }} 
-                      className="primary p-2 text-center rounded text-decoration-none font-monospace text-uppercase cursor-pointer"
-                      style={{ width: '100%', fontSize: '0.88rem' }}
+                      className="btn-clinical primary p-2 text-center rounded text-decoration-none font-monospace text-uppercase cursor-pointer"
+                      style={{ width: '100%', fontSize: '0.88rem', borderRadius: '6px' }}
                     >
                       Login
                     </button>
                 )}
                 <button
                   onClick={toggleTheme}
-                  className="btn-icon p-2 border-0 bg-transparent text-white opacity-70 mt-2"
+                  className="btn-icon p-2 border-0 bg-transparent opacity-70 mt-2 d-flex align-items-center"
+                  style={{ color: 'var(--text-primary)' }}
                   title={theme === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
                   aria-label={theme === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
                 >
@@ -453,10 +455,12 @@ function NavLink({ to, icon, label }) {
   return (
     <RouterNavLink
       to={to}
-      className={({ isActive }) =>
-        `text-decoration-none d-flex align-items-center gap-2 transition-all ${isActive ? 'text-white' : 'text-secondary hover-white'}`
-      }
-      style={({ isActive }) => isActive ? { fontWeight: 600 } : {}}
+      className="text-decoration-none d-flex align-items-center gap-2 transition-all px-2 py-1 rounded"
+      style={({ isActive }) => ({
+        color: isActive ? 'var(--primary-accent)' : 'var(--text-secondary)',
+        fontWeight: isActive ? 700 : 500,
+        background: isActive ? 'var(--bg-upload)' : 'transparent',
+      })}
     >
       {icon}
       <span>{label}</span>
@@ -468,9 +472,11 @@ function MobileNavLink({ to, label, onClick }) {
   return (
     <RouterNavLink
       to={to}
-      className={({ isActive }) =>
-        `text-decoration-none fs-5 py-2 border-bottom border-white-5 d-block ${isActive ? 'text-white fw-bold' : 'text-secondary'}`
-      }
+      className="text-decoration-none fs-5 py-2 border-bottom border-white-5 d-block"
+      style={({ isActive }) => ({
+        color: isActive ? 'var(--primary-accent)' : 'var(--text-secondary)',
+        fontWeight: isActive ? 700 : 500,
+      })}
       onClick={onClick}
     >
       {label}

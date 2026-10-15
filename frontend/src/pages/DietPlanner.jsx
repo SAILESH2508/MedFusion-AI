@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext, useCallback } from 'react';
-import { Salad, RefreshCw, Heart, ChevronDown, ChevronUp, Check, Shuffle, Star, ShoppingCart, Plus, Trash2, X, Calendar, Settings } from 'lucide-react';
+import { Salad, RefreshCw, Heart, ChevronDown, ChevronUp, Check, Shuffle, Star, ShoppingCart, Plus, Trash2, X, Calendar, Settings, CheckCircle2, AlertTriangle } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { api } from '../services/api';
 import { SidebarContext } from '../context/SidebarContext';
@@ -22,7 +22,7 @@ function TagInput({ label, value, onChange, placeholder }) {
       <div className="d-flex gap-2 flex-wrap mb-2">
         {value.map((v, i) => (
           <span key={i} className="badge d-flex align-items-center gap-1 px-2 py-1"
-            style={{ background: 'rgba(0,245,212,0.1)', border: '1px solid rgba(0,245,212,0.3)', color: 'var(--accent-teal)', fontSize: '0.78rem' }}>
+            style={{ background: 'var(--bg-upload)', border: '1px solid var(--border-color)', color: 'var(--primary-accent)', fontSize: '0.78rem' }}>
             {v}
             <X size={10} className="cursor-pointer" onClick={() => onChange(value.filter((_, j) => j !== i))} />
           </span>
@@ -50,14 +50,14 @@ function MealCard({ meal, dayKey, slotKey, completions, onComplete, onSwap, onFa
   if (!meal) return null;
   return (
     <div className="p-3 rounded mb-2 font-monospace"
-      style={{ background: isDone ? 'rgba(0,245,212,0.06)' : 'var(--bg-card)', border: `1px solid ${isDone ? 'rgba(0,245,212,0.3)' : 'var(--border-color)'}`, transition: 'all 0.2s' }}>
+      style={{ background: isDone ? 'var(--bg-upload)' : 'var(--bg-card)', border: `1px solid ${isDone ? 'var(--primary-accent)' : 'var(--border-color)'}`, transition: 'all 0.2s' }}>
       <div className="d-flex justify-content-between align-items-start gap-2">
         <div className="flex-grow-1">
           <div className="d-flex align-items-center gap-2 mb-1">
             <span className="fw-bold" style={{ color: 'var(--text-primary)', fontSize: '0.92rem', textDecoration: isDone ? 'line-through' : 'none', opacity: isDone ? 0.6 : 1 }}>
               {meal.name}
             </span>
-            {isDone && <Check size={14} style={{ color: 'var(--accent-teal)' }} />}
+            {isDone && <Check size={14} style={{ color: 'var(--primary-accent)' }} />}
           </div>
           <span className="text-secondary" style={{ fontSize: '0.78rem' }}>{meal.portion} · {meal.calories} kcal</span>
         </div>
@@ -94,7 +94,7 @@ function MealCard({ meal, dayKey, slotKey, completions, onComplete, onSwap, onFa
                 </div>
               ))}
             </div>
-            {meal.why && <p className="text-secondary mb-0" style={{ fontSize: '0.75rem', fontStyle: 'italic' }}>💡 {meal.why}</p>}
+            {meal.why && <p className="text-secondary mb-0" style={{ fontSize: '0.75rem', fontStyle: 'italic' }}>{meal.why}</p>}
           </motion.div>
         )}
       </AnimatePresence>
@@ -269,8 +269,8 @@ export default function DietPlanner({ user }) {
 
   return (
     <div className="reveal px-1 theme-general" style={{ paddingBottom: '32px' }}>
-      {success && <div className="alert mb-3 d-flex align-items-center gap-2 py-2 px-3 rounded font-monospace" style={{ fontSize: '0.8rem', background: 'rgba(0,200,130,0.12)', border: '1px solid rgba(0,200,130,0.3)', color: '#00f5a0' }}>✓ {success}</div>}
-      {error && <div className="alert mb-3 d-flex align-items-center gap-2 py-2 px-3 rounded font-monospace" style={{ fontSize: '0.8rem', background: 'rgba(255,50,80,0.1)', border: '1px solid rgba(255,50,80,0.3)', color: '#ff6080' }}>⚠ {error} <button onClick={() => setError('')} className="ms-auto bg-transparent border-0 text-secondary p-0"><X size={14} /></button></div>}
+      {success && <div className="alert mb-3 d-flex align-items-center gap-2 py-2 px-3 rounded font-monospace" style={{ fontSize: '0.8rem', background: 'var(--status-normal-bg)', border: '1px solid var(--status-normal-border)', color: 'var(--accent-green)' }}><CheckCircle2 size={14} /> {success}</div>}
+      {error && <div className="alert mb-3 d-flex align-items-center gap-2 py-2 px-3 rounded font-monospace" style={{ fontSize: '0.8rem', background: 'var(--status-danger-bg)', border: '1px solid var(--status-danger-border)', color: 'var(--accent-coral)' }}><AlertTriangle size={14} /> {error} <button onClick={() => setError('')} className="ms-auto bg-transparent border-0 text-secondary p-0"><X size={14} /></button></div>}
 
       {/* ── WEEKLY PLAN TAB ─────────────────────────────────────────────── */}
       {activeTab === 'plan' && (
@@ -369,7 +369,7 @@ export default function DietPlanner({ user }) {
           <div className="mb-3">
             <label className="text-secondary small d-block mb-2 font-monospace">DIET TYPE</label>
             <div className="d-flex gap-2">
-              {[['vegetarian', '🌱 Vegetarian'], ['non_vegetarian', '🍗 Non-Veg'], ['vegan', '🌿 Vegan']].map(([v, l]) => (
+              {[['vegetarian', 'Vegetarian'], ['non_vegetarian', 'Non-Veg'], ['vegan', 'Vegan']].map(([v, l]) => (
                 <button key={v} onClick={() => setPrefDraft(p => ({ ...p, diet_type: v }))}
                   className="px-3 py-2 rounded font-monospace text-uppercase fw-bold"
                   style={{ fontSize: '0.78rem', flex: 1, border: `1px solid ${prefDraft.diet_type === v ? 'var(--accent-teal)' : 'var(--border-color)'}`, background: prefDraft.diet_type === v ? 'rgba(0,245,212,0.1)' : 'transparent', color: prefDraft.diet_type === v ? 'var(--accent-teal)' : 'var(--text-secondary)', cursor: 'pointer' }}>
@@ -469,7 +469,7 @@ export default function DietPlanner({ user }) {
                     <div className="p-3 rounded h-100" style={{ background: 'var(--bg-card)', border: '1px solid var(--border-color)' }}>
                       <div className="fw-bold font-monospace mb-1" style={{ color: 'var(--text-primary)', fontSize: '0.92rem' }}>{meal.name || 'Meal'}</div>
                       <div className="text-secondary font-monospace" style={{ fontSize: '0.78rem' }}>{meal.portion} · {meal.calories} kcal</div>
-                      {meal.why && <p className="text-secondary mt-2 mb-0" style={{ fontSize: '0.74rem', fontStyle: 'italic' }}>💡 {meal.why}</p>}
+                      {meal.why && <p className="text-secondary mt-2 mb-0" style={{ fontSize: '0.74rem', fontStyle: 'italic' }}>{meal.why}</p>}
                     </div>
                   </div>
                 );
@@ -497,7 +497,7 @@ export default function DietPlanner({ user }) {
                   onMouseLeave={e => e.currentTarget.style.borderColor = 'var(--border-color)'}>
                   <div className="fw-bold font-monospace mb-1" style={{ color: 'var(--text-primary)', fontSize: '0.92rem' }}>{alt.name}</div>
                   <div className="text-secondary font-monospace" style={{ fontSize: '0.78rem' }}>{alt.portion} · {alt.calories} kcal</div>
-                  {alt.why && <p className="text-secondary mt-1 mb-0" style={{ fontSize: '0.74rem', fontStyle: 'italic' }}>💡 {alt.why}</p>}
+                  {alt.why && <p className="text-secondary mt-1 mb-0" style={{ fontSize: '0.74rem', fontStyle: 'italic' }}>{alt.why}</p>}
                 </div>
               ))}
             </motion.div>
