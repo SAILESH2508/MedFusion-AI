@@ -1,0 +1,31 @@
+{
+  "id": "FEAT-002",
+  "type": "feat",
+  "description": "Apply color token fixes across components and implement the Scanner page two-column redesign. Depends on FEAT-001 (theme variables must be in place first). This FEAT covers: (1) Scanner column ratio fix in Upload.jsx and GuestUpload.jsx — change col-lg-5/7 to col-lg-4/8, remove distracting float-subtle animation from upload card, fix GuestUpload hardcoded RGBA input backgrounds; (2) Fix hardcoded neon alert colors in DietPlanner.jsx; (3) Fix glassmorphism blur in DigitalTwin.jsx toolbar and replace hardcoded dark RGBA colors with theme variables; (4) Fix App.jsx Vitals Index accent color reference from removed --accent-orange/--accent-red to --accent-amber/--accent-coral.",
+  "status": "completed",
+  "steps": [
+    "Read frontend/src/pages/Upload.jsx before editing. Change both column divs: 'col-lg-5 col-md-5' → 'col-lg-4 col-md-4', and 'col-lg-7 col-md-7' → 'col-lg-8 col-md-8'. Remove 'float-subtle' from the left scanner glass-card className.",
+    "Read frontend/src/pages/GuestUpload.jsx before editing. Apply the same column ratio change: col-lg-5/7 → col-lg-4/8. Remove 'float-subtle' from the left panel glass-card. Replace the 4 occurrences of hardcoded input styles inside the Guest Identification Info card: change background:'rgba(255,255,255,0.04)' → background:'var(--input-surface)' and border:'1px solid rgba(255,255,255,0.1)' → border:'1px solid var(--border-color)'.",
+    "Read frontend/src/pages/DietPlanner.jsx before editing. In the success alert div (near top of return), replace color:'#00f5a0' → color:'var(--accent-green)', background:'rgba(0,200,130,0.12)' → background:'var(--status-normal-bg)', border:'1px solid rgba(0,200,130,0.3)' → border:'1px solid var(--status-normal-border)'. In the error alert div, replace color:'#ff6080' → color:'var(--accent-coral)', background:'rgba(255,50,80,0.1)' → background:'var(--status-danger-bg)', border:'1px solid rgba(255,50,80,0.3)' → border:'1px solid var(--status-danger-border)'.",
+    "Read frontend/src/pages/DigitalTwin.jsx before editing. In the view-mode toggle toolbar div (the one with position:'absolute', top:'12px', left:'12px'), find the inner container with backdropFilter:'blur(8px)' and: (a) remove backdropFilter:'blur(8px)' entirely, (b) replace background:'rgba(15,23,42,0.88)' with background:'var(--bg-form)', (c) replace border:'1px solid rgba(255,255,255,0.12)' with border:'1px solid var(--border-color)'. For each mode button, replace the active state background:'rgba(255,255,255,0.15)' → background:'var(--bg-upload)', active border:'1px solid rgba(255,255,255,0.22)' → border:'1px solid var(--primary-accent)', active color:'#ffffff' → color:'var(--text-primary)', inactive color:'rgba(255,255,255,0.55)' → color:'var(--text-secondary)'.",
+    "Read frontend/src/App.jsx before editing. In the Sidebar component, find the line: const themeAccentColor = scoreNum >= 85 ? 'var(--accent-green)' : scoreNum >= 70 ? 'var(--accent-orange)' : 'var(--accent-red)'. Change to: const themeAccentColor = scoreNum >= 85 ? 'var(--accent-green)' : scoreNum >= 70 ? 'var(--accent-amber)' : 'var(--accent-coral)'. Also update the mobile nav dropdown style from background:'var(--bg-surface)' to background:'var(--bg-form)' so it has depth differentiation from the page background."
+  ],
+  "acceptance_criteria": [
+    "On the Scanner page (/upload), the left upload column is narrower and the right result panel is wider",
+    "The left upload card no longer floats/bobs up and down",
+    "Guest upload inputs (Name, Email fields) use the theme input surface color instead of nearly-transparent white",
+    "In DietPlanner, success and error alerts use theme-colored backgrounds and text (no hardcoded neon hex values)",
+    "In DigitalTwin view-mode toggle, the toolbar background matches the form surface color with no blur effect",
+    "In the sidebar, the Vitals Index ring uses amber for moderate scores and coral for unstable scores"
+  ],
+  "verification": [
+    "cd d:\\MEDICAL_PROJECT\\medfusion-ai\\frontend && npm run dev",
+    "Navigate to /upload — confirm wider right panel, no floating animation on left card",
+    "Log out and navigate to /upload as guest — confirm identification inputs match theme colors",
+    "Navigate to /diet — generate a plan, confirm success/error alerts use muted blue-green/coral colors",
+    "Navigate to /digital-twin — confirm the view-mode toolbar has no blur behind it",
+    "If logged in as Patient with health score, check sidebar Vitals Index color mapping"
+  ],
+  "blocked_reason": null,
+  "findings": "All 5 steps applied cleanly. Upload.jsx and GuestUpload.jsx: left column narrowed to col-lg-4, right column widened to col-lg-8, float-subtle animation removed from left glass-card. GuestUpload.jsx: 4 hardcoded RGBA input styles replaced with var(--input-surface) and var(--border-color). DietPlanner.jsx: neon #00f5a0/#ff6080 alert colors replaced with --accent-green/--accent-coral and status bg/border variables. DigitalTwin.jsx: view-mode toolbar backdropFilter:blur(8px) removed, rgba(15,23,42,0.88) → var(--bg-form), rgba(255,255,255,0.12) border → var(--border-color), active button rgba colors → var(--bg-upload)/var(--primary-accent)/var(--text-primary)/var(--text-secondary). App.jsx: Vitals Index themeAccentColor updated from --accent-orange/--accent-red to --accent-amber/--accent-coral, mobile nav dropdown background changed from var(--bg-surface) to var(--bg-form). Build: passed with 0 errors."
+}
