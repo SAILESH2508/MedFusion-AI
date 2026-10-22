@@ -32,7 +32,7 @@ function TagInput({ label, value, onChange, placeholder }) {
         <input value={input} onChange={e => setInput(e.target.value)}
           onKeyDown={e => e.key === 'Enter' && (e.preventDefault(), add())}
           placeholder={placeholder}
-          className="flex-grow-1 bg-transparent text-white border border-white-10 rounded px-3 py-2 font-monospace"
+          className="flex-grow-1 bg-transparent border border-white-10 rounded px-3 py-2 font-monospace"
           style={{ fontSize: '0.85rem', outline: 'none', background: 'var(--input-bg)', color: 'var(--text-primary)' }} />
         <button onClick={add} className="px-3 py-2 rounded border border-white-10 bg-transparent text-secondary hover-white font-monospace" style={{ width: 'auto', fontSize: '0.82rem' }}>
           <Plus size={14} />
@@ -87,9 +87,9 @@ function MealCard({ meal, dayKey, slotKey, completions, onComplete, onSwap, onFa
             <div className="row g-1 mb-2" style={{ fontSize: '0.72rem' }}>
               {[['Protein', meal.protein], ['Carbs', meal.carbs], ['Fat', meal.fat]].map(([k, v]) => (
                 <div className="col-4" key={k}>
-                  <div className="text-center p-1 rounded" style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid var(--border-color)' }}>
+                  <div className="text-center p-1 rounded" style={{ background: 'var(--bg-card-tinted)', border: '1px solid var(--border)' }}>
                     <span className="text-secondary d-block">{k}</span>
-                    <span className="text-white fw-bold">{v}</span>
+                    <span className="fw-bold" style={{ color: 'var(--text-primary)' }}>{v}</span>
                   </div>
                 </div>
               ))}
@@ -124,6 +124,8 @@ export default function DietPlanner({ user }) {
   const [favorites, setFavorites] = useState([]);
 
   const load = useCallback(async () => {
+    const token = localStorage.getItem('medfusion_token');
+    if (!token || !user || user.role !== 'Patient') return;
     try {
       const [prefRes, planRes, shopRes, favRes] = await Promise.all([
         api.get('/diet/preferences/'),
@@ -141,9 +143,11 @@ export default function DietPlanner({ user }) {
       setShopping(shopRes.data.items || []);
       setFavorites(favRes.data.favorites || []);
     } catch (e) {
-      setError('Failed to load diet data.');
+      if (e.response?.status !== 401) {
+        setError('Failed to load diet data.');
+      }
     }
-  }, []);
+  }, [user]);
 
   useEffect(() => { load(); }, [load]);
 
@@ -267,6 +271,27 @@ export default function DietPlanner({ user }) {
   const completedCount = plan ? Object.values(completions).filter(Boolean).length : 0;
   const totalMeals = plan ? DAYS.reduce((acc, d) => acc + Object.keys(plan[d] || {}).length, 0) : 0;
 
+  if (!user || user.role !== 'Patient') {
+    return (
+      <div className="reveal px-1 theme-general py-5 text-center">
+        <div className="glass-card text-center p-5 mx-auto" style={{ maxWidth: '600px', borderRadius: '16px' }}>
+          <Salad size={52} className="mb-3" style={{ color: 'var(--accent-teal)' }} />
+          <h2 className="fw-bold mb-3" style={{ color: 'var(--text-primary)', fontSize: '1.4rem' }}>Personalized Regional Diet Planner</h2>
+          <p className="text-secondary mb-4" style={{ fontSize: '0.92rem', lineHeight: '1.6' }}>
+            To generate personalized regional meal plans, manage allergen filters, and track dietary milestones tailored to your clinical profile, please authenticate with your patient account.
+          </p>
+          <button
+            onClick={() => window.dispatchEvent(new CustomEvent('medfusion_open_auth', { detail: { role: 'patient' } }))}
+            className="btn-clinical primary px-4 py-2.5 font-monospace text-uppercase"
+            style={{ fontSize: '0.85rem' }}
+          >
+            Log In as Patient
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="reveal px-1 theme-general" style={{ paddingBottom: '32px' }}>
       {success && <div className="alert mb-3 d-flex align-items-center gap-2 py-2 px-3 rounded font-monospace" style={{ fontSize: '0.8rem', background: 'var(--status-normal-bg)', border: '1px solid var(--status-normal-border)', color: 'var(--accent-green)' }}><CheckCircle2 size={14} /> {success}</div>}
@@ -344,7 +369,7 @@ export default function DietPlanner({ user }) {
                   </motion.div>
                 );
               })}
-              <div className="p-3 rounded font-monospace text-secondary text-center" style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid var(--border-color)', fontSize: '0.75rem', lineHeight: '1.5' }}>
+              <div className="p-3 rounded font-monospace text-secondary text-center" style={{ background: 'var(--bg-surface)', border: '1px solid var(--border)', fontSize: '0.75rem', lineHeight: '1.5' }}>
                 This meal plan is generated by AI based on your regional preferences and available health profile. It is not a substitute for advice from a registered dietitian or your doctor.
               </div>
             </div>

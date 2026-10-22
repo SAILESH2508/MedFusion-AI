@@ -80,7 +80,7 @@ export default function BioDigitalViewer({ selectedOrgan = 'heart', onOrganSelec
   }, [customModelId, organConfig.modelId, developerKey]);
 
   return (
-    <div style={{ position: 'relative', width: '100%', height: '100%', display: 'flex', flexDirection: 'column', background: '#000814' }}>
+    <div style={{ position: 'relative', width: '100%', height: '100%', display: 'flex', flexDirection: 'column', background: 'var(--bg-nav)' }}>
       
       {/* Top Banner Control Bar — placed below the main view mode switcher */}
       <div style={{
@@ -92,20 +92,19 @@ export default function BioDigitalViewer({ selectedOrgan = 'heart', onOrganSelec
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'space-between',
-        background: 'rgba(15, 23, 42, 0.9)',
-        border: '1px solid rgba(255, 255, 255, 0.12)',
+        background: 'var(--bg-card)',
+        border: '1px solid var(--border)',
         borderRadius: '8px',
         padding: '6px 12px',
-        backdropFilter: 'blur(8px)',
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <Globe size={15} style={{ color: '#38bdf8', flexShrink: 0 }} />
+          <Globe size={15} style={{ color: 'var(--accent-cyan)', flexShrink: 0 }} />
           <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-              <span style={{ fontSize: '0.72rem', fontFamily: 'monospace', fontWeight: 700, color: '#38bdf8', letterSpacing: '0.06em', textTransform: 'uppercase' }}>
+              <span style={{ fontSize: '0.72rem', fontFamily: 'monospace', fontWeight: 700, color: 'var(--accent-cyan)', letterSpacing: '0.06em', textTransform: 'uppercase' }}>
                 BioDigital Human™ Cloud
               </span>
-              <span style={{ fontSize: '0.55rem', background: 'rgba(56, 189, 248, 0.15)', color: '#38bdf8', padding: '1px 5px', borderRadius: '4px', border: '1px solid rgba(56, 189, 248, 0.3)', fontFamily: 'monospace' }}>
+              <span style={{ fontSize: '0.55rem', background: 'rgba(56, 189, 248, 0.15)', color: 'var(--accent-cyan)', padding: '1px 5px', borderRadius: '4px', border: '1px solid rgba(56, 189, 248, 0.3)', fontFamily: 'monospace' }}>
                 Clinical Grade
               </span>
             </div>
@@ -141,7 +140,7 @@ export default function BioDigitalViewer({ selectedOrgan = 'heart', onOrganSelec
             style={{
               background: showConfig ? 'rgba(56, 189, 248, 0.2)' : 'rgba(255,255,255,0.05)',
               border: '1px solid rgba(56, 189, 248, 0.3)',
-              color: '#38bdf8',
+              color: 'var(--accent-cyan)',
               borderRadius: '6px',
               padding: '4px 8px',
               cursor: 'pointer',
@@ -187,20 +186,19 @@ export default function BioDigitalViewer({ selectedOrgan = 'heart', onOrganSelec
           left: '12px',
           right: '12px',
           zIndex: 15,
-          background: 'rgba(10, 15, 30, 0.96)',
-          border: '1px solid rgba(255, 255, 255, 0.18)',
+          background: 'var(--bg-card)',
+          border: '1px solid var(--border)',
           borderRadius: '8px',
           padding: '12px 14px',
-          backdropFilter: 'blur(12px)',
-          boxShadow: '0 8px 32px rgba(0,0,0,0.6)',
+          boxShadow: 'var(--shadow-md)',
         }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
-            <span style={{ fontSize: '0.72rem', fontFamily: 'monospace', fontWeight: 700, color: '#38bdf8', textTransform: 'uppercase' }}>
+            <span style={{ fontSize: '0.72rem', fontFamily: 'monospace', fontWeight: 700, color: 'var(--accent-cyan)', textTransform: 'uppercase' }}>
               BioDigital Enterprise API Integration
             </span>
             <button
               onClick={() => setShowConfig(false)}
-              style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.5)', cursor: 'pointer', padding: '2px', display: 'flex', alignItems: 'center' }}
+              style={{ background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer', padding: '2px', display: 'flex', alignItems: 'center' }}
             >
               <X size={14} />
             </button>
@@ -221,10 +219,10 @@ export default function BioDigitalViewer({ selectedOrgan = 'heart', onOrganSelec
                 onChange={e => setCustomModelId(e.target.value)}
                 style={{
                   width: '100%',
-                  background: 'rgba(0,0,0,0.5)',
-                  border: '1px solid rgba(255,255,255,0.15)',
+                  background: 'var(--bg-input)',
+                  border: '1px solid var(--border)',
                   borderRadius: '4px',
-                  color: '#fff',
+                  color: 'var(--text-primary)',
                   fontSize: '0.7rem',
                   fontFamily: 'monospace',
                   padding: '4px 8px',
@@ -242,10 +240,10 @@ export default function BioDigitalViewer({ selectedOrgan = 'heart', onOrganSelec
                 onChange={e => setDeveloperKey(e.target.value)}
                 style={{
                   width: '100%',
-                  background: 'rgba(0,0,0,0.5)',
-                  border: '1px solid rgba(255,255,255,0.15)',
+                  background: 'var(--bg-input)',
+                  border: '1px solid var(--border)',
                   borderRadius: '4px',
-                  color: '#fff',
+                  color: 'var(--text-primary)',
                   fontSize: '0.7rem',
                   fontFamily: 'monospace',
                   padding: '4px 8px',
@@ -263,7 +261,7 @@ export default function BioDigitalViewer({ selectedOrgan = 'heart', onOrganSelec
             </button>
             <button
               onClick={() => { setShowConfig(false); setIframeKey(k => k + 1); }}
-              style={{ background: 'rgba(56, 189, 248, 0.2)', border: '1px solid rgba(56, 189, 248, 0.4)', color: '#38bdf8', padding: '3px 12px', borderRadius: '4px', fontSize: '0.62rem', cursor: 'pointer', fontWeight: 600 }}
+              style={{ background: 'rgba(56, 189, 248, 0.2)', border: '1px solid rgba(56, 189, 248, 0.4)', color: 'var(--accent-cyan)', padding: '3px 12px', borderRadius: '4px', fontSize: '0.62rem', cursor: 'pointer', fontWeight: 600 }}
             >
               Apply & Reload
             </button>
@@ -285,7 +283,7 @@ export default function BioDigitalViewer({ selectedOrgan = 'heart', onOrganSelec
             border: 'none',
             width: '100%',
             height: '100%',
-            background: '#000814',
+            background: 'var(--bg-nav)',
           }}
         />
       </div>
@@ -308,3 +306,4 @@ export default function BioDigitalViewer({ selectedOrgan = 'heart', onOrganSelec
     </div>
   );
 }
+

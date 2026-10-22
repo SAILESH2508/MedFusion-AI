@@ -138,7 +138,7 @@ function Tag({ position, label, selected }) {
           fontWeight: selected ? 700 : 500,
           letterSpacing: '0.08em',
           textTransform: 'uppercase',
-          color: selected ? '#ffffff' : 'rgba(255,255,255,0.7)',
+          color: selected ? 'var(--text-on-dark)' : 'rgba(255,255,255,0.7)',
           background: selected ? 'rgba(15,23,42,0.92)' : 'rgba(15,23,42,0.65)',
           padding: '2px 6px',
           borderRadius: '4px',
@@ -727,40 +727,39 @@ export default function OrganViewer3D({ selectedOrgan, onOrganSelect, patientDat
           position: 'absolute',
           inset: '12px',
           zIndex: 20,
-          background: 'rgba(10, 15, 30, 0.96)',
-          border: '1px solid rgba(255, 255, 255, 0.15)',
+          background: 'var(--bg-card)',
+          border: '1px solid var(--border)',
           borderRadius: '12px',
           padding: '16px',
           overflowY: 'auto',
-          backdropFilter: 'blur(16px)',
-          boxShadow: '0 8px 32px rgba(0,0,0,0.8)',
-          color: '#fff',
+          boxShadow: 'var(--shadow-md)',
+          color: 'var(--text-primary)',
         }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <Database size={16} style={{ color: '#38bdf8' }} />
-              <h5 style={{ margin: 0, fontFamily: 'monospace', fontSize: '0.9rem', color: '#38bdf8', textTransform: 'uppercase' }}>
+              <Database size={16} style={{ color: 'var(--accent-cyan)' }} />
+              <h5 style={{ margin: 0, fontFamily: 'monospace', fontSize: '0.9rem', color: 'var(--accent-cyan)', textTransform: 'uppercase' }}>
                 Licensed 3D Medical Datasets & Model Registry
               </h5>
             </div>
             <button
               onClick={() => setShowManifest(false)}
-              style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.6)', cursor: 'pointer' }}
+              style={{ background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer' }}
             >
               <X size={16} />
             </button>
           </div>
 
-          <p style={{ fontSize: '0.72rem', color: 'rgba(255,255,255,0.65)', lineHeight: 1.5, margin: '0 0 14px' }}>
+          <p style={{ fontSize: '0.72rem', color: 'var(--text-secondary)', lineHeight: 1.5, margin: '0 0 14px' }}>
             MedFusion AI supports high-fidelity CAD/solid geometry exported from licensed datasets (<strong>Zygote 3D Anatomy</strong>, <strong>NIH 3D Print Exchange</strong>, and <strong>BodyParts3D</strong>).
             Place your optimized <code>.glb</code> files in <code>frontend/public/models/organs/</code> to activate clinical-grade mesh rendering.
           </p>
 
           {/* Organs Table */}
-          <div style={{ border: '1px solid rgba(255,255,255,0.08)', borderRadius: '8px', overflow: 'hidden', marginBottom: '14px' }}>
+          <div style={{ border: '1px solid var(--border)', borderRadius: '8px', overflow: 'hidden', marginBottom: '14px' }}>
             <table style={{ width: '100%', fontSize: '0.68rem', fontFamily: 'monospace', borderCollapse: 'collapse' }}>
               <thead>
-                <tr style={{ background: 'rgba(255,255,255,0.04)', color: '#38bdf8', borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
+                <tr style={{ background: 'var(--bg-card-tinted)', color: 'var(--accent-cyan)', borderBottom: '1px solid var(--border)' }}>
                   <th style={{ padding: '6px 10px', textAlign: 'left' }}>Organ</th>
                   <th style={{ padding: '6px 10px', textAlign: 'left' }}>Target File</th>
                   <th style={{ padding: '6px 10px', textAlign: 'left' }}>Dataset Source</th>
@@ -771,17 +770,17 @@ export default function OrganViewer3D({ selectedOrgan, onOrganSelect, patientDat
                 {Object.values(ORGAN_GLTF_CONFIG).map((cfg) => {
                   const isLoaded = modelStatuses[cfg.id] === true;
                   return (
-                    <tr key={cfg.id} style={{ borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
+                    <tr key={cfg.id} style={{ borderBottom: '1px solid var(--border)' }}>
                       <td style={{ padding: '6px 10px', fontWeight: 600 }}>{cfg.label}</td>
-                      <td style={{ padding: '6px 10px', color: 'rgba(255,255,255,0.5)' }}>{cfg.url}</td>
-                      <td style={{ padding: '6px 10px', color: 'rgba(255,255,255,0.7)' }}>{cfg.dataset}</td>
+                      <td style={{ padding: '6px 10px', color: 'var(--text-muted)' }}>{cfg.url}</td>
+                      <td style={{ padding: '6px 10px', color: 'var(--text-secondary)' }}>{cfg.dataset}</td>
                       <td style={{ padding: '6px 10px', textAlign: 'center' }}>
                         {useGLTFMode && isLoaded ? (
-                          <span style={{ color: '#38bdf8', display: 'inline-flex', alignItems: 'center', gap: '3px' }}>
+                          <span style={{ color: 'var(--accent-cyan)', display: 'inline-flex', alignItems: 'center', gap: '3px' }}>
                             <CheckCircle2 size={12} /> GLTF Active
                           </span>
                         ) : (
-                          <span style={{ color: '#f59e0b', display: 'inline-flex', alignItems: 'center', gap: '3px' }}>
+                          <span style={{ color: 'var(--accent-amber)', display: 'inline-flex', alignItems: 'center', gap: '3px' }}>
                             <AlertTriangle size={12} /> Procedural Fallback
                           </span>
                         )}
@@ -793,8 +792,8 @@ export default function OrganViewer3D({ selectedOrgan, onOrganSelect, patientDat
             </table>
           </div>
 
-          <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '6px', padding: '8px 12px', fontSize: '0.65rem', color: 'rgba(255,255,255,0.75)', lineHeight: 1.5 }}>
-            <span style={{ color: '#38bdf8', fontWeight: 600 }}>Quick Ingestion: </span>
+          <div style={{ background: 'var(--bg-card-tinted)', border: '1px solid var(--border)', borderRadius: '6px', padding: '8px 12px', fontSize: '0.65rem', color: 'var(--text-secondary)', lineHeight: 1.5 }}>
+            <span style={{ color: 'var(--accent-cyan)', fontWeight: 600 }}>Quick Ingestion: </span>
             Export your licensed Zygote/NIH geometry from Blender using Google Draco geometry compression (<code>--draco.compressionLevel 7</code>), save to <code>frontend/public/models/organs/{'{organ}'}.glb</code>, and toggle <strong>GLTF / CAD</strong> mode below.
           </div>
         </div>

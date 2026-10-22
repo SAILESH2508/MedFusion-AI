@@ -193,7 +193,7 @@ export default function DigitalTwin({ user }) {
 
           {/* Viewer card */}
           <div style={{
-            background: '#1C2333',
+            background: 'var(--bg-card)',
             border: '1px solid var(--border-color)',
             borderRadius: '16px',
             overflow: 'hidden',

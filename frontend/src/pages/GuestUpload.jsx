@@ -400,7 +400,7 @@ function GuestUpload({ openAuth }) {
                         background: 'var(--input-surface)',
                         border: '1px solid var(--border-color)',
                         borderRadius: '6px',
-                        color: 'white',
+                        color: 'var(--text-primary)',
                         padding: '6px 10px',
                         fontSize: '0.82rem',
                         outline: 'none'
@@ -420,7 +420,7 @@ function GuestUpload({ openAuth }) {
                         background: 'var(--input-surface)',
                         border: `1px solid ${guestEmail.trim() ? 'var(--border-color)' : 'var(--border-color)'}`,
                         borderRadius: '6px',
-                        color: 'white',
+                        color: 'var(--text-primary)',
                         padding: '6px 10px',
                         fontSize: '0.82rem',
                         outline: 'none'

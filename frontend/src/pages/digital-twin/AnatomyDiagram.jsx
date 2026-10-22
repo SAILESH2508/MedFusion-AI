@@ -247,7 +247,7 @@ function LabelBadge({ organ, isActive, isHovered }) {
         fontSize="9.5"
         fontFamily="'Courier New', monospace"
         fontWeight={isActive ? 700 : 500}
-        fill={isActive ? '#fff' : 'rgba(255,255,255,0.65)'}
+        fill={isActive ? 'var(--text-on-dark)' : 'rgba(255,255,255,0.65)'}
         letterSpacing="0.6"
         style={{ transition: 'all 0.25s', textTransform: 'uppercase' }}
       >

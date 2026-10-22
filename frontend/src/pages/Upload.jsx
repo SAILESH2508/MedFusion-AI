@@ -472,7 +472,7 @@ function Upload({ user }) {
                       {getInitials(activePatient.name)}
                     </div>
                     <div>
-                      <h5 className="text-white fw-bold m-0" style={{ fontSize: "0.85rem" }}>{activePatient.name}</h5>
+                      <h5 className="fw-bold m-0" style={{ fontSize: "0.85rem", color: 'var(--text-primary)' }}>{activePatient.name}</h5>
                       <span className="text-secondary small font-monospace" style={{ fontSize: "0.75rem" }}>{activePatient.email}</span>
                     </div>
                   </div>
@@ -481,19 +481,19 @@ function Upload({ user }) {
                     <div className="col-4">
                       <div className="p-1 bg-white-5 rounded border border-white-5">
                         <span className="text-secondary d-block" style={{ fontSize: '0.55rem', opacity: 0.8 }}>SEX / AGE</span>
-                        <span className="text-white fw-semibold">{activePatient.gender} / {getAge(activePatient.dob)} Y</span>
+                        <span className="fw-semibold" style={{ color: 'var(--text-primary)' }}>{activePatient.gender} / {getAge(activePatient.dob)} Y</span>
                       </div>
                     </div>
                     <div className="col-4">
                       <div className="p-1 bg-white-5 rounded border border-white-5">
                         <span className="text-secondary d-block" style={{ fontSize: '0.55rem', opacity: 0.8 }}>BLOOD GP</span>
-                        <span className="text-white fw-semibold">{activePatient.blood_group}</span>
+                        <span className="fw-semibold" style={{ color: 'var(--text-primary)' }}>{activePatient.blood_group}</span>
                       </div>
                     </div>
                     <div className="col-4">
                       <div className="p-1 bg-white-5 rounded border border-white-5">
                         <span className="text-secondary d-block" style={{ fontSize: '0.55rem', opacity: 0.8 }}>WT / HT</span>
-                        <span className="text-white fw-semibold">{activePatient.weight}k / {activePatient.height}c</span>
+                        <span className="fw-semibold" style={{ color: 'var(--text-primary)' }}>{activePatient.weight}k / {activePatient.height}c</span>
                       </div>
                     </div>
                   </div>
@@ -688,7 +688,7 @@ function Upload({ user }) {
                         <div key={i} className="p-3 rounded border border-white-10 bg-white-5" style={{ borderLeft: '3px solid var(--accent-teal)' }}>
                           {/* Top row: name + frequency badge */}
                           <div className="d-flex align-items-center justify-content-between mb-2">
-                            <span className="text-white fw-bold" style={{ fontSize: '1rem' }}>{m.name}</span>
+                            <span className="fw-bold" style={{ fontSize: '1rem', color: 'var(--text-primary)' }}>{m.name}</span>
                             <span className="badge badge-brand-blue px-2 py-1 font-monospace" style={{ fontSize: '0.72rem', letterSpacing: '0.08em' }}>{m.frequency || m.frequency_number ? `${m.frequency_number || ''}x / day` : '—'}</span>
                           </div>
 

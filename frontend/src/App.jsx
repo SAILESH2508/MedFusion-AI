@@ -84,6 +84,21 @@ function AppContent({ user, login, logout }) {
     return localStorage.getItem(`medfusion_health_score_${userId}`) || null;
   });
 
+  const [isAuthOpen, setIsAuthOpen] = useState(false);
+  const [authPortalType, setAuthPortalType] = useState('patient');
+  const [authMessage, setAuthMessage] = useState('');
+
+  const openAuth = useCallback((portalType, message) => {
+    setAuthPortalType(portalType || 'patient');
+    setAuthMessage(message || '');
+    setIsAuthOpen(true);
+  }, []);
+
+  const handleCloseAuth = useCallback(() => {
+    setIsAuthOpen(false);
+    setAuthMessage('');
+  }, []);
+
   useEffect(() => {
     const handleScoreUpdate = () => {
       const userId = user?.id || user?.user_id || user?.pk || 'guest';
@@ -99,29 +114,20 @@ function AppContent({ user, login, logout }) {
     window.addEventListener('storage', handleScoreUpdate);
     window.addEventListener('medfusion_auth_logout', logout);
     
+    const handleOpenAuthEvent = (e) => {
+      openAuth(e.detail?.role || 'patient', e.detail?.message || '');
+    };
+    window.addEventListener('medfusion_open_auth', handleOpenAuthEvent);
+    
     handleScoreUpdate();
 
     return () => {
       window.removeEventListener('medfusion_health_score_updated', handleScoreUpdate);
       window.removeEventListener('storage', handleScoreUpdate);
       window.removeEventListener('medfusion_auth_logout', logout);
+      window.removeEventListener('medfusion_open_auth', handleOpenAuthEvent);
     };
-  }, [user, logout]);
-
-  const [isAuthOpen, setIsAuthOpen] = useState(false);
-  const [authPortalType, setAuthPortalType] = useState('patient');
-  const [authMessage, setAuthMessage] = useState('');
-
-  const openAuth = useCallback((portalType, message) => {
-    setAuthPortalType(portalType || 'patient');
-    setAuthMessage(message || '');
-    setIsAuthOpen(true);
-  }, []);
-
-  const handleCloseAuth = useCallback(() => {
-    setIsAuthOpen(false);
-    setAuthMessage('');
-  }, []);
+  }, [user, logout, openAuth]);
 
   return (
     <SidebarContext.Provider value={{ sidebarContent, setSidebarContent }}>
@@ -312,14 +318,12 @@ function EmergencyQRDropdown({ user }) {
   const btnRef = useRef(null);
   const panelRef = useRef(null);
 
-  if (!user || user.role !== 'Patient') return null;
-
   // Fetch profile summary on first open
   useEffect(() => {
-    if (isOpen && !profile) {
+    if (user?.role === 'Patient' && isOpen && !profile) {
       api.get('/telemetry/emergency').then(r => setProfile(r.data)).catch(() => {});
     }
-  }, [isOpen]);
+  }, [isOpen, user?.role, profile]);
 
   // Close on outside click or Escape
   useEffect(() => {
@@ -338,6 +342,8 @@ function EmergencyQRDropdown({ user }) {
       document.removeEventListener('mousedown', handleClick);
     };
   }, [isOpen]);
+
+  if (!user || user.role !== 'Patient') return null;
 
   const handleGenerate = async () => {
     setLoading(true);
@@ -387,41 +393,41 @@ function EmergencyQRDropdown({ user }) {
             position: 'fixed',
             top: '60px',
             right: '16px',
-            width: '280px',
-            background: '#FFFFFF',
+            width: 'min(280px, calc(100vw - 32px))',
+            background: 'var(--bg-card)',
             border: '1px solid var(--border)',
             borderRadius: 'var(--radius-md)',
-            boxShadow: '0 8px 24px rgba(0,0,0,0.18)',
+            boxShadow: 'var(--shadow-md)',
             zIndex: 2100,
             padding: '16px',
-            color: '#1A2333',
+            color: 'var(--text-primary)',
             fontFamily: 'var(--font-mono)',
           }}
         >
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px', borderBottom: '1px solid #D1C8BC', paddingBottom: '10px' }}>
-            <span style={{ fontSize: '0.72rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: '#E07B39' }}>Emergency QR Card</span>
-            <button onClick={() => setIsOpen(false)} style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: '#718096', padding: 0 }} aria-label="Close QR panel"><X size={14} /></button>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px', borderBottom: '1px solid var(--border)', paddingBottom: '10px' }}>
+            <span style={{ fontSize: '0.72rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--brand-orange)' }}>Emergency QR Card</span>
+            <button onClick={() => setIsOpen(false)} style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: 'var(--text-muted)', padding: 0 }} aria-label="Close QR panel"><X size={14} /></button>
           </div>
 
           {profile && (
-            <div style={{ marginBottom: '10px', fontSize: '0.72rem', color: '#4A5568' }}>
-              <strong style={{ color: '#1A2333', display: 'block' }}>{profile.first_name} {profile.last_name}</strong>
-              {profile.blood_group && <span style={{ background: 'rgba(192,57,43,0.12)', color: '#C0392B', border: '1px solid #C0392B', borderRadius: '4px', padding: '1px 6px', marginRight: '6px', fontSize: '0.65rem' }}>{profile.blood_group}</span>}
-              {profile.allergies?.length > 0 && <span style={{ fontSize: '0.65rem', color: '#718096' }}>Allergies: {profile.allergies.join(', ')}</span>}
+            <div style={{ marginBottom: '10px', fontSize: '0.72rem', color: 'var(--text-secondary)' }}>
+              <strong style={{ color: 'var(--text-primary)', display: 'block' }}>{profile.first_name} {profile.last_name}</strong>
+              {profile.blood_group && <span style={{ background: 'rgba(192,57,43,0.12)', color: 'var(--accent-red)', border: '1px solid var(--accent-red)', borderRadius: '4px', padding: '1px 6px', marginRight: '6px', fontSize: '0.65rem' }}>{profile.blood_group}</span>}
+              {profile.allergies?.length > 0 && <span style={{ fontSize: '0.65rem', color: 'var(--text-muted)' }}>Allergies: {profile.allergies.join(', ')}</span>}
             </div>
           )}
 
           {qrUrl ? (
             <>
-              <img src={qrUrl} alt="Emergency QR Code" style={{ width: '100%', borderRadius: '6px', border: '1px solid #D1C8BC', display: 'block' }} />
+              <img src={qrUrl} alt="Emergency QR Code" style={{ width: '100%', borderRadius: '6px', border: '1px solid var(--border)', display: 'block' }} />
               <div style={{ display: 'flex', gap: '6px', marginTop: '10px', flexWrap: 'wrap' }}>
-                <button onClick={handleGenerate} disabled={loading} style={{ flex: 1, padding: '5px 8px', background: 'transparent', border: '1px solid #D1C8BC', borderRadius: '4px', fontSize: '0.64rem', cursor: 'pointer', color: '#4A5568' }}>Regenerate</button>
-                <button onClick={handleRevoke} style={{ flex: 1, padding: '5px 8px', background: 'transparent', border: '1px solid #C0392B', borderRadius: '4px', fontSize: '0.64rem', cursor: 'pointer', color: '#C0392B' }}>Revoke</button>
-                <a href={qrUrl.replace('200x200', '400x400')} download="MedFusion_QR.png" target="_blank" rel="noopener noreferrer" style={{ flex: 1, padding: '5px 8px', background: 'transparent', border: '1px solid #D1C8BC', borderRadius: '4px', fontSize: '0.64rem', color: '#4A5568', textDecoration: 'none', textAlign: 'center' }}>Download</a>
+                <button onClick={handleGenerate} disabled={loading} style={{ flex: 1, padding: '5px 8px', background: 'transparent', border: '1px solid var(--border)', borderRadius: '4px', fontSize: '0.64rem', cursor: 'pointer', color: 'var(--text-secondary)' }}>Regenerate</button>
+                <button onClick={handleRevoke} style={{ flex: 1, padding: '5px 8px', background: 'transparent', border: '1px solid var(--accent-red)', borderRadius: '4px', fontSize: '0.64rem', cursor: 'pointer', color: 'var(--accent-red)' }}>Revoke</button>
+                <a href={qrUrl.replace('200x200', '400x400')} download="MedFusion_QR.png" target="_blank" rel="noopener noreferrer" style={{ flex: 1, padding: '5px 8px', background: 'transparent', border: '1px solid var(--border)', borderRadius: '4px', fontSize: '0.64rem', color: 'var(--text-secondary)', textDecoration: 'none', textAlign: 'center' }}>Download</a>
               </div>
             </>
           ) : (
-            <button onClick={handleGenerate} disabled={loading} style={{ width: '100%', padding: '10px', background: '#E07B39', color: '#fff', border: 'none', borderRadius: '6px', fontSize: '0.78rem', fontWeight: 700, cursor: loading ? 'not-allowed' : 'pointer', opacity: loading ? 0.7 : 1 }}>
+            <button onClick={handleGenerate} disabled={loading} style={{ width: '100%', padding: '10px', background: 'var(--brand-orange)', color: 'var(--text-on-brand)', border: 'none', borderRadius: '6px', fontSize: '0.78rem', fontWeight: 700, cursor: loading ? 'not-allowed' : 'pointer', opacity: loading ? 0.7 : 1 }}>
               {loading ? 'Generating…' : 'Generate Emergency QR'}
             </button>
           )}
@@ -496,7 +502,7 @@ function Navbar({ user, logout, toggleSidebar, isSidebarPage, openAuth, navbarHe
               Login
             </button>
           )}
-          <EmergencyQRDropdown user={user} />
+          {user && user.role === 'Patient' && <EmergencyQRDropdown user={user} />}
           <button
             onClick={toggleTheme}
             className="btn-icon p-2 border-0 bg-transparent opacity-70 hover-opacity-100"

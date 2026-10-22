@@ -344,10 +344,10 @@ export default function AIChatbot({ user }) {
           cursor: 'pointer', zIndex: 9999,
         }}
       >
-        {isOpen ? <ChevronDown size={20} color="#FFFFFF" /> : <MessageSquare size={20} color="#FFFFFF" />}
+        {isOpen ? <ChevronDown size={20} color="var(--text-on-brand)" /> : <MessageSquare size={20} color="var(--text-on-brand)" />}
         {!isOpen && unread > 0 && (
           <span className="position-absolute d-flex align-items-center justify-content-center"
-            style={{ top: '-4px', right: '-4px', width: '20px', height: '20px', borderRadius: '50%', background: 'var(--accent-red)', fontSize: '0.62rem', fontWeight: 700, color: '#fff' }}>
+            style={{ top: '-4px', right: '-4px', width: '20px', height: '20px', borderRadius: '50%', background: 'var(--accent-red)', fontSize: '0.62rem', fontWeight: 700, color: 'var(--text-on-brand)' }}>
             {unread}
           </span>
         )}
@@ -505,7 +505,7 @@ export default function AIChatbot({ user }) {
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
                   }}
                 >
-                  <Send size={15} color={input.trim() && !loading ? '#fff' : 'var(--text-muted)'} />
+                  <Send size={15} color={input.trim() && !loading ? 'var(--text-on-brand)' : 'var(--text-muted)'} />
                 </button>
               </div>
             )}

@@ -294,7 +294,7 @@ function Profile({ user, onUserUpdate }) {
       setSidebarContent(
         <div className="d-flex flex-column gap-4 pt-2">
           <div className="glass-card p-4 mb-2 reveal border-theme-accent border-opacity-15 bg-white-5" style={{ borderRadius: '12px' }}>
-            <h2 className="fw-bolder fs-6 m-0 text-white" style={{ letterSpacing: '-0.02em', fontSize: '1.25rem' }}>
+            <h2 className="fw-bolder fs-6 m-0" style={{ letterSpacing: '-0.02em', fontSize: '1.25rem', color: 'var(--text-on-dark)' }}>
               Doctor <span className="text-theme-accent">Credentials</span>
             </h2>
             <p className="text-secondary m-0 mt-2" style={{ fontSize: '0.88rem', lineHeight: '1.4' }}>
@@ -302,7 +302,7 @@ function Profile({ user, onUserUpdate }) {
             </p>
           </div>
           <div className="mt-2">
-            <h4 className="fw-bold mb-3 text-white" style={{ fontSize: '1.05rem', letterSpacing: '0.05em' }}>
+            <h4 className="fw-bold mb-3" style={{ fontSize: '1.05rem', letterSpacing: '0.05em', color: 'var(--text-on-dark)' }}>
               <span className="text-theme-accent font-monospace text-uppercase" style={{ letterSpacing: '0.06em' }}>Vault Sections</span>
             </h4>
             <div className="d-flex flex-column gap-3 mt-3">
@@ -324,7 +324,7 @@ function Profile({ user, onUserUpdate }) {
       setSidebarContent(
         <div className="d-flex flex-column gap-4 pt-2">
           <div className="glass-card p-4 mb-2 reveal border-theme-accent border-opacity-15 bg-white-5" style={{ borderRadius: '12px' }}>
-            <h2 className="fw-bolder fs-6 m-0 text-white" style={{ letterSpacing: '-0.02em', fontSize: '1.25rem' }}>
+            <h2 className="fw-bolder fs-6 m-0" style={{ letterSpacing: '-0.02em', fontSize: '1.25rem', color: 'var(--text-on-dark)' }}>
               Health <span className="text-theme-accent">Vault Console</span>
             </h2>
             <p className="text-secondary m-0 mt-2" style={{ fontSize: '0.88rem', lineHeight: '1.4' }}>
@@ -333,7 +333,7 @@ function Profile({ user, onUserUpdate }) {
           </div>
 
           <div className="mt-2">
-            <h4 className="fw-bold mb-3 text-white" style={{ fontSize: '1.05rem', letterSpacing: '0.05em' }}>
+            <h4 className="fw-bold mb-3" style={{ fontSize: '1.05rem', letterSpacing: '0.05em', color: 'var(--text-on-dark)' }}>
               <span className="text-theme-accent font-monospace text-uppercase" style={{ letterSpacing: '0.06em' }}>Portal Sections</span>
             </h4>
             <div className="d-flex flex-column gap-2 mt-2">
@@ -531,7 +531,7 @@ function Profile({ user, onUserUpdate }) {
 
               {!isEditing ? (
                 <>
-                  <h2 className="fw-bold text-white mb-1 text-uppercase" style={{ letterSpacing: '0.02em', fontSize: '1.5rem' }}>{profile.name}</h2>
+                  <h2 className="fw-bold mb-1 text-uppercase" style={{ letterSpacing: '0.02em', fontSize: '1.5rem', color: 'var(--text-primary)' }}>{profile.name}</h2>
                   <p className="text-theme-accent fw-bold small mb-4">Credentials Vault: {profile.vault_id}</p>
                 </>
               ) : (
@@ -542,7 +542,7 @@ function Profile({ user, onUserUpdate }) {
                     placeholder="Full Name"
                     value={editData.full_name || ''}
                     onChange={(e) => setEditData({ ...editData, full_name: e.target.value })}
-                    className="text-center w-100 p-2 border border-white-10 rounded text-white bg-transparent font-monospace"
+                    className="text-center w-100 p-2 border border-white-10 rounded bg-transparent font-monospace" style={{ color: 'var(--text-primary)' }}
                   />
                 </div>
               )}
@@ -552,13 +552,13 @@ function Profile({ user, onUserUpdate }) {
                   <div className="bg-white-10 bg-opacity-20 p-3.5 rounded border border-white-5 text-start font-monospace">
                     <span className="small text-secondary d-block text-uppercase mb-1" style={{ fontSize: '0.72rem', letterSpacing: '0.06em' }}>Medical License ID</span>
                     {!isEditing ? (
-                      <strong className="text-white fs-6">{user.license_number || 'N/A'}</strong>
+                      <strong style={{ color: 'var(--text-primary)' }} className="fs-6">{user.license_number || 'N/A'}</strong>
                     ) : (
                       <input
                         type="text"
                         value={editData.license_number || ''}
                         onChange={(e) => setEditData({ ...editData, license_number: e.target.value })}
-                        className="py-1 mt-1 font-monospace w-100 text-white bg-transparent border-white-10"
+                        className="py-1 mt-1 font-monospace w-100 bg-transparent border-white-10" style={{ color: 'var(--text-primary)' }}
                         style={{ fontSize: '0.9rem' }}
                       />
                     )}
@@ -571,7 +571,7 @@ function Profile({ user, onUserUpdate }) {
           {/* Practice Stats Analytics Dashboard */}
           <div className="col-lg-7 col-md-7 d-flex">
             <div className="glass-card p-5 w-100 d-flex flex-column gap-4 justify-content-center text-start border-theme-accent border-opacity-15 bg-white-5">
-              <h3 className="fw-bold text-white m-0 d-flex align-items-center gap-2 border-bottom border-white-10 pb-3" style={{ fontSize: '1.4rem' }}>
+              <h3 className="fw-bold m-0 d-flex align-items-center gap-2 border-bottom border-white-10 pb-3" style={{ fontSize: '1.4rem', color: 'var(--text-primary)' }}>
                 <Activity className="text-theme-accent" />
                 Practice Registry Statistics
               </h3>
@@ -580,19 +580,19 @@ function Profile({ user, onUserUpdate }) {
                 <div className="col-md-4">
                   <div className="p-4 rounded border border-white-5 bg-white-10 bg-opacity-25 text-center hover-border-accent transition-all">
                     <span className="text-secondary d-block small mb-1" style={{ fontSize: '0.72rem' }}>PATIENTS MANAGED</span>
-                    <span className="text-white fw-bold fs-3 text-info">{docStats.patientCount}</span>
+                    <span className="fw-bold fs-3 text-info">{docStats.patientCount}</span>
                   </div>
                 </div>
                 <div className="col-md-4">
                   <div className="p-4 rounded border border-white-5 bg-white-10 bg-opacity-25 text-center hover-border-accent transition-all">
                     <span className="text-secondary d-block small mb-1" style={{ fontSize: '0.72rem' }}>INGESTED PRESCRIPTIONS</span>
-                    <span className="text-white fw-bold fs-3 text-info">{docStats.rxCount}</span>
+                    <span className="fw-bold fs-3 text-info">{docStats.rxCount}</span>
                   </div>
                 </div>
                 <div className="col-md-4">
                   <div className="p-4 rounded border border-white-5 bg-white-10 bg-opacity-25 text-center hover-border-accent transition-all">
                     <span className="text-secondary d-block small mb-1" style={{ fontSize: '0.72rem' }}>PATHOLOGY FILES</span>
-                    <span className="text-white fw-bold fs-3 text-info">{docStats.pathCount}</span>
+                    <span className="fw-bold fs-3 text-info">{docStats.pathCount}</span>
                   </div>
                 </div>
               </div>

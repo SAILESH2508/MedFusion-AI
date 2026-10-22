@@ -141,7 +141,7 @@ export default function InteractiveMap({ location, places, isPatient }) {
       const userIcon = createUserIcon(L);
       userMarkerRef.current = L.marker([location.lat, location.lon], { icon: userIcon, zIndexOffset: 1000 })
         .addTo(map)
-        .bindPopup('<div style="font-family:monospace;font-size:0.78rem;color:#000;font-weight:bold">Your Location</div>');
+        .bindPopup('<div style="font-family:monospace;font-size:0.78rem;color:#1A2333;font-weight:bold">Your Location</div>');
     });
 
     return () => {
@@ -283,7 +283,7 @@ export default function InteractiveMap({ location, places, isPatient }) {
     <div className="glass-card glass-card--map p-3 mb-4" style={{ borderRadius: '14px' }}>
       {/* Header row */}
       <div className="d-flex align-items-center justify-content-between mb-3 flex-wrap gap-2">
-        <h5 className="text-white fw-bold font-monospace m-0" style={{ fontSize: '0.88rem', letterSpacing: '0.06em' }}>
+        <h5 className="fw-bold font-monospace m-0" style={{ fontSize: '0.88rem', letterSpacing: '0.06em', color: 'var(--text-primary)' }}>
           INTERACTIVE MAP — {places.length} FACILITIES
         </h5>
         <div className="d-flex gap-2 align-items-center flex-wrap">
@@ -407,7 +407,7 @@ export default function InteractiveMap({ location, places, isPatient }) {
           </div>
         ))}
         <div className="d-flex align-items-center gap-1" style={{ fontSize: '0.65rem', color: 'rgba(255,255,255,0.5)' }}>
-          <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#00f5d4', border: '1px solid #fff', display: 'inline-block' }} />
+          <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: 'var(--accent-teal)', border: '1px solid var(--bg-card)', display: 'inline-block' }} />
           You
         </div>
       </div>
