@@ -244,7 +244,7 @@ export default function DigitalTwin({ user, openAuth }) {
               }}
             >
               {mode.icon}
-              <span style={{ display: 'none' }}>{mode.label}</span>
+              <span>{mode.label}</span>
             </button>
           ))}
         </div>

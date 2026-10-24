@@ -295,10 +295,24 @@ function GLTFOrganMesh({ url, organKey, sel, hovered, onClick, riskLevel, scale,
     return c;
   }, [scene, col, sel, hovered]);
 
+  // Auto-scale: normalise any GLB to fit within a ~0.55-unit bounding box
+  const autoScale = useMemo(() => {
+    const box = new THREE.Box3().setFromObject(processed);
+    const size = new THREE.Vector3();
+    box.getSize(size);
+    const maxDim = Math.max(size.x, size.y, size.z);
+    return maxDim > 0 ? 0.55 / maxDim : 1;
+  }, [processed]);
+
+  const finalScale = useMemo(() => {
+    const s = scale || [1, 1, 1];
+    return [s[0] * autoScale, s[1] * autoScale, s[2] * autoScale];
+  }, [scale, autoScale]);
+
   return (
     <primitive
       object={processed}
-      scale={scale || [1, 1, 1]}
+      scale={finalScale}
       rotation={rotation || [0, 0, 0]}
       position={position || [0, 0, 0]}
       onClick={(e) => {
@@ -330,6 +344,7 @@ function OrganWithGLTF({
     <OrganErrorBoundary fallback={fallback} onError={() => onModelStatus && onModelStatus(organKey, false)}>
       <React.Suspense fallback={fallback}>
         <group
+          position={POS[organKey]}
           onPointerOver={(e) => { e.stopPropagation(); document.body.style.cursor = 'pointer'; setHovered(true); }}
           onPointerOut={() => { document.body.style.cursor = 'auto'; setHovered(false); }}
         >
@@ -699,13 +714,13 @@ function RibCage({ visible = true }) {
       {ribs.map((r, i) => (
         <mesh key={i} position={[r.side * r.rx * 0.48, r.y, 0]} scale={[r.rx, r.ry, r.rz]}>
           <torusGeometry args={[1, 0.065, 5, 24, Math.PI]} />
-          <meshBasicMaterial color="#38bdf8" transparent opacity={0.18} />
+          <meshStandardMaterial color="#1a3a6a" transparent opacity={0.15} roughness={0.8} />
         </mesh>
       ))}
       {/* Sternum (anterior midline plate) */}
       <mesh position={[0, 0.38, 0.32]}>
         <boxGeometry args={[0.06, 0.62, 0.02]} />
-        <meshBasicMaterial color="#38bdf8" transparent opacity={0.3} />
+        <meshStandardMaterial color="#1a3a6a" transparent opacity={0.15} roughness={0.8} />
       </mesh>
     </group>
   );
@@ -745,9 +760,10 @@ function CameraRig({ selected, isIsolated, zoomDelta, resetSignal, ctrlRef }) {
   // Anatomical centre = (1.55 + (-0.72)) / 2 ≈ 0.415
   const targetPos = useMemo(() => {
     if (isIsolated && selected) {
-      // Isolated organ: comfortable close-up, zoomDelta adjustable
+      // Isolated organ: look at POS[selected] world position
+      const p = POS[selected] || [0, 0, 0];
       const d = Math.max(1.5, 1.8 * (1 + zoomDelta));
-      return new THREE.Vector3(0, 0, d);
+      return new THREE.Vector3(p[0], p[1], p[2] + d);
     }
     // Full body: base dist 4.2 keeps brain-to-intestines framing at FOV 48
     const dist = Math.max(3.8, 4.2 * (1 + zoomDelta));
@@ -756,7 +772,8 @@ function CameraRig({ selected, isIsolated, zoomDelta, resetSignal, ctrlRef }) {
 
   const targetLook = useMemo(() => {
     if (isIsolated && selected) {
-      return new THREE.Vector3(0, 0, 0);
+      const p = POS[selected] || [0, 0, 0];
+      return new THREE.Vector3(p[0], p[1], p[2]);
     }
     // y=0.415 is the anatomical centre (brain 1.55, intestines -0.72)
     return new THREE.Vector3(0, 0.415, 0);
@@ -862,8 +879,11 @@ function Scene({
           return null;
         }
 
-        // Isolated organ is centered at [0,0,0] with comfortable scaling
-        const organPosition = isIsolated && isSelected ? [0, 0, 0] : POS[key];
+        // GLTF organs carry their own POS offset via the inner group in OrganWithGLTF;
+        // procedural organs still need the outer group to carry POS.
+        const organPosition = (isIsolated && isSelected)
+          ? [0, 0, 0]
+          : useGLTFMode ? [0, 0, 0] : POS[key];
         const organScale = isIsolated && isSelected ? [1.6, 1.6, 1.6] : [1, 1, 1];
 
         return (
