@@ -1,0 +1,31 @@
+Build Result — Health Twin Visualizer Fix
+==========================================
+Date: First iteration implementation
+Build command: npm run build (Vite 8.0.10)
+Build status: SUCCESS — 0 errors, 0 warnings (chunk size warning only, expected for 3D app)
+Output: dist/assets/index-CT1eIe3l.js (1,975.59 kB / gzip: 520.26 kB)
+Built in: 3.14s
+
+Lint (changed files only — npm run lint timed out on full scan):
+  Command: npx eslint src/App.jsx src/pages/DigitalTwin.jsx src/pages/digital-twin/OrganViewer3D.jsx
+  Status: 3 pre-existing errors (not introduced by this change)
+  Pre-existing errors (lines 41, 53, 64 in OrganViewer3D.jsx):
+    react-refresh/only-export-components — exported constants ORGAN_COLORS, POS, TAG_POS
+    These exports existed before this change set and are used by TwinModulesDrawer and other subcomponents.
+    No new lint errors introduced.
+
+Changes applied:
+1. OrganViewer3D.jsx — showWireframe default: useState(true) → useState(false)
+2. OrganViewer3D.jsx — Canvas camera: position [0,0.25,3.4] fov:48 → position [0,0.415,4.2] fov:48 near:0.1 far:100
+3. OrganViewer3D.jsx — CameraRig full-body targetPos: base dist 3.4 y:0.25 → base dist 4.2 y:0.415, minDist 2.4→3.8
+4. OrganViewer3D.jsx — CameraRig full-body targetLook: y:0.25 → y:0.415
+5. OrganViewer3D.jsx — CameraRig isolated targetPos: max(1.2, 1.7*…) → max(1.5, 1.8*…)
+6. OrganViewer3D.jsx — OrbitControls minDistance: 1.1→0.8, maxDistance: 7.0→9.0
+7. OrganViewer3D.jsx — Added InitCamera component (sets camera.position and controls.target on mount)
+8. OrganViewer3D.jsx — Contour button title: "Toggle Body Contour" → "Toggle Body Contour (OFF by default)"
+9. App.jsx — Removed location.pathname.includes('digital-twin') from isSidebarPage
+10. DigitalTwin.jsx — Removed status badge pills div (alert_count + optimal_count spans)
+
+GLB files: All 8 present (brain, heart, intestines, kidneys, liver, lungs, pancreas, stomach)
+Subcomponents: All 6 required files exist (OrganInfoPanel, HealthTimeline, MedicationSafetyPanel,
+               ModelProvenancePanel, HealthChangeExplorer, BioDigitalViewer) — no stubs needed

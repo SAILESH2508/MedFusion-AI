@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, createContext, useCallback } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate, Link, useLocation, NavLink as RouterNavLink } from 'react-router-dom';
-import { Activity, FileUp, Database, User, LogOut, Menu, X, Home, PanelLeft, Pill, Smile, Calendar, MessageSquare, MapPin, Sun, Moon, Salad, Cpu, QrCode } from 'lucide-react';
+import { Activity, FileUp, Database, User, LogOut, Menu, X, Home, PanelLeft, Pill, Smile, Calendar, MessageSquare, MapPin, Sun, Moon, Salad, Cpu, QrCode, ShieldAlert, Stethoscope, HeartPulse, BrainCircuit, UtensilsCrossed, FlaskConical } from 'lucide-react';
 import { AnimatePresence, motion } from 'framer-motion';
 
 // Pages
@@ -66,7 +66,7 @@ function RedirectToHomeAndOpenAuth({ openAuth }) {
 function AppContent({ user, login, logout }) {
   const location = useLocation();
   const isAuthPage = location.pathname.startsWith('/auth');
-  const isSidebarPage = location.pathname.includes('dashboard') || location.pathname.includes('upload') || location.pathname.includes('nearby') || location.pathname.includes('diet') || location.pathname.includes('digital-twin') || (!!user && location.pathname.includes('profile'));
+  const isSidebarPage = location.pathname.includes('dashboard') || location.pathname.includes('upload') || location.pathname.includes('nearby') || location.pathname.includes('diet') || (!!user && location.pathname.includes('profile'));
   
   const [sidebarContent, setSidebarContent] = useState(null);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -163,7 +163,7 @@ function AppContent({ user, login, logout }) {
                   />
                 } />
                 <Route path="/diet" element={user && user.role === 'Patient' ? <DietPlanner user={user} /> : <Navigate to="/" />} />
-                <Route path="/digital-twin" element={user && user.role === 'Patient' ? <DigitalTwin user={user} /> : <Navigate to="/auth" />} />
+                <Route path="/digital-twin" element={<DigitalTwin user={user} openAuth={openAuth} />} />
                 <Route path="/vault" element={<Navigate to="/profile" />} />
                 <Route path="/profile" element={user ? <Profile user={user} onUserUpdate={login} /> : <RedirectToHomeAndOpenAuth openAuth={openAuth} />} />
                 
@@ -179,10 +179,7 @@ function AppContent({ user, login, logout }) {
 
       {isAuthOpen && (
         <div className="modal-overlay" onClick={handleCloseAuth}>
-          <div className="modal-container" onClick={(e) => e.stopPropagation()}>
-            <button className="modal-close-btn" onClick={handleCloseAuth}>
-              <X size={20} />
-            </button>
+          <div className="modal-container p-0 border-0 shadow-none bg-transparent" onClick={(e) => e.stopPropagation()} style={{ maxWidth: '480px' }}>
             <Auth login={login} initialPortal={authPortalType} onClose={handleCloseAuth} message={authMessage} />
           </div>
         </div>
@@ -209,56 +206,52 @@ function Sidebar({ user, logout, sidebarContent, isOpen, toggleSidebar, openAuth
     return 'US';
   };
 
-  const scoreNum = navbarHealthScore ? parseInt(navbarHealthScore, 10) : null;
-  const healthStatus = scoreNum >= 85 ? 'Optimal' : scoreNum >= 70 ? 'Moderate' : 'Unstable';
-  const themeAccentColor = scoreNum >= 85 ? 'var(--accent-green)' : scoreNum >= 70 ? 'var(--accent-amber)' : 'var(--accent-coral)';
+  const getAvatarGradient = (u) => {
+    if (!u) return 'linear-gradient(135deg, rgba(56,189,248,0.2) 0%, rgba(244,149,74,0.25) 100%)';
+    const role = (u.role || '').toLowerCase();
+    if (role === 'doctor') return 'linear-gradient(135deg, #0284c7 0%, #0d9488 100%)';
+    if (role === 'admin')  return 'linear-gradient(135deg, #7c3aed 0%, #2563eb 100%)';
+    const nameStr = u.full_name || u.email || 'U';
+    const charCode = nameStr.charCodeAt(0) + (nameStr.charCodeAt(1) || 0);
+    const gradients = [
+      'linear-gradient(135deg, #f97316 0%, #e11d48 100%)',
+      'linear-gradient(135deg, #0ea5e9 0%, #2563eb 100%)',
+      'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+      'linear-gradient(135deg, #8b5cf6 0%, #d946ef 100%)',
+      'linear-gradient(135deg, #f59e0b 0%, #ea580c 100%)',
+      'linear-gradient(135deg, #ec4899 0%, #8b5cf6 100%)',
+    ];
+    return gradients[charCode % gradients.length];
+  };
 
   return (
     <aside className={`app-sidebar ${isOpen ? 'open' : ''}`}>
       <button className="btn-icon d-md-none text-white position-absolute end-0 top-0 m-3 z-index-1000" onClick={toggleSidebar} aria-label="Close sidebar">
         <X size={24} />
       </button>
-      <div className="sidebar-menu flex-grow-1 overflow-visible py-2 mt-4 mt-md-0">
+      <div className="sidebar-menu flex-grow-1 overflow-auto py-2 mt-4 mt-md-0" style={{ paddingRight: '2px' }}>
         {sidebarContent}
       </div>
-
-      {user && user.role === 'Patient' && navbarHealthScore && (
-        <div className="mb-4 d-flex align-items-center gap-3 bg-white-5 p-3 rounded-4 border border-white-5 transition-all">
-          <div className="position-relative d-flex align-items-center justify-content-center" style={{ width: '56px', height: '56px' }}>
-            <svg className="position-absolute" style={{ transform: 'rotate(-90deg)', width: '100%', height: '100%' }} viewBox="0 0 36 36">
-              <path strokeWidth="3" stroke="rgba(255, 255, 255, 0.08)" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
-              <path 
-                strokeDasharray={`${scoreNum}, 100`} 
-                strokeWidth="3.5" 
-                strokeLinecap="round" 
-                stroke={themeAccentColor} 
-                fill="none" 
-                d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" 
-              />
-            </svg>
-            <strong className="fs-6" style={{ color: 'var(--text-on-dark)' }}>{scoreNum}</strong>
-          </div>
-          <div className="text-start">
-            <span className="text-secondary d-block" style={{ fontSize: '0.62rem', letterSpacing: '0.04em' }}>VITALS INDEX</span>
-            <strong className="text-uppercase" style={{ fontSize: '0.78rem', color: themeAccentColor }}>
-              {healthStatus}
-            </strong>
-          </div>
-        </div>
-      )}
 
       <div className="sidebar-footer">
         {user ? (
           <div className="d-flex align-items-center justify-content-between">
             <div className="d-flex align-items-center gap-3">
-              <div className="avatar-circle">
+              <div
+                className="avatar-circle"
+                style={{
+                  background: getAvatarGradient(user),
+                  boxShadow: '0 2px 10px rgba(0,0,0,0.3)',
+                  border: '1.5px solid rgba(255,255,255,0.25)',
+                }}
+              >
                 {getInitials(user.full_name, user.email)}
               </div>
               <div className="user-details overflow-hidden" style={{ maxWidth: '175px' }}>
                 <span className="fw-bold d-block text-truncate" style={{ fontSize: '1.05rem', color: 'var(--text-on-dark)' }}>
                   {user.full_name || user.email}
                 </span>
-                <span className="text-secondary d-block text-truncate" style={{ fontSize: '0.82rem', opacity: 0.7 }}>
+                <span className="d-block text-truncate" style={{ fontSize: '0.82rem', color: 'rgba(255, 255, 255, 0.88)' }}>
                   {user.email}
                 </span>
               </div>
@@ -270,7 +263,15 @@ function Sidebar({ user, logout, sidebarContent, isOpen, toggleSidebar, openAuth
         ) : (
           <div className="d-flex align-items-center justify-content-between w-100">
             <div className="d-flex align-items-center gap-3">
-              <div className="avatar-circle" style={{ background: 'rgba(255,255,255,0.1)', border: '1px dashed var(--border)' }}>
+              <div
+                className="avatar-circle"
+                style={{
+                  background: getAvatarGradient(null),
+                  border: '1px solid rgba(255,255,255,0.2)',
+                  color: '#FFFFFF',
+                  boxShadow: '0 2px 8px rgba(0,0,0,0.25)',
+                }}
+              >
                 GS
               </div>
               <div className="user-details overflow-hidden" style={{ maxWidth: '140px' }}>
@@ -357,7 +358,11 @@ function EmergencyQRDropdown({ user }) {
   };
 
   const handleRevoke = async () => {
-    try { await api.delete('/emergency/revoke/'); } catch {}
+    try {
+      await api.delete('/emergency/revoke/');
+    } catch {
+      // Local revocation proceeds regardless of network error
+    }
     setToken('');
     localStorage.removeItem(`medfusion_emergency_token_${userId}`);
   };
@@ -458,37 +463,46 @@ function Navbar({ user, logout, toggleSidebar, isSidebarPage, openAuth, navbarHe
           </Link>
         </div>
 
-        {/* Desktop Nav */}
+        {/* Desktop Nav — contextual per role, no duplicate Home link */}
         <div className="d-none d-md-flex align-items-center gap-3">
-          <NavLink to="/" icon={<Home size={16} />} label="Home" />
-          {user && user.role === 'Doctor' && (
-            <>
-              <NavLink to="/dashboard" icon={<Activity size={16} />} label="Patients" />
-              <NavLink to="/upload" icon={<FileUp size={16} />} label="Scanner" />
-              <NavLink to="/nearby" icon={<MapPin size={16} />} label="Nearby" />
-            </>
-          )}
+          {/* Patient Nav */}
           {user && user.role === 'Patient' && (
             <>
-              <NavLink to="/dashboard" icon={<Activity size={16} />} label="Health Check" />
-              <NavLink to="/upload" icon={<FileUp size={16} />} label="Scanner" />
-              <NavLink to="/diet" icon={<Salad size={16} />} label="Diet" />
-              <NavLink to="/digital-twin" icon={<Cpu size={16} />} label="Health Twin" />
+              <NavLink to="/dashboard" icon={<HeartPulse size={16} />} label="Health Check" />
+              <NavLink to="/upload" icon={<FlaskConical size={16} />} label="Scanner" />
+              <NavLink to="/diet" icon={<UtensilsCrossed size={16} />} label="Diet" />
+              <NavLink to="/digital-twin" icon={<BrainCircuit size={16} />} label="Health Twin" />
               <NavLink to="/nearby" icon={<MapPin size={16} />} label="Nearby" />
             </>
           )}
+          {/* Doctor Nav */}
+          {user && user.role === 'Doctor' && (
+            <>
+              <NavLink to="/dashboard" icon={<Stethoscope size={16} />} label="Patients" />
+              <NavLink to="/upload" icon={<FlaskConical size={16} />} label="AI Scanner" />
+              <NavLink to="/nearby" icon={<MapPin size={16} />} label="Nearby" />
+            </>
+          )}
+          {/* Guest Nav */}
           {!user && (
             <>
-              <NavLink to="/dashboard" icon={<Activity size={16} />} label="Health Check" />
-              <NavLink to="/upload" icon={<FileUp size={16} />} label="Scanner" />
+              <NavLink to="/dashboard" icon={<HeartPulse size={16} />} label="Health Check" />
+              <NavLink to="/upload" icon={<FlaskConical size={16} />} label="AI Scanner" />
               <NavLink to="/nearby" icon={<MapPin size={16} />} label="Nearby" />
             </>
           )}
+
+          {/* Right-side utilities */}
+          <div style={{ width: '1px', height: '20px', background: 'var(--border)', margin: '0 2px' }} />
+
+
+
+
           {user ? (
             <>
-              <NavLink to="/profile" icon={<User size={16} />} label={isDoctor ? "Vault" : "Profile"} />
+              <NavLink to="/profile" icon={<User size={16} />} label={user.role === 'Doctor' ? 'Vault' : 'Profile'} />
               {!isSidebarPage && (
-                <button onClick={logout} className="btn-icon p-2 border-0 bg-transparent text-secondary" style={{ color: 'var(--text-secondary)' }} aria-label="Log out">
+                <button onClick={logout} className="btn-icon p-2 border-0 bg-transparent" style={{ color: 'rgba(255, 255, 255, 0.82)' }} aria-label="Log out">
                   <LogOut size={18} />
                 </button>
               )}
@@ -505,8 +519,8 @@ function Navbar({ user, logout, toggleSidebar, isSidebarPage, openAuth, navbarHe
           {user && user.role === 'Patient' && <EmergencyQRDropdown user={user} />}
           <button
             onClick={toggleTheme}
-            className="btn-icon p-2 border-0 bg-transparent opacity-70 hover-opacity-100"
-            style={{ color: 'var(--text-primary)' }}
+            className="btn-icon p-2 border-0 bg-transparent"
+            style={{ color: 'rgba(255, 255, 255, 0.85)' }}
             title={theme === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
             aria-label={theme === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
           >
@@ -515,7 +529,7 @@ function Navbar({ user, logout, toggleSidebar, isSidebarPage, openAuth, navbarHe
         </div>
 
         {/* Mobile menu toggle */}
-        <button className="btn-icon d-md-none" style={{ color: 'var(--text-primary)' }} onClick={() => setIsOpen(!isOpen)} aria-label={isOpen ? 'Close menu' : 'Open menu'} aria-expanded={isOpen}>
+        <button className="btn-icon d-md-none" style={{ color: '#FFFFFF' }} onClick={() => setIsOpen(!isOpen)} aria-label={isOpen ? 'Close menu' : 'Open menu'} aria-expanded={isOpen}>
           {isOpen ? <X size={24} /> : <Menu size={24} />}
         </button>
       </div>
@@ -593,14 +607,15 @@ function NavLink({ to, icon, label }) {
   return (
     <RouterNavLink
       to={to}
-      className="text-decoration-none d-flex align-items-center gap-2 transition-all px-2 py-1 rounded"
+      className="text-decoration-none d-flex align-items-center gap-2 transition-all px-2.5 py-1.5 rounded-2"
       style={({ isActive }) => ({
-        color: isActive ? 'var(--primary-accent)' : 'var(--text-secondary)',
+        color: isActive ? '#FFFFFF' : 'rgba(255, 255, 255, 0.78)',
         fontWeight: isActive ? 700 : 500,
-        background: isActive ? 'var(--bg-upload)' : 'transparent',
+        background: isActive ? 'rgba(255, 255, 255, 0.16)' : 'transparent',
+        border: isActive ? '1px solid rgba(255, 255, 255, 0.22)' : '1px solid transparent',
       })}
     >
-      {icon}
+      <span style={{ display: 'inline-flex', opacity: 0.9 }}>{icon}</span>
       <span>{label}</span>
     </RouterNavLink>
   );

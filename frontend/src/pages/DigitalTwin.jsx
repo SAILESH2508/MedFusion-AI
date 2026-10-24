@@ -1,44 +1,84 @@
+/**
+ * DigitalTwin.jsx — Personal Health Twin: Immersive 3D Anatomy Viewer
+ * MedFusion AI Clinical Informatics Pipeline
+ *
+ * Layout: Full-page 3D canvas as primary content.
+ * All secondary modules accessible through a single Health Twin Modules drawer.
+ */
+
 import React, { useState, useEffect, useContext, useCallback } from 'react';
-import { Cpu, Activity, Shield, Zap, Info, Heart, Wind, Droplet, Brain as BrainIcon, FlaskConical, RotateCcw, AlertTriangle } from 'lucide-react';
+import {
+  Heart, Wind, FlaskConical, Droplet, Brain as BrainIcon, Activity,
+  LayoutGrid, UserCheck, RotateCcw, Cpu, Zap, Map, Maximize2, Minimize2,
+} from 'lucide-react';
 import { api } from '../services/api';
 import { SidebarContext } from '../context/SidebarContext';
-import OrganInfoPanel from './digital-twin/OrganInfoPanel';
-import HealthTimeline from './digital-twin/HealthTimeline';
-import HealthChangeExplorer from './digital-twin/HealthChangeExplorer';
-import MedicationSafetyPanel from './digital-twin/MedicationSafetyPanel';
+import OrganViewer3D from './digital-twin/OrganViewer3D';
 import AnatomyDiagram from './digital-twin/AnatomyDiagram';
+import BioDigitalViewer from './digital-twin/BioDigitalViewer';
+import TwinModulesDrawer from './digital-twin/TwinModulesDrawer';
 
-const ORGAN_BUTTONS = [
-  { id: 'heart',   label: 'Heart',   icon: <Heart   size={14} />, color: '#c1121f' },
-  { id: 'lungs',   label: 'Lungs',   icon: <Wind    size={14} />, color: '#e07a8a' },
-  { id: 'liver',   label: 'Liver',   icon: <FlaskConical size={14} />, color: '#a0522d' },
-  { id: 'kidneys', label: 'Kidneys', icon: <Droplet size={14} />, color: '#9b2226' },
-  { id: 'brain',   label: 'Brain',   icon: <BrainIcon size={14} />, color: '#b0a4b8' },
+/* ─── Organ definitions ───────────────────────────────────────────────────── */
+const ORGANS = [
+  { id: 'heart',      label: 'Heart',      icon: <Heart size={13} />,       color: '#EF4444' },
+  { id: 'lungs',      label: 'Lungs',      icon: <Wind size={13} />,        color: '#38BDF8' },
+  { id: 'liver',      label: 'Liver',      icon: <FlaskConical size={13} />, color: '#F97316' },
+  { id: 'stomach',    label: 'Stomach',    icon: <FlaskConical size={13} />, color: '#FBBF24' },
+  { id: 'pancreas',   label: 'Pancreas',   icon: <Activity size={13} />,    color: '#EC4899' },
+  { id: 'kidneys',    label: 'Kidneys',    icon: <Droplet size={13} />,     color: '#FB7185' },
+  { id: 'intestines', label: 'Intestines', icon: <Wind size={13} />,        color: '#10B981' },
+  { id: 'brain',      label: 'Brain',      icon: <BrainIcon size={13} />,   color: '#A78BFA' },
 ];
 
-const TABS = [
-  { id: 'timeline', label: 'Timeline', icon: <Activity size={13} /> },
-  { id: 'safety',   label: 'Safety',   icon: <Shield  size={13} /> },
-  { id: 'explorer', label: 'Explorer', icon: <Zap     size={13} /> },
-  { id: 'about',    label: 'About',    icon: <Info    size={13} /> },
+/* ─── View modes ──────────────────────────────────────────────────────────── */
+const VIEW_MODES = [
+  { id: '3d',        label: '3D Twin',   icon: <Cpu size={11} /> },
+  { id: '2d',        label: '2D Map',    icon: <Map size={11} /> },
+  { id: 'biodigital',label: 'BioDigital',icon: <Zap size={11} /> },
 ];
 
-export default function DigitalTwin({ user }) {
+export default function DigitalTwin({ user, openAuth }) {
   const { setSidebarContent } = useContext(SidebarContext);
 
+  /* ── State ── */
   const [selectedOrgan, setSelectedOrgan] = useState('heart');
-  const [patientData, setPatientData] = useState({ profile: null, predictions: [], pathology: [], prescriptions: [] });
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
-  const [activeTab, setActiveTab] = useState('timeline');
+  const [viewerMode, setViewerMode]       = useState('3d');
+  const [isIsolated, setIsIsolated]       = useState(false);
+  const [drawerOpen, setDrawerOpen]       = useState(false);
+  const [patientData, setPatientData]     = useState({
+    profile: null, organs: {}, system_metrics: null,
+    predictions: [], pathology: [], prescriptions: [],
+  });
+  const [organData, setOrganData]     = useState(null);
+  const [loading, setLoading]         = useState(true);
+  const [loadingOrgan, setLoadingOrgan] = useState(false);
+  const [error, setError]             = useState('');
 
-  const fetchData = useCallback(async () => {
+  /* ── Data fetching ── */
+  const fetchSummary = useCallback(async () => {
+    if (!user) {
+      setLoading(false);
+      setPatientData({
+        profile: { full_name: 'Guest Explorer', blood_group: 'O+' },
+        organs: {},
+        system_metrics: { total_systems: 8, alert_count: 0, attention_count: 0, optimal_count: 8 },
+        predictions: [], pathology: [], prescriptions: [],
+      });
+      return;
+    }
     setLoading(true);
     setError('');
     try {
       const response = await api.get('/health-twin/');
       const d = response.data;
-      setPatientData({ profile: d.profile || null, predictions: d.predictions || [], pathology: d.pathology_reports || [], prescriptions: d.prescriptions || [] });
+      setPatientData({
+        profile:        d.profile || null,
+        organs:         d.organs || {},
+        system_metrics: d.system_metrics || null,
+        predictions:    d.predictions || [],
+        pathology:      d.pathology_reports || [],
+        prescriptions:  d.prescriptions || [],
+      });
     } catch {
       try {
         const [emR, prR, paR, rxR] = await Promise.all([
@@ -48,107 +88,52 @@ export default function DigitalTwin({ user }) {
           api.get('/prescriptions/').catch(() => ({ data: [] })),
         ]);
         setPatientData({
-          profile: emR.data || null,
-          predictions: Array.isArray(prR.data) ? prR.data : (prR.data?.results || []),
-          pathology:   Array.isArray(paR.data) ? paR.data : (paR.data?.results || []),
-          prescriptions: Array.isArray(rxR.data) ? rxR.data : (rxR.data?.results || []),
+          profile:        emR.data || null,
+          organs:         {},
+          system_metrics: null,
+          predictions:    Array.isArray(prR.data) ? prR.data : (prR.data?.results || []),
+          pathology:      Array.isArray(paR.data) ? paR.data : (paR.data?.results || []),
+          prescriptions:  Array.isArray(rxR.data) ? rxR.data : (rxR.data?.results || []),
         });
-      } catch (e) {
-        setError(e.response?.data?.error || e.message || 'Failed to load health data.');
+      } catch (err) {
+        setError(err.response?.data?.error || err.message || 'Failed to load health twin data.');
       }
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [user]);
 
-  useEffect(() => { fetchData(); }, [fetchData]);
+  const fetchOrganDetails = useCallback(async (organId) => {
+    if (!organId || !user) { setOrganData(null); return; }
+    setLoadingOrgan(true);
+    try {
+      const res = await api.get(`/health-twin/organ/${organId}/`);
+      setOrganData(res.data);
+    } catch {
+      setOrganData(null);
+    } finally {
+      setLoadingOrgan(false);
+    }
+  }, [user]);
 
-  // Sidebar injection
+  useEffect(() => { fetchSummary(); }, [fetchSummary]);
+  useEffect(() => { if (selectedOrgan) fetchOrganDetails(selectedOrgan); }, [selectedOrgan, fetchOrganDetails]);
+
+  /* ── Clear sidebar (this page owns its own layout) ── */
   useEffect(() => {
-    const name = patientData.profile?.full_name || patientData.profile?.name || user?.full_name || 'Patient';
-    const blood = patientData.profile?.blood_group || patientData.profile?.blood_type || null;
-    const predCount = patientData.predictions.length;
-    const pathCount = patientData.pathology.length;
-    const rxCount   = patientData.prescriptions.length;
-
-    setSidebarContent(
-      <div>
-        {/* Patient pill */}
-        <div style={{ marginBottom: '18px' }}>
-          <p style={{ fontSize: '0.57rem', fontFamily: 'monospace', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.08em', margin: '0 0 5px' }}>
-            Personal Health Twin
-          </p>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <p style={{ fontSize: '0.88rem', color: 'var(--text-primary)', fontWeight: 700, margin: 0 }}>{name}</p>
-            {blood && (
-              <span style={{ background: 'rgba(185, 28, 28, 0.15)', border: '1px solid var(--accent-red)', color: 'var(--accent-red)', padding: '1px 7px', borderRadius: '20px', fontSize: '0.65rem', fontFamily: 'monospace' }}>
-                {blood}
-              </span>
-            )}
-          </div>
-        </div>
-
-        {/* Record counts */}
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '6px', marginBottom: '20px' }}>
-          {[
-            { label: 'Assessments', val: predCount, color: 'var(--accent-orange)' },
-            { label: 'Pathology',   val: pathCount, color: 'var(--primary-accent)' },
-            { label: 'Scripts',     val: rxCount,   color: 'var(--text-secondary)' },
-          ].map(({ label, val, color }) => (
-            <div key={label} style={{ background: 'var(--bg-card)', border: '1px solid var(--border-color)', borderRadius: '8px', padding: '8px 6px', textAlign: 'center' }}>
-              <p style={{ fontSize: '1.1rem', fontFamily: 'monospace', fontWeight: 700, color, margin: 0 }}>{val}</p>
-              <p style={{ fontSize: '0.52rem', color: 'var(--text-muted)', margin: 0, textTransform: 'uppercase', letterSpacing: '0.05em' }}>{label}</p>
-            </div>
-          ))}
-        </div>
-
-        {/* Organ selector */}
-        <p style={{ fontSize: '0.57rem', fontFamily: 'monospace', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.08em', margin: '0 0 8px' }}>
-          Select Organ
-        </p>
-        {ORGAN_BUTTONS.map((organ) => {
-          const isActive = selectedOrgan === organ.id;
-          return (
-            <button
-              key={organ.id}
-              onClick={() => setSelectedOrgan(organ.id)}
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '10px',
-                width: '100%',
-                background: isActive ? 'var(--bg-card-tinted)' : 'transparent',
-                border: isActive ? '1px solid var(--brand-orange)' : '1px solid transparent',
-                borderRadius: '8px',
-                color: isActive ? 'var(--text-primary)' : 'var(--text-secondary)',
-                padding: '7px 10px',
-                marginBottom: '3px',
-                cursor: 'pointer',
-                fontSize: '0.82rem',
-                fontFamily: 'monospace',
-                textAlign: 'left',
-                transition: 'all 0.15s',
-              }}
-            >
-              <span style={{ color: isActive ? organ.color : 'rgba(255,255,255,0.3)', lineHeight: 0 }}>{organ.icon}</span>
-              <span>{organ.label}</span>
-              {isActive && (
-                <span style={{ marginLeft: 'auto', width: '6px', height: '6px', borderRadius: '50%', background: 'var(--brand-orange)', flexShrink: 0 }} />
-              )}
-            </button>
-          );
-        })}
-      </div>
-    );
+    setSidebarContent(null);
     return () => setSidebarContent(null);
-  }, [setSidebarContent, selectedOrgan, patientData, user]);
+  }, [setSidebarContent]);
 
+  /* ── Loading / Error states ── */
   if (loading) {
     return (
-      <div className="reveal px-1 theme-general d-flex align-items-center justify-content-center" style={{ minHeight: '60vh' }}>
-        <div className="text-center">
-          <div style={{ width: '48px', height: '48px', borderRadius: '50%', border: '2px solid var(--border-color)', borderTopColor: 'var(--primary-accent)', animation: 'spin 0.9s linear infinite', margin: '0 auto 16px' }} />
-          <p style={{ fontFamily: 'monospace', color: 'var(--text-secondary)', fontSize: '0.8rem', margin: 0, letterSpacing: '0.08em', textTransform: 'uppercase' }}>Loading Health Twin…</p>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100vh', background: '#040d1a' }}>
+        <div style={{ textAlign: 'center' }}>
+          <div style={{ width: '36px', height: '36px', borderRadius: '50%', border: '2px solid rgba(255,255,255,0.1)', borderTopColor: '#f97316', animation: 'spin 0.8s linear infinite', margin: '0 auto 12px' }} />
+          <p style={{ fontFamily: 'monospace', color: 'rgba(255,255,255,0.4)', fontSize: '0.75rem', margin: 0, letterSpacing: '0.1em', textTransform: 'uppercase' }}>
+            Loading Health Twin…
+          </p>
         </div>
       </div>
     );
@@ -156,10 +141,10 @@ export default function DigitalTwin({ user }) {
 
   if (error) {
     return (
-      <div className="reveal px-1 theme-general d-flex align-items-center justify-content-center" style={{ minHeight: '50vh' }}>
-        <div className="text-center">
-          <p style={{ color: 'var(--accent-red)', fontSize: '0.9rem', marginBottom: '16px' }}>{error}</p>
-          <button onClick={fetchData} className="btn-clinical primary" style={{ padding: '6px 20px', borderRadius: '8px', cursor: 'pointer', fontFamily: 'monospace', fontSize: '0.82rem' }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '80vh' }}>
+        <div style={{ textAlign: 'center' }}>
+          <p style={{ color: '#ef4444', marginBottom: '12px', fontSize: '0.9rem' }}>{error}</p>
+          <button onClick={fetchSummary} style={{ padding: '6px 18px', borderRadius: '8px', background: 'rgba(249,115,22,0.15)', border: '1px solid #f97316', color: '#f97316', cursor: 'pointer', fontFamily: 'monospace', fontSize: '0.8rem' }}>
             Retry
           </button>
         </div>
@@ -167,176 +152,314 @@ export default function DigitalTwin({ user }) {
     );
   }
 
-  return (
-    <div className="reveal theme-general" style={{ padding: '0 4px' }}>
+  const metrics = patientData.system_metrics || { alert_count: 0, optimal_count: 8 };
+  const selectedOrganInfo = ORGANS.find(o => o.id === selectedOrgan);
 
-      {/* ── Page header ────────────────────────────────────────────────── */}
-      <div style={{ marginBottom: '20px', borderBottom: '1px solid var(--border-color, rgba(255,255,255,0.08))', paddingBottom: '14px' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '4px' }}>
-          <Activity size={20} style={{ color: 'var(--accent-teal, #38bdf8)' }} />
-          <h2 style={{ fontSize: '1.25rem', fontWeight: 700, color: 'var(--text-primary)', margin: 0, fontFamily: 'monospace', letterSpacing: '0.02em' }}>
-            PERSONAL HEALTH TWIN
-          </h2>
-          <span style={{ background: 'rgba(91,159,224,0.12)', border: '1px solid var(--brand-blue)', color: 'var(--brand-blue)', fontSize: '0.58rem', padding: '2px 8px', borderRadius: '4px', fontFamily: 'monospace', letterSpacing: '0.06em', textTransform: 'uppercase', fontWeight: 600 }}>
-            Interactive
-          </span>
-        </div>
-        <p style={{ color: 'var(--text-secondary)', fontSize: '0.8rem', margin: 0, fontFamily: 'monospace' }}>
-          Click an organ to explore your recorded health data · Hover to highlight · Select to deep-dive
-        </p>
+  return (
+    <div style={{
+      position: 'relative',
+      width: '100%',
+      height: 'calc(100vh - 64px)',  /* subtract navbar height */
+      overflow: 'hidden',
+      background: '#040d1a',
+    }}>
+
+      {/* ══ FULL-SCREEN VIEWER ══════════════════════════════════════════ */}
+      <div style={{ position: 'absolute', inset: 0 }}>
+        {viewerMode === '3d' && (
+          <OrganViewer3D
+            selectedOrgan={selectedOrgan}
+            onOrganSelect={(organId) => {
+              setSelectedOrgan(organId);
+              if (!organId) setIsIsolated(false);
+            }}
+            patientData={patientData}
+            organData={organData}
+            hideControls={true}
+            isIsolated={isIsolated}
+            onToggleIsolated={() => setIsIsolated(prev => !prev)}
+          />
+        )}
+        {viewerMode === '2d' && (
+          <AnatomyDiagram
+            selectedOrgan={selectedOrgan}
+            onOrganSelect={setSelectedOrgan}
+            patientData={patientData}
+          />
+        )}
+        {viewerMode === 'biodigital' && (
+          <BioDigitalViewer
+            selectedOrgan={selectedOrgan}
+            onOrganSelect={setSelectedOrgan}
+            onSwitchTo3D={() => setViewerMode('3d')}
+          />
+        )}
       </div>
 
-      <div className="row g-4">
-
-        {/* ── Left: anatomy diagram + organ info ─────────────────────── */}
-        <div className="col-lg-7">
-
-          {/* Viewer card */}
-          <div style={{
-            background: 'var(--bg-card)',
-            border: '1px solid var(--border-color)',
-            borderRadius: '16px',
-            overflow: 'hidden',
-            position: 'relative',
+      {/* ══ TOP BAR: title + view mode + auth prompt ═══════════════════ */}
+      <div style={{
+        position: 'absolute',
+        top: '14px',
+        left: '16px',
+        right: '16px',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        zIndex: 20,
+        gap: '10px',
+        pointerEvents: 'none',
+      }}>
+        {/* Page title */}
+        <div style={{ pointerEvents: 'auto' }}>
+          <span style={{
+            fontSize: '0.62rem', fontFamily: 'monospace', color: '#f97316',
+            letterSpacing: '0.1em', textTransform: 'uppercase', display: 'block', lineHeight: 1,
           }}>
-            {/* Reset row */}
-            <div style={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'flex-end',
-              gap: '8px',
-              padding: '10px 14px 0',
-            }}>
-              {selectedOrgan && (
-                <div style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '6px',
-                  background: 'var(--bg-form)',
-                  border: '1px solid var(--border-color)',
-                  borderRadius: '6px',
-                  padding: '4px 10px',
-                }}>
-                  <span style={{ width: '7px', height: '7px', borderRadius: '50%', background: ORGAN_BUTTONS.find(o => o.id === selectedOrgan)?.color || 'var(--primary-accent)', flexShrink: 0 }} />
-                  <span style={{ fontSize: '0.65rem', fontFamily: 'monospace', color: 'var(--text-primary)', letterSpacing: '0.06em', textTransform: 'uppercase' }}>
-                    {ORGAN_BUTTONS.find(o => o.id === selectedOrgan)?.label}
-                  </span>
-                </div>
-              )}
-              <button
-                onClick={() => setSelectedOrgan(null)}
-                style={{
-                  background: 'var(--bg-form)',
-                  color: 'var(--text-secondary)',
-                  border: '1px solid var(--border-color)',
-                  borderRadius: '6px',
-                  padding: '4px 10px',
-                  fontSize: '0.65rem',
-                  fontFamily: 'monospace',
-                  letterSpacing: '0.04em',
-                  cursor: 'pointer',
-                  textTransform: 'uppercase',
-                  transition: 'all 0.15s ease',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '5px',
-                }}
-                onMouseEnter={e => { e.currentTarget.style.color = 'var(--text-primary)'; e.currentTarget.style.borderColor = 'var(--brand-orange)'; }}
-                onMouseLeave={e => { e.currentTarget.style.color = 'var(--text-secondary)'; e.currentTarget.style.borderColor = 'var(--border-color)'; }}
-              >
-                <RotateCcw size={11} /> Reset
-              </button>
-            </div>
-
-            {/* 2D anatomy diagram */}
-            <div style={{ height: '460px', position: 'relative' }}>
-              <AnatomyDiagram selectedOrgan={selectedOrgan} onOrganSelect={setSelectedOrgan} patientData={patientData} />
-            </div>
-          </div>
-
-          {/* Organ info below viewer */}
-          <div style={{ marginTop: '16px' }}>
-            <OrganInfoPanel selectedOrgan={selectedOrgan} patientData={patientData} />
-          </div>
+            MedFusion AI
+          </span>
+          <h1 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 700, color: '#fff', letterSpacing: '-0.02em', lineHeight: 1.2 }}>
+            Health Twin
+          </h1>
         </div>
 
-        {/* ── Right: tabs ────────────────────────────────────────────── */}
-        <div className="col-lg-5">
-          <div className="card-secondary" style={{
-            borderRadius: '16px',
-            padding: '16px',
-            height: '100%',
-            minHeight: '520px',
-            display: 'flex',
-            flexDirection: 'column',
-          }}>
-            {/* Tab bar */}
-            <div style={{ display: 'flex', gap: '6px', marginBottom: '16px', flexWrap: 'wrap' }}>
-              {TABS.map((tab) => (
+        {/* View mode switcher */}
+        <div style={{ display: 'flex', gap: '3px', pointerEvents: 'auto', background: 'rgba(4,13,26,0.82)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px', padding: '3px' }}>
+          {VIEW_MODES.map(mode => (
+            <button
+              key={mode.id}
+              onClick={() => setViewerMode(mode.id)}
+              title={mode.label}
+              style={{
+                display: 'flex', alignItems: 'center', gap: '5px',
+                padding: '4px 10px',
+                background: viewerMode === mode.id ? 'rgba(56,189,248,0.18)' : 'transparent',
+                border: viewerMode === mode.id ? '1px solid rgba(56,189,248,0.4)' : '1px solid transparent',
+                borderRadius: '6px',
+                color: viewerMode === mode.id ? '#38bdf8' : 'rgba(255,255,255,0.45)',
+                cursor: 'pointer',
+                fontSize: '0.68rem',
+                fontFamily: 'monospace',
+                fontWeight: viewerMode === mode.id ? 700 : 400,
+                transition: 'all 0.15s ease',
+              }}
+            >
+              {mode.icon}
+              <span style={{ display: 'none' }}>{mode.label}</span>
+            </button>
+          ))}
+        </div>
+
+        {/* Auth prompt for guests */}
+        {!user && openAuth && (
+          <button
+            onClick={() => openAuth('patient')}
+            style={{
+              display: 'flex', alignItems: 'center', gap: '6px',
+              padding: '6px 14px',
+              background: 'rgba(249,115,22,0.15)',
+              border: '1px solid rgba(249,115,22,0.4)',
+              borderRadius: '8px',
+              color: '#f97316',
+              cursor: 'pointer',
+              fontSize: '0.72rem',
+              fontFamily: 'monospace',
+              fontWeight: 600,
+              pointerEvents: 'auto',
+              transition: 'all 0.15s ease',
+            }}
+          >
+            <UserCheck size={13} />
+            <span>Sign In</span>
+          </button>
+        )}
+      </div>
+
+      {/* ══ BOTTOM BAR: organ selector + selected info + Modules button ═ */}
+      <div style={{
+        position: 'absolute',
+        bottom: '16px',
+        left: '16px',
+        right: '16px',
+        zIndex: 20,
+        display: 'flex',
+        alignItems: 'flex-end',
+        justifyContent: 'space-between',
+        gap: '12px',
+        pointerEvents: 'none',
+      }}>
+
+        {/* Left: Selected organ info pill */}
+        <div style={{ pointerEvents: 'auto', flexShrink: 0 }}>
+          {selectedOrgan && (
+            <div style={{
+              display: 'flex', alignItems: 'center', gap: '8px',
+              padding: '6px 12px',
+              background: 'rgba(4,13,26,0.88)',
+              border: `1px solid ${selectedOrganInfo?.color || '#f97316'}40`,
+              borderRadius: '10px',
+              backdropFilter: 'blur(8px)',
+            }}>
+              <span style={{ color: selectedOrganInfo?.color || '#f97316', display: 'flex', alignItems: 'center' }}>
+                {selectedOrganInfo?.icon}
+              </span>
+              <span style={{ fontSize: '0.7rem', fontFamily: 'monospace', fontWeight: 700, color: '#fff', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+                {selectedOrganInfo?.label}
+              </span>
+              {patientData.organs?.[selectedOrgan]?.clinical_status === 'ALERT' && (
+                <span style={{ fontSize: '0.58rem', fontFamily: 'monospace', fontWeight: 700, color: '#ef4444', background: 'rgba(239,68,68,0.18)', padding: '1px 5px', borderRadius: '4px' }}>
+                  ALERT
+                </span>
+              )}
+              {viewerMode === '3d' && (
                 <button
-                  key={tab.id}
-                  onClick={() => setActiveTab(tab.id)}
+                  onClick={() => setIsIsolated(prev => !prev)}
                   style={{
+                    background: isIsolated ? 'rgba(249,115,22,0.25)' : 'rgba(255,255,255,0.06)',
+                    border: isIsolated ? '1px solid #f97316' : '1px solid rgba(255,255,255,0.14)',
+                    color: isIsolated ? '#f97316' : 'rgba(255,255,255,0.6)',
+                    borderRadius: '5px',
+                    padding: '2px 7px',
+                    fontSize: '0.62rem',
+                    fontFamily: 'monospace',
+                    fontWeight: 600,
+                    cursor: 'pointer',
                     display: 'flex',
                     alignItems: 'center',
-                    gap: '6px',
-                    padding: '6px 14px',
-                    background: activeTab === tab.id ? 'rgba(244,149,74,0.15)' : 'transparent',
-                    border: activeTab === tab.id ? '1px solid var(--brand-orange)' : '1px solid var(--border-color, rgba(255, 255, 255, 0.1))',
-                    borderRadius: '20px',
-                    color: activeTab === tab.id ? 'var(--brand-orange)' : 'var(--text-secondary, #64748b)',
-                    cursor: 'pointer',
-                    fontSize: '0.76rem',
-                    fontFamily: 'monospace',
+                    gap: '4px',
+                    marginLeft: '2px',
                     transition: 'all 0.15s ease',
-                    letterSpacing: '0.04em',
-                    fontWeight: activeTab === tab.id ? 700 : 500,
                   }}
+                  title={isIsolated ? 'Show full body anatomy' : 'Isolate organ in 3D'}
                 >
-                  {tab.icon}
-                  {tab.label}
+                  {isIsolated ? <Minimize2 size={10} /> : <Maximize2 size={10} />}
+                  <span>{isIsolated ? 'Full Body' : 'Isolate'}</span>
                 </button>
-              ))}
+              )}
+              <button
+                onClick={() => { setSelectedOrgan(null); setIsIsolated(false); }}
+                style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.35)', cursor: 'pointer', padding: '0 0 0 2px', display: 'flex', alignItems: 'center', lineHeight: 1 }}
+                title="Clear selection"
+              >
+                ×
+              </button>
             </div>
-
-            {/* Tab content */}
-            <div style={{ flex: 1, overflowY: 'auto', paddingRight: '2px' }}>
-              {activeTab === 'timeline'  && <HealthTimeline patientData={patientData} loading={false} />}
-              {activeTab === 'safety'    && <MedicationSafetyPanel patientData={patientData} />}
-              {activeTab === 'explorer'  && <HealthChangeExplorer patientData={patientData} />}
-              {activeTab === 'about'     && <AboutTab />}
-            </div>
-          </div>
+          )}
         </div>
 
-      </div>
-    </div>
-  );
-}
-
-function AboutTab() {
-  return (
-    <div style={{ fontSize: '0.82rem', color: 'var(--text-secondary)', lineHeight: '1.65' }}>
-      <h6 style={{ color: 'var(--text-primary)', fontWeight: 700, fontFamily: 'monospace', letterSpacing: '0.05em', fontSize: '0.88rem', marginBottom: '12px', textTransform: 'uppercase' }}>
-        About Personal Health Twin
-      </h6>
-
-      {[
-        { label: 'Anatomy Diagram', text: 'A front-facing human anatomy diagram with interactive SVG organ regions. Click any organ to explore your recorded health data for that system. The diagram is illustrative and not anatomically certified for clinical diagnosis.' },
-        { label: 'Health Timeline', text: 'Displays your existing pathology reports, disease risk assessments, and prescriptions sorted newest first. No data is fabricated or estimated.' },
-        { label: 'Medication Safety', text: 'Runs against the same drug safety engine used in the Doctor Dashboard. Results are for awareness only — always consult your prescribing physician.' },
-        { label: 'Health Change Explorer', text: 'An educational comparison tool. Hypothetical values you enter are never saved to your records, and no clinical predictions are made.' },
-      ].map(({ label, text }) => (
-        <div key={label} style={{ marginBottom: '14px' }}>
-          <p style={{ color: 'var(--brand-orange)', fontFamily: 'monospace', fontSize: '0.72rem', textTransform: 'uppercase', letterSpacing: '0.07em', margin: '0 0 3px' }}>{label}</p>
-          <p style={{ margin: 0, color: 'var(--text-secondary)' }}>{text}</p>
+        {/* Center: Compact organ selector */}
+        <div style={{
+          display: 'flex',
+          gap: '4px',
+          background: 'rgba(4,13,26,0.88)',
+          border: '1px solid rgba(255,255,255,0.1)',
+          borderRadius: '12px',
+          padding: '5px',
+          backdropFilter: 'blur(10px)',
+          pointerEvents: 'auto',
+          flexShrink: 0,
+        }}>
+          {ORGANS.map(organ => {
+            const isActive = selectedOrgan === organ.id;
+            const status = patientData.organs?.[organ.id]?.clinical_status;
+            return (
+              <button
+                key={organ.id}
+                onClick={() => setSelectedOrgan(organ.id)}
+                title={organ.label}
+                style={{
+                  position: 'relative',
+                  width: '32px',
+                  height: '32px',
+                  borderRadius: '7px',
+                  background: isActive ? `${organ.color}20` : 'transparent',
+                  border: isActive ? `1.5px solid ${organ.color}` : '1.5px solid transparent',
+                  color: isActive ? organ.color : 'rgba(255,255,255,0.35)',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  transition: 'all 0.15s ease',
+                  boxShadow: isActive ? `0 0 10px ${organ.color}30` : 'none',
+                }}
+                onMouseEnter={e => { if (!isActive) { e.currentTarget.style.background = 'rgba(255,255,255,0.07)'; e.currentTarget.style.color = 'rgba(255,255,255,0.7)'; }}}
+                onMouseLeave={e => { if (!isActive) { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'rgba(255,255,255,0.35)'; }}}
+              >
+                {organ.icon}
+                {/* Status dot */}
+                {status === 'ALERT' && (
+                  <span style={{ position: 'absolute', top: '3px', right: '3px', width: '5px', height: '5px', borderRadius: '50%', background: '#ef4444', boxShadow: '0 0 4px #ef4444' }} />
+                )}
+                {status === 'ATTENTION' && !isActive && (
+                  <span style={{ position: 'absolute', top: '3px', right: '3px', width: '5px', height: '5px', borderRadius: '50%', background: '#f97316' }} />
+                )}
+              </button>
+            );
+          })}
         </div>
-      ))}
 
-      <div style={{ background: 'rgba(255,193,7,0.08)', border: '1px solid rgba(255,193,7,0.25)', borderRadius: '8px', padding: '10px 12px', marginTop: '12px', fontSize: '0.74rem', color: 'var(--accent-yellow, #b45309)', lineHeight: '1.5', display: 'flex', alignItems: 'flex-start', gap: '8px' }}>
-        <AlertTriangle size={14} style={{ flexShrink: 0, marginTop: '2px' }} />
-        <span>This feature is for personal health awareness only. It does not constitute medical advice, diagnosis, or treatment. Always consult a qualified healthcare professional for medical decisions.</span>
+        {/* Right: Modules button + system status */}
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '6px', pointerEvents: 'auto', flexShrink: 0 }}>
+          {/* Health Twin Modules button */}
+          <button
+            onClick={() => setDrawerOpen(true)}
+            style={{
+              display: 'flex', alignItems: 'center', gap: '8px',
+              padding: '9px 16px',
+              background: 'rgba(4,13,26,0.92)',
+              border: '1px solid rgba(249,115,22,0.35)',
+              borderRadius: '10px',
+              color: '#f97316',
+              cursor: 'pointer',
+              fontSize: '0.78rem',
+              fontFamily: 'monospace',
+              fontWeight: 700,
+              letterSpacing: '0.04em',
+              backdropFilter: 'blur(10px)',
+              boxShadow: '0 4px 16px rgba(0,0,0,0.4)',
+              transition: 'all 0.15s ease',
+            }}
+            onMouseEnter={e => { e.currentTarget.style.background = 'rgba(249,115,22,0.12)'; e.currentTarget.style.borderColor = '#f97316'; }}
+            onMouseLeave={e => { e.currentTarget.style.background = 'rgba(4,13,26,0.92)'; e.currentTarget.style.borderColor = 'rgba(249,115,22,0.35)'; }}
+          >
+            <LayoutGrid size={14} />
+            <span>Health Twin Modules</span>
+          </button>
+        </div>
       </div>
+
+      {/* Guest mode overlay hint */}
+      {!user && (
+        <div style={{
+          position: 'absolute',
+          top: '60px',
+          left: '50%',
+          transform: 'translateX(-50%)',
+          zIndex: 15,
+          background: 'rgba(4,13,26,0.85)',
+          border: '1px solid rgba(249,115,22,0.2)',
+          borderRadius: '8px',
+          padding: '6px 14px',
+          fontSize: '0.68rem',
+          fontFamily: 'monospace',
+          color: 'rgba(255,255,255,0.45)',
+          backdropFilter: 'blur(6px)',
+          whiteSpace: 'nowrap',
+          pointerEvents: 'none',
+        }}>
+          Guest mode — sign in to sync your EHR records
+        </div>
+      )}
+
+      {/* ══ MODULES DRAWER ══════════════════════════════════════════════ */}
+      <TwinModulesDrawer
+        open={drawerOpen}
+        onClose={() => setDrawerOpen(false)}
+        selectedOrgan={selectedOrgan}
+        onOrganSelect={setSelectedOrgan}
+        patientData={patientData}
+        organData={organData}
+        loadingOrgan={loadingOrgan}
+      />
     </div>
   );
 }
