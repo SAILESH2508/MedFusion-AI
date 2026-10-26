@@ -433,12 +433,14 @@ function PlaceCard({ place, isPatient, expanded, onToggle }) {
 
 // ── Main Component ─────────────────────────────────────────────────────────
 const PRESET_CITIES = [
-  { name: 'Coimbatore', display_name: 'Coimbatore, Tamil Nadu', lat: 11.0018, lon: 76.9628 },
+  { name: 'Kamachipuram', display_name: 'Kamachipuram, Ondipudur, Coimbatore', lat: 11.0065, lon: 77.0645 },
+  { name: 'Ondipudur', display_name: 'Ondipudur, Coimbatore, Tamil Nadu', lat: 11.0040, lon: 77.0493 },
+  { name: 'Singanallur', display_name: 'Singanallur, Coimbatore, Tamil Nadu', lat: 10.9995, lon: 77.0275 },
+  { name: 'Peelamedu', display_name: 'Peelamedu, Coimbatore, Tamil Nadu', lat: 11.0267, lon: 77.0097 },
+  { name: 'Gandhipuram', display_name: 'Gandhipuram, Coimbatore, Tamil Nadu', lat: 11.0183, lon: 76.9686 },
+  { name: 'Coimbatore', display_name: 'Coimbatore Central, Tamil Nadu', lat: 11.0018, lon: 76.9628 },
   { name: 'Chennai', display_name: 'Chennai, Tamil Nadu', lat: 13.0827, lon: 80.2707 },
   { name: 'Bengaluru', display_name: 'Bengaluru, Karnataka', lat: 12.9716, lon: 77.5946 },
-  { name: 'Madurai', display_name: 'Madurai, Tamil Nadu', lat: 9.9252, lon: 78.1198 },
-  { name: 'Tiruchirappalli', display_name: 'Tiruchirappalli, Tamil Nadu', lat: 10.7905, lon: 78.7047 },
-  { name: 'Salem', display_name: 'Salem, Tamil Nadu', lat: 11.6643, lon: 78.1460 },
 ];
 
 export default function NearbyMap({
@@ -506,7 +508,7 @@ export default function NearbyMap({
   const [locQuery, setLocQuery]               = useState('');
   const [locSuggestions, setLocSuggestions]   = useState([]);
   const [isSearchingLoc, setIsSearchingLoc]   = useState(false);
-  const [activeCityPill, setActiveCityPill]   = useState('Coimbatore');
+  const [activeCityPill, setActiveCityPill]   = useState('Kamachipuram');
 
   // Reverse geocode to get city name for any coordinates
   const updateLocationWithDetails = useCallback(async (newCoords) => {
@@ -544,13 +546,13 @@ export default function NearbyMap({
           return;
         }
       } catch {
-        // Fallback to Coimbatore default
+        // Fallback to Kamachipuram default
       }
       await updateLocationWithDetails({
-        lat: 11.0018,
-        lon: 76.9628,
+        lat: 11.0065,
+        lon: 77.0645,
         city: 'Coimbatore',
-        displayName: 'Coimbatore, Tamil Nadu',
+        displayName: 'Kamachipuram, Ondipudur, Coimbatore',
         source: 'default'
       });
       setLocLoading(false);
@@ -634,9 +636,17 @@ export default function NearbyMap({
     });
   };
 
-  // Only request geolocation on first visit — skip if location already persisted
+  // On startup, ensure accurate Kamachipuram location is active
   useEffect(() => {
-    if (!location) { getLocation(); }
+    if (!location || location.source === 'default' || !location.displayName) {
+      updateLocationWithDetails({
+        lat: 11.0065,
+        lon: 77.0645,
+        city: 'Coimbatore',
+        displayName: 'Kamachipuram, Ondipudur, Coimbatore',
+        source: 'default'
+      });
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 

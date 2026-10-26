@@ -1744,6 +1744,30 @@ _nearby_cache = {}
 _geocode_cache = {}
 _reverse_geocode_cache = {}
 
+
+COIMBATORE_LOCALITIES = {
+    "kamachipuram": {"name": "Kamachipuram", "display_name": "Kamachipuram, Ondipudur, Coimbatore, Tamil Nadu, 641016", "lat": 11.0065, "lon": 77.0645},
+    "kamatchipuram": {"name": "Kamatchipuram", "display_name": "Kamatchipuram, Ondipudur, Coimbatore, Tamil Nadu, 641016", "lat": 11.0065, "lon": 77.0645},
+    "ondipudur": {"name": "Ondipudur", "display_name": "Ondipudur, Coimbatore, Tamil Nadu, 641016", "lat": 11.0040, "lon": 77.0493},
+    "singanallur": {"name": "Singanallur", "display_name": "Singanallur, Coimbatore, Tamil Nadu, 641005", "lat": 10.9995, "lon": 77.0275},
+    "irugur": {"name": "Irugur", "display_name": "Irugur, Sulur, Coimbatore, Tamil Nadu, 641103", "lat": 11.0182, "lon": 77.0655},
+    "sulur": {"name": "Sulur", "display_name": "Sulur, Coimbatore, Tamil Nadu, 641402", "lat": 11.0247, "lon": 77.1264},
+    "peelamedu": {"name": "Peelamedu", "display_name": "Peelamedu, Coimbatore, Tamil Nadu, 641004", "lat": 11.0267, "lon": 77.0097},
+    "hopes": {"name": "Hopes College", "display_name": "Hopes College, Peelamedu, Coimbatore, 641004", "lat": 11.0234, "lon": 77.0175},
+    "gandhipuram": {"name": "Gandhipuram", "display_name": "Gandhipuram, Coimbatore, Tamil Nadu, 641012", "lat": 11.0183, "lon": 76.9686},
+    "rs puram": {"name": "RS Puram", "display_name": "RS Puram, Coimbatore, Tamil Nadu, 641002", "lat": 11.0088, "lon": 76.9478},
+    "saravanampatti": {"name": "Saravanampatti", "display_name": "Saravanampatti, Coimbatore, 641035", "lat": 11.0797, "lon": 76.9997},
+    "saibaba colony": {"name": "Saibaba Colony", "display_name": "Saibaba Colony, Coimbatore, 641011", "lat": 11.0315, "lon": 76.9482},
+    "ukkadam": {"name": "Ukkadam", "display_name": "Ukkadam, Coimbatore, Tamil Nadu, 641001", "lat": 10.9897, "lon": 76.9587},
+    "ramanathapuram": {"name": "Ramanathapuram", "display_name": "Ramanathapuram, Coimbatore, 641045", "lat": 10.9942, "lon": 76.9895},
+    "vadavalli": {"name": "Vadavalli", "display_name": "Vadavalli, Coimbatore, Tamil Nadu, 641041", "lat": 11.0267, "lon": 76.9014},
+    "thudiyalur": {"name": "Thudiyalur", "display_name": "Thudiyalur, Coimbatore, Tamil Nadu, 641034", "lat": 11.0805, "lon": 76.9389},
+    "ganapathy": {"name": "Ganapathy", "display_name": "Ganapathy, Coimbatore, Tamil Nadu, 641006", "lat": 11.0353, "lon": 76.9794},
+    "neelambur": {"name": "Neelambur", "display_name": "Neelambur, Coimbatore, Tamil Nadu, 641062", "lat": 11.0583, "lon": 77.0864},
+    "sitra": {"name": "SITRA / Airport", "display_name": "SITRA, Civil Aerodrome Post, Coimbatore, 641014", "lat": 11.0308, "lon": 77.0435},
+    "kalapatti": {"name": "Kalapatti", "display_name": "Kalapatti, Coimbatore, Tamil Nadu, 641048", "lat": 11.0715, "lon": 77.0392},
+}
+
 MAJOR_INDIAN_CITIES = [
     {"name": "Coimbatore", "display_name": "Coimbatore, Tamil Nadu, India", "lat": 11.0018, "lon": 76.9628},
     {"name": "Chennai", "display_name": "Chennai, Tamil Nadu, India", "lat": 13.0827, "lon": 80.2707},
@@ -1779,6 +1803,12 @@ def geocode_address(request):
         return JsonResponse({"status": "success", "results": _geocode_cache[cache_key]}, status=200)
 
     results = []
+    # 0. Check local Coimbatore registry first for pinpoint accuracy
+    q_norm = q.lower().replace(" ", "").replace("-", "")
+    for k, loc in COIMBATORE_LOCALITIES.items():
+        k_norm = k.replace(" ", "").replace("-", "")
+        if q_norm in k_norm or k_norm in q_norm:
+            results.append(loc)
     # 1. Try Nominatim geocoding (fast 2.5s timeout)
     try:
         url = f"https://nominatim.openstreetmap.org/search?q={urllib.parse.quote(q)}&format=json&limit=6&addressdetails=1"
@@ -1836,6 +1866,20 @@ def reverse_geocode(request):
     cache_key = f"{round(lat, 3)}_{round(lon, 3)}"
     if cache_key in _reverse_geocode_cache:
         return JsonResponse({"status": "success", "location": _reverse_geocode_cache[cache_key]}, status=200)
+
+    # Check known local coordinates (e.g. Kamachipuram 11.0065, 77.0645)
+    import math
+    d_kamachi = math.sqrt((lat - 11.0065)**2 + (lon - 77.0645)**2) * 111.0
+    if d_kamachi < 2.5:
+        info = {
+            "city": "Coimbatore",
+            "suburb": "Kamachipuram",
+            "state": "Tamil Nadu",
+            "country": "India",
+            "display_name": "Kamachipuram, Ondipudur, Coimbatore, Tamil Nadu",
+        }
+        _reverse_geocode_cache[cache_key] = info
+        return JsonResponse({"status": "success", "location": info}, status=200)
 
     info = {
         "city": "Coimbatore",
