@@ -243,11 +243,17 @@ function DoctorDashboard({ user }) {
           </div>
         ) : (
           /* INSPECT VIEW: Return Control & Section Quick Links */
-          <div className="reveal d-flex flex-column gap-4 animate-fadeIn">
+          <div className="reveal d-flex flex-column gap-3 animate-fadeIn">
             <button 
               onClick={() => setSelectedPatient(null)}
-              className="btn-clinical border border-white-10 text-secondary w-100 py-3 d-flex align-items-center justify-content-center gap-2 font-monospace text-uppercase"
-              style={{ fontSize: '0.85rem' }}
+              className="btn-clinical w-100 py-2.5 d-flex align-items-center justify-content-center gap-2 font-monospace text-uppercase"
+              style={{ 
+                fontSize: '0.82rem', 
+                background: 'rgba(255, 255, 255, 0.14)', 
+                color: '#FFFFFF', 
+                border: '1px solid rgba(255, 255, 255, 0.28)',
+                boxShadow: '0 2px 8px rgba(0, 0, 0, 0.2)'
+              }}
             >
               ← Patient Directory
             </button>
@@ -513,13 +519,13 @@ function DoctorDashboard({ user }) {
         </div>
       ) : (
         /* PATIENT DETAIL & ACTIONS SCREEN */
-        <div className="row g-4 align-items-stretch flex-grow-1" style={{ minHeight: '600px' }}>
+        <div className="row g-4 align-items-start flex-grow-1">
           
           {/* LEFT STAGE: Patient Information, Diagnostic & Ingested Records */}
-          <div className="col-lg-6 col-md-12 d-flex flex-column gap-4 reveal" style={{ minHeight: '520px' }}>
+          <div className="col-lg-6 col-md-12 d-flex flex-column gap-3 reveal">
             
             {/* Profile Card */}
-            <div id="section-profile" className="card-secondary p-4">
+            <div id="section-profile" className="card-secondary p-3 p-md-4" style={{ flex: '0 0 auto' }}>
               <div className="d-flex align-items-center gap-3 mb-3 border-bottom border-white-10 pb-3">
                 <div className="rounded-circle bg-theme-accent border border-theme-accent border-opacity-35 d-flex align-items-center justify-content-center fw-bold text-white" style={{ width: '48px', height: '48px', fontSize: '1.1rem' }}>
                   {selectedPatient.name ? selectedPatient.name.split(' ').map(n => n[0]).join('').toUpperCase() : 'P'}
@@ -559,8 +565,8 @@ function DoctorDashboard({ user }) {
             </div>
 
             {/* Ingested Medical History Records */}
-            <div className="glass-card p-4 flex-grow-1 d-flex flex-column gap-3 overflow-auto" style={{ minHeight: 0 }}>
-              <h4 className="fw-bold font-monospace d-flex align-items-center gap-2 mb-2 pb-2 border-bottom border-white-10" style={{ fontSize: '1.1rem', color: 'var(--text-primary)' }}>
+            <div className="glass-card p-3 p-md-4 d-flex flex-column gap-3" style={{ borderRadius: '16px' }}>
+              <h4 className="fw-bold font-monospace d-flex align-items-center gap-2 mb-2 pb-2 border-bottom border-white-10" style={{ fontSize: '1.05rem', color: 'var(--text-primary)' }}>
                 <FileText style={{ color: 'var(--brand-orange)' }} size={18} />
                 Clinical History Logs
               </h4>
@@ -669,8 +675,8 @@ function DoctorDashboard({ user }) {
           </div>
 
           {/* RIGHT STAGE: Clinical Notes & Prescription Issuer */}
-          <div className="col-lg-6 col-md-12 d-flex flex-column reveal" style={{ minHeight: '520px' }}>
-            <div id="section-formulate" className="panel-form p-4 flex-grow-1 d-flex flex-column gap-3" style={{ borderRadius: '16px' }}>
+          <div className="col-lg-6 col-md-12 d-flex flex-column reveal">
+            <div id="section-formulate" className="panel-form p-3 p-md-4 d-flex flex-column gap-3" style={{ borderRadius: '16px' }}>
               
               <div>
                 <h4 className="fw-bold font-monospace d-flex align-items-center gap-2 mb-2" style={{ fontSize: '1.15rem', color: 'var(--text-primary)' }}>
@@ -756,15 +762,14 @@ function DoctorDashboard({ user }) {
                 )}
 
                 {/* Recommendations notes */}
-                <div className="flex-grow-1 d-flex flex-column">
+                <div className="d-flex flex-column">
                   <label className="small text-secondary fw-semibold mb-2">Clinical Diagnostics Notes & General Instructions</label>
                   <textarea 
                     placeholder="Enter diet recommendations, active lifestyle modifications, or daily telemetry review observations..."
                     value={doctorNotes} 
                     onChange={(e) => setDoctorNotes(e.target.value)} 
-                    rows={5}
-                    className="flex-grow-1"
-                    style={{ resize: 'none', background: 'var(--input-bg)', border: '1px solid var(--input-border)', borderRadius: '8px', padding: '12px', fontSize: '0.85rem', color: 'var(--text-primary)' }}
+                    rows={4}
+                    style={{ resize: 'vertical', minHeight: '90px', background: 'var(--input-bg)', border: '1px solid var(--input-border)', borderRadius: '8px', padding: '12px', fontSize: '0.85rem', color: 'var(--text-primary)', marginBottom: 0 }}
                   />
                 </div>
 

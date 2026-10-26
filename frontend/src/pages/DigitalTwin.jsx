@@ -216,12 +216,12 @@ export default function DigitalTwin({ user, openAuth }) {
         {/* ── Active Tab Contextual Sub-Tools in Sidebar ── */}
         {activeTab === 'organs' && (
           <div className="d-flex flex-column gap-3">
-            <div className="glass-card p-3" style={{ borderRadius: '12px', border: '1px solid var(--border)' }}>
+            <div className="glass-card p-3" style={{ borderRadius: '12px', border: '1px solid rgba(255, 255, 255, 0.16)', background: 'rgba(255, 255, 255, 0.08)' }}>
               <div className="d-flex align-items-center justify-content-between mb-2">
                 <span className="font-monospace text-uppercase" style={{ fontSize: '0.68rem', color: 'var(--brand-orange)', letterSpacing: '0.05em' }}>
                   Anatomical Status
                 </span>
-                <span className="badge" style={{ background: 'var(--bg-card-tinted)', color: 'var(--text-secondary)', border: '1px solid var(--border)', fontSize: '0.64rem' }}>
+                <span className="badge" style={{ background: 'rgba(255, 255, 255, 0.15)', color: '#FFFFFF', border: '1px solid rgba(255, 255, 255, 0.3)', fontSize: '0.64rem' }}>
                   8 Systems
                 </span>
               </div>

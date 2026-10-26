@@ -247,7 +247,7 @@ function Sidebar({ user, logout, sidebarContent, isOpen, toggleSidebar, openAuth
       <button className="btn-icon d-md-none text-white position-absolute end-0 top-0 m-3 z-index-1000" onClick={toggleSidebar} aria-label="Close sidebar">
         <X size={24} />
       </button>
-      <div className="sidebar-menu flex-grow-1 overflow-auto py-2 mt-4 mt-md-0" style={{ paddingRight: '2px' }}>
+      <div className="sidebar-menu flex-grow-1 overflow-auto py-2 mt-4 mt-md-0" style={{ paddingRight: '4px', paddingBottom: '32px' }}>
         {sidebarContent}
       </div>
 

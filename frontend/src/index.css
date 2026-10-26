@@ -437,6 +437,25 @@ nav.bg-glass .emergency-qr-panel a,
   color: #FFFFFF !important;
 }
 
+/* Sidebar Buttons & Badges: High-contrast translucent glass on dark navy background */
+.app-sidebar .btn-clinical:not(.primary):not(.secondary) {
+  background: rgba(255, 255, 255, 0.12) !important;
+  border: 1px solid rgba(255, 255, 255, 0.25) !important;
+  color: #FFFFFF !important;
+}
+
+.app-sidebar .btn-clinical:not(.primary):not(.secondary):hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.22) !important;
+  border-color: rgba(255, 255, 255, 0.45) !important;
+  color: #FFFFFF !important;
+}
+
+.app-sidebar .badge {
+  background: rgba(255, 255, 255, 0.15) !important;
+  border: 1px solid rgba(255, 255, 255, 0.28) !important;
+  color: #FFFFFF !important;
+}
+
 .main-content-wrapper {
   flex-grow: 1;
   min-height: calc(100vh - 56px);
@@ -446,6 +465,7 @@ nav.bg-glass .emergency-qr-panel a,
   display: flex;
   flex-direction: column;
   gap: 8px;
+  padding-bottom: 32px !important;
 }
 
 .sidebar-link {
