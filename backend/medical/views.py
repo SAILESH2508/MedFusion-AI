@@ -1748,12 +1748,20 @@ _nearby_cache = {}
 def get_nearby_facilities(request):
     """
     Search and return live nearby medical facilities (hospitals, clinics, pharmacies, dentists, labs)
-    around the provided GPS coordinates using live OpenStreetMap Overpass and Nominatim engines.
+    around the provided GPS coordinates.
+
+    Strategy (non-blocking):
+      1. Serve from cache immediately (fresh < 10 min, or stale while triggering bg refresh)
+      2. Race 3 Overpass mirrors concurrently — 3s wall-clock budget, 4s socket timeout each
+      3. Fallback to Nominatim if Overpass is empty
+      4. Final geographic fallback — always returns something, zero network calls
     """
     import urllib.request
     import urllib.parse
     import math
     import time
+    import threading
+    from concurrent.futures import ThreadPoolExecutor, as_completed, TimeoutError as FuturesTimeout
 
     try:
         lat = float(request.GET.get('lat', 13.0827))
@@ -1765,9 +1773,17 @@ def get_nearby_facilities(request):
         return JsonResponse({"error": "Invalid query parameters"}, status=400)
 
     cache_key = f"{round(lat, 3)}_{round(lon, 3)}_{radius}_{','.join(sorted(types))}"
-    cached = _nearby_cache.get(cache_key)
-    if cached and (time.time() - cached['time']) < 300:
-        return JsonResponse({"status": "success", "source": "cache", "facilities": cached['data']}, status=200)
+    CACHE_TTL = 600  # 10 minutes
+
+    # ── Helpers ─────────────────────────────────────────────────────────────────
+    def haversine(pLat, pLon):
+        R = 6371
+        dLa = (pLat - lat) * math.pi / 180
+        dLo = (pLon - lon) * math.pi / 180
+        a = (math.sin(dLa / 2) ** 2
+             + math.cos(lat * math.pi / 180) * math.cos(pLat * math.pi / 180)
+             * math.sin(dLo / 2) ** 2)
+        return R * 2 * math.atan2(math.sqrt(a), math.sqrt(1 - a))
 
     TYPE_TAGS = {
         'hospital': ['hospital'],
@@ -1777,104 +1793,112 @@ def get_nearby_facilities(request):
         'lab': ['laboratory'],
     }
 
-    facilities = []
-    # 1. Overpass on openstreetmap.fr (high speed)
-    parts = []
-    for t in types:
-        for tag in TYPE_TAGS.get(t, []):
-            parts.append(f'node["amenity"="{tag}"](around:{radius},{lat},{lon});')
-            parts.append(f'way["amenity"="{tag}"](around:{radius},{lat},{lon});')
+    def parse_osm_element(el):
+        pLat = el.get('lat') or (el.get('center', {}).get('lat') if isinstance(el.get('center'), dict) else None)
+        pLon = el.get('lon') or (el.get('center', {}).get('lon') if isinstance(el.get('center'), dict) else None)
+        if not pLat or not pLon:
+            return None
+        tags = el.get('tags', {})
+        amenity = tags.get('amenity', '')
+        ftype = 'clinic'
+        if amenity == 'hospital':
+            ftype = 'hospital'
+        elif amenity in ('pharmacy', 'chemist'):
+            ftype = 'pharmacy'
+        elif amenity == 'dentist':
+            ftype = 'dentist'
+        elif amenity == 'laboratory':
+            ftype = 'lab'
 
-    if parts:
-        query = f'[out:json][timeout:12];({"".join(parts)});out center 80;'
-        overpass_url = 'https://overpass.openstreetmap.fr/api/interpreter?data=' + urllib.parse.quote(query)
-        try:
-            req = urllib.request.Request(overpass_url, headers={'User-Agent': 'MedFusionAI/2.0'})
-            res = urllib.request.urlopen(req, timeout=3.5)
-            data = json.loads(res.read().decode())
-            for el in data.get('elements', []):
-                pLat = el.get('lat') or (el.get('center', {}).get('lat') if isinstance(el.get('center'), dict) else None)
-                pLon = el.get('lon') or (el.get('center', {}).get('lon') if isinstance(el.get('center'), dict) else None)
-                if not pLat or not pLon:
-                    continue
-                tags = el.get('tags', {})
-                amenity = tags.get('amenity', '')
-                t = 'clinic'
-                if amenity == 'hospital':
-                    t = 'hospital'
-                elif amenity in ('pharmacy', 'chemist'):
-                    t = 'pharmacy'
-                elif amenity == 'dentist':
-                    t = 'dentist'
-                elif amenity == 'laboratory':
-                    t = 'lab'
+        dist = haversine(pLat, pLon)
+        addr_parts = [tags.get(k) for k in ('addr:full', 'addr:housenumber', 'addr:street',
+                                              'addr:place', 'addr:suburb', 'addr:district',
+                                              'addr:city', 'addr:postcode')]
+        clean_parts = [str(p).strip() for p in addr_parts if p and str(p).strip()]
+        addr = (tags.get('addr:full') or (', '.join(clean_parts) if clean_parts else
+                f"Coordinates: {round(pLat, 4)}\u00b0N, {round(pLon, 4)}\u00b0E \u2022 ~{round(dist, 1)} km away"))
+        hours = tags.get('opening_hours') or (
+            '24/7 Emergency Service' if ftype == 'hospital' else
+            ('Daily: 08:00 \u2013 22:00' if ftype == 'pharmacy' else 'Mon\u2013Sat: 09:00 \u2013 20:00'))
+        speciality = (tags.get('speciality') or tags.get('healthcare:speciality') or
+            ('Emergency & Inpatient Medicine' if ftype == 'hospital' else
+             ('Prescription Dispensing & Supplies' if ftype == 'pharmacy' else
+              'Outpatient Clinical Consultations')))
+        return {
+            'id': f"osm-{el.get('id')}",
+            'name': tags.get('name') or tags.get('name:en') or f"Regional {ftype.capitalize()}",
+            'type': ftype,
+            'lat': pLat, 'lon': pLon,
+            'distance': round(dist, 2),
+            'phone': tags.get('phone') or tags.get('contact:phone') or tags.get('contact:mobile') or None,
+            'opening_hours': hours,
+            'speciality': speciality,
+            'address': addr,
+            'website': tags.get('website') or tags.get('contact:website') or None,
+            'operator': tags.get('operator') or None,
+            'emergency': tags.get('emergency') == 'yes' or ftype == 'hospital',
+            'wheelchair': tags.get('wheelchair'),
+        }
 
-                # Haversine distance in km
-                R = 6371
-                dLat = (pLat - lat) * math.pi / 180
-                dLon = (pLon - lon) * math.pi / 180
-                a = math.sin(dLat / 2) ** 2 + math.cos(lat * math.pi / 180) * math.cos(pLat * math.pi / 180) * math.sin(dLon / 2) ** 2
-                dist = R * 2 * math.atan2(math.sqrt(a), math.sqrt(1 - a))
+    # ── Overpass mirrors — race them concurrently ────────────────────────────────
+    OVERPASS_MIRRORS = [
+        'https://overpass-api.de/api/interpreter',
+        'https://overpass.openstreetmap.fr/api/interpreter',
+        'https://maps.mail.ru/osm/tools/overpass/api/interpreter',
+    ]
 
-                addr_parts = [
-                    tags.get('addr:full'),
-                    tags.get('addr:housenumber'),
-                    tags.get('addr:street'),
-                    tags.get('addr:place'),
-                    tags.get('addr:suburb'),
-                    tags.get('addr:district'),
-                    tags.get('addr:city'),
-                    tags.get('addr:postcode'),
-                ]
-                clean_parts = [str(p).strip() for p in addr_parts if p and str(p).strip()]
-                addr = tags.get('addr:full') or (', '.join(clean_parts) if clean_parts else None)
-                if not addr:
-                    addr = f"Coordinates: {round(pLat, 4)}°N, {round(pLon, 4)}°E • ~{round(dist, 1)} km from search area"
+    def fetch_overpass(mirror_url):
+        parts = []
+        for t in types:
+            for tag in TYPE_TAGS.get(t, []):
+                parts.append(f'node["amenity"="{tag}"](around:{radius},{lat},{lon});')
+                parts.append(f'way["amenity"="{tag}"](around:{radius},{lat},{lon});')
+        if not parts:
+            return []
+        query = f'[out:json][timeout:8];({"".join(parts)});out center 80;'
+        url = mirror_url + '?data=' + urllib.parse.quote(query)
+        req = urllib.request.Request(url, headers={'User-Agent': 'MedFusionAI/2.0'})
+        res = urllib.request.urlopen(req, timeout=4)   # 4s per mirror socket
+        data = json.loads(res.read().decode())
+        results = []
+        for el in data.get('elements', []):
+            f = parse_osm_element(el)
+            if f:
+                results.append(f)
+        return results
 
-                phone = tags.get('phone') or tags.get('contact:phone') or tags.get('contact:mobile') or tags.get('phone:emergency') or None
+    def try_overpass_concurrent():
+        """Race all mirrors — return first non-empty result within 3s wall-clock."""
+        with ThreadPoolExecutor(max_workers=len(OVERPASS_MIRRORS)) as ex:
+            futures = {ex.submit(fetch_overpass, m): m for m in OVERPASS_MIRRORS}
+            try:
+                for fut in as_completed(futures, timeout=3.0):
+                    try:
+                        result = fut.result(timeout=0)
+                        if result:
+                            return result
+                    except Exception:
+                        pass
+            except FuturesTimeout:
+                pass
+        return []
 
-                hours = tags.get('opening_hours')
-                if not hours:
-                    hours = '24/7 Emergency Service' if t == 'hospital' else ('Daily: 08:00 – 22:00' if t == 'pharmacy' else 'Mon–Sat: 09:00 – 20:00')
-
-                speciality = tags.get('speciality') or tags.get('healthcare:speciality')
-                if not speciality:
-                    speciality = 'Emergency & Inpatient Medicine' if t == 'hospital' else ('Prescription Dispensing & Supplies' if t == 'pharmacy' else 'Outpatient Clinical Consultations')
-
-                facilities.append({
-                    'id': f"osm-{el.get('id')}",
-                    'name': tags.get('name') or tags.get('name:en') or f"Regional {t.capitalize()}",
-                    'type': t,
-                    'lat': pLat,
-                    'lon': pLon,
-                    'distance': round(dist, 2),
-                    'phone': phone,
-                    'opening_hours': hours,
-                    'speciality': speciality,
-                    'address': addr,
-                    'website': tags.get('website') or tags.get('contact:website') or None,
-                    'operator': tags.get('operator') or None,
-                    'emergency': tags.get('emergency') == 'yes' or t == 'hospital',
-                    'wheelchair': tags.get('wheelchair'),
-                })
-        except Exception as e:
-            logger.warning(f"Overpass fetch error in backend: {e}")
-
-    # 2. Fallback to Nominatim if Overpass returned empty
-    if not facilities:
+    # ── Nominatim fallback ───────────────────────────────────────────────────────
+    def fetch_nominatim():
         radiusKm = radius / 1000.0
-        dLat = radiusKm / 111.0
-        cosLat = math.cos(lat * math.pi / 180.0) or 1.0
-        dLon = radiusKm / (111.0 * cosLat)
-        viewbox = f"{lon - dLon:.4f},{lat + dLat:.4f},{lon + dLon:.4f},{lat - dLat:.4f}"
-
+        dLat_deg = radiusKm / 111.0
+        cos_lat = math.cos(lat * math.pi / 180.0) or 1.0
+        dLon_deg = radiusKm / (111.0 * cos_lat)
+        viewbox = f"{lon - dLon_deg:.4f},{lat + dLat_deg:.4f},{lon + dLon_deg:.4f},{lat - dLat_deg:.4f}"
+        results = []
         seen_names = set()
         for t in types:
             q = 'laboratory' if t == 'lab' else t
-            nom_url = f"https://nominatim.openstreetmap.org/search?q={q}&format=json&viewbox={viewbox}&bounded=1&limit=12&addressdetails=1"
+            nom_url = (f"https://nominatim.openstreetmap.org/search"
+                       f"?q={q}&format=json&viewbox={viewbox}&bounded=1&limit=10&addressdetails=1")
             try:
                 req = urllib.request.Request(nom_url, headers={'User-Agent': 'MedFusionAI/2.0'})
-                res = urllib.request.urlopen(req, timeout=4)
+                res = urllib.request.urlopen(req, timeout=3)
                 items = json.loads(res.read().decode())
                 for it in items:
                     pLat = float(it.get('lat'))
@@ -1883,20 +1907,11 @@ def get_nearby_facilities(request):
                     if not name or name in seen_names:
                         continue
                     seen_names.add(name)
-
-                    R = 6371
-                    dLat = (pLat - lat) * math.pi / 180
-                    dLon = (pLon - lon) * math.pi / 180
-                    a = math.sin(dLat / 2) ** 2 + math.cos(lat * math.pi / 180) * math.cos(pLat * math.pi / 180) * math.sin(dLon / 2) ** 2
-                    dist = R * 2 * math.atan2(math.sqrt(a), math.sqrt(1 - a))
-
-                    facilities.append({
+                    results.append({
                         'id': f"nom-{it.get('place_id', name)}",
-                        'name': name,
-                        'type': t,
-                        'lat': pLat,
-                        'lon': pLon,
-                        'distance': round(dist, 2),
+                        'name': name, 'type': t,
+                        'lat': pLat, 'lon': pLon,
+                        'distance': round(haversine(pLat, pLon), 2),
                         'phone': None,
                         'opening_hours': '24/7' if t == 'hospital' else None,
                         'address': it.get('display_name'),
@@ -1904,10 +1919,11 @@ def get_nearby_facilities(request):
                         'wheelchair': None,
                     })
             except Exception as e:
-                logger.warning(f"Nominatim fetch error for {t}: {e}")
+                logger.debug(f"Nominatim fetch error for {t}: {e}")
+        return results
 
-    # 3. Guaranteed Geographic Fallback if external networks are slow or blocked
-    if not facilities:
+    # ── Instant geographic fallback (zero network) ───────────────────────────────
+    def geographic_fallback():
         fallback_types = {
             'hospital': ['City General Hospital & Emergency Center', 'Apex Multi-Specialty Hospital', 'Community Care Hospital'],
             'clinic': ['Family Health Clinic', 'MedFusion Wellness Clinic', 'Urgent Primary Care'],
@@ -1915,23 +1931,23 @@ def get_nearby_facilities(request):
             'dentist': ['Advanced Smile Dental Care', 'City Dental Specialty Clinic'],
             'lab': ['Metropolis Diagnostic Laboratory', 'Precision Clinical Pathology']
         }
+        results = []
         for t in types:
             names = fallback_types.get(t, [f'Regional {t.capitalize()} Facility'])
             for i, name in enumerate(names):
                 dist = min((i + 1) * 0.75, (radius / 1000.0) * 0.9)
-                angle = (len(facilities) + 1) * 67 * math.pi / 180.0
+                angle = (len(results) + 1) * 67 * math.pi / 180.0
                 cos_lat = math.cos(lat * math.pi / 180.0) or 1.0
                 d_lat = (dist / 111.0) * math.sin(angle)
                 d_lon = (dist / (111.0 * cos_lat)) * math.cos(angle)
-                facilities.append({
+                results.append({
                     'id': f'local-{t}-{i+1}',
-                    'name': name,
-                    'type': t,
+                    'name': name, 'type': t,
                     'lat': round(lat + d_lat, 6),
                     'lon': round(lon + d_lon, 6),
                     'distance': round(dist, 2),
                     'phone': '+91 1800 200 4567',
-                    'opening_hours': '24/7 Emergency Care' if t == 'hospital' else 'Daily: 08:00 – 22:00',
+                    'opening_hours': '24/7 Emergency Care' if t == 'hospital' else 'Daily: 08:00 \u2013 22:00',
                     'speciality': 'Emergency & Inpatient Medicine' if t == 'hospital' else 'Outpatient Clinical Consultations',
                     'address': f'Located ~{round(dist, 1)} km from current coordinates',
                     'website': None,
@@ -1939,10 +1955,50 @@ def get_nearby_facilities(request):
                     'emergency': t == 'hospital',
                     'wheelchair': 'yes',
                 })
+        return results
+
+    # ── Background refresh for stale cache ──────────────────────────────────────
+    def background_refresh():
+        try:
+            fresh = try_overpass_concurrent()
+            if not fresh:
+                fresh = fetch_nominatim()
+            if fresh:
+                fresh = sorted(fresh, key=lambda x: x['distance'])
+                _nearby_cache[cache_key] = {'time': time.time(), 'data': fresh}
+                logger.debug(f"Background nearby refresh complete: {len(fresh)} facilities")
+        except Exception as e:
+            logger.debug(f"Background nearby refresh failed: {e}")
+
+    # ── Main decision logic ──────────────────────────────────────────────────────
+    cached = _nearby_cache.get(cache_key)
+    now = time.time()
+
+    if cached:
+        age = now - cached['time']
+        if age < CACHE_TTL:
+            return JsonResponse({"status": "success", "source": "cache",
+                                 "facilities": cached['data']}, status=200)
+        else:
+            # Stale — serve immediately, refresh in background (no user wait)
+            threading.Thread(target=background_refresh, daemon=True).start()
+            return JsonResponse({"status": "success", "source": "cache_stale",
+                                 "facilities": cached['data']}, status=200)
+
+    # No cache — race Overpass mirrors (3s budget)
+    facilities = try_overpass_concurrent()
+
+    # Nominatim if Overpass was empty/slow
+    if not facilities:
+        facilities = fetch_nominatim()
+
+    # Always return something
+    if not facilities:
+        facilities = geographic_fallback()
 
     facilities = sorted(facilities, key=lambda x: x['distance'])
     if facilities:
-        _nearby_cache[cache_key] = {'time': time.time(), 'data': facilities}
+        _nearby_cache[cache_key] = {'time': now, 'data': facilities}
 
     return JsonResponse({
         "status": "success",
