@@ -561,7 +561,7 @@ export default function NearbyMap({
       return;
     }
 
-    // Try fast low-accuracy first (succeeds quickly on desktop/laptops)
+    // Try high-accuracy GPS first (gets true device / Wi-Fi trilaterated position)
     navigator.geolocation.getCurrentPosition(
       (pos) => {
         updateLocationWithDetails({
@@ -572,10 +572,24 @@ export default function NearbyMap({
         setLocLoading(false);
       },
       () => {
-        // Fallback to IP or Coimbatore if GPS denied/unsupported
-        fallbackToIPOrCity();
+        // Second try: low accuracy
+        navigator.geolocation.getCurrentPosition(
+          (pos) => {
+            updateLocationWithDetails({
+              lat: pos.coords.latitude,
+              lon: pos.coords.longitude,
+              source: 'gps_low'
+            });
+            setLocLoading(false);
+          },
+          () => {
+            // Fallback to IP or Coimbatore if GPS denied/unsupported
+            fallbackToIPOrCity();
+          },
+          { enableHighAccuracy: false, timeout: 5000, maximumAge: 120000 }
+        );
       },
-      { enableHighAccuracy: false, timeout: 4000, maximumAge: 60000 }
+      { enableHighAccuracy: true, timeout: 8000, maximumAge: 0 }
     );
   }, [updateLocationWithDetails]);
 
@@ -889,6 +903,7 @@ export default function NearbyMap({
           location={location}
           places={filtered}
           isPatient={isPatient}
+          onLocationSelect={updateLocationWithDetails}
         />
       )}
 

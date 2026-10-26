@@ -85,7 +85,7 @@ function createUserIcon(L) {
   return L.divIcon({ html, className: '', iconSize: [20, 20], iconAnchor: [10, 10] });
 }
 
-export default function InteractiveMap({ location, places, isPatient }) {
+export default function InteractiveMap({ location, places, isPatient, onLocationSelect }) {
   const mapContainerRef = useRef(null);
   const mapRef          = useRef(null);
   const tileRef         = useRef(null);
@@ -137,11 +137,48 @@ export default function InteractiveMap({ location, places, isPatient }) {
       tileRef.current  = tile;
       mapRef.current   = map;
 
-      // User location marker
+      // User location marker (Draggable for pinpoint precision)
       const userIcon = createUserIcon(L);
-      userMarkerRef.current = L.marker([location.lat, location.lon], { icon: userIcon, zIndexOffset: 1000 })
+      const userMarker = L.marker([location.lat, location.lon], {
+        icon: userIcon,
+        zIndexOffset: 1000,
+        draggable: true,
+      })
         .addTo(map)
-        .bindPopup('<div style="font-family:monospace;font-size:0.78rem;color:#1A2333;font-weight:bold">Your Location</div>');
+        .bindPopup(
+          `<div style="font-family:'Outfit',sans-serif;font-size:0.8rem;color:#1A2333;font-weight:700">
+            📍 ${location.displayName || location.city || 'Your Location'}
+            <div style="font-size:0.68rem;color:#666;font-family:monospace;font-weight:normal;margin-top:2px">
+              ${location.lat.toFixed(5)}°N, ${location.lon.toFixed(5)}°E
+            </div>
+            <div style="font-size:0.65rem;color:#0ea5e9;font-weight:600;margin-top:4px">
+              Drag pin or click map to move
+            </div>
+          </div>`
+        );
+
+      userMarker.on('dragend', (e) => {
+        const pt = e.target.getLatLng();
+        if (onLocationSelect) {
+          onLocationSelect({
+            lat: pt.lat,
+            lon: pt.lng,
+            source: 'marker_drag'
+          });
+        }
+      });
+      userMarkerRef.current = userMarker;
+
+      // Click anywhere on map to set your exact location
+      map.on('click', (e) => {
+        if (onLocationSelect) {
+          onLocationSelect({
+            lat: e.latlng.lat,
+            lon: e.latlng.lng,
+            source: 'map_click'
+          });
+        }
+      });
     });
 
     return () => {
@@ -150,7 +187,31 @@ export default function InteractiveMap({ location, places, isPatient }) {
         mapRef.current = null;
       }
     };
-  }, [location]);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+
+  // ── Pan map & update marker whenever location changes ─────────────────
+  useEffect(() => {
+    if (!mapRef.current || !location) return;
+
+    mapRef.current.flyTo([location.lat, location.lon], 15, { duration: 0.8 });
+
+    if (userMarkerRef.current) {
+      userMarkerRef.current.setLatLng([location.lat, location.lon]);
+      const popupText = location.displayName || location.city || 'Your Location';
+      userMarkerRef.current.bindPopup(
+        `<div style="font-family:'Outfit',sans-serif;font-size:0.8rem;color:#1A2333;font-weight:700">
+          📍 ${popupText}
+          <div style="font-size:0.68rem;color:#666;font-family:monospace;font-weight:normal;margin-top:2px">
+            ${location.lat.toFixed(5)}°N, ${location.lon.toFixed(5)}°E
+          </div>
+          <div style="font-size:0.65rem;color:#0ea5e9;font-weight:600;margin-top:4px">
+            Drag pin or click map to move
+          </div>
+        </div>`
+      );
+    }
+  }, [location?.lat, location?.lon, location?.displayName, location?.city]);
 
   // ── Update tile layer ─────────────────────────────────────────────────
   useEffect(() => {
@@ -341,6 +402,19 @@ export default function InteractiveMap({ location, places, isPatient }) {
             </button>
           )}
         </div>
+      </div>
+
+      {/* Location accuracy tip */}
+      <div className="d-flex align-items-center justify-content-between px-3 py-1.5 rounded mb-2.5" style={{ background: 'rgba(56, 189, 248, 0.1)', border: '1px solid rgba(56, 189, 248, 0.25)', fontSize: '0.72rem' }}>
+        <span style={{ color: 'rgba(255, 255, 255, 0.85)' }}>
+          <strong style={{ color: '#38BDF8' }}>💡 Pinpoint Accuracy: </strong>
+          Click anywhere on the map or drag the blue marker to set your exact location.
+        </span>
+        {location?.displayName && (
+          <span className="font-monospace text-truncate d-none d-md-inline" style={{ maxWidth: '280px', color: '#F4954A', fontSize: '0.68rem' }}>
+            📍 {location.displayName}
+          </span>
+        )}
       </div>
 
       {/* Route info bar */}
