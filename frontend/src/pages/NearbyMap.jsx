@@ -46,34 +46,7 @@ const TYPE_CONFIG = {
   lab:       { label: 'Labs',        icon: FlaskConical, color: '#F59E0B', brightColor: '#FBBF24', glow: 'rgba(245, 158, 11, 0.25)', bg: 'rgba(245, 158, 11, 0.15)', border: 'rgba(245, 158, 11, 0.45)', tags: ['laboratory'] },
 };
 
-// ── Geocoding & Reverse-Geocoding Helpers ──────────────────────────────────
-export async function reverseGeocodeCoords(lat, lon) {
-  try {
-    const res = await api.get('/reverse-geocode/', { params: { lat, lon } });
-    if (res.data?.status === 'success' && res.data.location?.display_name) {
-      return res.data.location;
-    }
-  } catch (err) {
-    console.debug('Reverse geocode error:', err);
-  }
-  return {
-    city: 'Local Area',
-    display_name: `${lat.toFixed(4)}°N, ${lon.toFixed(4)}°E`,
-  };
-}
-
-export async function searchGeocodeAddress(query) {
-  if (!query || !query.trim()) return [];
-  try {
-    const res = await api.get('/geocode/', { params: { q: query.trim() } });
-    if (res.data?.status === 'success' && Array.isArray(res.data.results)) {
-      return res.data.results;
-    }
-  } catch (err) {
-    console.debug('Geocode search error:', err);
-  }
-  return [];
-}
+// (geocoding helpers removed — location is set directly, no async reverse-geocode)
 
 async function fetchPlaces(lat, lon, radiusM, types) {
   // Ultra-fast Backend Proxy /api/nearby/ (runs parallel Nominatim queries with 15-min cache)
@@ -505,119 +478,60 @@ export default function NearbyMap({
     setPersistedRadius(val);
   }, [setPersistedRadius]);
 
-  const [locQuery, setLocQuery]               = useState('');
-  const [locSuggestions, setLocSuggestions]   = useState([]);
-  const [isSearchingLoc, setIsSearchingLoc]   = useState(false);
-  const [activeCityPill, setActiveCityPill]   = useState('Kamachipuram');
-
-  // Reverse geocode to get city name for any coordinates
-  const updateLocationWithDetails = useCallback(async (newCoords) => {
-    setLocation(newCoords);
-    try {
-      const details = await reverseGeocodeCoords(newCoords.lat, newCoords.lon);
-      if (details?.display_name) {
-        setLocation({
-          ...newCoords,
-          displayName: details.display_name,
-          city: details.city || newCoords.city || 'Regional Area',
-        });
-      }
-    } catch {
-      // Keep existing coordinates
-    }
-  }, [setLocation]);
-
+  // ── Simple GPS / location logic (no reverse-geocoding — set coords directly) ──
   const getLocation = useCallback(() => {
     setLocLoading(true);
     setLocError(null);
 
-    // Fallback: skip IP geolocation (inaccurate — often returns city center, not neighbourhood)
-    // and go straight to the Kamachipuram default when GPS is unavailable / denied
-    const fallbackToKamachi = async () => {
-      await updateLocationWithDetails({
+    const setKamachiDefault = () => {
+      setLocation({
         lat: 11.0065,
         lon: 77.0645,
-        city: 'Coimbatore',
+        city: 'Kamachipuram',
         displayName: 'Kamachipuram, Ondipudur, Coimbatore',
-        source: 'default'
+        source: 'default',
       });
       setLocLoading(false);
     };
 
     if (!navigator.geolocation) {
-      fallbackToKamachi();
+      setKamachiDefault();
       return;
     }
 
-    // Try high-accuracy GPS (device GPS chip / Wi-Fi trilateration)
     navigator.geolocation.getCurrentPosition(
       (pos) => {
-        updateLocationWithDetails({
+        setLocation({
           lat: pos.coords.latitude,
           lon: pos.coords.longitude,
-          source: 'gps'
+          city: 'My Location',
+          displayName: `${pos.coords.latitude.toFixed(4)}°N, ${pos.coords.longitude.toFixed(4)}°E`,
+          source: 'gps',
         });
         setLocLoading(false);
       },
-      () => {
-        // GPS permission denied or unavailable → use Kamachipuram default
-        fallbackToKamachi();
-      },
-      { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+      () => setKamachiDefault(),
+      { enableHighAccuracy: true, timeout: 8000 }
     );
-  }, [updateLocationWithDetails]);
-
-  const handleLocQueryChange = async (val) => {
-    setLocQuery(val);
-    if (!val || val.trim().length < 2) {
-      setLocSuggestions([]);
-      return;
-    }
-    setIsSearchingLoc(true);
-    try {
-      const results = await searchGeocodeAddress(val);
-      setLocSuggestions(results);
-    } catch {
-      setLocSuggestions([]);
-    } finally {
-      setIsSearchingLoc(false);
-    }
-  };
-
-  const selectSearchedLocation = (item) => {
-    setLocQuery('');
-    setLocSuggestions([]);
-    setActiveCityPill(item.name);
-    updateLocationWithDetails({
-      lat: item.lat,
-      lon: item.lon,
-      city: item.name,
-      displayName: item.display_name,
-      source: 'search'
-    });
-  };
+  }, [setLocation]);
 
   const selectQuickCity = (cityObj) => {
-    setActiveCityPill(cityObj.name);
-    updateLocationWithDetails({
+    setLocation({
       lat: cityObj.lat,
       lon: cityObj.lon,
       city: cityObj.name,
       displayName: cityObj.display_name,
-      source: 'preset'
+      source: 'preset',
     });
   };
 
-  // On startup: if no location or it's the bare default with no displayName, set Kamachipuram.
-  // DO NOT call updateLocationWithDetails (which triggers reverse geocoding) when location
-  // already has a proper displayName — that would overwrite a correct label with a GPS-derived
-  // area name that may not match the user's actual neighbourhood.
+  // On startup: set Kamachipuram if no location yet
   useEffect(() => {
     if (!location) {
       setLocation({
         lat: 11.0065,
         lon: 77.0645,
-        city: 'Coimbatore',
+        city: 'Kamachipuram',
         displayName: 'Kamachipuram, Ondipudur, Coimbatore',
         source: 'default',
       });
@@ -888,7 +802,11 @@ export default function NearbyMap({
           location={location}
           places={filtered}
           isPatient={isPatient}
-          onLocationSelect={updateLocationWithDetails}
+          onLocationSelect={(coords) => setLocation({
+            ...coords,
+            city: coords.city || 'My Location',
+            displayName: coords.displayName || `${coords.lat.toFixed(4)}°N, ${coords.lon.toFixed(4)}°E`,
+          })}
         />
       )}
 
@@ -941,89 +859,14 @@ export default function NearbyMap({
                 <p className="text-secondary small mb-3">No location locked yet.</p>
               )}
 
-              {/* Search Any Location / City Input */}
-              <div className="position-relative mb-2.5">
-                <div
-                  className="d-flex align-items-center gap-2 px-2.5 py-2 rounded"
-                  style={{ background: 'var(--input-bg)', border: '1px solid var(--input-border)' }}
-                >
-                  <Search size={13} className="text-secondary flex-shrink-0" />
-                  <input
-                    type="text"
-                    placeholder="Search city, area (e.g. Coimbatore, RS Puram, Chennai)..."
-                    value={locQuery}
-                    onChange={(e) => handleLocQueryChange(e.target.value)}
-                    onKeyDown={(e) => {
-                      if (e.key === 'Enter' && locSuggestions.length > 0) {
-                        selectSearchedLocation(locSuggestions[0]);
-                      }
-                    }}
-                    style={{
-                      background: 'transparent',
-                      border: 'none',
-                      color: 'var(--text-primary)',
-                      outline: 'none',
-                      width: '100%',
-                      fontSize: '0.78rem',
-                      padding: 0,
-                      margin: 0
-                    }}
-                  />
-                  {isSearchingLoc ? (
-                    <RefreshCw size={12} className="spin text-secondary flex-shrink-0" />
-                  ) : locQuery ? (
-                    <X
-                      size={12}
-                      className="text-secondary cursor-pointer flex-shrink-0"
-                      onClick={() => { setLocQuery(''); setLocSuggestions([]); }}
-                    />
-                  ) : null}
-                </div>
-
-                {/* Autocomplete Dropdown */}
-                {locSuggestions.length > 0 && (
-                  <div
-                    className="position-absolute w-100 shadow-lg rounded mt-1 border"
-                    style={{
-                      zIndex: 200,
-                      background: 'var(--bg-card)',
-                      borderColor: 'var(--border-color)',
-                      maxHeight: '190px',
-                      overflowY: 'auto'
-                    }}
-                  >
-                    {locSuggestions.map((s, idx) => (
-                      <div
-                        key={idx}
-                        onClick={() => selectSearchedLocation(s)}
-                        className="p-2 cursor-pointer border-bottom d-flex align-items-center gap-2"
-                        style={{
-                          fontSize: '0.74rem',
-                          borderColor: 'var(--border-color)',
-                          background: 'transparent'
-                        }}
-                        onMouseEnter={(e) => e.currentTarget.style.background = 'var(--bg-card-hover)'}
-                        onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
-                      >
-                        <MapPin size={12} style={{ color: 'var(--brand-blue)', flexShrink: 0 }} />
-                        <div className="overflow-hidden">
-                          <div className="fw-bold text-truncate" style={{ color: 'var(--text-primary)' }}>{s.name}</div>
-                          <div className="text-secondary text-truncate" style={{ fontSize: '0.64rem' }}>{s.display_name}</div>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-
-              {/* Quick Regional Presets */}
+              {/* Search / Quick Regions */}
               <div className="mb-2">
                 <span className="font-monospace text-uppercase text-secondary d-block mb-1.5" style={{ fontSize: '0.64rem', letterSpacing: '0.05em' }}>
                   Quick Regions
                 </span>
                 <div className="d-flex flex-wrap gap-1.5">
                   {PRESET_CITIES.map((c) => {
-                    const isSelected = (location?.displayName && location.displayName.includes(c.name)) || activeCityPill === c.name;
+                    const isSelected = location?.city === c.name || location?.displayName?.includes(c.name);
                     return (
                       <button
                         key={c.name}
