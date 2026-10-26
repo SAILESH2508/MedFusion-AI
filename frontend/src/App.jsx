@@ -72,7 +72,14 @@ function AppContent({ user, login, logout }) {
   const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
 
   // ── Persistent map state — lifted here so navigating away doesn't reset it ──
-  const [mapLocation, setMapLocation] = useState(null);
+  // Default to Kamachipuram, Coimbatore — updated when user searches or uses GPS
+  const [mapLocation, setMapLocation] = useState({
+    lat: 11.0065,
+    lon: 77.0645,
+    city: 'Coimbatore',
+    displayName: 'Kamachipuram, Ondipudur, Coimbatore',
+    source: 'default',
+  });
   const [mapPlaces, setMapPlaces]     = useState([]);
   const [mapActiveTypes, setMapActiveTypes] = useState(['hospital', 'clinic', 'pharmacy']);
   const [mapRadius, setMapRadius]     = useState(null); // null = will default inside NearbyMap based on user role

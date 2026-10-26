@@ -531,23 +531,9 @@ export default function NearbyMap({
     setLocLoading(true);
     setLocError(null);
 
-    const fallbackToIPOrCity = async () => {
-      try {
-        const r = await fetch('https://ipwho.is/');
-        const d = await r.json();
-        if (d.success && d.latitude && d.longitude) {
-          await updateLocationWithDetails({
-            lat: d.latitude,
-            lon: d.longitude,
-            city: d.city,
-            source: 'ip'
-          });
-          setLocLoading(false);
-          return;
-        }
-      } catch {
-        // Fallback to Kamachipuram default
-      }
+    // Fallback: skip IP geolocation (inaccurate — often returns city center, not neighbourhood)
+    // and go straight to the Kamachipuram default when GPS is unavailable / denied
+    const fallbackToKamachi = async () => {
       await updateLocationWithDetails({
         lat: 11.0065,
         lon: 77.0645,
@@ -559,11 +545,11 @@ export default function NearbyMap({
     };
 
     if (!navigator.geolocation) {
-      fallbackToIPOrCity();
+      fallbackToKamachi();
       return;
     }
 
-    // Try high-accuracy GPS first (gets true device / Wi-Fi trilaterated position)
+    // Try high-accuracy GPS (device GPS chip / Wi-Fi trilateration)
     navigator.geolocation.getCurrentPosition(
       (pos) => {
         updateLocationWithDetails({
@@ -574,24 +560,10 @@ export default function NearbyMap({
         setLocLoading(false);
       },
       () => {
-        // Second try: low accuracy
-        navigator.geolocation.getCurrentPosition(
-          (pos) => {
-            updateLocationWithDetails({
-              lat: pos.coords.latitude,
-              lon: pos.coords.longitude,
-              source: 'gps_low'
-            });
-            setLocLoading(false);
-          },
-          () => {
-            // Fallback to IP or Coimbatore if GPS denied/unsupported
-            fallbackToIPOrCity();
-          },
-          { enableHighAccuracy: false, timeout: 5000, maximumAge: 120000 }
-        );
+        // GPS permission denied or unavailable → use Kamachipuram default
+        fallbackToKamachi();
       },
-      { enableHighAccuracy: true, timeout: 8000, maximumAge: 0 }
+      { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
     );
   }, [updateLocationWithDetails]);
 
@@ -636,15 +608,18 @@ export default function NearbyMap({
     });
   };
 
-  // On startup, ensure accurate Kamachipuram location is active
+  // On startup: if no location or it's the bare default with no displayName, set Kamachipuram.
+  // DO NOT call updateLocationWithDetails (which triggers reverse geocoding) when location
+  // already has a proper displayName — that would overwrite a correct label with a GPS-derived
+  // area name that may not match the user's actual neighbourhood.
   useEffect(() => {
-    if (!location || location.source === 'default' || !location.displayName) {
-      updateLocationWithDetails({
+    if (!location) {
+      setLocation({
         lat: 11.0065,
         lon: 77.0645,
         city: 'Coimbatore',
         displayName: 'Kamachipuram, Ondipudur, Coimbatore',
-        source: 'default'
+        source: 'default',
       });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps

@@ -1853,9 +1853,12 @@ def geocode_address(request):
 def reverse_geocode(request):
     """
     Reverse geocode coordinates into a human-readable city, neighborhood, and region.
+    Checks the local Coimbatore locality registry first (nearest within 3 km) for
+    pinpoint accuracy, then falls back to Nominatim, then to a safe default.
     """
     import urllib.request
     import json
+    import math
 
     try:
         lat = float(request.GET.get('lat', 11.0018))
@@ -1867,20 +1870,29 @@ def reverse_geocode(request):
     if cache_key in _reverse_geocode_cache:
         return JsonResponse({"status": "success", "location": _reverse_geocode_cache[cache_key]}, status=200)
 
-    # Check known local coordinates (e.g. Kamachipuram 11.0065, 77.0645)
-    import math
-    d_kamachi = math.sqrt((lat - 11.0065)**2 + (lon - 77.0645)**2) * 111.0
-    if d_kamachi < 2.5:
+    # ── Step 1: Check ALL known Coimbatore localities — return closest within 3 km ──
+    best_locality = None
+    best_dist_km  = float('inf')
+    for k, loc in COIMBATORE_LOCALITIES.items():
+        dlat = (lat - loc['lat']) * 111.0
+        dlon = (lon - loc['lon']) * 111.0 * math.cos(math.radians(lat))
+        dist_km = math.sqrt(dlat**2 + dlon**2)
+        if dist_km < best_dist_km:
+            best_dist_km = dist_km
+            best_locality = loc
+
+    if best_locality and best_dist_km < 3.0:
         info = {
             "city": "Coimbatore",
-            "suburb": "Kamachipuram",
+            "suburb": best_locality['name'],
             "state": "Tamil Nadu",
             "country": "India",
-            "display_name": "Kamachipuram, Ondipudur, Coimbatore, Tamil Nadu",
+            "display_name": best_locality['display_name'],
         }
         _reverse_geocode_cache[cache_key] = info
         return JsonResponse({"status": "success", "location": info}, status=200)
 
+    # ── Step 2: Nominatim fallback for coordinates outside the local registry ──
     info = {
         "city": "Coimbatore",
         "suburb": None,
