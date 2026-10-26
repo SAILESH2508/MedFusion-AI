@@ -5,15 +5,12 @@ import {
   Database,
   Heart,
   FileText,
-  Pill,
   FileUp,
   Droplet,
   Scale,
   Ruler,
   CheckCircle2,
   AlertTriangle,
-  Salad,
-  Flame,
 } from 'lucide-react';
 import { api } from '../services/api';
 import { useSearchParams, Link } from 'react-router-dom';
@@ -26,9 +23,6 @@ import { useTheme } from '../context/useTheme';
 import ProfileIdentity from './profile/ProfileIdentity';
 import MedicalVault from './profile/MedicalVault';
 import RiskAssessments from './profile/RiskAssessments';
-import PillBox from './profile/PillBox';
-import IntegratedDietSection from './digital-twin/IntegratedDietSection';
-import IntegratedGardenSection from './digital-twin/IntegratedGardenSection';
 
 
 function Profile({ user, onUserUpdate }) {
@@ -98,7 +92,7 @@ function Profile({ user, onUserUpdate }) {
   const tabParam = searchParams.get('tab');
   const [activeTabState, setActiveTabState] = useState('identity');
 
-  const activeTab = (tabParam && ['identity', 'vault', 'diet', 'adherence', 'habits'].includes(tabParam))
+  const activeTab = (tabParam && ['identity', 'vault'].includes(tabParam))
     ? tabParam
     : activeTabState;
 
@@ -112,23 +106,6 @@ function Profile({ user, onUserUpdate }) {
   const [archive, setArchive] = useState([]);
   const [loadingArchive, setLoadingArchive] = useState(false);
   const [expandedId, setExpandedId] = useState(null);
-
-  // Garden state for habit tracking
-  const [gardenData, setGardenData] = useState({
-    stage: 0,
-    total_points: 0,
-    current_streak: 0,
-    best_streak: 0,
-    recent_activities: [],
-    today_activity_count: 0,
-  });
-
-  const fetchGarden = useCallback(async () => {
-    try {
-      const res = await api.get('/garden/status/');
-      if (res.data) setGardenData(res.data);
-    } catch { /* silent */ }
-  }, []);
 
   // Stats for doctors
   const [docStats, setDocStats] = useState({ patientCount: 0, rxCount: 0, pathCount: 0 });
@@ -215,7 +192,7 @@ function Profile({ user, onUserUpdate }) {
   useEffect(() => {
     const loadAll = async () => {
       setLoading(true);
-      await Promise.all([fetchProfile(), fetchHistory(), fetchArchive(), fetchGarden()]);
+      await Promise.all([fetchProfile(), fetchHistory(), fetchArchive()]);
       if (user && user.role === 'Doctor') {
         try {
           const res = await api.get('/patients');
@@ -292,16 +269,10 @@ function Profile({ user, onUserUpdate }) {
               {[
                 { id: 'identity', label: 'Profile & Vitals', icon: <User size={18} /> },
                 { id: 'vault', label: 'Medical Vault & History', icon: <FileUp size={18} /> },
-                { id: 'diet', label: 'Diet & Nutrition', icon: <Salad size={18} /> },
-                { id: 'adherence', label: 'Medication Pill Box', icon: <Pill size={18} /> },
-                { id: 'habits', label: 'Wellness Garden', icon: <Flame size={18} /> },
               ].map((tab) => {
                 const tabThemeClasses = {
                   identity: 'theme-general-active',
                   vault: 'theme-cancer-active',
-                  diet: 'theme-heart-active',
-                  adherence: 'theme-diabetes-active',
-                  habits: 'theme-general-active',
                 };
                 return (
                   <div
@@ -574,7 +545,6 @@ function Profile({ user, onUserUpdate }) {
   const tabThemes = {
     identity: 'theme-general',
     vault: 'theme-cancer',
-    adherence: 'theme-diabetes',
   };
   const activeTheme = tabThemes[activeTab] || 'theme-general';
 
@@ -638,9 +608,6 @@ function Profile({ user, onUserUpdate }) {
           {[
             { id: 'identity', label: 'Identity', icon: <User size={16} /> },
             { id: 'vault', label: 'Vault', icon: <FileText size={16} /> },
-            { id: 'diet', label: 'Diet', icon: <Salad size={16} /> },
-            { id: 'adherence', label: 'Pill Box', icon: <Pill size={16} /> },
-            { id: 'habits', label: 'Garden', icon: <Flame size={16} /> }
           ].map((tab) => (
             <div className="col p-0" key={tab.id}>
               <button
@@ -713,59 +680,6 @@ function Profile({ user, onUserUpdate }) {
           </motion.div>
         )}
 
-        {activeTab === 'diet' && (
-          <motion.div
-            key="diet"
-            initial={{ opacity: 0, y: 15 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -15 }}
-            className="mt-2"
-          >
-            <IntegratedDietSection
-              user={user}
-              onActivityLogged={(updatedGarden) => {
-                if (updatedGarden) {
-                  setGardenData(prev => ({
-                    ...prev,
-                    total_points: updatedGarden.total_points,
-                    current_streak: updatedGarden.current_streak,
-                    best_streak: updatedGarden.best_streak,
-                    stage: updatedGarden.stage,
-                    today_activity_count: updatedGarden.today_activity_count,
-                  }));
-                }
-              }}
-            />
-          </motion.div>
-        )}
-
-        {activeTab === 'adherence' && (
-          <motion.div
-            key="adherence"
-            initial={{ opacity: 0, y: 15 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -15 }}
-            className="mt-2"
-          >
-            <PillBox user={user} />
-          </motion.div>
-        )}
-
-        {activeTab === 'habits' && (
-          <motion.div
-            key="habits"
-            initial={{ opacity: 0, y: 15 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -15 }}
-            className="mt-2"
-          >
-            <IntegratedGardenSection
-              gardenData={gardenData}
-              onGardenUpdate={setGardenData}
-              user={user}
-            />
-          </motion.div>
-        )}
       </AnimatePresence>
     </div>
   );
