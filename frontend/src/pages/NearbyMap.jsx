@@ -569,48 +569,48 @@ export default function NearbyMap({
   // Sidebar injection
   useEffect(() => {
     setSidebarContent(
-      <div className="d-flex flex-column gap-4 pt-2">
+      <div className="d-flex flex-column gap-2.5 pt-1">
         {/* Sleek Medical Header Console inside Sidebar — unified across MedFusion AI */}
-        <div className="glass-card p-4 mb-2 reveal border-theme-accent border-opacity-15 bg-white-5" style={{ borderRadius: '12px' }}>
-          <div className="d-flex align-items-center gap-2 mb-2">
+        <div className="glass-card p-3 reveal border-theme-accent border-opacity-15 bg-white-5" style={{ borderRadius: '12px' }}>
+          <div className="d-flex align-items-center gap-2 mb-1.5">
             <div style={{
-              width: '30px',
-              height: '30px',
-              borderRadius: '8px',
+              width: '26px',
+              height: '26px',
+              borderRadius: '6px',
               background: 'linear-gradient(135deg, rgba(244,149,74,0.3) 0%, rgba(56,189,248,0.3) 100%)',
               border: '1px solid rgba(244,149,74,0.4)',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
             }}>
-              <Radio size={15} style={{ color: 'var(--brand-orange)' }} />
+              <Radio size={13} style={{ color: 'var(--brand-orange)' }} />
             </div>
-            <span style={{ fontSize: '0.66rem', fontFamily: 'var(--font-mono)', color: 'var(--brand-orange)', letterSpacing: '0.08em', textTransform: 'uppercase', fontWeight: 700 }}>
+            <span style={{ fontSize: '0.64rem', fontFamily: 'var(--font-mono)', color: 'var(--brand-orange)', letterSpacing: '0.08em', textTransform: 'uppercase', fontWeight: 700 }}>
               Live GPS Radar
             </span>
           </div>
-          <h2 className="fw-bolder fs-6 m-0" style={{ letterSpacing: '-0.02em', fontSize: '1.25rem', color: '#FFFFFF' }}>
+          <h2 className="fw-bolder fs-6 m-0" style={{ letterSpacing: '-0.02em', fontSize: '1.1rem', color: '#FFFFFF' }}>
             Facility <span style={{ color: 'var(--brand-orange)' }}>Radar</span>
           </h2>
-          <p className="m-0 mt-2" style={{ fontSize: '0.88rem', lineHeight: '1.4', color: 'rgba(255, 255, 255, 0.88)' }}>
+          <p className="m-0 mt-1.5" style={{ fontSize: '0.78rem', lineHeight: '1.35', color: 'rgba(255, 255, 255, 0.85)' }}>
             {isPatient ? 'Live GPS radar with one-tap directions, emergency routing, and hospital contacts.' : 'Sign in for direct facility calling, emergency routing, and 15km extended radius.'}
           </p>
         </div>
 
         {/* Active Search Zone Status Card */}
-        <div className="p-3 bg-white-5 border border-theme-accent border-opacity-15 rounded bg-opacity-20 font-monospace">
-          <span className="fw-bold font-monospace text-uppercase d-block mb-1.5" style={{ fontSize: '0.72rem', color: 'var(--brand-orange)' }}>
+        <div className="p-2.5 bg-white-5 border border-theme-accent border-opacity-15 rounded bg-opacity-20 font-monospace">
+          <span className="fw-bold font-monospace text-uppercase d-block mb-1" style={{ fontSize: '0.68rem', color: 'var(--brand-orange)' }}>
             Active Search Zone
           </span>
           <div className="d-flex align-items-center justify-content-between">
-            <span className="fw-bold d-block" style={{ fontSize: '0.92rem', color: 'var(--text-primary)' }}>
+            <span className="fw-bold d-block" style={{ fontSize: '0.88rem', color: 'var(--text-primary)' }}>
               {location ? 'GPS Locked' : 'Locating…'}
             </span>
-            <span style={{ background: 'rgba(56, 189, 248, 0.2)', border: '1px solid #38BDF8', color: '#FFFFFF', padding: '1px 7px', borderRadius: '20px', fontSize: '0.68rem', fontFamily: 'var(--font-mono)', fontWeight: 700 }}>
+            <span style={{ background: 'rgba(56, 189, 248, 0.2)', border: '1px solid #38BDF8', color: '#FFFFFF', padding: '1px 6px', borderRadius: '16px', fontSize: '0.64rem', fontFamily: 'var(--font-mono)', fontWeight: 700 }}>
               {(radius / 1000).toFixed(0)} KM RADIUS
             </span>
           </div>
-          <div className="d-flex gap-3 mt-2 pt-2 border-top border-white-5" style={{ fontSize: '0.7rem', color: 'rgba(255, 255, 255, 0.75)' }}>
+          <div className="d-flex gap-2.5 mt-1.5 pt-1.5 border-top border-white-5" style={{ fontSize: '0.68rem', color: 'rgba(255, 255, 255, 0.75)' }}>
             <span>{places.length} Total Found</span>
             <span>•</span>
             <span>{activeTypes.length} Active Types</span>
@@ -618,11 +618,11 @@ export default function NearbyMap({
         </div>
 
         {/* Live Facilities Selector using standard disease-select-tile pattern */}
-        <div className="mt-2">
-          <h4 className="fw-bold mb-3" style={{ fontSize: '1.05rem', letterSpacing: '0.05em', color: '#FFFFFF' }}>
+        <div className="mt-1">
+          <h4 className="fw-bold mb-2" style={{ fontSize: '0.92rem', letterSpacing: '0.05em', color: '#FFFFFF' }}>
             <span className="font-monospace text-uppercase" style={{ letterSpacing: '0.06em', color: '#FFFFFF' }}>Live Facilities</span>
           </h4>
-          <div className="d-flex flex-column gap-2 mt-2">
+          <div className="d-flex flex-column gap-1.5">
             {Object.entries(TYPE_CONFIG).map(([key, cfg]) => {
               const IconComponent = cfg.icon;
               const count = places.filter((p) => p.type === key).length;
