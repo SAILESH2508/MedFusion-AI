@@ -22,39 +22,39 @@ VALID_ACTIVITY_TYPES = {c[0] for c in ACTIVITY_TYPE_CHOICES}
 
 def get_garden_stage(total_points):
     if total_points < 50:
-        return {"stage": 0, "name": "Seed", "emoji": "🌱", "next_at": 50}
+        return {"stage": 0, "name": "Seed", "icon": "seed", "next_at": 50}
     elif total_points < 150:
-        return {"stage": 1, "name": "Sprout", "emoji": "🌿", "next_at": 150}
+        return {"stage": 1, "name": "Sprout", "icon": "sprout", "next_at": 150}
     elif total_points < 300:
-        return {"stage": 2, "name": "Small Plant", "emoji": "🪴", "next_at": 300}
+        return {"stage": 2, "name": "Small Plant", "icon": "plant", "next_at": 300}
     elif total_points < 500:
-        return {"stage": 3, "name": "Growing Plant", "emoji": "🌳", "next_at": 500}
+        return {"stage": 3, "name": "Growing Plant", "icon": "tree", "next_at": 500}
     elif total_points < 750:
-        return {"stage": 4, "name": "Flowering Plant", "emoji": "🌸", "next_at": 750}
+        return {"stage": 4, "name": "Flowering Plant", "icon": "flower", "next_at": 750}
     elif total_points < 1000:
-        return {"stage": 5, "name": "Mature Plant", "emoji": "🌺", "next_at": 1000}
+        return {"stage": 5, "name": "Mature Plant", "icon": "bloom", "next_at": 1000}
     else:
-        return {"stage": 6, "name": "Personal Health Garden", "emoji": "🏡", "next_at": None}
+        return {"stage": 6, "name": "Personal Health Garden", "icon": "garden", "next_at": None}
 
 
 # ── Achievement logic ──────────────────────────────────────────────────────
 
 ACHIEVEMENTS_DEF = [
-    {"id": "first_step",      "name": "First Step",          "emoji": "👣",
+    {"id": "first_step",      "name": "First Step",          "icon": "footprints",
      "desc": "Your first health check-in"},
-    {"id": "three_day",       "name": "3-Day Growth",         "emoji": "🌱",
+    {"id": "three_day",       "name": "3-Day Growth",         "icon": "sprout",
      "desc": "Maintained a 3-day streak"},
-    {"id": "one_week",        "name": "One Week Strong",      "emoji": "🌿",
+    {"id": "one_week",        "name": "One Week Strong",      "icon": "leaf",
      "desc": "Maintained a 7-day streak"},
-    {"id": "consistency",     "name": "Consistency Builder",  "emoji": "🔥",
+    {"id": "consistency",     "name": "Consistency Builder",  "icon": "flame",
      "desc": "Maintained a 30-day streak"},
-    {"id": "med_champ",       "name": "Medication Champion",  "emoji": "💊",
+    {"id": "med_champ",       "name": "Medication Champion",  "icon": "pill",
      "desc": "Logged 50+ medication points"},
-    {"id": "healthy_plate",   "name": "Healthy Plate",        "emoji": "🥗",
+    {"id": "healthy_plate",   "name": "Healthy Plate",        "icon": "utensils",
      "desc": "Completed 20 meals"},
-    {"id": "active_bloom",    "name": "Active Bloom",         "emoji": "🏃",
+    {"id": "active_bloom",    "name": "Active Bloom",         "icon": "activity",
      "desc": "Logged 10 activity sessions"},
-    {"id": "garden_keeper",   "name": "Garden Keeper",        "emoji": "🏡",
+    {"id": "garden_keeper",   "name": "Garden Keeper",        "icon": "shield-check",
      "desc": "Reached 500 total points"},
 ]
 
@@ -105,7 +105,7 @@ def _award_garden_activity(patient, activity_type, note=''):
     HealthActivity.objects.create(
         patient=patient, activity_type=activity_type, points=points, note=note
     )
-    with transaction.atomic():
+    with transaction.atomic():  # type: ignore
         garden, _ = GardenProgress.objects.get_or_create(patient=patient)
         garden.total_points += points
         _update_streak(garden)
@@ -155,10 +155,11 @@ def garden_status(request):
         "last_activity_date": str(garden.last_activity_date) if garden.last_activity_date else None,
         "stage": stage,
         "today_activities": today_activities,
+        "today_activity_count": len(today_activities),
         "week_points": week_points,
         "achievements_earned": json.loads(garden.achievements or '[]'),
         "recovery_message": (
-            "Yesterday was tough — your garden can grow again today! 🌱"
+            "Your garden can grow again today"
             if (garden.last_activity_date and
                 garden.last_activity_date < today - timedelta(days=1))
             else None
@@ -175,10 +176,13 @@ def log_garden_activity(request):
     if not patient:
         return JsonResponse({"error": "Patient profile not found."}, status=404)
 
-    try:
-        data = json.loads(request.body or '{}')
-    except json.JSONDecodeError:
-        return JsonResponse({"error": "Invalid JSON"}, status=400)
+    if hasattr(request, 'data') and isinstance(request.data, dict):
+        data = request.data
+    else:
+        try:
+            data = json.loads(request.body or '{}')
+        except json.JSONDecodeError:
+            return JsonResponse({"error": "Invalid JSON"}, status=400)
 
     activity_type = data.get('activity_type', '')
     if activity_type not in VALID_ACTIVITY_TYPES:
@@ -191,6 +195,13 @@ def log_garden_activity(request):
     garden = _award_garden_activity(patient, activity_type, note=note)
     stage = get_garden_stage(garden.total_points)
 
+    today = date.today()
+    today_activities = list(HealthActivity.objects.filter(
+        patient=patient, logged_at__date=today
+    ).values('activity_type', 'points', 'note', 'logged_at'))
+    for a in today_activities:
+        a['logged_at'] = str(a['logged_at'])
+
     return JsonResponse({
         "total_points": garden.total_points,
         "current_streak": garden.current_streak,
@@ -198,6 +209,8 @@ def log_garden_activity(request):
         "stage": stage,
         "points_awarded": POINTS_MAP.get(activity_type, 5),
         "achievements_earned": json.loads(garden.achievements or '[]'),
+        "today_activities": today_activities,
+        "today_activity_count": len(today_activities),
     }, status=200)
 
 

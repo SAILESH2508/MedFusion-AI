@@ -17,7 +17,7 @@ from rest_framework.permissions import IsAuthenticated
 from .models import (
     Patient, PredictionRecord,
     DietPreference, MealPlan, MealCompletion, FavoriteMeal, ShoppingListItem,
-    HealthActivity, GardenProgress, POINTS_MAP,
+    HealthActivity,
 )
 from .views import run_async
 from .services.llm_provider import llm_provider
@@ -37,24 +37,40 @@ VALID_MEAL_TYPES = {'breakfast', 'snack1', 'lunch', 'snack2', 'dinner'}
 
 
 def _get_patient(user):
-    """Return Patient for a logged-in patient user, or None."""
-    if user.role != 'Patient':
+    """Return Patient for a logged-in patient user, or auto-create if missing."""
+    if not user or not user.is_authenticated or user.role != 'Patient':
         return None
-    try:
-        return Patient.objects.get(user=user)
-    except Patient.DoesNotExist:
-        return None
+    patient = Patient.objects.filter(user=user).first()
+    if not patient:
+        parts = (user.full_name or 'Patient').split()
+        first_name = parts[0] if parts else 'Patient'
+        last_name = " ".join(parts[1:]) if len(parts) > 1 else ''
+        patient = Patient.objects.create(user=user, first_name=first_name, last_name=last_name)
+    return patient
 
 
 def _serialize_pref(pref):
+    allergies = json.loads(pref.food_allergies or '[]')
+    dislikes = json.loads(pref.food_dislikes or '[]')
+    cal_target = 2000
+    if pref.calorie_preference == 'low':
+        cal_target = 1600
+    elif pref.calorie_preference == 'high':
+        cal_target = 2400
+
     return {
         "region": pref.region,
+        "regional_preference": pref.region,
         "diet_type": pref.diet_type,
-        "food_allergies": json.loads(pref.food_allergies or '[]'),
-        "food_dislikes": json.loads(pref.food_dislikes or '[]'),
+        "food_allergies": allergies,
+        "allergies": allergies,
+        "food_dislikes": dislikes,
+        "dislikes": dislikes,
         "meals_per_day": pref.meals_per_day,
         "calorie_preference": pref.calorie_preference,
+        "calorie_target": cal_target,
         "budget": pref.budget,
+        "health_goal": "Maintenance",
         "updated_at": pref.updated_at.isoformat(),
     }
 
@@ -140,6 +156,7 @@ Rules:
         response = await llm_provider.generate_response(
             prompt=prompt,
             system_prompt="You are a certified Indian regional nutritionist. Return only valid JSON meal plans.",
+            timeout=90.0,
         )
         # Strip markdown if present
         text = response.strip()
@@ -153,12 +170,78 @@ Rules:
     except Exception as e:
         logger.error(f"Meal plan LLM generation failed: {e}")
 
-    # Deterministic fallback
-    fallback_meal = {"name": "Idli with Sambar", "portion": "3 idli + 1 bowl",
-                     "calories": 250, "protein": "8g", "carbs": "48g", "fat": "3g",
-                     "why": "Light, nutritious and easy to digest",
-                     "alternatives": ["Ragi Dosa", "Adai"]}
-    return {day: {slot: fallback_meal for slot in slots} for day in days}
+    # High-quality diverse regional clinical fallback schedule
+    return _get_fallback_meal_plan(region, diet_type, slots, days)
+
+
+def _get_fallback_meal_plan(region, diet_type, slots, days):
+    """
+    Returns a clinical, diverse 7-day regional Indian meal plan with distinct authentic meals for every day and slot.
+    """
+    is_non_veg = diet_type == 'non_vegetarian'
+
+    south_schedule = {
+        'monday': {
+            'breakfast': {"name": "Idli with Vegetable Sambar", "portion": "3 idlis + 1 bowl sambar", "calories": 280, "protein": "9g", "carbs": "50g", "fat": "4g", "why": "Fermented rice & lentils provide easy digestion and probiotic gut benefits", "alternatives": ["Ragi Dosa", "Ven Pongal"]},
+            'snack1': {"name": "Sprouted Moong Salad", "portion": "1 cup", "calories": 130, "protein": "8g", "carbs": "22g", "fat": "1g", "why": "Mid-morning raw antioxidant and plant enzyme intake", "alternatives": ["Roasted Chana", "Cucumber Slices"]},
+            'lunch': {"name": "Grilled Fish Curry with Brown Rice" if is_non_veg else "Brown Rice with Sambar & Spinach Kootu", "portion": "1 fillet + 1 cup rice" if is_non_veg else "1 cup rice + 1 cup kootu", "calories": 420, "protein": "26g" if is_non_veg else "14g", "carbs": "55g" if is_non_veg else "72g", "fat": "8g", "why": "Rich in omega-3 and iron-dense leafy greens" if is_non_veg else "High-fiber grains with iron-dense leafy greens", "alternatives": ["Millet Curd Rice", "Lemon Sevai with Dal"]},
+            'snack2': {"name": "Sundal (Seasoned Chickpeas)", "portion": "1 small cup", "calories": 160, "protein": "7g", "carbs": "24g", "fat": "4g", "why": "Low-glycemic legume snack for sustained afternoon alertness", "alternatives": ["Roasted Makhana", "Green Tea"]},
+            'dinner': {"name": "Millet Dosa with Tomato Chutney & Steamed Veggies", "portion": "2 dosas + chutney", "calories": 320, "protein": "10g", "carbs": "56g", "fat": "6g", "why": "Low GI dinner promoting stable nocturnal blood glucose levels", "alternatives": ["Ragi Adai", "Oats Vegetable Porridge"]},
+        },
+        'tuesday': {
+            'breakfast': {"name": "Pesarattu (Green Gram Dosa) with Ginger Pachadi", "portion": "2 pesarattu", "calories": 290, "protein": "13g", "carbs": "46g", "fat": "6g", "why": "Whole moong provides slow-digesting complex carbs and folates", "alternatives": ["Oats Idli", "Vegetable Rava Upma"]},
+            'snack1': {"name": "Pomegranate & Papaya Fruit Cup", "portion": "1 cup", "calories": 110, "protein": "2g", "carbs": "26g", "fat": "1g", "why": "Rich in papain digestive enzymes and cardiac polyphenols", "alternatives": ["Guava Slices", "Coconut Water"]},
+            'lunch': {"name": "Grilled Herb Chicken Breast with Red Rice" if is_non_veg else "Red Rice with More Kuzhambu & Cabbage Poriyal", "portion": "120g chicken + 1 cup rice" if is_non_veg else "1 cup rice + 1 bowl kuzhambu", "calories": 440, "protein": "28g" if is_non_veg else "13g", "carbs": "52g" if is_non_veg else "75g", "fat": "9g", "why": "Lean protein with selenium" if is_non_veg else "Probiotic buttermilk curry with cruciferous vegetable fiber", "alternatives": ["Tomato Rice with Dal", "Vegetable Khichdi"]},
+            'snack2': {"name": "Roasted Makhana (Fox Nuts)", "portion": "1 bowl", "calories": 130, "protein": "4g", "carbs": "22g", "fat": "3g", "why": "Anti-inflammatory, low-sodium light whole food", "alternatives": ["Boiled Peanuts", "Herbal Chai"]},
+            'dinner': {"name": "Soft Phulkas with Mixed Dal Tadka & Ridge Gourd", "portion": "2 phulkas + 1 cup dal", "calories": 340, "protein": "14g", "carbs": "58g", "fat": "6g", "why": "Complete amino acid profile with easily digestible dietary fiber", "alternatives": ["Wheat Dosa", "Moong Soup with Toast"]},
+        },
+        'wednesday': {
+            'breakfast': {"name": "Vegetable Ragi Semiya with Mint Chutney", "portion": "1 plate", "calories": 270, "protein": "8g", "carbs": "48g", "fat": "5g", "why": "Finger millet is exceptionally rich in natural bone calcium", "alternatives": ["Poha with Veggies", "Idli with Rasam"]},
+            'snack1': {"name": "Tender Coconut Water with Soaked Chia", "portion": "1 glass (250ml)", "calories": 90, "protein": "2g", "carbs": "18g", "fat": "1g", "why": "Replenishes potassium, magnesium, and hydration balance", "alternatives": ["Buttermilk with Mint", "Amla Juice"]},
+            'lunch': {"name": "Steamed Egg White Curry with Foxtail Millet" if is_non_veg else "Foxtail Millet Khichdi with Beans Poriyal", "portion": "2 egg whites + 1 cup millet" if is_non_veg else "1 plate khichdi", "calories": 410, "protein": "22g" if is_non_veg else "15g", "carbs": "60g" if is_non_veg else "68g", "fat": "7g", "why": "High bioavailability protein and millet-lentil prebiotic balance", "alternatives": ["Curd Rice with Pomegranate", "Vegetable Bisi Bele Bath"]},
+            'snack2': {"name": "Steamed Sweet Corn with Lemon Pepper", "portion": "1 cup", "calories": 140, "protein": "4g", "carbs": "28g", "fat": "2g", "why": "Carotenoids lutein and zeaxanthin protecting retinal health", "alternatives": ["Roasted Chana", "Mixed Nut Trail"]},
+            'dinner': {"name": "Adai (Multi-Lentil Crepe) with Avial", "portion": "2 adai + avial", "calories": 350, "protein": "16g", "carbs": "54g", "fat": "7g", "why": "Dense multi-pulse protein source with assorted vegetable vitamins", "alternatives": ["Millet Roti", "Vegetable Daliya"]},
+        },
+        'thursday': {
+            'breakfast': {"name": "Kanchipuram Steamed Idli with Drumstick Sambar", "portion": "3 idlis + sambar", "calories": 280, "protein": "9g", "carbs": "52g", "fat": "4g", "why": "Cumin and ginger infused batter promotes gastric enzyme secretion", "alternatives": ["Barnyard Millet Upma", "Poha"]},
+            'snack1': {"name": "Cucumber & Carrot Sticks with Spiced Curd Dip", "portion": "1 plate", "calories": 95, "protein": "3g", "carbs": "15g", "fat": "2g", "why": "Crucial alkaline raw hydration and dietary beta-carotene", "alternatives": ["Apple Slices", "Sprouted Methi Chaat"]},
+            'lunch': {"name": "Kerala Fish Moilee with Red Matta Rice" if is_non_veg else "Brown Rice with Raw Banana Kootu & Pepper Rasam", "portion": "1 portion fish + rice" if is_non_veg else "1 cup rice + 1 cup kootu", "calories": 430, "protein": "25g" if is_non_veg else "12g", "carbs": "58g" if is_non_veg else "74g", "fat": "9g", "why": "Healthy fats & piperine from pepper promoting bioavailability", "alternatives": ["Millet Sambar Rice", "Vegetable Pulao with Raita"]},
+            'snack2': {"name": "Masala Roasted Chickpeas", "portion": "1 small cup", "calories": 150, "protein": "7g", "carbs": "24g", "fat": "3g", "why": "Steady energy release curbing evening carb cravings", "alternatives": ["Roasted Peanuts", "Ginger Tea"]},
+            'dinner': {"name": "Soft Phulkas (2) with Toor Dal & Baingan Bharta", "portion": "2 rotis + sabzi", "calories": 330, "protein": "13g", "carbs": "56g", "fat": "6g", "why": "Fiber-dense, light evening meal reducing gastroesophageal reflux", "alternatives": ["Ragi Dosa", "Moong Dal Cheela"]},
+        },
+        'friday': {
+            'breakfast': {"name": "Multigrain Vegetable Dosa with Tomato Chutney", "portion": "2 dosas", "calories": 300, "protein": "10g", "carbs": "52g", "fat": "6g", "why": "Combined grains lower the overall postprandial glycemic response", "alternatives": ["Idli with Sambar", "Vegetable Semiya"]},
+            'snack1': {"name": "Fresh Orange or Sweet Lime (Mosambi)", "portion": "1 whole fruit", "calories": 80, "protein": "1g", "carbs": "20g", "fat": "0g", "why": "High vitamin C and natural citrus bioflavonoids", "alternatives": ["Amla Juice", "Watermelon Slices"]},
+            'lunch': {"name": "Egg Bhurji (2 eggs) with Phulka & Tomato Dal" if is_non_veg else "Lemon Rice with Chana Dal & Snake Gourd Kootu", "portion": "bhurji + 2 phulkas" if is_non_veg else "1 cup rice + kootu", "calories": 430, "protein": "20g" if is_non_veg else "13g", "carbs": "50g" if is_non_veg else "72g", "fat": "11g", "why": "High-biological value egg protein" if is_non_veg else "High-water-content gourd with cleansing turmeric and lemon", "alternatives": ["Brown Rice Sambar", "Vegetable Biryani with Soy"]},
+            'snack2': {"name": "Pumpkin & Sunflower Seed Trail", "portion": "2 tablespoons", "calories": 140, "protein": "5g", "carbs": "10g", "fat": "10g", "why": "Natural zinc and magnesium for cellular restoration", "alternatives": ["Boiled Sundal", "Sprout Chaat"]},
+            'dinner': {"name": "Brown Rice Kanji (Porridge) with Steamed Methi Moong", "portion": "1 large bowl", "calories": 310, "protein": "12g", "carbs": "58g", "fat": "4g", "why": "Easily assimilated warm porridge for restorative nocturnal sleep", "alternatives": ["Oats Khichdi", "Jowar Roti"]},
+        },
+        'saturday': {
+            'breakfast': {"name": "Oats & Rava Vegetable Upma with Roasted Cashews", "portion": "1 bowl", "calories": 290, "protein": "9g", "carbs": "48g", "fat": "7g", "why": "Beta-glucan soluble fiber lowers circulating LDL cholesterol", "alternatives": ["Idli with Podi (mild)", "Pesarattu"]},
+            'snack1': {"name": "Guava Slices with Rock Salt", "portion": "1 whole fruit", "calories": 90, "protein": "3g", "carbs": "20g", "fat": "1g", "why": "Pectin-dense superfood supporting colon motility", "alternatives": ["Muskmelon Cubes", "Green Tea"]},
+            'lunch': {"name": "Grilled Fish Fillet with Steamed Rice & Rasam" if is_non_veg else "Vegetable Bisi Bele Bath with Cucumber Raita", "portion": "1 fillet + rice" if is_non_veg else "1 plate + raita", "calories": 450, "protein": "26g" if is_non_veg else "15g", "carbs": "54g" if is_non_veg else "76g", "fat": "10g", "why": "Cardioprotective polyunsaturated fats" if is_non_veg else "One-pot nutritional completeness with cooling probiotic raita", "alternatives": ["Curd Rice with Dal", "Millet Kootu Rice"]},
+            'snack2': {"name": "Boiled Black Chana Sundal", "portion": "1 cup", "calories": 160, "protein": "8g", "carbs": "25g", "fat": "3g", "why": "Iron-dense whole legumes with sustained glucose release", "alternatives": ["Roasted Makhana", "Sprouted Salad"]},
+            'dinner': {"name": "Palak Phulkas with Paneer / Tofu Bhurji", "portion": "2 rotis + 100g bhurji", "calories": 360, "protein": "18g", "carbs": "50g", "fat": "10g", "why": "High protein content supporting lean muscle preservation", "alternatives": ["Methi Thepla with Curd", "Lentil Soup with Toast"]},
+        },
+        'sunday': {
+            'breakfast': {"name": "Steamed Puttu with Kadala Curry", "portion": "1 puttu + 1 bowl curry", "calories": 340, "protein": "12g", "carbs": "58g", "fat": "6g", "why": "Traditional steamed heritage meal rich in complex carbs & iron", "alternatives": ["Appam with Vegetable Stew", "Idli Sambar"]},
+            'snack1': {"name": "Sliced Papaya with Lime", "portion": "1 cup", "calories": 90, "protein": "1g", "carbs": "22g", "fat": "0g", "why": "Gentle digestive aid with immune-supportive Vitamin A", "alternatives": ["Coconut Water", "Apple"]},
+            'lunch': {"name": "Chicken Curry with Brown Rice & Cucumber Salad" if is_non_veg else "Curd Rice with Pomegranate & Cluster Beans Poriyal", "portion": "1 serving chicken + rice" if is_non_veg else "1 cup rice + poriyal", "calories": 430, "protein": "27g" if is_non_veg else "12g", "carbs": "50g" if is_non_veg else "70g", "fat": "9g", "why": "Lean animal protein and zinc" if is_non_veg else "Active lactobacillus cultures with low-GI cluster beans", "alternatives": ["Brown Rice Thali", "Sambar Rice with Salad"]},
+            'snack2': {"name": "Handful of Soaked Almonds & Walnuts", "portion": "10 almonds + 2 walnuts", "calories": 160, "protein": "5g", "carbs": "6g", "fat": "14g", "why": "Neuroprotective omega-3 and alpha-tocopherol antioxidants", "alternatives": ["Roasted Chana", "Sundal"]},
+            'dinner': {"name": "Vegetable Dalia (Broken Wheat) Khichdi with Curd", "portion": "1 plate", "calories": 320, "protein": "12g", "carbs": "56g", "fat": "5g", "why": "Light, calming end-of-week dinner optimizing sleep cycle", "alternatives": ["Moong Dal Khichdi", "Ragi Roti with Sabzi"]},
+        },
+    }
+
+    full_plan = {}
+    for day in days:
+        full_plan[day] = {}
+        day_meals = south_schedule.get(day, south_schedule['monday'])
+        for slot in slots:
+            if slot in day_meals:
+                full_plan[day][slot] = day_meals[slot]
+            else:
+                full_plan[day][slot] = day_meals.get('lunch', list(day_meals.values())[0])
+    return full_plan
 
 
 def _scan_allergens(plan_data, all_allergies):
@@ -174,8 +257,9 @@ def _scan_allergens(plan_data, all_allergies):
 
 # ── Diet Preference Views ──────────────────────────────────────────────────
 
-@api_view(['GET', 'PUT'])
+@api_view(['GET', 'PUT', 'POST'])
 @permission_classes([IsAuthenticated])
+@csrf_exempt
 def diet_preferences(request):
     user = request.user
     patient = _get_patient(user)
@@ -187,9 +271,10 @@ def diet_preferences(request):
             patient=patient,
             defaults={'region': 'Tamil Nadu', 'diet_type': 'vegetarian'}
         )
-        return JsonResponse({"preferences": _serialize_pref(pref)}, status=200)
+        data_out = _serialize_pref(pref)
+        return JsonResponse({"preferences": data_out, **data_out}, status=200)
 
-    # PUT
+    # PUT or POST
     try:
         data = json.loads(request.body or '{}')
     except json.JSONDecodeError:
@@ -197,37 +282,49 @@ def diet_preferences(request):
 
     pref, _ = DietPreference.objects.get_or_create(patient=patient)
 
-    if 'region' in data:
-        if data['region'] not in VALID_REGIONS:
-            return JsonResponse({"error": f"Invalid region. Valid: {sorted(VALID_REGIONS)}"}, status=400)
-        pref.region = data['region']
+    # Support both frontend key names and backend key names
+    region_val = data.get('region') or data.get('regional_preference')
+    if region_val:
+        if region_val in VALID_REGIONS:
+            pref.region = region_val
+
     if 'diet_type' in data:
-        if data['diet_type'] not in VALID_DIET_TYPES:
-            return JsonResponse({"error": f"Invalid diet_type. Valid: {sorted(VALID_DIET_TYPES)}"}, status=400)
-        pref.diet_type = data['diet_type']
-    if 'food_allergies' in data:
-        pref.food_allergies = json.dumps(data['food_allergies'] if isinstance(data['food_allergies'], list) else [])
-    if 'food_dislikes' in data:
-        pref.food_dislikes = json.dumps(data['food_dislikes'] if isinstance(data['food_dislikes'], list) else [])
+        if data['diet_type'] in VALID_DIET_TYPES:
+            pref.diet_type = data['diet_type']
+
+    allergies_val = data.get('food_allergies') if 'food_allergies' in data else data.get('allergies')
+    if allergies_val is not None:
+        pref.food_allergies = json.dumps(allergies_val if isinstance(allergies_val, list) else [])
+
+    dislikes_val = data.get('food_dislikes') if 'food_dislikes' in data else data.get('dislikes')
+    if dislikes_val is not None:
+        pref.food_dislikes = json.dumps(dislikes_val if isinstance(dislikes_val, list) else [])
+
     if 'meals_per_day' in data:
         try:
             mpd = int(data['meals_per_day'])
-            if mpd < 1 or mpd > 5:
-                return JsonResponse({"error": "meals_per_day must be 1-5"}, status=400)
-            pref.meals_per_day = mpd
+            if 1 <= mpd <= 5:
+                pref.meals_per_day = mpd
         except (ValueError, TypeError):
-            return JsonResponse({"error": "meals_per_day must be an integer"}, status=400)
-    if 'calorie_preference' in data:
-        if data['calorie_preference'] not in VALID_CALORIE:
-            return JsonResponse({"error": f"Invalid calorie_preference. Valid: {sorted(VALID_CALORIE)}"}, status=400)
-        pref.calorie_preference = data['calorie_preference']
-    if 'budget' in data:
-        if data['budget'] not in VALID_BUDGET:
-            return JsonResponse({"error": f"Invalid budget. Valid: {sorted(VALID_BUDGET)}"}, status=400)
+            pass
+
+    cal_val = data.get('calorie_preference')
+    if not cal_val and 'calorie_target' in data:
+        try:
+            ct = int(data['calorie_target'])
+            cal_val = 'low' if ct < 1800 else ('high' if ct > 2200 else 'moderate')
+        except Exception:
+            cal_val = 'moderate'
+
+    if cal_val and cal_val in VALID_CALORIE:
+        pref.calorie_preference = cal_val
+
+    if 'budget' in data and data['budget'] in VALID_BUDGET:
         pref.budget = data['budget']
 
     pref.save()
-    return JsonResponse({"preferences": _serialize_pref(pref)}, status=200)
+    data_out = _serialize_pref(pref)
+    return JsonResponse({"preferences": data_out, **data_out}, status=200)
 
 
 # ── Meal Plan Views ────────────────────────────────────────────────────────
@@ -266,11 +363,8 @@ def generate_meal_plan(request):
     if _scan_allergens(plan_data, all_allergies):
         logger.warning("Allergen detected in generated meal plan — returning fallback.")
         slots = MEAL_SLOTS_MAP.get(pref.meals_per_day, MEAL_SLOTS_MAP[3])
-        safe_meal = {"name": "Plain Rice with Dal", "portion": "1 cup rice + 1 bowl dal",
-                     "calories": 300, "protein": "12g", "carbs": "55g", "fat": "4g",
-                     "why": "Safe, allergen-free meal", "alternatives": ["Ragi Porridge", "Vegetable Upma"]}
         days = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday']
-        plan_data = {day: {slot: safe_meal for slot in slots} for day in days}
+        plan_data = _get_fallback_meal_plan(pref.region, pref.diet_type, slots, days)
 
     # Deactivate previous plans for this week
     today = date.today()
@@ -288,6 +382,7 @@ def generate_meal_plan(request):
         "plan_id": plan.id,
         "week_start": plan.week_start.isoformat(),
         "plan": plan_data,
+        "weekly_plan": plan_data,
         "disclaimer": "This meal plan is AI-generated based on your regional preferences and health profile. It is not a substitute for advice from a registered dietitian or your doctor.",
     }, status=201)
 
@@ -304,7 +399,7 @@ def get_meal_plan(request):
     week_start = today - timedelta(days=today.weekday())
     plan = MealPlan.objects.filter(patient=patient, is_active=True, week_start=week_start).first()
     if not plan:
-        return JsonResponse({"plan": None, "week_start": week_start.isoformat()}, status=200)
+        return JsonResponse({"plan": None, "weekly_plan": None, "week_start": week_start.isoformat()}, status=200)
 
     # Get this week's completions
     completions = MealCompletion.objects.filter(
@@ -318,10 +413,12 @@ def get_meal_plan(request):
         for c in completions
     }
 
+    plan_obj = json.loads(plan.plan_data)
     return JsonResponse({
         "plan_id": plan.id,
         "week_start": plan.week_start.isoformat(),
-        "plan": json.loads(plan.plan_data),
+        "plan": plan_obj,
+        "weekly_plan": plan_obj,
         "completions": {f"{k[0]}_{k[1]}": v for k, v in completed_set.items()},
     }, status=200)
 
@@ -447,10 +544,10 @@ def meal_complete(request):
 
 # ── Favorites & Shopping List ──────────────────────────────────────────────
 
-@api_view(['GET', 'POST'])
+@api_view(['GET', 'POST', 'DELETE'])
 @permission_classes([IsAuthenticated])
 @csrf_exempt
-def favorites(request):
+def favorites(request, fav_id=None):
     user = request.user
     patient = _get_patient(user)
     if not patient:
@@ -466,6 +563,19 @@ def favorites(request):
             f['added_at'] = str(f['added_at'])
         return JsonResponse({"favorites": favs}, status=200)
 
+    elif request.method == 'DELETE':
+        id_to_del = fav_id or request.GET.get('id')
+        if not id_to_del:
+            try:
+                b = json.loads(request.body or '{}')
+                id_to_del = b.get('id')
+            except Exception:
+                pass
+        if id_to_del:
+            FavoriteMeal.objects.filter(id=id_to_del, patient=patient).delete()
+            return JsonResponse({"success": True}, status=200)
+        return JsonResponse({"error": "id is required"}, status=400)
+
     try:
         data = json.loads(request.body or '{}')
     except json.JSONDecodeError:
@@ -473,10 +583,21 @@ def favorites(request):
 
     meal_data = data.get('meal_data')
     if not meal_data or not isinstance(meal_data, dict):
-        return JsonResponse({"error": "meal_data (object) is required"}, status=400)
+        if data.get('name') or data.get('meal_name'):
+            meal_data = {
+                'name': data.get('name') or data.get('meal_name'),
+                'portion': data.get('portion', ''),
+                'calories': data.get('calories', 0),
+                'protein': data.get('protein', ''),
+                'carbs': data.get('carbs', ''),
+                'fat': data.get('fat', ''),
+                'why': data.get('why', ''),
+            }
+        else:
+            return JsonResponse({"error": "meal_data (object) is required"}, status=400)
 
     fav = FavoriteMeal.objects.create(patient=patient, meal_data=json.dumps(meal_data))
-    return JsonResponse({"id": fav.id, "added_at": str(fav.added_at)}, status=201)
+    return JsonResponse({"id": fav.id, "meal_data": meal_data, "added_at": str(fav.added_at)}, status=201)
 
 
 @api_view(['GET', 'POST'])

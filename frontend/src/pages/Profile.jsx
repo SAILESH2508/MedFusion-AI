@@ -11,22 +11,29 @@ import {
   Scale,
   Ruler,
   CheckCircle2,
-  AlertTriangle
+  AlertTriangle,
+  Salad,
+  Flame,
 } from 'lucide-react';
 import { api } from '../services/api';
 import { useSearchParams, Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { SidebarContext } from '../context/SidebarContext';
 import { getAge, getInitials } from '../services/utils';
+import { useTheme } from '../context/useTheme';
 
 // Import Decomposed Tab Components
 import ProfileIdentity from './profile/ProfileIdentity';
 import MedicalVault from './profile/MedicalVault';
 import RiskAssessments from './profile/RiskAssessments';
 import PillBox from './profile/PillBox';
+import IntegratedDietSection from './digital-twin/IntegratedDietSection';
+import IntegratedGardenSection from './digital-twin/IntegratedGardenSection';
 
 
 function Profile({ user, onUserUpdate }) {
+  const { theme } = useTheme();
+  const isDark = theme === 'dark';
   const { setSidebarContent } = useContext(SidebarContext);
 
   const [profile, setProfile] = useState(null);
@@ -91,7 +98,7 @@ function Profile({ user, onUserUpdate }) {
   const tabParam = searchParams.get('tab');
   const [activeTabState, setActiveTabState] = useState('identity');
 
-  const activeTab = (tabParam && ['identity', 'vault', 'adherence'].includes(tabParam))
+  const activeTab = (tabParam && ['identity', 'vault', 'diet', 'adherence', 'habits'].includes(tabParam))
     ? tabParam
     : activeTabState;
 
@@ -106,80 +113,25 @@ function Profile({ user, onUserUpdate }) {
   const [loadingArchive, setLoadingArchive] = useState(false);
   const [expandedId, setExpandedId] = useState(null);
 
+  // Garden state for habit tracking
+  const [gardenData, setGardenData] = useState({
+    stage: 0,
+    total_points: 0,
+    current_streak: 0,
+    best_streak: 0,
+    recent_activities: [],
+    today_activity_count: 0,
+  });
+
+  const fetchGarden = useCallback(async () => {
+    try {
+      const res = await api.get('/garden/status/');
+      if (res.data) setGardenData(res.data);
+    } catch { /* silent */ }
+  }, []);
+
   // Stats for doctors
   const [docStats, setDocStats] = useState({ patientCount: 0, rxCount: 0, pathCount: 0 });
-
-  // -------------------------------------------------------------
-  // MEDICATION ADHERENCE TRACKER
-  // -------------------------------------------------------------
-  const [customMeds, setCustomMeds] = useState(() => {
-    try {
-      const saved = localStorage.getItem(`medfusion_custom_meds_${user?.id || 'guest'}`);
-      return saved ? JSON.parse(saved) : [];
-    } catch (e) {
-      return [];
-    }
-  });
-  const [newMedName, setNewMedName] = useState('');
-  const [newMedDosage, setNewMedDosage] = useState('');
-  const [newMedFrequency, setNewMedFrequency] = useState('Once daily');
-  const [newMedTime, setNewMedTime] = useState('Morning');
-
-  const [medsTakenToday, setMedsTakenToday] = useState(() => {
-    try {
-      const today = new Date().toISOString().split('T')[0];
-      const saved = localStorage.getItem(`medfusion_adherence_${user?.id || 'guest'}_${today}`);
-      return saved ? JSON.parse(saved) : {};
-    } catch (e) {
-      return {};
-    }
-  });
-
-  // Save custom meds helper
-  const saveCustomMeds = (meds) => {
-    setCustomMeds(meds);
-    localStorage.setItem(`medfusion_custom_meds_${user?.id || 'guest'}`, JSON.stringify(meds));
-  };
-
-  // Toggle med taken state
-  const handleToggleMedTaken = (medId, timeSlot) => {
-    const today = new Date().toISOString().split('T')[0];
-    const key = `${medId}-${timeSlot}`;
-    const newMedsTaken = { ...medsTakenToday, [key]: !medsTakenToday[key] };
-    setMedsTakenToday(newMedsTaken);
-    localStorage.setItem(`medfusion_adherence_${user?.id || 'guest'}_${today}`, JSON.stringify(newMedsTaken));
-  };
-
-  // Add custom med
-  const handleAddCustomMed = (e) => {
-    e.preventDefault();
-    if (!newMedName.trim()) return;
-    const newMed = {
-      id: `custom-${Date.now()}`,
-      name: newMedName,
-      dosage: newMedDosage || 'As directed',
-      frequency: newMedFrequency,
-      timeSlot: newMedTime,
-      isCustom: true
-    };
-    const updated = [...customMeds, newMed];
-    saveCustomMeds(updated);
-    setNewMedName('');
-    setNewMedDosage('');
-  };
-
-  // Delete custom med
-  const handleDeleteCustomMed = (id) => {
-    const updated = customMeds.filter(m => m.id !== id);
-    saveCustomMeds(updated);
-  };
-
-  // -------------------------------------------------------------
-  // DRUG SAFETY ADVISOR
-  // -------------------------------------------------------------
-  const [safetyLoading, setSafetyLoading] = useState(false);
-  const [safetyError, setSafetyError] = useState('');
-  const [safetyReport, setSafetyReport] = useState(null);
 
   // -------------------------------------------------------------
   // DATA SYNC AND LOADING LOGIC
@@ -263,7 +215,7 @@ function Profile({ user, onUserUpdate }) {
   useEffect(() => {
     const loadAll = async () => {
       setLoading(true);
-      await Promise.all([fetchProfile(), fetchHistory(), fetchArchive()]);
+      await Promise.all([fetchProfile(), fetchHistory(), fetchArchive(), fetchGarden()]);
       if (user && user.role === 'Doctor') {
         try {
           const res = await api.get('/patients');
@@ -340,12 +292,16 @@ function Profile({ user, onUserUpdate }) {
               {[
                 { id: 'identity', label: 'Profile & Vitals', icon: <User size={18} /> },
                 { id: 'vault', label: 'Medical Vault & History', icon: <FileUp size={18} /> },
-                { id: 'adherence', label: 'Pill Box', icon: <Pill size={18} /> }
+                { id: 'diet', label: 'Diet & Nutrition', icon: <Salad size={18} /> },
+                { id: 'adherence', label: 'Medication Pill Box', icon: <Pill size={18} /> },
+                { id: 'habits', label: 'Wellness Garden', icon: <Flame size={18} /> },
               ].map((tab) => {
                 const tabThemeClasses = {
                   identity: 'theme-general-active',
                   vault: 'theme-cancer-active',
-                  adherence: 'theme-diabetes-active'
+                  diet: 'theme-heart-active',
+                  adherence: 'theme-diabetes-active',
+                  habits: 'theme-general-active',
                 };
                 return (
                   <div
@@ -558,8 +514,8 @@ function Profile({ user, onUserUpdate }) {
                         type="text"
                         value={editData.license_number || ''}
                         onChange={(e) => setEditData({ ...editData, license_number: e.target.value })}
-                        className="py-1 mt-1 font-monospace w-100 bg-transparent border-white-10" style={{ color: 'var(--text-primary)' }}
-                        style={{ fontSize: '0.9rem' }}
+                        className="py-1 mt-1 font-monospace w-100 bg-transparent border-white-10"
+                        style={{ color: 'var(--text-primary)', fontSize: '0.9rem' }}
                       />
                     )}
                   </div>
@@ -625,6 +581,45 @@ function Profile({ user, onUserUpdate }) {
   return (
     <div className={`reveal px-1 ${activeTheme} transition-all duration-300 ${activeTab === 'vault' ? 'vault-tab-active-layout' : ''}`}>
 
+      {/* ── Profile Header Banner (Theme-Adaptive) ──────────────────── */}
+      <div
+        className="mb-4 position-relative overflow-hidden"
+        style={{
+          borderRadius: '20px',
+          padding: '28px 32px',
+          background: isDark
+            ? 'linear-gradient(135deg, #080808 0%, #081008 35%, #0a1508 65%, #080808 100%)'
+            : '#FFFFFF',
+          border: isDark
+            ? '1px solid rgba(52, 211, 153, 0.28)'
+            : '1px solid rgba(16, 185, 129, 0.25)',
+          boxShadow: isDark
+            ? '0 0 40px rgba(52,211,153,0.08), inset 0 1px 0 rgba(255,255,255,0.06)'
+            : '0 4px 20px rgba(16, 185, 129, 0.08), 0 1px 4px rgba(0, 0, 0, 0.04)',
+          transition: 'all 0.3s ease',
+        }}
+      >
+        <div style={{ position: 'absolute', top: '-25px', right: '80px', width: '180px', height: '180px', borderRadius: '50%', background: `radial-gradient(circle, rgba(52,211,153,${isDark ? '0.12' : '0.08'}) 0%, transparent 70%)`, pointerEvents: 'none' }} />
+        <div style={{ position: 'absolute', bottom: '-20px', left: '100px', width: '130px', height: '130px', borderRadius: '50%', background: `radial-gradient(circle, rgba(45,212,191,${isDark ? '0.1' : '0.08'}) 0%, transparent 70%)`, pointerEvents: 'none' }} />
+
+        <div style={{ position: 'relative', zIndex: 1 }}>
+          <div className="d-flex align-items-center gap-2 mb-2">
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '28px', height: '28px', borderRadius: '8px', background: isDark ? 'rgba(52,211,153,0.18)' : 'rgba(16,185,129,0.12)', border: '1px solid rgba(16,185,129,0.35)' }}>
+              <User size={14} style={{ color: isDark ? '#34d399' : '#059669' }} />
+            </div>
+            <span className="font-monospace text-uppercase" style={{ fontSize: '0.68rem', letterSpacing: '0.14em', color: isDark ? '#34d399' : '#059669', fontWeight: 700 }}>
+              Patient Identity Vault &nbsp;·&nbsp; {profile?.vault_id || `MF-P-${user?.id || '—'}`}
+            </span>
+          </div>
+          <h1 className="fw-bolder m-0 mb-2" style={{ fontSize: '2rem', letterSpacing: '-0.03em', color: isDark ? '#FFFFFF' : '#0F172A', lineHeight: 1.1, fontFamily: 'var(--font-main)' }}>
+            Health <span style={{ background: 'linear-gradient(90deg, #DC2626, #EA580C)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Profile</span>
+          </h1>
+          <p className="m-0" style={{ fontSize: '0.9rem', color: isDark ? 'rgba(255,255,255,0.65)' : '#475569', maxWidth: '520px', lineHeight: 1.5, fontWeight: isDark ? 400 : 500 }}>
+            Manage your clinical identity, medical history vault, risk assessments, and emergency QR card — all secured in one place.
+          </p>
+        </div>
+      </div>
+
       {/* Global save success / error toast */}
       {saveSuccess && (
         <div className="alert alert-success d-flex align-items-center gap-2 py-2 px-3 mb-3 rounded-3 font-monospace" style={{ fontSize: '0.8rem', background: 'rgba(57, 116, 91, 0.15)', border: '1px solid var(--primary-accent)', color: 'var(--primary-accent)', letterSpacing: '0.02em' }}>
@@ -641,19 +636,20 @@ function Profile({ user, onUserUpdate }) {
       <div className="mb-4 tab-selector-container p-1 bg-glass d-md-none" style={{ borderRadius: '12px', border: '1px solid var(--border-color)' }}>
         <div className="row g-1 w-100 m-0">
           {[
-            { id: 'identity', label: 'Identity & Vitals', icon: <User size={16} /> },
-            { id: 'vault', label: 'Medical Vault & History', icon: <FileText size={16} /> },
-            { id: 'adherence', label: 'Pill Box', icon: <Pill size={16} /> }
+            { id: 'identity', label: 'Identity', icon: <User size={16} /> },
+            { id: 'vault', label: 'Vault', icon: <FileText size={16} /> },
+            { id: 'diet', label: 'Diet', icon: <Salad size={16} /> },
+            { id: 'adherence', label: 'Pill Box', icon: <Pill size={16} /> },
+            { id: 'habits', label: 'Garden', icon: <Flame size={16} /> }
           ].map((tab) => (
-            <div className="col-4 p-0" key={tab.id}>
+            <div className="col p-0" key={tab.id}>
               <button
                 onClick={() => setActiveTab(tab.id)}
-                className={`btn-clinical py-2.5 w-100 d-flex align-items-center justify-content-center gap-2 border-0 rounded-3 font-monospace text-uppercase font-bold ${activeTab === tab.id ? 'primary' : 'bg-transparent text-secondary hover-white'}`}
-                style={{ fontSize: '0.78rem', letterSpacing: '0.03em', transition: 'all 0.25s' }}
+                className={`btn-clinical py-2 w-100 d-flex align-items-center justify-content-center gap-1 border-0 rounded-3 font-monospace text-uppercase font-bold ${activeTab === tab.id ? 'primary' : 'bg-transparent text-secondary hover-white'}`}
+                style={{ fontSize: '0.72rem', letterSpacing: '0.02em', transition: 'all 0.25s' }}
               >
                 {tab.icon}
-                <span className="d-none d-sm-inline">{tab.label}</span>
-                <span className="d-inline d-sm-none">{tab.label.split(' & ')[0]}</span>
+                <span>{tab.label}</span>
               </button>
             </div>
           ))}
@@ -717,36 +713,57 @@ function Profile({ user, onUserUpdate }) {
           </motion.div>
         )}
 
+        {activeTab === 'diet' && (
+          <motion.div
+            key="diet"
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -15 }}
+            className="mt-2"
+          >
+            <IntegratedDietSection
+              user={user}
+              onActivityLogged={(updatedGarden) => {
+                if (updatedGarden) {
+                  setGardenData(prev => ({
+                    ...prev,
+                    total_points: updatedGarden.total_points,
+                    current_streak: updatedGarden.current_streak,
+                    best_streak: updatedGarden.best_streak,
+                    stage: updatedGarden.stage,
+                    today_activity_count: updatedGarden.today_activity_count,
+                  }));
+                }
+              }}
+            />
+          </motion.div>
+        )}
+
         {activeTab === 'adherence' && (
           <motion.div
             key="adherence"
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -15 }}
-            className="row g-4 mt-2 align-items-stretch vault-tab-row"
+            className="mt-2"
           >
-            <div className="col-12">
-              <PillBox
-                archive={archive}
-                customMeds={customMeds}
-                newMedName={newMedName}
-                setNewMedName={setNewMedName}
-                newMedDosage={newMedDosage}
-                setNewMedDosage={setNewMedDosage}
-                newMedFrequency={newMedFrequency}
-                setNewMedFrequency={setNewMedFrequency}
-                newMedTime={newMedTime}
-                setNewMedTime={setNewMedTime}
-                medsTakenToday={medsTakenToday}
-                handleToggleMedTaken={handleToggleMedTaken}
-                handleAddCustomMed={handleAddCustomMed}
-                handleDeleteCustomMed={handleDeleteCustomMed}
-                safetyReport={safetyReport}
-                safetyLoading={safetyLoading}
-                safetyError={safetyError}
-                handleCheckDrugSafety={handleCheckDrugSafety}
-              />
-            </div>
+            <PillBox user={user} />
+          </motion.div>
+        )}
+
+        {activeTab === 'habits' && (
+          <motion.div
+            key="habits"
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -15 }}
+            className="mt-2"
+          >
+            <IntegratedGardenSection
+              gardenData={gardenData}
+              onGardenUpdate={setGardenData}
+              user={user}
+            />
           </motion.div>
         )}
       </AnimatePresence>

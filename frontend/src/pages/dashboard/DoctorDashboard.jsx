@@ -206,10 +206,10 @@ function DoctorDashboard({ user }) {
       <div className="d-flex flex-column gap-4 pt-2">
         {/* Header Console */}
         <div className="glass-card p-4 mb-2 reveal border-theme-accent border-opacity-15 bg-white-5" style={{ borderRadius: '12px' }}>
-          <h2 className="fw-bolder fs-6 m-0" style={{ letterSpacing: '-0.02em', fontSize: '1.25rem', color: 'var(--text-primary)' }}>
+          <h2 className="fw-bolder fs-6 m-0" style={{ letterSpacing: '-0.02em', fontSize: '1.25rem', color: '#FFFFFF' }}>
             Clinical <span style={{ color: 'var(--brand-orange)' }}>Examiner</span>
           </h2>
-          <p className="text-secondary m-0 mt-2" style={{ fontSize: '0.88rem', lineHeight: '1.4' }}>
+          <p className="m-0 mt-2" style={{ fontSize: '0.88rem', lineHeight: '1.4', color: 'rgba(255, 255, 255, 0.88)' }}>
             Logged in as Dr. {user.full_name || "Examiner"}. Select patients to review diagnostics, pathology and write clinical recommendations.
           </p>
         </div>
@@ -218,23 +218,23 @@ function DoctorDashboard({ user }) {
           /* DIRECTORY VIEW: Practice Analytics */
           <div className="reveal d-flex flex-column gap-4">
             <div>
-              <h4 className="fw-bold mb-3 font-monospace text-uppercase" style={{ fontSize: '0.9rem', letterSpacing: '0.05em', color: 'var(--text-primary)' }}>
+              <h4 className="fw-bold mb-3 font-monospace text-uppercase" style={{ fontSize: '0.9rem', letterSpacing: '0.05em', color: '#FFFFFF' }}>
                 <span style={{ color: 'var(--brand-orange)' }}>Practice Overview</span>
               </h4>
               <div className="d-flex flex-column gap-2">
                 <div className="p-3 bg-white-5 rounded border border-white-5 d-flex justify-content-between align-items-center font-monospace">
-                  <span className="text-secondary small" style={{ fontSize: '0.72rem' }}>REGISTERED PATIENTS</span>
-                  <span className="fw-bold" style={{ color: 'var(--text-primary)' }}>{patients.length}</span>
+                  <span className="small" style={{ fontSize: '0.74rem', color: 'rgba(255, 255, 255, 0.85)' }}>REGISTERED PATIENTS</span>
+                  <span className="fw-bold" style={{ color: '#FFFFFF', fontSize: '1.05rem' }}>{patients.length}</span>
                 </div>
                 <div className="p-3 bg-white-5 rounded border border-white-5 d-flex justify-content-between align-items-center font-monospace">
-                  <span className="text-secondary small" style={{ fontSize: '0.72rem' }}>PATHOLOGY REPORTS</span>
-                  <span className="fw-bold" style={{ color: 'var(--text-primary)' }}>
+                  <span className="small" style={{ fontSize: '0.74rem', color: 'rgba(255, 255, 255, 0.85)' }}>PATHOLOGY REPORTS</span>
+                  <span className="fw-bold" style={{ color: '#FFFFFF', fontSize: '1.05rem' }}>
                     {patients.reduce((acc, p) => acc + (p.pathology_count || 0), 0)}
                   </span>
                 </div>
                 <div className="p-3 bg-white-5 rounded border border-white-5 d-flex justify-content-between align-items-center font-monospace">
-                  <span className="text-secondary small" style={{ fontSize: '0.72rem' }}>AI DISEASE RUNS</span>
-                  <span className="fw-bold" style={{ color: 'var(--text-primary)' }}>
+                  <span className="small" style={{ fontSize: '0.74rem', color: 'rgba(255, 255, 255, 0.85)' }}>AI DISEASE RUNS</span>
+                  <span className="fw-bold" style={{ color: '#FFFFFF', fontSize: '1.05rem' }}>
                     {patients.reduce((acc, p) => acc + (p.prediction_count || 0), 0)}
                   </span>
                 </div>
@@ -295,13 +295,13 @@ function DoctorDashboard({ user }) {
   }, [patients, selectedPatient, setSidebarContent, user]);
 
   return (
-    <div className="reveal px-1 theme-general font-monospace" style={{ height: 'calc(100vh - 155px)', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
+    <div className="reveal px-1 theme-general font-monospace" style={{ minHeight: 'calc(100vh - 155px)', display: 'flex', flexDirection: 'column' }}>
       {!selectedPatient ? (
         /* PATIENT DIRECTORY SCREEN WITH PLANNER & CALCULATOR WIDGETS */
-        <div className="row g-4 flex-grow-1 align-items-stretch" style={{ minHeight: 0, overflow: 'hidden' }}>
+        <div className="row g-4 flex-grow-1 align-items-stretch" style={{ minHeight: '600px' }}>
           {/* Patient Directory Console Column */}
-          <div className="col-lg-8 d-flex" style={{ height: 'calc(100% - 24px)', overflow: 'hidden' }}>
-            <div className="glass-card p-4 flex-grow-1 d-flex flex-column" style={{ borderRadius: '16px', overflow: 'hidden' }}>
+          <div className="col-lg-8 d-flex flex-column" style={{ minHeight: '520px' }}>
+            <div className="glass-card p-4 flex-grow-1 d-flex flex-column" style={{ borderRadius: '16px' }}>
               <div className="d-flex align-items-center justify-content-between mb-4 border-bottom border-white-10 pb-3 flex-wrap gap-2">
                 <div>
                   <h3 className="fw-bold m-0 text-uppercase d-flex align-items-center gap-2" style={{ fontSize: '1.25rem', color: 'var(--text-primary)' }}>
@@ -354,7 +354,7 @@ function DoctorDashboard({ user }) {
                       }}
                     >
                       <div className="d-flex align-items-center gap-3 text-truncate pe-3">
-                        <div className="rounded-circle bg-theme-accent bg-opacity-10 border border-theme-accent border-opacity-35 d-flex align-items-center justify-content-center fw-bold text-theme-accent flex-shrink-0" style={{ width: '48px', height: '48px', fontSize: '1rem' }}>
+                        <div className="rounded-circle bg-theme-accent border border-theme-accent border-opacity-35 d-flex align-items-center justify-content-center fw-bold text-white flex-shrink-0" style={{ width: '48px', height: '48px', fontSize: '1rem' }}>
                           {p.name ? p.name.split(' ').map(n => n[0]).join('').toUpperCase() : 'P'}
                         </div>
                         <div className="text-truncate">
@@ -513,15 +513,15 @@ function DoctorDashboard({ user }) {
         </div>
       ) : (
         /* PATIENT DETAIL & ACTIONS SCREEN */
-        <div className="row g-4 align-items-stretch flex-grow-1" style={{ minHeight: 0, overflow: 'hidden' }}>
+        <div className="row g-4 align-items-stretch flex-grow-1" style={{ minHeight: '600px' }}>
           
           {/* LEFT STAGE: Patient Information, Diagnostic & Ingested Records */}
-          <div className="col-lg-6 col-md-6 d-flex flex-column gap-4 reveal" style={{ height: 'calc(100% - 24px)', overflow: 'hidden' }}>
+          <div className="col-lg-6 col-md-12 d-flex flex-column gap-4 reveal" style={{ minHeight: '520px' }}>
             
             {/* Profile Card */}
             <div id="section-profile" className="card-secondary p-4">
               <div className="d-flex align-items-center gap-3 mb-3 border-bottom border-white-10 pb-3">
-                <div className="rounded-circle bg-theme-accent bg-opacity-10 border border-theme-accent border-opacity-35 d-flex align-items-center justify-content-center fw-bold text-theme-accent" style={{ width: '48px', height: '48px', fontSize: '1.1rem' }}>
+                <div className="rounded-circle bg-theme-accent border border-theme-accent border-opacity-35 d-flex align-items-center justify-content-center fw-bold text-white" style={{ width: '48px', height: '48px', fontSize: '1.1rem' }}>
                   {selectedPatient.name ? selectedPatient.name.split(' ').map(n => n[0]).join('').toUpperCase() : 'P'}
                 </div>
                 <div>
@@ -669,8 +669,8 @@ function DoctorDashboard({ user }) {
           </div>
 
           {/* RIGHT STAGE: Clinical Notes & Prescription Issuer */}
-          <div className="col-lg-6 col-md-6 d-flex flex-column reveal" style={{ height: 'calc(100% - 24px)', overflow: 'hidden' }}>
-            <div id="section-formulate" className="panel-form p-4 flex-grow-1 d-flex flex-column gap-3" style={{ overflow: 'hidden', borderRadius: '16px' }}>
+          <div className="col-lg-6 col-md-12 d-flex flex-column reveal" style={{ minHeight: '520px' }}>
+            <div id="section-formulate" className="panel-form p-4 flex-grow-1 d-flex flex-column gap-3" style={{ borderRadius: '16px' }}>
               
               <div>
                 <h4 className="fw-bold font-monospace d-flex align-items-center gap-2 mb-2" style={{ fontSize: '1.15rem', color: 'var(--text-primary)' }}>

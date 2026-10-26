@@ -283,33 +283,50 @@ export default function InteractiveMap({ location, places, isPatient }) {
     <div className="glass-card glass-card--map p-3 mb-4" style={{ borderRadius: '14px' }}>
       {/* Header row */}
       <div className="d-flex align-items-center justify-content-between mb-3 flex-wrap gap-2">
-        <h5 className="fw-bold font-monospace m-0" style={{ fontSize: '0.88rem', letterSpacing: '0.06em', color: 'var(--text-primary)' }}>
+        <h5 className="fw-bold font-monospace m-0" style={{ fontSize: '0.88rem', letterSpacing: '0.06em', color: '#FFFFFF' }}>
           INTERACTIVE MAP — {places.length} FACILITIES
         </h5>
         <div className="d-flex gap-2 align-items-center flex-wrap">
           {/* Layer toggle */}
-          {Object.entries(TILE_LAYERS).map(([key, cfg]) => (
-            <button
-              key={key}
-              onClick={() => setTileLayer(key)}
-              className="d-flex align-items-center gap-1 px-2 py-1 rounded font-monospace"
-              style={{
-                fontSize: '0.65rem', letterSpacing: '0.05em', cursor: 'pointer',
-                background: tileLayer === key ? 'rgba(45,184,176,0.12)' : 'var(--bg-card-tinted)',
-                border: `1px solid ${tileLayer === key ? 'var(--accent-teal)' : 'rgba(255,255,255,0.08)'}`,
-                color: tileLayer === key ? 'var(--accent-teal)' : 'rgba(255,255,255,0.45)',
-                transition: 'all 0.2s',
-              }}
-            >
-              {cfg.label}
-            </button>
-          ))}
+          {Object.entries(TILE_LAYERS).map(([key, cfg]) => {
+            const isActive = tileLayer === key;
+            return (
+              <button
+                key={key}
+                onClick={() => setTileLayer(key)}
+                className="d-flex align-items-center gap-1 px-3 py-1.5 rounded-2 font-monospace"
+                style={{
+                  fontSize: '0.72rem',
+                  letterSpacing: '0.05em',
+                  cursor: 'pointer',
+                  fontWeight: isActive ? 700 : 600,
+                  background: isActive ? 'var(--brand-orange, #F4954A)' : 'rgba(255, 255, 255, 0.12)',
+                  border: isActive ? '1px solid var(--brand-orange, #F4954A)' : '1px solid rgba(255, 255, 255, 0.22)',
+                  color: '#FFFFFF',
+                  boxShadow: isActive ? '0 2px 8px rgba(244, 149, 74, 0.35)' : 'none',
+                  transition: 'all 0.2s ease',
+                }}
+              >
+                {cfg.label}
+              </button>
+            );
+          })}
           {/* Recenter */}
           <button
             onClick={recenter}
             title="Re-center on my location"
             aria-label="Re-centre map on my location"
-            style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '6px', color: 'rgba(255,255,255,0.55)', cursor: 'pointer', padding: '5px 8px', display: 'flex', alignItems: 'center' }}
+            style={{
+              background: 'rgba(255, 255, 255, 0.12)',
+              border: '1px solid rgba(255, 255, 255, 0.22)',
+              borderRadius: '6px',
+              color: '#FFFFFF',
+              cursor: 'pointer',
+              padding: '6px 10px',
+              display: 'flex',
+              alignItems: 'center',
+              transition: 'all 0.2s ease',
+            }}
           >
             <Crosshair size={14} />
           </button>
@@ -318,7 +335,7 @@ export default function InteractiveMap({ location, places, isPatient }) {
             <button
               onClick={clearRoute}
               aria-label="Clear route"
-              style={{ background: 'rgba(255,0,85,0.1)', border: '1px solid rgba(255,0,85,0.3)', borderRadius: '6px', color: '#ff3366', cursor: 'pointer', padding: '5px 8px', display: 'flex', alignItems: 'center', gap: '4px', fontSize: '0.65rem', fontFamily: 'monospace' }}
+              style={{ background: 'rgba(255,0,85,0.18)', border: '1px solid rgba(255,0,85,0.4)', borderRadius: '6px', color: '#ff4d79', cursor: 'pointer', padding: '6px 10px', display: 'flex', alignItems: 'center', gap: '4px', fontSize: '0.7rem', fontFamily: 'var(--font-mono)', fontWeight: 600 }}
             >
               <X size={12} /> Clear Route
             </button>
@@ -328,17 +345,17 @@ export default function InteractiveMap({ location, places, isPatient }) {
 
       {/* Route info bar */}
       {routeInfo && (
-        <div className="d-flex align-items-center gap-3 mb-2 px-3 py-2 rounded" style={{ background: 'var(--status-info-bg)', border: '1px solid var(--status-info-border)', fontSize: '0.78rem' }}>
-          <span className="text-info font-monospace fw-bold">Route calculated</span>
-          <span className="text-secondary">{routeInfo.distance} km</span>
-          <span className="text-secondary">~{routeInfo.duration} min drive</span>
+        <div className="d-flex align-items-center gap-3 mb-2 px-3 py-2 rounded" style={{ background: 'rgba(91, 159, 224, 0.15)', border: '1px solid rgba(91, 159, 224, 0.4)', fontSize: '0.78rem' }}>
+          <span className="font-monospace fw-bold" style={{ color: '#38BDF8' }}>Route calculated</span>
+          <span style={{ color: 'rgba(255, 255, 255, 0.85)' }}>{routeInfo.distance} km</span>
+          <span style={{ color: 'rgba(255, 255, 255, 0.85)' }}>~{routeInfo.duration} min drive</span>
         </div>
       )}
 
       {routing && (
-        <div className="d-flex align-items-center gap-2 mb-2 px-3 py-2 rounded" style={{ background: 'var(--bg-card-hover)', border: '1px solid var(--border-color)', fontSize: '0.75rem' }}>
-          <div className="spinner-border text-info" style={{ width: '14px', height: '14px', borderWidth: '2px' }} />
-          <span className="text-secondary font-monospace">Calculating route via OSRM...</span>
+        <div className="d-flex align-items-center gap-2 mb-2 px-3 py-2 rounded" style={{ background: 'rgba(255, 255, 255, 0.07)', border: '1px solid rgba(255, 255, 255, 0.16)', fontSize: '0.75rem' }}>
+          <div className="spinner-border" style={{ width: '14px', height: '14px', borderWidth: '2px', color: '#38BDF8' }} />
+          <span className="font-monospace" style={{ color: 'rgba(255, 255, 255, 0.82)' }}>Calculating route via OSRM...</span>
         </div>
       )}
 
@@ -361,9 +378,9 @@ export default function InteractiveMap({ location, places, isPatient }) {
       {/* Selected place quick panel */}
       {selectedPlace && !routeInfo && (
         <div className="mt-3 p-3 rounded d-flex align-items-center justify-content-between flex-wrap gap-2"
-          style={{ background: 'var(--bg-card-hover)', border: `1px solid ${TYPE_COLORS[selectedPlace.type] || 'var(--border-color)'}` }}>
+          style={{ background: 'rgba(255, 255, 255, 0.08)', border: `1px solid ${TYPE_COLORS[selectedPlace.type] || 'rgba(255,255,255,0.22)'}` }}>
           <div>
-            <p className="fw-bold m-0" style={{ fontSize: '0.88rem', color: 'var(--text-primary)' }}>
+            <p className="fw-bold m-0" style={{ fontSize: '0.88rem', color: '#FFFFFF' }}>
               {selectedPlace.name}
             </p>
             <p className="text-secondary m-0 mt-1" style={{ fontSize: '0.72rem' }}>
@@ -390,7 +407,7 @@ export default function InteractiveMap({ location, places, isPatient }) {
               href={`https://www.google.com/maps/dir/?api=1&destination=${selectedPlace.lat},${selectedPlace.lon}&travelmode=driving`}
               target="_blank" rel="noopener noreferrer"
               className="d-flex align-items-center gap-2 px-3 py-2 rounded font-monospace text-uppercase fw-bold text-decoration-none"
-              style={{ fontSize: '0.68rem', background: 'var(--bg-card-hover)', border: '1px solid var(--border-color)', color: 'var(--text-primary)' }}
+              style={{ fontSize: '0.68rem', background: 'rgba(255, 255, 255, 0.1)', border: '1px solid rgba(255, 255, 255, 0.25)', color: '#FFFFFF' }}
             >
               Google Maps
             </a>
@@ -399,16 +416,16 @@ export default function InteractiveMap({ location, places, isPatient }) {
       )}
 
       {/* Legend */}
-      <div className="d-flex flex-wrap gap-2 mt-3">
+      <div className="d-flex flex-wrap align-items-center gap-3 mt-3 pt-2" style={{ borderTop: '1px solid rgba(255, 255, 255, 0.1)' }}>
         {Object.entries(TYPE_COLORS).map(([type, color]) => (
-          <div key={type} className="d-flex align-items-center gap-1" style={{ fontSize: '0.65rem', color: 'rgba(255,255,255,0.5)' }}>
-            <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: color, display: 'inline-block' }} />
-            {type.charAt(0).toUpperCase() + type.slice(1)}
+          <div key={type} className="d-flex align-items-center gap-1.5" style={{ fontSize: '0.74rem', color: '#FFFFFF', fontWeight: 600 }}>
+            <span style={{ width: '9px', height: '9px', borderRadius: '50%', background: color, display: 'inline-block', boxShadow: `0 0 6px ${color}88` }} />
+            <span>{type.charAt(0).toUpperCase() + type.slice(1)}</span>
           </div>
         ))}
-        <div className="d-flex align-items-center gap-1" style={{ fontSize: '0.65rem', color: 'rgba(255,255,255,0.5)' }}>
-          <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: 'var(--accent-teal)', border: '1px solid var(--bg-card)', display: 'inline-block' }} />
-          You
+        <div className="d-flex align-items-center gap-1.5" style={{ fontSize: '0.74rem', color: '#FFFFFF', fontWeight: 600 }}>
+          <span style={{ width: '9px', height: '9px', borderRadius: '50%', background: '#38BDF8', border: '2px solid #FFFFFF', display: 'inline-block', boxShadow: '0 0 6px rgba(56, 189, 248, 0.8)' }} />
+          <span>You</span>
         </div>
       </div>
 
@@ -426,7 +443,9 @@ export default function InteractiveMap({ location, places, isPatient }) {
         .glass-card--map {
           backdrop-filter: none !important;
           -webkit-backdrop-filter: none !important;
-          background: rgba(0, 4, 30, 0.75) !important;
+          background: #1C2333 !important;
+          border: 1px solid rgba(255, 255, 255, 0.14) !important;
+          color: #FFFFFF !important;
         }
 
         /* ── Leaflet container — own compositing layer ──────────────────

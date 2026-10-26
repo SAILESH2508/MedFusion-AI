@@ -12,7 +12,7 @@ function RiskAssessments({
     <div className="glass-card p-4 text-start vault-glass-card theme-heart">
       <div className="d-flex justify-content-between align-items-center border-bottom border-white-10 pb-3 mb-4 flex-wrap gap-3">
         <div>
-          <h3 className="fw-bold text-white d-flex align-items-center gap-2 m-0" style={{ fontSize: '1.35rem' }}>
+          <h3 className="fw-bold d-flex align-items-center gap-2 m-0" style={{ fontSize: '1.35rem', color: 'var(--text-primary)' }}>
             <Heart className="text-theme-accent" />
             AI Risk Assessment History
           </h3>
@@ -70,12 +70,12 @@ function RiskAssessments({
                       <Heart size={18} />
                     </div>
                     <div>
-                      <strong className="text-white text-uppercase fs-6">{record.disease_type.replace(/_/g, ' ')} Risk Profile</strong>
+                      <strong className="text-uppercase fs-6" style={{ color: 'var(--text-primary)' }}>{record.disease_type.replace(/_/g, ' ')} Risk Profile</strong>
                       <span className="text-secondary small d-block font-monospace mt-1">Generated: {new Date(record.created_at).toLocaleString([], { hour12: false })}</span>
                     </div>
                   </div>
                   <div className="d-flex align-items-center gap-4">
-                    <span className="text-secondary d-none d-sm-inline">Risk Index: <strong className="text-white">{record.risk_score}%</strong></span>
+                    <span className="text-secondary d-none d-sm-inline">Risk Index: <strong style={{ color: 'var(--text-primary)' }}>{record.risk_score}%</strong></span>
                     <span className={`badge px-3 py-1.5 ${
                       record.risk_level === 'HIGH' || record.risk_level === 'CRITICAL' 
                         ? 'badge-clinical-danger' 
@@ -100,7 +100,7 @@ function RiskAssessments({
                     <div className="row g-4">
                       <div className="col-lg-7">
                         <div className="inner-vault-card h-100">
-                          <h6 className="fw-bold text-white mb-2.5 text-uppercase d-flex align-items-center gap-1.5" style={{ fontSize: '0.88rem' }}>
+                          <h6 className="fw-bold mb-2.5 text-uppercase d-flex align-items-center gap-1.5" style={{ fontSize: '0.88rem', color: 'var(--text-primary)' }}>
                             <Activity size={14} className="text-theme-accent" />
                             AI Clinical Reasoning
                           </h6>
@@ -109,33 +109,37 @@ function RiskAssessments({
                       </div>
                       <div className="col-lg-5">
                         <div className="inner-vault-card h-100">
-                          <h6 className="fw-bold text-white mb-2.5 text-uppercase d-flex align-items-center gap-1.5" style={{ fontSize: '0.88rem' }}>
+                          <h6 className="fw-bold mb-2.5 text-uppercase d-flex align-items-center gap-1.5" style={{ fontSize: '0.88rem', color: 'var(--text-primary)' }}>
                             <Sparkles size={14} className="text-theme-accent" />
                             AI Recommended Directives
                           </h6>
-                          {remedies && (
-                            <div className="d-flex flex-column gap-3.5" style={{ fontSize: '0.8rem' }}>
-                              {remedies.lifestyle_modifications?.length > 0 && (
-                                <div>
-                                  <span className="text-theme-accent fw-bold d-block mb-1.5 text-uppercase" style={{ fontSize: '0.72rem' }}>Lifestyle Modifications</span>
-                                  <ul className="text-secondary ps-3 mb-0">
-                                    {remedies.lifestyle_modifications.slice(0, 3).map((v, i) => <li key={i} className="mb-0.5">{v}</li>)}
-                                  </ul>
-                                </div>
-                              )}
-                              {remedies.dietary_guidelines?.length > 0 && (
-                                <div>
-                                  <span className="text-success fw-bold d-block mb-1.5 text-uppercase" style={{ fontSize: '0.72rem' }}>Nutrition Guidelines</span>
-                                  <ul className="text-secondary ps-3 mb-0">
-                                    {remedies.dietary_guidelines.slice(0, 3).map((v, i) => <li key={i} className="mb-0.5">{v}</li>)}
-                                  </ul>
-                                </div>
-                              )}
-                              {!remedies.lifestyle_modifications && !remedies.dietary_guidelines && (
-                                <span className="text-secondary italic">Check summary details for full remedy suggestions.</span>
-                              )}
-                            </div>
-                          )}
+                          {remedies && (() => {
+                            const lifestyle = Array.isArray(remedies.lifestyle_modifications) ? remedies.lifestyle_modifications : (remedies.lifestyle_modifications ? [remedies.lifestyle_modifications] : []);
+                            const dietary = Array.isArray(remedies.dietary_guidelines) ? remedies.dietary_guidelines : (remedies.dietary_guidelines ? [remedies.dietary_guidelines] : []);
+                            return (
+                              <div className="d-flex flex-column gap-3.5" style={{ fontSize: '0.8rem' }}>
+                                {lifestyle.length > 0 && (
+                                  <div>
+                                    <span className="text-theme-accent fw-bold d-block mb-1.5 text-uppercase" style={{ fontSize: '0.72rem' }}>Lifestyle Modifications</span>
+                                    <ul className="text-secondary ps-3 mb-0">
+                                      {lifestyle.slice(0, 3).map((v, i) => <li key={i} className="mb-0.5">{String(v)}</li>)}
+                                    </ul>
+                                  </div>
+                                )}
+                                {dietary.length > 0 && (
+                                  <div>
+                                    <span className="text-success fw-bold d-block mb-1.5 text-uppercase" style={{ fontSize: '0.72rem' }}>Nutrition Guidelines</span>
+                                    <ul className="text-secondary ps-3 mb-0">
+                                      {dietary.slice(0, 3).map((v, i) => <li key={i} className="mb-0.5">{String(v)}</li>)}
+                                    </ul>
+                                  </div>
+                                )}
+                                {lifestyle.length === 0 && dietary.length === 0 && (
+                                  <span className="text-secondary italic">Check summary details for full remedy suggestions.</span>
+                                )}
+                              </div>
+                            );
+                          })()}
                         </div>
                       </div>
                       {/* Parameters logged */}
@@ -148,7 +152,7 @@ function RiskAssessments({
                                 if (typeof val === 'object') return null;
                                 return (
                                   <span key={key} className="badge bg-white-10 border border-white-10 text-secondary" style={{ fontSize: '0.78rem' }}>
-                                    {key.toUpperCase().replace(/_/g, ' ')}: <strong className="text-white">{String(val).toUpperCase()}</strong>
+                                    {key.toUpperCase().replace(/_/g, ' ')}: <strong style={{ color: 'var(--text-primary)' }}>{String(val).toUpperCase()}</strong>
                                   </span>
                                 );
                               })}

@@ -50,7 +50,7 @@ function EmergencyCard() {
       <div style={styles.page}>
         <div style={{ ...styles.card, borderColor: 'var(--accent-red)' }}>
           <div style={styles.errorBadge}>NOT FOUND</div>
-          <p style={{ color: 'var(--accent-red)', fontFamily: 'monospace', textAlign: 'center', marginTop: '1rem' }}>
+          <p style={{ color: 'var(--accent-red)', fontFamily: 'var(--font-mono)', textAlign: 'center', marginTop: '1rem' }}>
             {error}
           </p>
         </div>
@@ -170,7 +170,7 @@ const styles = {
     alignItems: 'center',
     justifyContent: 'center',
     padding: '2rem 1rem',
-    fontFamily: 'monospace',
+    fontFamily: 'var(--font-mono)',
   },
   card: {
     background: '#FFFFFF',
@@ -303,7 +303,7 @@ const styles = {
   loadingText: {
     color: '#4A5568',
     textAlign: 'center',
-    fontFamily: 'monospace',
+    fontFamily: 'var(--font-mono)',
     fontSize: '0.9rem',
   },
   errorBadge: {

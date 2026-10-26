@@ -29,6 +29,17 @@ const logs = [
   "Finalising diagnostic synthesis report..."
 ];
 
+const safeList = (val) => {
+  if (!val) return [];
+  if (Array.isArray(val)) return val;
+  if (typeof val === 'string') {
+    const lines = val.split('\n').map(s => s.trim().replace(/^[•\-\*]\s*/, '')).filter(Boolean);
+    return lines.length > 0 ? lines : [val];
+  }
+  if (typeof val === 'object') return Object.values(val).map(String);
+  return [];
+};
+
 function GuestDashboard({ openAuth }) {
   const { setSidebarContent } = useContext(SidebarContext);
   const [selectedDisease, setSelectedDisease] = useState('heart_attack');
@@ -442,18 +453,18 @@ function GuestDashboard({ openAuth }) {
       <div className="d-flex flex-column gap-4 pt-2">
         {/* Sleek Medical Header Console inside Sidebar */}
         <div className="glass-card p-4 mb-2 reveal border-theme-accent border-opacity-15 bg-white-5" style={{ borderRadius: '12px' }}>
-          <h2 className="fw-bolder fs-6 m-0" style={{ letterSpacing: '-0.02em', fontSize: '1.25rem', color: 'var(--text-primary)' }}>
+          <h2 className="fw-bolder fs-6 m-0" style={{ letterSpacing: '-0.02em', fontSize: '1.25rem', color: '#FFFFFF' }}>
             AI Health <span style={{ color: 'var(--brand-orange)' }}>Diagnostics</span>
           </h2>
-          <p className="text-secondary m-0 mt-2" style={{ fontSize: '0.88rem', lineHeight: '1.4' }}>
+          <p className="m-0 mt-2" style={{ fontSize: '0.88rem', lineHeight: '1.4', color: 'rgba(255, 255, 255, 0.88)' }}>
             Enter your medical numbers and symptoms to check your health risks instantly.
           </p>
         </div>
 
         {/* Screening Profile selector */}
         <div className="mt-2">
-          <h4 className="fw-bold mb-3" style={{ fontSize: '1.05rem', letterSpacing: '0.05em', color: 'var(--text-primary)' }}>
-            <span className="text-theme-accent font-monospace text-uppercase" style={{ letterSpacing: '0.06em' }}>Screening Profile</span>
+          <h4 className="fw-bold mb-3" style={{ fontSize: '1.05rem', letterSpacing: '0.05em', color: '#FFFFFF' }}>
+            <span className="font-monospace text-uppercase" style={{ letterSpacing: '0.06em', color: '#FFFFFF' }}>Screening Profile</span>
           </h4>
           <div className="d-flex flex-column gap-3 mt-3">
             {displayedPredictors.map((disease) => (
@@ -622,16 +633,16 @@ function GuestDashboard({ openAuth }) {
       result.clinical_reasoning || 'N/A',
       '',
       '--- DIETARY GUIDELINES ---',
-      ...(result.remedies?.dietary_guidelines || []).map(g => `• ${g}`),
+      ...safeList(result.remedies?.dietary_guidelines).map(g => `• ${g}`),
       '',
       '--- LIFESTYLE MODIFICATIONS ---',
-      ...(result.remedies?.lifestyle_modifications || []).map(g => `• ${g}`),
+      ...safeList(result.remedies?.lifestyle_modifications).map(g => `• ${g}`),
       '',
       '--- CLINICAL RECOMMENDATIONS ---',
-      ...(result.remedies?.clinical_recommendations || []).map(g => `• ${g}`),
+      ...safeList(result.remedies?.clinical_recommendations).map(g => `• ${g}`),
       '',
       '--- URGENT WARNING SIGNS ---',
-      ...(result.remedies?.urgent_warning_signs || []).map(g => g),
+      ...safeList(result.remedies?.urgent_warning_signs).map(g => g),
       '',
       '==============================================',
       'DISCLAIMER: AI-generated analysis only.',
@@ -703,8 +714,8 @@ function GuestDashboard({ openAuth }) {
                         className="typeable-number-input"
                         style={{
                           width: '65px',
-                          background: 'rgba(255,255,255,0.07)',
-                          border: '1px solid rgba(255,255,255,0.15)',
+                          background: 'var(--bg-input)',
+                          border: '1px solid var(--border)',
                           borderRadius: '4px',
                           color: 'var(--theme-accent)',
                           textAlign: 'center',
@@ -745,8 +756,8 @@ function GuestDashboard({ openAuth }) {
                         className="typeable-number-input"
                         style={{
                           width: '65px',
-                          background: 'rgba(255,255,255,0.07)',
-                          border: '1px solid rgba(255,255,255,0.15)',
+                          background: 'var(--bg-input)',
+                          border: '1px solid var(--border)',
                           borderRadius: '4px',
                           color: 'var(--theme-accent)',
                           textAlign: 'center',
@@ -788,8 +799,8 @@ function GuestDashboard({ openAuth }) {
                         className="typeable-number-input"
                         style={{
                           width: '65px',
-                          background: 'rgba(255,255,255,0.07)',
-                          border: '1px solid rgba(255,255,255,0.15)',
+                          background: 'var(--bg-input)',
+                          border: '1px solid var(--border)',
                           borderRadius: '4px',
                           color: 'var(--theme-accent)',
                           textAlign: 'center',
@@ -830,8 +841,8 @@ function GuestDashboard({ openAuth }) {
                         className="typeable-number-input"
                         style={{
                           width: '65px',
-                          background: 'rgba(255,255,255,0.07)',
-                          border: '1px solid rgba(255,255,255,0.15)',
+                          background: 'var(--bg-input)',
+                          border: '1px solid var(--border)',
                           borderRadius: '4px',
                           color: 'var(--theme-accent)',
                           textAlign: 'center',
@@ -964,8 +975,8 @@ function GuestDashboard({ openAuth }) {
                         className="typeable-number-input"
                         style={{
                           width: '65px',
-                          background: 'rgba(255,255,255,0.07)',
-                          border: '1px solid rgba(255,255,255,0.15)',
+                          background: 'var(--bg-input)',
+                          border: '1px solid var(--border)',
                           borderRadius: '4px',
                           color: 'var(--theme-accent)',
                           textAlign: 'center',
@@ -1008,8 +1019,8 @@ function GuestDashboard({ openAuth }) {
                         className="typeable-number-input"
                         style={{
                           width: '65px',
-                          background: 'rgba(255,255,255,0.07)',
-                          border: '1px solid rgba(255,255,255,0.15)',
+                          background: 'var(--bg-input)',
+                          border: '1px solid var(--border)',
                           borderRadius: '4px',
                           color: 'var(--theme-accent)',
                           textAlign: 'center',
@@ -1051,8 +1062,8 @@ function GuestDashboard({ openAuth }) {
                         className="typeable-number-input"
                         style={{
                           width: '65px',
-                          background: 'rgba(255,255,255,0.07)',
-                          border: '1px solid rgba(255,255,255,0.15)',
+                          background: 'var(--bg-input)',
+                          border: '1px solid var(--border)',
                           borderRadius: '4px',
                           color: 'var(--theme-accent)',
                           textAlign: 'center',
@@ -1092,8 +1103,8 @@ function GuestDashboard({ openAuth }) {
                         className="typeable-number-input"
                         style={{
                           width: '65px',
-                          background: 'rgba(255,255,255,0.07)',
-                          border: '1px solid rgba(255,255,255,0.15)',
+                          background: 'var(--bg-input)',
+                          border: '1px solid var(--border)',
                           borderRadius: '4px',
                           color: 'var(--theme-accent)',
                           textAlign: 'center',
@@ -1259,7 +1270,7 @@ function GuestDashboard({ openAuth }) {
       case 'heart_attack':
         return (
           <div className="reveal">
-            <h4 className="fw-bold mb-4 text-white d-flex align-items-center gap-2" style={{ fontSize: '1.05rem', letterSpacing: '0.05em' }}>
+            <h4 className="fw-bold mb-4 d-flex align-items-center gap-2" style={{ fontSize: '1.05rem', letterSpacing: '0.05em' }}>
               <ShieldAlert size={18} style={{ color: 'var(--theme-accent)' }} />
               <span style={{ color: 'var(--theme-accent)' }}>Active Cardiovascular Symptoms Checklist</span>
             </h4>
@@ -1283,7 +1294,7 @@ function GuestDashboard({ openAuth }) {
                       className="m-0 cursor-pointer"
                       style={{ width: '20px', height: '20px', marginBottom: 0 }}
                     />
-                    <span className={`text-capitalize font-monospace ${heartSymptoms[sym] ? 'text-white fw-bold' : ''}`} style={{ fontSize: '0.95rem' }}>{sym.replace(/_/g, ' ')}</span>
+                    <span className="text-capitalize font-monospace" style={{ fontSize: '0.95rem', color: heartSymptoms[sym] ? 'var(--text-primary)' : 'var(--text-secondary)', fontWeight: heartSymptoms[sym] ? 700 : 400 }}>{sym.replace(/_/g, ' ')}</span>
                   </div>
                 </div>
               ))}
@@ -1294,7 +1305,7 @@ function GuestDashboard({ openAuth }) {
       case 'diabetes':
         return (
           <div className="reveal">
-            <h4 className="fw-bold mb-4 text-white d-flex align-items-center gap-2" style={{ fontSize: '1.05rem', letterSpacing: '0.05em' }}>
+            <h4 className="fw-bold mb-4 d-flex align-items-center gap-2" style={{ fontSize: '1.05rem', letterSpacing: '0.05em' }}>
               <ShieldAlert size={18} style={{ color: 'var(--theme-accent)' }} />
               <span style={{ color: 'var(--theme-accent)' }}>Active Glycemic Symptoms Checklist</span>
             </h4>
@@ -1329,7 +1340,7 @@ function GuestDashboard({ openAuth }) {
       case 'cancer':
         return (
           <div className="reveal">
-            <h4 className="fw-bold mb-4 text-white d-flex align-items-center gap-2" style={{ fontSize: '1.05rem', letterSpacing: '0.05em' }}>
+            <h4 className="fw-bold mb-4 d-flex align-items-center gap-2" style={{ fontSize: '1.05rem', letterSpacing: '0.05em' }}>
               <ShieldAlert size={18} style={{ color: 'var(--theme-accent)' }} />
               <span style={{ color: 'var(--theme-accent)' }}>Active Oncological Symptoms & Warning Flags</span>
             </h4>
@@ -1384,7 +1395,7 @@ function GuestDashboard({ openAuth }) {
               >
                 {/* Guest Profile Information Card */}
                 <div className="panel-alt p-4">
-                  <h4 className="fw-bold mb-3 text-white d-flex align-items-center gap-2" style={{ fontSize: '1rem' }}>
+                  <h4 className="fw-bold mb-3  d-flex align-items-center gap-2" style={{ fontSize: '1rem' }}>
                     <User size={18} style={{ color: 'var(--theme-accent)' }} />
                     <span style={{ color: 'var(--theme-accent)' }}>Guest Identification Info</span>
                   </h4>
@@ -1393,7 +1404,7 @@ function GuestDashboard({ openAuth }) {
                   </p>
                   <div className="row g-3">
                     <div className="col-6">
-                      <div className="predictor-card" style={{ background: 'rgba(255, 255, 255, 0.02)', padding: '15px', borderRadius: '8px', border: '1px solid rgba(255, 255, 255, 0.05)' }}>
+                      <div className="predictor-card" style={{ padding: '15px' }}>
                         <label className="small text-secondary fw-semibold mb-2 font-monospace d-block">Full Name</label>
                         <input 
                           type="text" 
@@ -1402,20 +1413,20 @@ function GuestDashboard({ openAuth }) {
                           onChange={(e) => { setGuestName(e.target.value); setHasChanges(true); }}
                           style={{
                             width: '100%',
-                            background: 'rgba(255, 255, 255, 0.05)',
-                            border: '1px solid rgba(255, 255, 255, 0.1)',
+                            background: 'var(--bg-input)',
+                            border: '1px solid var(--border)',
                             borderRadius: '6px',
-                            color: 'white',
+                            color: 'var(--text-primary)',
                             padding: '10px 14px',
                             fontSize: '0.88rem',
                             outline: 'none',
-                            fontFamily: 'monospace'
+                            fontFamily: 'var(--font-mono)'
                           }}
                         />
                       </div>
                     </div>
                     <div className="col-6">
-                      <div className="predictor-card" style={{ background: 'rgba(255, 255, 255, 0.02)', padding: '15px', borderRadius: '8px', border: '1px solid rgba(255, 255, 255, 0.05)' }}>
+                      <div className="predictor-card" style={{ padding: '15px' }}>
                         <label className="small text-secondary fw-semibold mb-2 font-monospace d-block">Email Address </label>
                         <input 
                           type="email" 
@@ -1424,14 +1435,14 @@ function GuestDashboard({ openAuth }) {
                           onChange={(e) => { setGuestEmail(e.target.value); setHasChanges(true); }}
                           style={{
                             width: '100%',
-                            background: 'rgba(255, 255, 255, 0.05)',
-                            border: '1px solid rgba(255, 255, 255, 0.1)',
+                            background: 'var(--bg-input)',
+                            border: '1px solid var(--border)',
                             borderRadius: '6px',
-                            color: 'white',
+                            color: 'var(--text-primary)',
                             padding: '10px 14px',
                             fontSize: '0.88rem',
                             outline: 'none',
-                            fontFamily: 'monospace'
+                            fontFamily: 'var(--font-mono)'
                           }}
                         />
                       </div>
@@ -1441,7 +1452,7 @@ function GuestDashboard({ openAuth }) {
 
                 {/* Container 1: Modular Demographics Card */}
                 <div className="glass-card p-4">
-                  <h4 className="fw-bold mb-3 text-white d-flex align-items-center gap-2" style={{ fontSize: '1rem' }}>
+                  <h4 className="fw-bold mb-3  d-flex align-items-center gap-2" style={{ fontSize: '1rem' }}>
                     <User size={18} style={{ color: 'var(--theme-accent)' }} />
                     <span style={{ color: 'var(--theme-accent)' }}>Patient Demographics</span>
                   </h4>
@@ -1472,8 +1483,8 @@ function GuestDashboard({ openAuth }) {
                               className="typeable-number-input"
                               style={{
                                 width: '65px',
-                                background: 'rgba(255,255,255,0.07)',
-                                border: '1px solid rgba(255,255,255,0.15)',
+                                background: 'var(--bg-input)',
+                                border: '1px solid var(--border)',
                                 borderRadius: '4px',
                                 color: 'var(--theme-accent)',
                                 textAlign: 'center',
@@ -1490,58 +1501,61 @@ function GuestDashboard({ openAuth }) {
                     </div>
 
                     <div className="col-md-6">
-                      <div className="predictor-card">
-                        <label className="small text-secondary fw-semibold mb-2 font-monospace">Biological Gender</label>
-                        <div className="d-flex flex-wrap gap-2">
+                      <div className="predictor-card h-100">
+                        <label className="small text-secondary fw-semibold mb-2 d-block">Biological Gender</label>
+                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
                           {[
                             { val: 'M', label: 'Male (XY)' },
                             { val: 'F', label: 'Female (XX)' }
                           ].map(opt => (
-                            <div 
+                            <button 
+                              type="button"
                               key={opt.val} onClick={() => setGender(opt.val)}
-                              className={`px-3 py-2 rounded border cursor-pointer font-monospace text-center flex-grow-1 ${gender === opt.val ? 'border-theme-accent bg-theme-accent bg-opacity-10 text-white fw-bold' : 'border-white-10 bg-white-5 text-secondary hover-white'}`}
-                              style={{ fontSize: '0.82rem', transition: 'all 0.2s' }}
-                            >{opt.label}</div>
+                              className={`px-3 py-2.5 rounded border cursor-pointer text-center ${gender === opt.val ? 'border-theme-accent bg-theme-accent text-white fw-bold' : 'border-white-10 bg-white-5 text-secondary hover-white'}`}
+                              style={{ fontSize: '0.82rem', transition: 'all 0.2s', width: '100%' }}
+                            >{opt.label}</button>
                           ))}
                         </div>
                       </div>
                     </div>
 
                     <div className="col-md-6">
-                      <div className="predictor-card">
-                        <label className="small text-secondary fw-semibold mb-2 font-monospace">Family Medical History</label>
-                        <div className="d-flex flex-wrap gap-2">
+                      <div className="predictor-card h-100">
+                        <label className="small text-secondary fw-semibold mb-2 d-block">Family Medical History</label>
+                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(100px, 1fr))', gap: '8px' }}>
                           {[
                             { val: 'no', label: 'None' },
-                            { val: 'mild', label: 'Extended Only' },
-                            { val: 'yes', label: 'Immediate Relative' },
-                            { val: 'severe', label: 'Multiple Relatives' },
+                            { val: 'mild', label: 'Extended' },
+                            { val: 'yes', label: 'Immediate' },
+                            { val: 'severe', label: 'Multiple' },
                             { val: 'unknown', label: 'Unknown' }
                           ].map(opt => (
-                            <div 
+                            <button 
+                              type="button"
                               key={opt.val} onClick={() => setFamilyHistory(opt.val)}
-                              className={`px-2 py-2 rounded border cursor-pointer font-monospace text-center flex-grow-1 ${familyHistory === opt.val ? 'border-theme-accent bg-theme-accent bg-opacity-10 text-white fw-bold' : 'border-white-10 bg-white-5 text-secondary hover-white'}`}
-                              style={{ fontSize: '0.75rem', transition: 'all 0.2s' }}
-                            >{opt.label}</div>
+                              className={`px-2 py-2.5 rounded border cursor-pointer text-center ${familyHistory === opt.val ? 'border-theme-accent bg-theme-accent text-white fw-bold' : 'border-white-10 bg-white-5 text-secondary hover-white'}`}
+                              style={{ fontSize: '0.76rem', transition: 'all 0.2s', width: '100%' }}
+                            >{opt.label}</button>
                           ))}
                         </div>
                       </div>
                     </div>
 
                     <div className="col-md-6">
-                      <div className="predictor-card">
-                        <label className="small text-secondary fw-semibold mb-2 font-monospace">Smoking Status</label>
-                        <div className="d-flex flex-wrap gap-2">
+                      <div className="predictor-card h-100">
+                        <label className="small text-secondary fw-semibold mb-2 d-block">Smoking Status</label>
+                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '8px' }}>
                           {[
-                            { val: 'no', label: 'Never / Non-Smoker' },
-                            { val: 'former', label: 'Former Smoker' },
-                            { val: 'yes', label: 'Active Smoker' }
+                            { val: 'no', label: 'Non-Smoker' },
+                            { val: 'former', label: 'Former' },
+                            { val: 'yes', label: 'Active' }
                           ].map(opt => (
-                            <div 
+                            <button 
+                              type="button"
                               key={opt.val} onClick={() => setSmoking(opt.val)}
-                              className={`px-2 py-2 rounded border cursor-pointer font-monospace text-center flex-grow-1 ${smoking === opt.val ? 'border-theme-accent bg-theme-accent bg-opacity-10 text-white fw-bold' : 'border-white-10 bg-white-5 text-secondary hover-white'}`}
-                              style={{ fontSize: '0.75rem', transition: 'all 0.2s' }}
-                            >{opt.label}</div>
+                              className={`px-2 py-2.5 rounded border cursor-pointer text-center ${smoking === opt.val ? 'border-theme-accent bg-theme-accent text-white fw-bold' : 'border-white-10 bg-white-5 text-secondary hover-white'}`}
+                              style={{ fontSize: '0.78rem', transition: 'all 0.2s', width: '100%' }}
+                            >{opt.label}</button>
                           ))}
                         </div>
                       </div>
@@ -1550,7 +1564,7 @@ function GuestDashboard({ openAuth }) {
                 </div>
 
                 {/* Container 2: Dynamic Vitals Form */}
-                <div className="panel-form float-subtle p-4">
+                <div className="panel-form p-4">
                   {renderDiseaseVitals()}
                 </div>
 
@@ -1584,7 +1598,7 @@ function GuestDashboard({ openAuth }) {
                       margin: 0,
                       opacity: (hasChanges && consentChecked) ? 1 : 0.45,
                       cursor: (hasChanges && consentChecked) ? 'pointer' : 'not-allowed',
-                      borderColor: (hasChanges && consentChecked) ? 'var(--theme-accent)' : 'rgba(255, 255, 255, 0.1)'
+                      borderColor: (hasChanges && consentChecked) ? 'var(--theme-accent)' : 'var(--border)'
                     }}
                   >
                     <Activity size={18} />
@@ -1616,9 +1630,9 @@ function GuestDashboard({ openAuth }) {
                   <Cpu size={32} className="position-absolute" style={{ color: 'var(--theme-accent)' }} />
                 </div>
                 
-                <h3 className="fw-bold mb-2 font-monospace text-white">Analyzing Health Profile...</h3>
+                <h3 className="fw-bold mb-2 font-monospace" style={{ color: "var(--text-primary)" }}>Analyzing Health Profile...</h3>
                 <p className="text-secondary small font-monospace mt-2">{simulationLog || 'Please wait while we process your vitals...'}</p>
-                <div className="w-50 bg-white-10 rounded mt-3" style={{ height: '6px', overflow: 'hidden' }}>
+                <div className="w-50 rounded mt-3" style={{ background: "var(--grad-track)", height: '6px', overflow: 'hidden' }}>
                   <div className="h-100 bg-theme-accent" style={{ width: `${analysisProgress}%`, transition: 'width 0.4s ease' }}></div>
                 </div>
               </motion.div>
@@ -1665,7 +1679,7 @@ function GuestDashboard({ openAuth }) {
                       {/* Ring SVG Gauge */}
                       <div className="position-relative d-flex align-items-center justify-content-center mb-3" style={{ width: '160px', height: '160px' }}>
                         <svg width="160" height="160" viewBox="0 0 160 160" className="position-absolute" style={{ transform: 'rotate(-90deg)' }}>
-                          <circle cx="80" cy="80" r="68" stroke="rgba(255,255,255,0.04)" strokeWidth="8" fill="transparent" />
+                          <circle cx="80" cy="80" r="68" stroke="var(--grad-track)" strokeWidth="8" fill="transparent" />
                           <circle 
                             cx="80" cy="80" r="68" 
                             stroke={getRiskColor(result.risk_level)} 
@@ -1690,7 +1704,7 @@ function GuestDashboard({ openAuth }) {
 
                     {/* Right Reasoning sub-column */}
                     <div className="col-md-8 ps-md-4">
-                      <h3 className="fw-bold mb-2 text-white font-monospace" style={{ fontSize: '1.35rem' }}>Diagnostic Clinical Synthesis</h3>
+                      <h3 className="fw-bold mb-2 font-monospace" style={{ fontSize: "1.35rem", color: "var(--text-primary)" }}>Diagnostic Clinical Synthesis</h3>
                       <p className="text-secondary font-monospace" style={{ lineHeight: 1.6, fontSize: '0.98rem' }}>
                         {result.clinical_reasoning}
                       </p>
@@ -1701,7 +1715,7 @@ function GuestDashboard({ openAuth }) {
 
                 {/* PRESCRIBED PREVENTATIVE REMEDY MATRIX */}
                 <div className="panel-alt p-4">
-                  <h4 className="fw-bold mb-4 text-white d-flex align-items-center gap-2" style={{ fontSize: '1.35rem' }}>
+                  <h4 className="fw-bold mb-4 d-flex align-items-center gap-2" style={{ fontSize: '1.35rem' }}>
                     <BookOpen className="text-theme-accent" size={20} />
                     Prescribed Preventative Remedies
                   </h4>
@@ -1748,7 +1762,7 @@ function GuestDashboard({ openAuth }) {
                         exit={{ opacity: 0, y: -5 }}
                       >
                         <div className="row g-2">
-                          {result.remedies?.dietary_guidelines?.map((item, idx) => (
+                          {safeList(result.remedies?.dietary_guidelines).map((item, idx) => (
                             <div className="col-md-6" key={idx}>
                               <div className="p-3 bg-white-10 bg-opacity-20 rounded border border-white-5 font-monospace text-secondary small h-100 d-flex gap-2" style={{ fontSize: '0.92rem' }}>
                                 <span>•</span>
@@ -1768,7 +1782,7 @@ function GuestDashboard({ openAuth }) {
                         exit={{ opacity: 0, y: -5 }}
                       >
                         <div className="row g-2">
-                          {result.remedies?.lifestyle_modifications?.map((item, idx) => (
+                          {safeList(result.remedies?.lifestyle_modifications).map((item, idx) => (
                             <div className="col-md-6" key={idx}>
                               <div className="p-3 bg-white-10 bg-opacity-20 rounded border border-white-5 font-monospace text-secondary small h-100 d-flex gap-2" style={{ fontSize: '0.92rem' }}>
                                 <span>•</span>
@@ -1789,9 +1803,9 @@ function GuestDashboard({ openAuth }) {
                         className="font-monospace"
                       >
                         <div className="p-3 bg-white-10 border border-white-10 rounded">
-                          <h6 className="fw-bold text-white m-0 mb-2 font-monospace" style={{ fontSize: '0.94rem' }}>Clinical Recommendations</h6>
+                          <h6 className="fw-bold m-0 mb-2 font-monospace" style={{ color: "var(--text-primary)", fontSize: '0.94rem' }}>Clinical Recommendations</h6>
                           <ul className="small text-secondary ps-3 mb-0 font-monospace" style={{ fontSize: '0.88rem' }}>
-                            {result.remedies?.clinical_recommendations?.map((item, idx) => (
+                            {safeList(result.remedies?.clinical_recommendations).map((item, idx) => (
                               <li key={idx} className="mb-1">{item}</li>
                             ))}
                           </ul>
@@ -1809,7 +1823,7 @@ function GuestDashboard({ openAuth }) {
                       >
                         <div className="p-3 bg-danger bg-opacity-10 border border-danger border-opacity-30 rounded">
                           <ul className="small text-danger ps-3 mb-0 font-monospace" style={{ fontSize: '0.88rem' }}>
-                            {result.remedies?.urgent_warning_signs?.map((item, idx) => (
+                            {safeList(result.remedies?.urgent_warning_signs).map((item, idx) => (
                               <li key={idx} className="mb-1">{item}</li>
                             ))}
                           </ul>
@@ -1824,7 +1838,7 @@ function GuestDashboard({ openAuth }) {
                   <button
                     onClick={() => setShowFactors(prev => !prev)}
                     className="btn-icon d-flex align-items-center gap-2 font-monospace text-uppercase w-100 justify-content-between"
-                    style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px', padding: '12px 16px', color: 'var(--theme-accent)', fontSize: '0.9rem', cursor: 'pointer', width: '100%' }}
+                    style={{ background: 'var(--bg-card-tinted)', border: '1px solid var(--border)', borderRadius: '8px', padding: '12px 16px', color: 'var(--brand-orange)', fontSize: '0.9rem', cursor: 'pointer', width: '100%' }}
                   >
                     <span>Why this score?</span>
                     <span style={{ fontSize: '0.75rem', opacity: 0.7 }}>{showFactors ? 'Hide' : 'Show'} Key Risk Factors</span>
@@ -1832,21 +1846,21 @@ function GuestDashboard({ openAuth }) {
 
                   {showFactors && (
                     <div className="mt-3">
-                      <h6 className="fw-bold text-white font-monospace mb-2" style={{ fontSize: '0.95rem' }}>Key Risk Factors</h6>
-                      <p className="text-secondary font-monospace mb-3" style={{ fontSize: '0.78rem', lineHeight: '1.5', padding: '10px 14px', background: 'rgba(255,255,255,0.03)', borderRadius: '6px', border: '1px solid rgba(255,255,255,0.07)' }}>
+                      <h6 className="fw-bold font-monospace mb-2" style={{ fontSize: "0.95rem", color: "var(--text-primary)" }}>Key Risk Factors</h6>
+                      <p className="text-secondary font-monospace mb-3" style={{ fontSize: '0.78rem', lineHeight: '1.5', padding: '10px 14px', background: 'var(--bg-surface)', borderRadius: '6px', border: '1px solid var(--border)' }}>
                         These factors influenced the machine learning model estimate. They do not establish medical causation or constitute a diagnosis.
                       </p>
                       {result.factors && result.factors.length > 0 ? (
                         <div className="d-flex flex-column gap-2">
                           {result.factors.slice(0, 5).map((factor, idx) => (
-                            <div key={idx} style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px', padding: '12px 16px' }}>
+                            <div key={idx} style={{ background: 'var(--bg-surface)', border: '1px solid var(--border)', borderRadius: '8px', padding: '12px 16px' }}>
                               <div className="d-flex justify-content-between align-items-center mb-1">
                                 <span className="font-monospace fw-bold text-white" style={{ fontSize: '0.88rem' }}>{factor.feature}</span>
                                 <span className="font-monospace text-secondary" style={{ fontSize: '0.8rem' }}>
                                   Value: <span style={{ color: 'var(--theme-accent)' }}>{factor.value}</span>
                                 </span>
                               </div>
-                              <div style={{ background: 'rgba(255,255,255,0.08)', borderRadius: '4px', height: '6px', overflow: 'hidden' }}>
+                              <div style={{ background: 'var(--grad-track)', borderRadius: '4px', height: '6px', overflow: 'hidden' }}>
                                 <div style={{ width: `${Math.min(100, (factor.importance || 0) * 100)}%`, height: '100%', background: 'var(--theme-accent)', borderRadius: '4px', transition: 'width 0.6s ease' }} />
                               </div>
                               <div className="d-flex justify-content-between mt-1">
@@ -1889,7 +1903,7 @@ function GuestDashboard({ openAuth }) {
                       setShowSimulator(prev => !prev);
                     }}
                     className="btn-icon d-flex align-items-center gap-2 font-monospace text-uppercase w-100 justify-content-between"
-                    style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px', padding: '12px 16px', color: '#60a5fa', fontSize: '0.9rem', cursor: 'pointer', width: '100%' }}
+                    style={{ background: 'var(--bg-card-tinted)', border: '1px solid var(--border)', borderRadius: '8px', padding: '12px 16px', color: 'var(--brand-blue)', fontSize: '0.9rem', cursor: 'pointer', width: '100%' }}
                   >
                     <span>What-If Simulator</span>
                     <span style={{ fontSize: '0.75rem', opacity: 0.7 }}>{showSimulator ? 'Close' : 'Open'} Simulator</span>
@@ -1897,8 +1911,8 @@ function GuestDashboard({ openAuth }) {
 
                   {showSimulator && (
                     <div className="mt-3">
-                      <h6 className="fw-bold text-white font-monospace mb-2" style={{ fontSize: '0.95rem' }}>What-If Risk Simulator</h6>
-                      <p className="text-secondary font-monospace mb-3" style={{ fontSize: '0.78rem', lineHeight: '1.5', padding: '10px 14px', background: 'rgba(96,165,250,0.06)', borderRadius: '6px', border: '1px solid rgba(96,165,250,0.2)' }}>
+                      <h6 className="fw-bold font-monospace mb-2" style={{ fontSize: "0.95rem", color: "var(--text-primary)" }}>What-If Risk Simulator</h6>
+                      <p className="text-secondary font-monospace mb-3" style={{ fontSize: '0.78rem', lineHeight: '1.5', padding: '10px 14px', background: 'var(--bg-card-tinted)', borderRadius: '6px', border: '1px solid var(--brand-blue)' }}>
                         This is a model simulation, not a medical prediction or treatment recommendation. Changing a value does not guarantee a real-world health outcome.
                       </p>
 

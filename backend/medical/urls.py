@@ -1,6 +1,7 @@
 from django.urls import path, re_path
 from . import views
 from . import diet_views
+from . import garden_views
 
 urlpatterns = [
     # Chat endpoint
@@ -50,8 +51,16 @@ urlpatterns = [
     # AI explain/translate route
     re_path(r'^ai/explain/?$', views.explain_result, name='explain_result'),
 
-    # FEAT-004: Consolidated health-twin endpoint
+    # Personal Health Twin Endpoints
+    re_path(r'^health-twin/organ/(?P<organ_id>[A-Za-z0-9_-]+)/?$', views.health_twin_organ_view, name='health_twin_organ'),
+    re_path(r'^health-twin/timeline/?$', views.health_twin_timeline_view, name='health_twin_timeline'),
+    re_path(r'^health-twin/models/?$', views.health_twin_models_view, name='health_twin_models'),
+    re_path(r'^health-twin/manifest/?$', views.health_twin_manifest_view, name='health_twin_manifest'),
+    re_path(r'^health-twin/observations/?$', views.health_twin_create_observation, name='health_twin_observations'),
     re_path(r'^health-twin/?$', views.health_twin_view, name='health_twin'),
+
+    # Live nearby facilities route
+    re_path(r'^nearby/?$', views.get_nearby_facilities, name='nearby_facilities'),
 
     # ── Diet Planner ──────────────────────────────────────────────────────
     re_path(r'^diet/preferences/?$', diet_views.diet_preferences, name='diet_preferences'),
@@ -59,7 +68,15 @@ urlpatterns = [
     re_path(r'^diet/plan/?$', diet_views.get_meal_plan, name='diet_plan'),
     re_path(r'^diet/swap/?$', diet_views.swap_meal, name='diet_swap'),
     re_path(r'^diet/meal-complete/?$', diet_views.meal_complete, name='diet_meal_complete'),
-    re_path(r'^diet/favorites/?$', diet_views.favorites, name='diet_favorites'),
+    re_path(r'^diet/favorites(?:/(?P<fav_id>\d+))?/?$', diet_views.favorites, name='diet_favorites'),
     re_path(r'^diet/shopping-list/(?P<item_id>\d+)/?$', diet_views.shopping_list_item, name='diet_shopping_item'),
     re_path(r'^diet/shopping-list/?$', diet_views.shopping_list, name='diet_shopping_list'),
+
+    # ── Health Garden ──────────────────────────────────────────────────────
+    re_path(r'^garden/activity/?$', garden_views.log_garden_activity, name='garden_activity'),
+    re_path(r'^garden/status/?$', garden_views.garden_status, name='garden_status'),
+    re_path(r'^garden/history/?$', garden_views.garden_history, name='garden_history'),
+    re_path(r'^garden/achievements/?$', garden_views.garden_achievements, name='garden_achievements'),
+    re_path(r'^garden/?$', garden_views.garden_status, name='garden_status_root'),
 ]
+

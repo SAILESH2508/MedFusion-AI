@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { MessageSquare, X, Send, Bot, User, RefreshCw, ChevronDown, Mic, MicOff, Download, Activity, AlertTriangle, Stethoscope } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useLocation } from 'react-router-dom';
 import { api } from '../services/api';
 import { useTheme } from '../context/useTheme';
 
@@ -326,6 +327,15 @@ export default function AIChatbot({ user }) {
     ? ['Explain my risk score', 'What to eat for my condition?', 'Are my vitals normal?', 'What supplements help?']
     : ['Signs of diabetes?', 'How to lower BP?', 'Healthy BMI range?', 'When to see a doctor?'];
 
+  // P2-02: On /digital-twin the drawer uses z-index 301. Lower chatbot FAB
+  // below the drawer so it never obscures module content. Raise FAB to
+  // bottom:90px to avoid overlapping the Health Twin Modules button.
+  const { pathname } = useLocation();
+  const isDigitalTwin = pathname.startsWith('/digital-twin');
+  const fabBottom = isDigitalTwin ? '90px' : '28px';
+  const fabZIndex = isDigitalTwin ? 200 : 9999;
+  const panelZIndex = isDigitalTwin ? 199 : 9998;
+
   return (
     <>
       {/* ── Toggle Button ── */}
@@ -336,12 +346,12 @@ export default function AIChatbot({ user }) {
         aria-label={isOpen ? 'Close health assistant' : 'Open health assistant'}
         className="d-flex align-items-center justify-content-center"
         style={{
-          position: 'fixed', bottom: '28px', right: '28px',
+          position: 'fixed', bottom: fabBottom, right: '28px',
           width: '54px', height: '54px', borderRadius: '50%',
           background: 'var(--brand-orange)',
           border: 'none',
           boxShadow: 'var(--shadow-md)',
-          cursor: 'pointer', zIndex: 9999,
+          cursor: 'pointer', zIndex: fabZIndex,
         }}
       >
         {isOpen ? <ChevronDown size={20} color="var(--text-on-brand)" /> : <MessageSquare size={20} color="var(--text-on-brand)" />}
@@ -362,14 +372,16 @@ export default function AIChatbot({ user }) {
             exit={{ opacity: 0, y: 20, scale: 0.98 }}
             transition={{ duration: 0.2 }}
             style={{
-              position: 'fixed', bottom: '94px', right: '28px',
+              position: 'fixed',
+              bottom: isDigitalTwin ? '156px' : '94px',
+              right: '28px',
               width: '390px', maxWidth: 'calc(100vw - 36px)', maxHeight: '600px',
               display: 'flex', flexDirection: 'column',
               background: C.panelBg,
               border: `1px solid ${C.panelBorder}`,
               borderRadius: '12px',
               boxShadow: C.panelShadow,
-              zIndex: 9998, overflow: 'hidden',
+              zIndex: panelZIndex, overflow: 'hidden',
             }}
           >
             {/* Header */}

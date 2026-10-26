@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, createContext, useCallback } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate, Link, useLocation, NavLink as RouterNavLink } from 'react-router-dom';
-import { Activity, FileUp, Database, User, LogOut, Menu, X, Home, PanelLeft, Pill, Smile, Calendar, MessageSquare, MapPin, Sun, Moon, Salad, Cpu, QrCode, ShieldAlert, Stethoscope, HeartPulse, BrainCircuit, UtensilsCrossed, FlaskConical } from 'lucide-react';
+import { Activity, FileUp, Database, User, LogOut, Menu, X, Home, PanelLeft, Pill, Smile, Calendar, MessageSquare, MapPin, Sun, Moon, Salad, Cpu, QrCode, ShieldAlert, Stethoscope, HeartPulse, BrainCircuit, UtensilsCrossed, FlaskConical, Sprout } from 'lucide-react';
 import { AnimatePresence, motion } from 'framer-motion';
 
 // Pages
@@ -13,7 +13,6 @@ import Auth from './pages/Auth';
 import Landing from './pages/Landing';
 import NearbyMap from './pages/NearbyMap';
 import EmergencyCard from './pages/EmergencyCard';
-import DietPlanner from './pages/DietPlanner';
 import DigitalTwin from './pages/DigitalTwin';
 import AIChatbot from './components/AIChatbot';
 import { removeAuthToken, api } from './services/api';
@@ -66,7 +65,7 @@ function RedirectToHomeAndOpenAuth({ openAuth }) {
 function AppContent({ user, login, logout }) {
   const location = useLocation();
   const isAuthPage = location.pathname.startsWith('/auth');
-  const isSidebarPage = location.pathname.includes('dashboard') || location.pathname.includes('upload') || location.pathname.includes('nearby') || location.pathname.includes('diet') || (!!user && location.pathname.includes('profile'));
+  const isSidebarPage = location.pathname.includes('dashboard') || location.pathname.includes('upload') || location.pathname.includes('nearby') || location.pathname.includes('digital-twin') || location.pathname.includes('diet') || location.pathname.includes('garden') || (!!user && location.pathname.includes('profile'));
   
   const [sidebarContent, setSidebarContent] = useState(null);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -142,7 +141,17 @@ function AppContent({ user, login, logout }) {
           {isSidebarPage && <Sidebar user={user} logout={logout} sidebarContent={sidebarContent} isOpen={isSidebarOpen} toggleSidebar={toggleSidebar} openAuth={openAuth} navbarHealthScore={navbarHealthScore} />}
           
           <div className={`flex-grow-1 d-flex flex-column ${isSidebarPage ? 'main-content-wrapper' : ''}`} style={{ minHeight: 0 }}>
-            <main className={`container-fluid ${location.pathname === '/upload' ? 'p-2 p-md-3' : 'py-4 px-md-5'} flex-grow-1 d-flex flex-column`} style={{ minHeight: 0 }}>
+            {/* P2-01: /digital-twin uses a full-viewport canvas — suppress all Bootstrap padding.
+                Guest unauthenticated calls to /health-twin/ return 401 and DigitalTwin falls
+                back to its built-in guest mode silently (P6-05 — documented, not a bug). */}
+            <main
+              className={`container-fluid ${
+                location.pathname === '/upload'
+                  ? 'p-2 p-md-3'
+                  : 'py-4 px-md-5'
+              } flex-grow-1 d-flex flex-column`}
+              style={{ minHeight: 0 }}
+            >
               <Routes>
                 <Route path="/" element={<Landing />} />
                 <Route path="/auth" element={<Auth login={login} />} />
@@ -162,8 +171,10 @@ function AppContent({ user, login, logout }) {
                     setPersistedRadius={setMapRadius}
                   />
                 } />
-                <Route path="/diet" element={user && user.role === 'Patient' ? <DietPlanner user={user} /> : <Navigate to="/" />} />
                 <Route path="/digital-twin" element={<DigitalTwin user={user} openAuth={openAuth} />} />
+                <Route path="/diet" element={<Navigate to="/digital-twin?tab=diet" replace />} />
+                <Route path="/garden" element={<Navigate to="/digital-twin?tab=garden" replace />} />
+                <Route path="/health-twin" element={<Navigate to="/digital-twin" replace />} />
                 <Route path="/vault" element={<Navigate to="/profile" />} />
                 <Route path="/profile" element={user ? <Profile user={user} onUserUpdate={login} /> : <RedirectToHomeAndOpenAuth openAuth={openAuth} />} />
                 
@@ -470,8 +481,7 @@ function Navbar({ user, logout, toggleSidebar, isSidebarPage, openAuth, navbarHe
             <>
               <NavLink to="/dashboard" icon={<HeartPulse size={16} />} label="Health Check" />
               <NavLink to="/upload" icon={<FlaskConical size={16} />} label="Scanner" />
-              <NavLink to="/diet" icon={<UtensilsCrossed size={16} />} label="Diet" />
-              <NavLink to="/digital-twin" icon={<BrainCircuit size={16} />} label="Health Twin" />
+              <NavLink to="/digital-twin" icon={<BrainCircuit size={16} />} label="Digital Twin" />
               <NavLink to="/nearby" icon={<MapPin size={16} />} label="Nearby" />
             </>
           )}
@@ -494,9 +504,6 @@ function Navbar({ user, logout, toggleSidebar, isSidebarPage, openAuth, navbarHe
 
           {/* Right-side utilities */}
           <div style={{ width: '1px', height: '20px', background: 'var(--border)', margin: '0 2px' }} />
-
-
-
 
           {user ? (
             <>
@@ -557,8 +564,7 @@ function Navbar({ user, logout, toggleSidebar, isSidebarPage, openAuth, navbarHe
                   <>
                     <MobileNavLink to="/dashboard" label="AI Health Check" onClick={() => setIsOpen(false)} />
                     <MobileNavLink to="/upload" label="AI Report Scanner" onClick={() => setIsOpen(false)} />
-                    <MobileNavLink to="/diet" label="Diet Planner" onClick={() => setIsOpen(false)} />
-                    <MobileNavLink to="/digital-twin" label="Personal Health Twin" onClick={() => setIsOpen(false)} />
+                    <MobileNavLink to="/digital-twin" label="Digital Twin" onClick={() => setIsOpen(false)} />
                     <MobileNavLink to="/nearby" label="Nearby Facilities" onClick={() => setIsOpen(false)} />
                   </>
                 )}

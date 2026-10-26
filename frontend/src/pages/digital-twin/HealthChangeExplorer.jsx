@@ -25,7 +25,7 @@ function buildBiomarkerList(patientData) {
 
 function parseNumeric(val) {
   if (val === null || val === undefined) return null;
-  const n = parseFloat(String(val).replace(/[^\d.\-]/g, ''));
+  const n = parseFloat(String(val).replace(/[^\d.-]/g, ''));
   return isNaN(n) ? null : n;
 }
 
@@ -96,7 +96,7 @@ export default function HealthChangeExplorer({ patientData }) {
 
       {/* Biomarker selector */}
       <div className="mb-3">
-        <label style={{ display: 'block', fontSize: '0.75rem', fontFamily: 'monospace', color: 'var(--text-muted)', marginBottom: '4px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Select Biomarker</label>
+        <label style={{ display: 'block', fontSize: '0.75rem', fontFamily: 'var(--font-mono)', color: 'var(--text-muted)', marginBottom: '4px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Select Biomarker</label>
         <select value={selectedBiomarker?.name || ''} onChange={handleBiomarkerChange}
           style={{ width: '100%', background: 'var(--bg-input)', border: '1px solid var(--border)', borderRadius: '6px', color: 'var(--text-primary)', padding: '6px 10px', fontSize: '0.85rem' }}>
           <option value="">— Choose a biomarker —</option>
@@ -110,7 +110,7 @@ export default function HealthChangeExplorer({ patientData }) {
       {selectedBiomarker && (
         <div style={{ background: 'var(--status-info-bg)', border: '1px solid var(--status-info-border)', borderRadius: '8px', padding: '8px 12px', marginBottom: '12px', fontSize: '0.82rem' }}>
           <span style={{ color: 'var(--text-secondary)' }}>Recorded value: </span>
-          <strong style={{ color: 'var(--brand-blue)', fontFamily: 'monospace' }}>{selectedBiomarker.value} {selectedBiomarker.unit}</strong>
+          <strong style={{ color: 'var(--brand-blue)', fontFamily: 'var(--font-mono)' }}>{selectedBiomarker.value} {selectedBiomarker.unit}</strong>
           <span style={{ color: 'var(--text-muted)', fontSize: '0.72rem', marginLeft: '8px' }}>({selectedBiomarker.date})</span>
         </div>
       )}
@@ -118,7 +118,7 @@ export default function HealthChangeExplorer({ patientData }) {
       {/* Hypothetical input */}
       {selectedBiomarker && (
         <div className="mb-3">
-          <label style={{ display: 'block', fontSize: '0.75rem', fontFamily: 'monospace', color: 'var(--text-muted)', marginBottom: '4px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+          <label style={{ display: 'block', fontSize: '0.75rem', fontFamily: 'var(--font-mono)', color: 'var(--text-muted)', marginBottom: '4px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
             Hypothetical Value (not saved){selectedBiomarker.unit ? ` — ${selectedBiomarker.unit}` : ''}
           </label>
           <input type="number" min={0} max={10000} value={hypotheticalValue} onChange={handleHypotheticalChange}
@@ -131,20 +131,20 @@ export default function HealthChangeExplorer({ patientData }) {
       {/* Comparison section */}
       {showComparison && (
         <div style={{ marginBottom: '12px' }}>
-          <p style={{ fontSize: '0.75rem', fontFamily: 'monospace', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '8px' }}>Comparison</p>
+          <p style={{ fontSize: '0.75rem', fontFamily: 'var(--font-mono)', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '8px' }}>Comparison</p>
 
           {/* Bar visualization */}
           <div style={{ marginBottom: '10px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.7rem', color: 'var(--text-secondary)', marginBottom: '3px' }}>
               <span>Recorded</span>
-              <span style={{ fontFamily: 'monospace', color: 'var(--brand-blue)' }}>{recordedNum} {selectedBiomarker.unit}</span>
+              <span style={{ fontFamily: 'var(--font-mono)', color: 'var(--brand-blue)' }}>{recordedNum} {selectedBiomarker.unit}</span>
             </div>
             <div style={{ height: '10px', background: 'var(--grad-track)', borderRadius: '5px', overflow: 'hidden', marginBottom: '6px' }}>
               <div style={{ height: '100%', width: `${recordedPct}%`, background: 'var(--brand-blue)', borderRadius: '5px', transition: 'width 0.3s' }} />
             </div>
             <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.7rem', color: 'var(--text-secondary)', marginBottom: '3px' }}>
               <span>Hypothetical</span>
-              <span style={{ fontFamily: 'monospace', color: 'var(--accent-violet)' }}>{hypotheticalNum} {selectedBiomarker.unit}</span>
+              <span style={{ fontFamily: 'var(--font-mono)', color: 'var(--accent-violet)' }}>{hypotheticalNum} {selectedBiomarker.unit}</span>
             </div>
             <div style={{ height: '10px', background: 'var(--grad-track)', borderRadius: '5px', overflow: 'hidden' }}>
               <div style={{ height: '100%', width: `${hypotheticalPct}%`, background: 'var(--accent-violet)', borderRadius: '5px', transition: 'width 0.3s' }} />
@@ -172,7 +172,7 @@ export default function HealthChangeExplorer({ patientData }) {
           {selectedBiomarker.reference_range && (
             <div style={{ marginTop: '10px', fontSize: '0.78rem' }}>
               <span style={{ color: 'var(--text-muted)' }}>Reference range: </span>
-              <span style={{ color: 'var(--text-primary)', fontFamily: 'monospace' }}>{selectedBiomarker.reference_range} {selectedBiomarker.unit}</span>
+              <span style={{ color: 'var(--text-primary)', fontFamily: 'var(--font-mono)' }}>{selectedBiomarker.reference_range} {selectedBiomarker.unit}</span>
               <div style={{ marginTop: '4px', display: 'flex', gap: '12px' }}>
                 <span style={{ color: 'var(--text-secondary)' }}>
                   Recorded:{' '}

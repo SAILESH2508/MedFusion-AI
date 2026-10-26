@@ -19,12 +19,13 @@
   --bg-nav: #111827;
   --bg-input: #374151;
   --bg-modal: #2D3748;
-  --text-primary: #E8E3DA;
-  --text-secondary: #B0BED4;
-  --text-muted: #7A90A8;
-  --text-disabled: #4A5568;
-  --text-on-dark: #E8E3DA;
+  --text-primary: #F8FAFC;
+  --text-secondary: #CBD5E1;
+  --text-muted: #94A3B8;
+  --text-disabled: #64748B;
+  --text-on-dark: #F8FAFC;
   --text-on-brand: #FFFFFF;
+  --accent-green: #34C97A;
   --border: #3D4F68;
   --border-focus: #F4954A;
   --border-card: #374155;
@@ -49,6 +50,20 @@
   --grad-track: #3D4F68;
   --font-main: 'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   --font-mono: 'JetBrains Mono', monospace;
+
+  /* RGB-Inspired Palette Tokens */
+  --rgb-red: #EF4444;
+  --rgb-green: #10B981;
+  --rgb-blue: #3B82F6;
+  --rgb-cyan: #06B6D4;
+  --rgb-teal: #14B8A6;
+  --rgb-violet: #8B5CF6;
+  --rgb-magenta: #D946EF;
+  --rgb-amber: #F59E0B;
+  --rgb-grad-primary: linear-gradient(135deg, #3B82F6 0%, #10B981 50%, #EF4444 100%);
+  --rgb-grad-accent: linear-gradient(90deg, #06B6D4 0%, #3B82F6 30%, #8B5CF6 60%, #EC4899 100%);
+  --rgb-grad-reading: linear-gradient(90deg, #06B6D4 0%, #10B981 40%, #F59E0B 75%, #EF4444 100%);
+  --rgb-focus-glow: 0 0 0 3px rgba(59, 130, 246, 0.22);
 }
 
 [data-theme='light'] {
@@ -61,12 +76,13 @@
   --bg-nav: #1E3A5F;
   --bg-input: #F7F5F1;
   --bg-modal: #F0EDE8;
-  --text-primary: #1A2333;
-  --text-secondary: #4A5568;
-  --text-muted: #718096;
-  --text-disabled: #A0AEC0;
-  --text-on-dark: #F7F5F1;
+  --text-primary: #0F172A;
+  --text-secondary: #27364B;
+  --text-muted: #475569;
+  --text-disabled: #64748B;
+  --text-on-dark: #F8FAFC;
   --text-on-brand: #FFFFFF;
+  --accent-green: #1E7A4A;
   --border: #D1C8BC;
   --border-focus: #E07B39;
   --border-card: #D9D3CC;
@@ -91,6 +107,20 @@
   --grad-track: #D1C8BC;
   --font-main: 'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   --font-mono: 'JetBrains Mono', monospace;
+
+  /* RGB-Inspired Palette Tokens (Light mode calibrated) */
+  --rgb-red: #DC2626;
+  --rgb-green: #059669;
+  --rgb-blue: #2563EB;
+  --rgb-cyan: #0891B2;
+  --rgb-teal: #0D9488;
+  --rgb-violet: #7C3AED;
+  --rgb-magenta: #C026D3;
+  --rgb-amber: #D97706;
+  --rgb-grad-primary: linear-gradient(135deg, #2563EB 0%, #059669 50%, #DC2626 100%);
+  --rgb-grad-accent: linear-gradient(90deg, #0891B2 0%, #2563EB 30%, #7C3AED 60%, #DB2777 100%);
+  --rgb-grad-reading: linear-gradient(90deg, #0891B2 0%, #059669 40%, #D97706 75%, #DC2626 100%);
+  --rgb-focus-glow: 0 0 0 3px rgba(37, 99, 235, 0.22);
 }
 
 /* ── Backward-compat aliases (old var names → new tokens) ─────────────────── */
@@ -171,27 +201,28 @@
   box-sizing: border-box;
 }
 
-/* 4. Background Grid — Subtle, Full-Page Grid Lines in Both Themes */
+/* 4. Background Grid — Subtle, High-Precision Clinical Blueprint Grid */
 body {
   background-color: var(--bg-page) !important;
   background-image:
-    linear-gradient(rgba(44,111,181,0.07) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(44,111,181,0.07) 1px, transparent 1px) !important;
-  background-size: 30px 30px !important;
+    linear-gradient(rgba(44, 111, 181, 0.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(44, 111, 181, 0.035) 1px, transparent 1px) !important;
+  background-size: 38px 38px !important;
   background-position: 0 0 !important;
   background-attachment: fixed !important;
   color: var(--text-primary);
   font-family: var(--font-main);
   overflow-x: hidden;
   min-height: 100vh;
+  line-height: 1.55;
   -webkit-font-smoothing: antialiased;
 }
 
 [data-theme="dark"] body {
   background-image:
-    linear-gradient(rgba(91,159,224,0.06) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(91,159,224,0.06) 1px, transparent 1px) !important;
-  background-size: 30px 30px !important;
+    linear-gradient(rgba(91, 159, 224, 0.028) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(91, 159, 224, 0.028) 1px, transparent 1px) !important;
+  background-size: 38px 38px !important;
 }
 
 /* ── Clean Healthcare Navigation Bar ─────────────────────────────────────── */
@@ -219,23 +250,28 @@ nav.bg-glass {
 }
 
 nav.bg-glass h1 {
-  color: var(--text-primary) !important;
+  color: #FFFFFF !important;
 }
 
 nav.bg-glass a {
-  color: var(--text-secondary) !important;
+  color: rgba(255, 255, 255, 0.8) !important;
 }
 
 nav.bg-glass .text-secondary {
-  color: var(--text-secondary) !important;
+  color: rgba(255, 255, 255, 0.8) !important;
   padding: 6px 12px;
   border-radius: 6px;
   transition: color 0.15s ease, background-color 0.15s ease;
 }
 
-nav.bg-glass .text-secondary:hover {
-  color: var(--text-primary) !important;
-  background: var(--bg-upload) !important;
+nav.bg-glass .text-secondary:hover,
+nav.bg-glass a:hover {
+  color: #FFFFFF !important;
+  background: rgba(255, 255, 255, 0.14) !important;
+}
+
+nav.bg-glass .btn-icon {
+  color: rgba(255, 255, 255, 0.85) !important;
 }
 
 /* Brand Logo: Clean, solid, medical authority */
@@ -277,7 +313,108 @@ nav.bg-glass .text-secondary:hover {
   flex-shrink: 0;
   overflow-y: auto;
   box-shadow: none !important;
-  color: var(--text-on-dark);
+  color: #E2E8F0 !important;
+}
+
+/* Sidebar High-Contrast Elements */
+.app-sidebar {
+  color: #FFFFFF !important;
+}
+
+.app-sidebar h1,
+.app-sidebar h2,
+.app-sidebar h3,
+.app-sidebar h4,
+.app-sidebar h5,
+.app-sidebar h6 {
+  color: #FFFFFF !important;
+}
+
+.app-sidebar .text-secondary {
+  color: rgba(255, 255, 255, 0.90) !important;
+}
+
+.app-sidebar .text-muted {
+  color: rgba(255, 255, 255, 0.85) !important;
+}
+
+.app-sidebar .text-white {
+  color: #FFFFFF !important;
+}
+
+.app-sidebar p {
+  color: rgba(255, 255, 255, 0.90);
+}
+
+.app-sidebar .glass-card {
+  background: rgba(255, 255, 255, 0.08) !important;
+  border-color: rgba(255, 255, 255, 0.16) !important;
+  color: #FFFFFF !important;
+}
+
+.app-sidebar .glass-card h1,
+.app-sidebar .glass-card h2,
+.app-sidebar .glass-card h3,
+.app-sidebar .glass-card h4 {
+  color: #FFFFFF !important;
+}
+
+.app-sidebar .glass-card p {
+  color: rgba(255, 255, 255, 0.88) !important;
+}
+
+/* Force elements with inline text colors in sidebar to remain bright & legible, excluding tiles with their own card background */
+.app-sidebar [style*="color: var(--text-primary)"]:not(.disease-select-tile *):not(.disease-select-tile),
+.app-sidebar [style*="color:var(--text-primary)"]:not(.disease-select-tile *):not(.disease-select-tile) {
+  color: #FFFFFF !important;
+}
+
+.app-sidebar [style*="color: var(--text-secondary)"]:not(.disease-select-tile *):not(.disease-select-tile),
+.app-sidebar [style*="color:var(--text-secondary)"]:not(.disease-select-tile *):not(.disease-select-tile) {
+  color: rgba(255, 255, 255, 0.90) !important;
+}
+
+.app-sidebar [style*="color: var(--text-muted)"]:not(.disease-select-tile *):not(.disease-select-tile),
+.app-sidebar [style*="color:var(--text-muted)"]:not(.disease-select-tile *):not(.disease-select-tile) {
+  color: rgba(255, 255, 255, 0.85) !important;
+}
+
+.app-sidebar [style*="rgba(255, 255, 255, 0.65)"],
+.app-sidebar [style*="rgba(255,255,255,0.65)"],
+.app-sidebar [style*="rgba(255, 255, 255, 0.58)"],
+.app-sidebar [style*="rgba(255,255,255,0.58)"],
+.app-sidebar [style*="rgba(255, 255, 255, 0.7)"],
+.app-sidebar [style*="rgba(255,255,255,0.7)"] {
+  color: rgba(255, 255, 255, 0.92) !important;
+}
+
+.app-sidebar .bg-white-5,
+.app-sidebar .bg-white-10 {
+  background: rgba(255, 255, 255, 0.08) !important;
+  border-color: rgba(255, 255, 255, 0.14) !important;
+  color: #FFFFFF !important;
+}
+
+.app-sidebar [style*="background: var(--bg-surface)"],
+.app-sidebar [style*="background:var(--bg-surface)"],
+.app-sidebar [style*="background: var(--bg-card)"],
+.app-sidebar [style*="background:var(--bg-card)"] {
+  background: rgba(255, 255, 255, 0.08) !important;
+  border-color: rgba(255, 255, 255, 0.16) !important;
+  color: #FFFFFF !important;
+}
+
+.app-sidebar select {
+  background: rgba(255, 255, 255, 0.1) !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  color: #FFFFFF !important;
+  padding: 8px 10px;
+  border-radius: 6px;
+}
+
+.app-sidebar select option {
+  background: #1E3A5F !important;
+  color: #FFFFFF !important;
 }
 
 .main-content-wrapper {
@@ -296,7 +433,7 @@ nav.bg-glass .text-secondary:hover {
   align-items: center;
   gap: 14px;
   padding: 10px 16px;
-  color: var(--text-secondary) !important;
+  color: rgba(255, 255, 255, 0.78) !important;
   text-decoration: none;
   font-weight: 600;
   font-size: 0.88rem;
@@ -311,9 +448,9 @@ nav.bg-glass .text-secondary:hover {
 }
 
 .sidebar-link:hover {
-  color: var(--text-on-dark) !important;
-  background: var(--bg-card-tinted) !important;
-  border-color: var(--border-color) !important;
+  color: #FFFFFF !important;
+  background: rgba(255, 255, 255, 0.12) !important;
+  border-color: rgba(255, 255, 255, 0.18) !important;
 }
 
 .sidebar-link:hover svg {
@@ -321,8 +458,8 @@ nav.bg-glass .text-secondary:hover {
 }
 
 .sidebar-link.active {
-  color: var(--text-on-dark) !important;
-  background: var(--bg-card) !important;
+  color: #FFFFFF !important;
+  background: rgba(255, 255, 255, 0.18) !important;
   border-color: var(--brand-orange) !important;
   font-weight: 700;
 }
@@ -406,8 +543,8 @@ h4 .text-info,
   color: var(--text-muted) !important;
 }
 
-/* Adapt text-white to primary text unless on colored primary buttons or status badges */
-[data-theme='light'] .text-white:not(.btn):not(.btn *):not(.badge):not(.badge *):not(.btn-clinical.primary):not(.btn-clinical.primary *):not([style*="background: #"]):not([style*="background:#"]):not([style*="background-color: #"]):not([style*="background-color:#"]):not([style*="background: var(--btn"]):not([style*="background-color: var(--btn"]) {
+/* Adapt text-white to primary text unless on dark containers, colored primary buttons or status badges */
+[data-theme='light'] .text-white:not(.app-sidebar *):not(nav.bg-glass *):not(.glass-card--map *):not(.btn):not(.btn *):not(.badge):not(.badge *):not(.btn-clinical.primary):not(.btn-clinical.primary *):not([style*="background: #"]):not([style*="background:#"]):not([style*="background-color: #"]):not([style*="background-color:#"]):not([style*="background: var(--btn"]):not([style*="background-color: var(--btn"]):not(.bg-theme-accent):not(.bg-theme-accent *):not([class*="bg-theme-accent"]):not([class*="bg-theme-accent"] *):not([class*="border-theme-accent"]):not([class*="border-theme-accent"] *):not([class*="active-symptom"]):not([class*="active-symptom"] *) {
   color: var(--text-primary) !important;
 }
 
@@ -493,10 +630,33 @@ h4 .text-info,
 .smartcard-hologram {
   background: var(--bg-card) !important;
   border: 1px solid var(--border-color) !important;
-  border-radius: 8px !important;
+  border-radius: 12px !important;
+  padding: 16px 18px !important;
   color: var(--text-primary) !important;
   box-shadow: var(--card-shadow) !important;
-  transition: border-color 0.15s ease, background-color 0.15s ease !important;
+  transition: border-color 0.15s ease, background-color 0.15s ease, box-shadow 0.15s ease !important;
+}
+
+.telemetry-node {
+  padding: 16px 18px !important;
+  border-radius: 12px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: space-between !important;
+  min-height: 86px !important;
+  border: 1px solid var(--border-color) !important;
+}
+
+.telemetry-node:hover {
+  border-color: var(--brand-blue) !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.18) !important;
+}
+
+.predictor-card {
+  position: relative;
+  overflow: hidden;
+  padding: 18px 20px !important;
+  border-radius: 12px !important;
 }
 
 .med-item-card:hover,
@@ -506,7 +666,6 @@ h4 .text-info,
 .inner-vault-card:hover,
 .predictor-card:hover,
 .patient-row:hover,
-.telemetry-node:hover,
 .target-node:hover,
 .smartcard-hologram:hover {
   border-color: var(--primary-accent) !important;
@@ -565,21 +724,20 @@ input, select, textarea, .typeable-number-input {
   border: 1px solid var(--border-color) !important;
   color: var(--text-primary) !important;
   border-radius: 8px !important;
-  padding: 11px 15px !important;
+  padding: 12px 16px !important;
   font-family: var(--font-main);
   width: 100%;
   margin-bottom: 12px;
-  transition: border-color 0.15s ease, outline 0.15s ease !important;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease !important;
   font-size: 0.92rem;
 }
 
 input:focus, select:focus, textarea:focus, .typeable-number-input:focus {
-  outline: 2px solid var(--primary-accent) !important;
-  outline-offset: 1px !important;
-  border-color: var(--primary-accent) !important;
+  outline: none !important;
+  border-color: var(--brand-blue) !important;
   background: var(--bg-input) !important;
   color: var(--text-primary) !important;
-  box-shadow: none !important;
+  box-shadow: var(--rgb-focus-glow) !important;
 }
 
 input::placeholder, textarea::placeholder {
@@ -609,38 +767,191 @@ option {
   caret-color: #E8E3DA !important;
 }
 
-/* Range input track & thumb styling */
+/* ─── Sliders, Progress Bars, and Predictor Cards ───────────────────────── */
+
+/* Range input — advanced RGB track and accessible clinical thumb */
 input[type="range"] {
   -webkit-appearance: none;
   appearance: none;
-  background: var(--border-color) !important;
-  height: 6px;
-  border-radius: 3px;
+  width: 100%;
+  height: 8px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #3B82F6 0%, #10B981 45%, #F59E0B 75%, #EF4444 100%) !important;
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.25);
   cursor: pointer;
   position: relative;
+  outline: none;
+  border: none !important;
+  transition: opacity 0.15s ease;
+}
+
+input[type="range"]:hover {
+  opacity: 0.92;
 }
 
 input[type="range"]::-webkit-slider-runnable-track {
-  background: var(--border-color);
-  height: 6px;
-  border-radius: 3px;
+  -webkit-appearance: none;
+  background: transparent;
+  height: 8px;
+  border-radius: 999px;
+  border: none;
+}
+
+input[type="range"]::-moz-range-track {
+  background: linear-gradient(90deg, #3B82F6 0%, #10B981 45%, #F59E0B 75%, #EF4444 100%) !important;
+  height: 8px;
+  border-radius: 999px;
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.25);
+  border: none;
 }
 
 input[type="range"]::-webkit-slider-thumb {
   -webkit-appearance: none;
-  width: 18px;
-  height: 18px;
+  appearance: none;
+  width: 20px;
+  height: 20px;
   border-radius: 50%;
-  background: var(--primary-accent);
-  border: 2px solid var(--bg-card);
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+  background: var(--bg-card);
+  border: 2.5px solid var(--brand-blue);
+  box-shadow: 0 1px 5px rgba(0, 0, 0, 0.35);
   cursor: pointer;
   margin-top: -6px;
-  transition: transform 0.1s ease;
+  transition: transform 0.12s ease, border-color 0.15s ease;
 }
 
 input[type="range"]::-webkit-slider-thumb:hover {
-  transform: scale(1.1);
+  transform: scale(1.15);
+  border-color: var(--brand-orange);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.45);
+}
+
+input[type="range"]::-moz-range-thumb {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--bg-card);
+  border: 2.5px solid var(--brand-blue);
+  box-shadow: 0 1px 5px rgba(0, 0, 0, 0.35);
+  cursor: pointer;
+  transition: transform 0.12s ease, border-color 0.15s ease;
+}
+
+input[type="range"]::-moz-range-thumb:hover {
+  transform: scale(1.15);
+  border-color: var(--brand-orange);
+}
+
+/* ── Progress Bars & Telemetry Indicator Bars ── */
+.progress {
+  background: var(--grad-track) !important;
+  border-radius: 999px !important;
+  box-shadow: none !important;
+  overflow: hidden !important;
+  height: 8px !important;
+}
+
+.progress-bar {
+  background: linear-gradient(90deg, #06B6D4 0%, #3B82F6 30%, #8B5CF6 60%, #EC4899 100%) !important;
+  border-radius: 999px !important;
+  box-shadow: none !important;
+  transition: width 0.4s ease !important;
+}
+
+.h-100.bg-theme-accent {
+  background: linear-gradient(90deg, #3B82F6 0%, #10B981 50%, #F59E0B 100%) !important;
+  animation: none !important;
+  box-shadow: none !important;
+}
+
+/* ── Advanced RGB Medical Reading Bars ── */
+.medical-reading-bar {
+  margin-top: 10px;
+  font-family: var(--font-main);
+}
+
+.reading-bar-labels {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.72rem;
+  color: var(--text-secondary);
+  margin-bottom: 5px;
+  font-weight: 500;
+}
+
+.reading-bar-track {
+  position: relative;
+  width: 100%;
+  height: 8px;
+  border-radius: 999px;
+  background: var(--grad-track);
+  overflow: visible;
+}
+
+.reading-bar-zone-normal {
+  position: absolute;
+  top: 0;
+  height: 100%;
+  background: rgba(16, 185, 129, 0.35);
+  border-left: 1px solid rgba(16, 185, 129, 0.6);
+  border-right: 1px solid rgba(16, 185, 129, 0.6);
+  border-radius: 2px;
+}
+
+.reading-bar-marker {
+  position: absolute;
+  top: -4px;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  transform: translateX(-50%);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.35);
+  border: 2px solid #ffffff;
+  transition: left 0.35s ease;
+  z-index: 5;
+}
+
+/* ── Scanner Expanded Workspace ── */
+.scanner-workspace-hero {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.scan-laser-line {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, transparent 0%, #06B6D4 20%, #3B82F6 50%, #EC4899 80%, transparent 100%);
+  box-shadow: 0 0 12px #06B6D4, 0 0 20px #3B82F6;
+  animation: scanLaser 2.2s ease-in-out infinite alternate;
+  z-index: 10;
+}
+
+@keyframes scanLaser {
+  0% { top: 4%; opacity: 0.8; }
+  100% { top: 94%; opacity: 1; }
+}
+
+/* ── Form Card Top Accent Bars ── */
+.predictor-card {
+  position: relative;
+  overflow: hidden;
+  padding: 18px 20px !important;
+}
+
+.predictor-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--brand-blue) 0%, var(--brand-orange) 100%);
+  border-radius: 8px 8px 0 0;
 }
 
 /* ── Gentle 3–4px Floating Animation (Selected Upload & Form Panels Only) ── */
@@ -826,6 +1137,37 @@ button.btn-icon:hover {
 .disease-select-tile.active.prescription *,
 .disease-select-tile.active.lab * {
   color: var(--text-primary) !important;
+}
+
+.disease-select-tile.inactive {
+  background: var(--bg-card) !important;
+  border-color: var(--border-color) !important;
+  color: var(--text-secondary) !important;
+  opacity: 0.75;
+}
+
+.disease-select-tile.inactive * {
+  color: var(--text-secondary) !important;
+}
+
+/* Explicit sidebar disease-select-tile rules to ensure full visibility when clicked/inactive */
+.app-sidebar .disease-select-tile.active {
+  background: rgba(255, 255, 255, 0.15) !important;
+  border-color: var(--primary-accent) !important;
+}
+
+.app-sidebar .disease-select-tile.active * {
+  color: #FFFFFF !important;
+}
+
+.app-sidebar .disease-select-tile.inactive {
+  background: rgba(255, 255, 255, 0.04) !important;
+  border-color: rgba(255, 255, 255, 0.12) !important;
+  opacity: 0.85;
+}
+
+.app-sidebar .disease-select-tile.inactive * {
+  color: rgba(255, 255, 255, 0.75) !important;
 }
 
 /* ── 6. Meaningful Clinical Risk Indicators & Status Labels ──────────────── */
@@ -1084,11 +1426,29 @@ button.btn-icon:hover {
   z-index: 10;
 }
 
-/* Scrollbars: restrained and subtle */
-::-webkit-scrollbar { width: 5px; height: 5px; }
-::-webkit-scrollbar-track { background: var(--bg-page); }
-::-webkit-scrollbar-thumb { background: var(--border-color); border-radius: 4px; }
-::-webkit-scrollbar-thumb:hover { background: var(--brand-orange); }
+/* ── Globally Hide All Scrollbars Everywhere While Keeping Scrolling Functional ── */
+* {
+  scrollbar-width: none !important;
+  -ms-overflow-style: none !important;
+}
+
+*::-webkit-scrollbar,
+::-webkit-scrollbar {
+  width: 0px !important;
+  height: 0px !important;
+  display: none !important;
+  background: transparent !important;
+}
+
+*::-webkit-scrollbar-track,
+::-webkit-scrollbar-track {
+  background: transparent !important;
+}
+
+*::-webkit-scrollbar-thumb,
+::-webkit-scrollbar-thumb {
+  background: transparent !important;
+}
 
 /* ── Bootstrap Grid & Layout Utilities ───────────────────────────────────── */
 
@@ -1231,6 +1591,45 @@ button.btn-icon:hover {
   -webkit-backdrop-filter: none !important;
 }
 
+/* ── glass-card--map: always-dark container — force all text white ───────── */
+/* Override the global h1-h6 and .glass-card color rules which use !important  */
+.glass-card--map,
+.glass-card--map * {
+  --text-primary: #FFFFFF;
+  --text-secondary: rgba(255, 255, 255, 0.88);
+  --text-muted: rgba(255, 255, 255, 0.72);
+}
+
+.glass-card--map h1,
+.glass-card--map h2,
+.glass-card--map h3,
+.glass-card--map h4,
+.glass-card--map h5,
+.glass-card--map h6 {
+  color: #FFFFFF !important;
+}
+
+.glass-card--map {
+  color: #FFFFFF !important;
+}
+
+.glass-card--map .text-secondary {
+  color: rgba(255, 255, 255, 0.88) !important;
+}
+
+.glass-card--map .text-muted {
+  color: rgba(255, 255, 255, 0.72) !important;
+}
+
+/* Prevent the light-mode .text-white override from making the legend text dark */
+[data-theme='light'] .glass-card--map .text-white,
+[data-theme='light'] .glass-card--map [style*="color: #FFFFFF"],
+[data-theme='light'] .glass-card--map [style*="color:#FFFFFF"],
+[data-theme='light'] .glass-card--map [style*="color: rgba(255"],
+[data-theme='light'] .glass-card--map [style*="color:rgba(255"] {
+  color: #FFFFFF !important;
+}
+
 /* ── Minimal, Purposeful Animation ───────────────────────────────────────── */
 .reveal {
   animation: fadeIn 0.3s ease-out forwards;
@@ -1244,6 +1643,12 @@ button.btn-icon:hover {
 @keyframes spin {
   from { transform: rotate(0deg); }
   to { transform: rotate(360deg); }
+}
+
+@keyframes scanLine {
+  0%   { transform: translateY(0); opacity: 0.9; }
+  50%  { transform: translateY(250px); opacity: 1; }
+  100% { transform: translateY(0); opacity: 0.9; }
 }
 
 /* Reduced motion compliance */
@@ -1342,3 +1747,60 @@ button.btn-icon:hover {
   }
 }
 
+
+/* ── Selection toggle buttons (gender, smoking, family history, etc.) ──────── */
+
+/* Active: solid brand-orange fill, white text — clear, sharp and readable in all themes */
+.border-theme-accent.bg-theme-accent,
+.border-theme-accent.bg-theme-accent *,
+.border-theme-accent.bg-theme-accent.bg-opacity-10,
+.border-theme-accent.bg-theme-accent.bg-opacity-10 *,
+.border-theme-accent.bg-theme-accent.text-white,
+.border-theme-accent.bg-theme-accent.text-white *,
+.border-theme-accent.bg-theme-accent.bg-opacity-10.text-white,
+.border-theme-accent.bg-theme-accent.bg-opacity-10.text-white *,
+.border-theme-accent.bg-theme-accent.bg-opacity-10.fw-bold,
+.border-theme-accent.bg-theme-accent.bg-opacity-10.fw-bold * {
+  background-color: var(--brand-orange) !important;
+  border-color: var(--brand-orange) !important;
+  color: #FFFFFF !important;
+  opacity: 1 !important;
+}
+
+/* Inactive: card surface, subtle border */
+.border-white-10.bg-white-5.text-secondary.hover-white {
+  background: var(--bg-card) !important;
+  border-color: var(--border) !important;
+  color: var(--text-secondary) !important;
+}
+
+/* ── Modal visual separation ────────────────────────────────────────────────── */
+.modal-container {
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.40) !important;
+}
+
+[data-theme='light'] .modal-container {
+  box-shadow: 0 16px 48px rgba(26, 35, 51, 0.22) !important;
+}
+
+/* ── Typeable number inputs: always use token bg regardless of inline style ── */
+input.typeable-number-input,
+input[class*="typeable-number"] {
+  background: var(--bg-input) !important;
+  border: 1px solid var(--border) !important;
+  color: var(--text-primary) !important;
+  padding: 3px 6px !important;
+  text-align: center !important;
+  font-weight: bold !important;
+}
+
+/* ── Result score ring SVG track ────────────────────────────────────────────── */
+.risk-ring-track {
+  stroke: var(--grad-track);
+}
+
+/* ── Font Fix: Override Bootstrap's .font-monospace to use JetBrains Mono ── */
+.font-monospace,
+code, kbd, samp, pre {
+  font-family: var(--font-mono) !important;
+}

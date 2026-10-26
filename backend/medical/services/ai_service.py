@@ -1,6 +1,8 @@
-﻿import json
+import json
 import logging
 import os
+import random
+import datetime
 from typing import Dict, Any, List, Optional
 from .llm_provider import llm_provider
 from google.genai import types
@@ -148,9 +150,9 @@ class AIService:
                 clean_text = clean_text[:-3].strip()
 
             start = clean_text.find(start_char)
-            end = clean_text.rfind(end_char) + 1
-            if start != -1 and end != -1:
-                return json.loads(clean_text[start:end])
+            end = clean_text.rfind(end_char)
+            if start != -1 and end != -1 and end >= start:
+                return json.loads(clean_text[start:end + 1])
             return json.loads(clean_text)
         except Exception as e:
             logger.error(f"JSON Clean & Parse Error: {e}. Raw: {text[:100]}...")
@@ -304,10 +306,44 @@ class AIService:
             res = self._parse_json(response_text)
             if not isinstance(res, dict) or "risk_score" not in res:
                 return self._get_fallback_prediction(disease_type, parameters, "Invalid prediction response format")
+
+            # Ensure remedies structure and list fields are normalized
+            raw_remedies = res.get('remedies')
+            remedies: Dict[str, Any] = {}
+            if isinstance(raw_remedies, str):
+                try:
+                    parsed_rem = json.loads(raw_remedies)
+                    if isinstance(parsed_rem, dict):
+                        remedies = parsed_rem
+                    else:
+                        remedies = {"stage": str(parsed_rem)}
+                except Exception:
+                    remedies = {"stage": raw_remedies}
+            elif isinstance(raw_remedies, dict):
+                remedies = dict(raw_remedies)
+
+            def _normalize_list(val: Any) -> List[str]:
+                if val is None:
+                    return []
+                if isinstance(val, list):
+                    return [str(x) for x in val]
+                if isinstance(val, str):
+                    return [s.strip() for s in val.split("\n") if s.strip()] or [val]
+                if isinstance(val, dict):
+                    return [f"{k}: {v}" for k, v in val.items()]
+                return [str(val)]
+
+            for key in ['dietary_guidelines', 'lifestyle_modifications', 'clinical_recommendations', 'urgent_warning_signs']:
+                remedies[key] = _normalize_list(remedies.get(key))
+            res['remedies'] = remedies
+
             # Augment Gemini response with real ML feature importances
             if 'factors' not in res or not res.get('factors'):
                 ml_result = self._predict_using_ml(disease_type, parameters)
-                res['factors'] = ml_result['factors'] if ml_result is not None else []
+                if isinstance(ml_result, dict):
+                    res['factors'] = ml_result.get('factors', [])
+                else:
+                    res['factors'] = []
             return res
         except Exception as e:
             logger.error(f"Health Risk Prediction failed for {disease_type}: {e}")
@@ -322,8 +358,18 @@ class AIService:
         
         # Try running real-time Machine Learning prediction via our trained Random Forest models
         ml_result = self._predict_using_ml(disease_type, parameters)
-        risk_score = ml_result['score'] if ml_result is not None else 15.0
-        ml_active = ml_result is not None
+        if isinstance(ml_result, (int, float)):
+            risk_score = float(ml_result)
+            ml_factors = []
+            ml_active = True
+        elif isinstance(ml_result, dict):
+            risk_score = float(ml_result.get('score', 15.0))
+            ml_factors = ml_result.get('factors', [])
+            ml_active = True
+        else:
+            risk_score = 15.0
+            ml_factors = []
+            ml_active = False
         
         # Extract common fields
         age = int(parameters.get("age", 35) or 35)
@@ -602,11 +648,24 @@ class AIService:
             ]
             
         if ml_active:
-            risk_score = ml_result['score']
+            if isinstance(ml_result, dict):
+                risk_score = float(ml_result.get('score', risk_score))
+            elif isinstance(ml_result, (int, float)):
+                risk_score = float(ml_result)
             clinical_reasoning = (
                 f"[Trained Random Forest Machine Learning Model active. Calculated exact probability of {risk_score}% based on patient clinical parameters.] "
                 + clinical_reasoning
             )
+
+        # Ensure remedies stage reflects the final calculated risk_score
+        stage_val = "Stage 0 (Normal / Low Risk)"
+        if risk_score > 80:
+            stage_val = "Stage III (Severe / Critical Risk)"
+        elif risk_score > 55:
+            stage_val = "Stage II (High Risk / Intervention Needed)"
+        elif risk_score > 30:
+            stage_val = "Stage I (Moderate Risk / Monitoring Recommended)"
+        remedies["stage"] = stage_val
 
         return {
             "disease_type": disease_type,
@@ -615,7 +674,7 @@ class AIService:
             "risk_level": "CRITICAL" if risk_score > 80 else ("HIGH" if risk_score > 55 else ("MODERATE" if risk_score > 30 else "LOW")),
             "clinical_reasoning": clinical_reasoning,
             "remedies": remedies,
-            "factors": ml_result['factors'] if ml_result is not None else [],
+            "factors": ml_factors if ml_active else [],
             "note": "Calculated via MedFusion Machine Learning (Random Forest) Diagnostics Core.",
             "error_detail": error_msg
         }
@@ -743,9 +802,12 @@ class AIService:
             else:
                 return None
 
+            import warnings
             features = np.array([feature_values])
-            with open(model_path, 'rb') as f:
-                model = pickle.load(f)
+            with warnings.catch_warnings():
+                warnings.simplefilter("ignore")
+                with open(model_path, 'rb') as f:
+                    model = pickle.load(f)
             score = float(model.predict(features)[0])
 
             # Extract feature importances from the trained Random Forest

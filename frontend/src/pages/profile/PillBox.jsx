@@ -103,15 +103,15 @@ function PillBox({
       <div className="adherence-summary-box border border-white-5 font-monospace">
         <div className="position-relative d-flex align-items-center justify-content-center" style={{ width: '50px', height: '50px', flexShrink: 0 }}>
           <svg className="position-absolute" style={{ transform: 'rotate(-90deg)', width: '100%', height: '100%' }} viewBox="0 0 36 36">
-            <path strokeWidth="3" stroke="rgba(255, 255, 255, 0.08)" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+            <path strokeWidth="3" stroke="var(--grad-track, rgba(61,79,104,0.5))" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
             <path strokeDasharray={`${adherencePercent}, 100`} strokeWidth="3.5" strokeLinecap="round" stroke="var(--theme-accent)" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
           </svg>
-          <strong className="text-white" style={{ fontSize: '0.85rem' }}>{adherencePercent}%</strong>
+          <strong style={{ fontSize: '0.85rem', color: 'var(--text-primary)' }}>{adherencePercent}%</strong>
         </div>
         <div className="text-start">
           <span className="text-secondary small d-block mb-0.5 text-uppercase" style={{ fontSize: '0.68rem', letterSpacing: '0.04em' }}>Daily Compliance</span>
           <div className="d-flex align-items-center gap-2">
-            <strong className="text-white" style={{ fontSize: '1.05rem' }}>{totalTaken} / {totalScheduled} Taken</strong>
+            <strong style={{ fontSize: '1.05rem', color: 'var(--text-primary)' }}>{totalTaken} / {totalScheduled} Taken</strong>
             <span className="text-secondary small">({adherencePercent === 100 ? 'All completed' : 'Remaining'})</span>
           </div>
         </div>
@@ -120,15 +120,15 @@ function PillBox({
       {/* Collapsible Add supplementary form */}
       {showAddForm && (
         <div className="p-3.5 bg-white-5 rounded border border-white-5 mb-4 animate-fadeIn font-monospace">
-          <h5 className="text-white fw-bold mb-3 text-uppercase" style={{ fontSize: '0.85rem' }}>Log Supplementary Med</h5>
+          <h5 className="fw-bold mb-3 text-uppercase" style={{ fontSize: '0.85rem', color: 'var(--text-primary)' }}>Log Supplementary Med</h5>
           <form onSubmit={(e) => { handleAddCustomMed(e); setShowAddForm(false); }} className="d-flex flex-column gap-2.5" style={{ fontSize: '0.8rem' }}>
             <input 
               type="text" 
               placeholder="Medication Name (e.g. Vitamin D3)" 
               value={newMedName} 
               onChange={(e) => setNewMedName(e.target.value)} 
-              className="p-2.5 border border-white-10 rounded text-white bg-transparent w-100" 
-              style={{ marginBottom: '4px' }}
+              className="p-2.5 border border-white-10 rounded w-100" 
+              style={{ marginBottom: '4px', background: 'var(--bg-input)', color: 'var(--text-primary)' }}
               required
             />
             <div className="row g-2" style={{ marginBottom: '4px' }}>
@@ -138,14 +138,16 @@ function PillBox({
                   placeholder="Dosage (e.g. 1000 IU)" 
                   value={newMedDosage} 
                   onChange={(e) => setNewMedDosage(e.target.value)} 
-                  className="p-2.5 border border-white-10 rounded text-white bg-transparent w-100"
+                  className="p-2.5 border border-white-10 rounded w-100"
+                  style={{ background: 'var(--bg-input)', color: 'var(--text-primary)' }}
                 />
               </div>
               <div className="col-6">
                 <select 
                   value={newMedTime} 
                   onChange={(e) => setNewMedTime(e.target.value)} 
-                  className="p-2.5 border border-white-10 rounded text-white bg-transparent bg-dark w-100"
+                  className="p-2.5 border border-white-10 rounded w-100"
+                  style={{ background: 'var(--bg-input)', color: 'var(--text-primary)' }}
                 >
                   {slots.map(s => <option key={s} value={s}>{s}</option>)}
                 </select>
@@ -155,7 +157,8 @@ function PillBox({
               <select 
                 value={newMedFrequency} 
                 onChange={(e) => setNewMedFrequency(e.target.value)} 
-                className="p-2.5 border border-white-10 rounded text-white bg-transparent bg-dark w-75"
+                className="p-2.5 border border-white-10 rounded w-75"
+                style={{ background: 'var(--bg-input)', color: 'var(--text-primary)' }}
               >
                 <option value="Once daily">Once daily</option>
                 <option value="Twice daily">Twice daily</option>

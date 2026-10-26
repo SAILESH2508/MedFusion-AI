@@ -36,3 +36,5 @@ backend/media/uploads/*
 *debug.json
 *diff*.txt
 pyrightconfig.json
+.agents/
+.agents/tasks/

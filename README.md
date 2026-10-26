@@ -80,15 +80,11 @@ Create a file named `.env` in the `backend/` directory with the following variab
 ```env
 GEMINI_API_KEY=your_gemini_api_key_here
 GOOGLE_API_KEY=your_gemini_api_key_here
-DEFAULT_LLM_MODEL=gemini-2.5-flash
+DEFAULT_LLM_MODEL=gemini-2.0-flash
 ```
 
-### Local Machine Learning Models Training
-Pre-trained Random Forest model binaries are stored under `backend/medical/ml_models/`. To retrain or synthesize new training datasets, run:
-```bash
-cd backend
-python medical/train_models.py
-```
+### Local Machine Learning Models
+Pre-trained Random Forest model binaries are pre-packaged under `backend/medical/ml_models/` (`cancer_rf.pkl`, `diabetes_rf.pkl`, `heart_attack_rf.pkl`) for real-time risk assessment without requiring external training steps.
 
 ---
 

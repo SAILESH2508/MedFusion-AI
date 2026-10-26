@@ -42,7 +42,7 @@ const STATUS_COLORS = {
 function BiomarkerChart({ data }) {
   if (!data || data.length < 2) {
     return (
-      <p style={{ textAlign: 'center', color: 'rgba(255,255,255,0.35)', fontFamily: 'monospace', fontSize: '0.78rem', margin: 0 }}>
+      <p style={{ textAlign: 'center', color: 'rgba(255,255,255,0.35)', fontFamily: 'var(--font-mono)', fontSize: '0.78rem', margin: 0 }}>
         Only one data point recorded. Upload another lab report to see a trend chart.
       </p>
     );

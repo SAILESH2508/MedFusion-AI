@@ -138,7 +138,7 @@ function VoiceExplainer({ text, label }) {
               style={{
                 padding: '3px 10px',
                 fontSize: '0.75rem',
-                fontFamily: 'monospace',
+                fontFamily: 'var(--font-mono)',
                 border: language === code
                   ? '1.5px solid var(--theme-accent, #00f5d4)'
                   : '1.5px solid rgba(255,255,255,0.15)',
@@ -194,7 +194,7 @@ function VoiceExplainer({ text, label }) {
               gap: '6px',
               padding: '4px 12px',
               fontSize: '0.75rem',
-              fontFamily: 'monospace',
+              fontFamily: 'var(--font-mono)',
               border: '1px solid rgba(255,255,255,0.18)',
               borderRadius: '6px',
               background: speaking

@@ -1,4 +1,46 @@
-﻿import React, { useState, useMemo } from 'react';import { AlertTriangle, Search, CheckCircle2 } from 'lucide-react';import { api } from '../../services/api';function extractMedications(prescriptions) {  if (!Array.isArray(prescriptions)) return [];  const seen = new Map();  for (const rx of prescriptions) {    const meds = rx.extracted_data?.medicines;    if (!Array.isArray(meds)) continue;    for (const med of meds) {      const name = (med.name || med || '').trim();      if (!name) continue;      const key = name.toLowerCase();      if (!seen.has(key)) seen.set(key, { name, dosage: med.dosage || null });    }    if (seen.size >= 10) break;  }  return Array.from(seen.values());}function checkAllergyHits(medications, allergies) {  if (!Array.isArray(allergies) || allergies.length === 0) return [];  if (!Array.isArray(medications) || medications.length === 0) return [];  const hits = [];  for (const med of medications) {    const medNameLower = med.name.toLowerCase();    for (const allergy of allergies) {      const allergyLower = (allergy || '').toLowerCase().trim();      if (allergyLower && medNameLower.includes(allergyLower)) hits.push({ med: med.name, allergy });    }  }  return hits;}export default function MedicationSafetyPanel({ patientData }) {  const [safetyReport, setSafetyReport] = useState(null);  const [loading, setLoading] = useState(false);  const [error, setError] = useState('');  const [hasRun, setHasRun] = useState(false);  const currentMeds = useMemo(() => extractMedications(patientData?.prescriptions), [patientData?.prescriptions]);  const allergies = patientData?.profile?.allergies || [];  const allergyHits = useMemo(() => checkAllergyHits(currentMeds, allergies), [currentMeds, allergies]);
+import React, { useState, useMemo } from 'react';
+import { AlertTriangle, Search, CheckCircle2 } from 'lucide-react';
+import { api } from '../../services/api';
+
+function extractMedications(prescriptions) {
+  if (!Array.isArray(prescriptions)) return [];
+  const seen = new Map();
+  for (const rx of prescriptions) {
+    const meds = rx.extracted_data?.medicines;
+    if (!Array.isArray(meds)) continue;
+    for (const med of meds) {
+      const name = (med.name || med || '').trim();
+      if (!name) continue;
+      const key = name.toLowerCase();
+      if (!seen.has(key)) seen.set(key, { name, dosage: med.dosage || null });
+    }
+    if (seen.size >= 10) break;
+  }
+  return Array.from(seen.values());
+}
+
+function checkAllergyHits(medications, allergies) {
+  if (!Array.isArray(allergies) || allergies.length === 0) return [];
+  if (!Array.isArray(medications) || medications.length === 0) return [];
+  const hits = [];
+  for (const med of medications) {
+    const medNameLower = med.name.toLowerCase();
+    for (const allergy of allergies) {
+      const allergyLower = (allergy || '').toLowerCase().trim();
+      if (allergyLower && medNameLower.includes(allergyLower)) hits.push({ med: med.name, allergy });
+    }
+  }
+  return hits;
+}
+
+export default function MedicationSafetyPanel({ patientData }) {
+  const [safetyReport, setSafetyReport] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+  const [hasRun, setHasRun] = useState(false);
+  const currentMeds = useMemo(() => extractMedications(patientData?.prescriptions), [patientData?.prescriptions]);
+  const allergies = useMemo(() => patientData?.profile?.allergies || [], [patientData?.profile?.allergies]);
+  const allergyHits = useMemo(() => checkAllergyHits(currentMeds, allergies), [currentMeds, allergies]);
   const handleRunSafetyCheck = async () => {
     if (currentMeds.length === 0) return;
     setLoading(true); setError(''); setSafetyReport(null);
@@ -19,14 +61,14 @@
       ) : (
         <>
           <div className="mb-3">
-            <p style={{ fontSize: '0.72rem', fontFamily: 'monospace', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '6px' }}>
+            <p style={{ fontSize: '0.72rem', fontFamily: 'var(--font-mono)', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '6px' }}>
               Current Medications ({currentMeds.length})
             </p>
             <ul style={{ margin: 0, padding: 0, listStyle: 'none' }}>
               {currentMeds.map((med, i) => (
                 <li key={i} style={{ display: 'flex', justifyContent: 'space-between', padding: '4px 0', borderBottom: '1px solid var(--border)', fontSize: '0.82rem' }}>
                   <span style={{ color: 'var(--text-primary)' }}>{med.name}</span>
-                  <span style={{ color: 'var(--text-muted)', fontFamily: 'monospace' }}>{med.dosage || 'As directed'}</span>
+                  <span style={{ color: 'var(--text-muted)', fontFamily: 'var(--font-mono)' }}>{med.dosage || 'As directed'}</span>
                 </li>
               ))}
             </ul>
@@ -34,10 +76,10 @@
 
           {Array.isArray(allergies) && allergies.length > 0 && (
             <div className="mb-3">
-              <p style={{ fontSize: '0.72rem', fontFamily: 'monospace', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '6px' }}>Known Allergies</p>
+              <p style={{ fontSize: '0.72rem', fontFamily: 'var(--font-mono)', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '6px' }}>Known Allergies</p>
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px' }}>
                 {allergies.map((a, i) => (
-                  <span key={i} style={{ background: 'var(--status-danger-bg)', border: '1px solid var(--status-danger-border)', color: 'var(--accent-red)', padding: '1px 8px', borderRadius: '20px', fontSize: '0.72rem', fontFamily: 'monospace' }}>
+                  <span key={i} style={{ background: 'var(--status-danger-bg)', border: '1px solid var(--status-danger-border)', color: 'var(--accent-red)', padding: '1px 8px', borderRadius: '20px', fontSize: '0.72rem', fontFamily: 'var(--font-mono)' }}>
                     {a}
                   </span>
                 ))}
@@ -60,7 +102,7 @@
 
           {!hasRun && (
             <button onClick={handleRunSafetyCheck} disabled={loading}
-              style={{ width: '100%', padding: '8px', background: 'var(--status-info-bg)', border: '1px solid var(--status-info-border)', borderRadius: '8px', color: 'var(--status-info)', fontFamily: 'monospace', fontSize: '0.82rem', cursor: loading ? 'not-allowed' : 'pointer', marginBottom: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
+              style={{ width: '100%', padding: '8px', background: 'var(--status-info-bg)', border: '1px solid var(--status-info-border)', borderRadius: '8px', color: 'var(--status-info)', fontFamily: 'var(--font-mono)', fontSize: '0.82rem', cursor: loading ? 'not-allowed' : 'pointer', marginBottom: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
               {loading ? (
                 <><span className="spinner-border spinner-border-sm" role="status" aria-hidden="true" /> Checking...</>
               ) : (
@@ -78,7 +120,7 @@
           {hasRun && safetyReport && (
             <div>
               <button onClick={handleRunSafetyCheck} disabled={loading}
-                style={{ background: 'transparent', border: '1px solid var(--border)', borderRadius: '6px', color: 'var(--text-muted)', fontFamily: 'monospace', fontSize: '0.72rem', padding: '3px 10px', cursor: 'pointer', marginBottom: '10px' }}>
+                style={{ background: 'transparent', border: '1px solid var(--border)', borderRadius: '6px', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)', fontSize: '0.72rem', padding: '3px 10px', cursor: 'pointer', marginBottom: '10px' }}>
                 Re-run check
               </button>
 
@@ -103,7 +145,7 @@
 
               {Array.isArray(safetyReport.dietary_precautions) && safetyReport.dietary_precautions.length > 0 && (
                 <div style={{ marginBottom: '10px' }}>
-                  <p style={{ fontSize: '0.72rem', fontFamily: 'monospace', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '4px' }}>Dietary Precautions</p>
+                  <p style={{ fontSize: '0.72rem', fontFamily: 'var(--font-mono)', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '4px' }}>Dietary Precautions</p>
                   <ul style={{ margin: 0, paddingLeft: '16px' }}>
                     {safetyReport.dietary_precautions.map((p, i) => (
                       <li key={i} style={{ fontSize: '0.78rem', color: 'var(--text-secondary)', marginBottom: '2px' }}>{p}</li>
@@ -114,7 +156,7 @@
 
               {Array.isArray(safetyReport.side_effects) && safetyReport.side_effects.length > 0 && (
                 <div style={{ marginBottom: '10px' }}>
-                  <p style={{ fontSize: '0.72rem', fontFamily: 'monospace', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '4px' }}>Side Effects to Monitor</p>
+                  <p style={{ fontSize: '0.72rem', fontFamily: 'var(--font-mono)', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '4px' }}>Side Effects to Monitor</p>
                   <ul style={{ margin: 0, paddingLeft: '16px' }}>
                     {safetyReport.side_effects.map((s, i) => (
                       <li key={i} style={{ fontSize: '0.78rem', color: 'var(--text-secondary)', marginBottom: '2px' }}>{s}</li>
@@ -125,7 +167,7 @@
 
               {safetyReport.summary && (
                 <details style={{ marginBottom: '10px' }}>
-                  <summary style={{ fontSize: '0.78rem', color: 'var(--text-muted)', cursor: 'pointer', fontFamily: 'monospace', textTransform: 'uppercase', letterSpacing: '0.05em', padding: '4px 0' }}>
+                  <summary style={{ fontSize: '0.78rem', color: 'var(--text-muted)', cursor: 'pointer', fontFamily: 'var(--font-mono)', textTransform: 'uppercase', letterSpacing: '0.05em', padding: '4px 0' }}>
                     Full Clinical Summary
                   </summary>
                   <p style={{ margin: '6px 0 0', fontSize: '0.78rem', color: 'var(--text-secondary)', lineHeight: '1.5', background: 'var(--bg-card-tinted)', padding: '8px', borderRadius: '6px' }}>

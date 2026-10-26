@@ -99,14 +99,43 @@ function ProfileIdentity({
                   </div>
 
                   {/* Emergency Contact */}
-                  <div className="bg-white-5 p-3.5 rounded-4 border border-white-5 d-flex justify-content-between align-items-center hover-border-theme-accent-glow transition-all mt-1">
+                  <div className="bg-white-5 p-3.5 rounded-4 border border-white-5 d-flex justify-content-between align-items-center hover-border-theme-accent transition-all mt-1">
                     <div>
                       <span className="small text-secondary d-block text-uppercase mb-1" style={{ fontSize: '0.62rem', letterSpacing: '0.06em' }}>EMERGENCY CONTACT</span>
                       <strong className="fs-5 font-monospace" style={{ color: 'var(--text-primary)' }}>{profile.emergency_contact || 'None registered'}</strong>
                     </div>
-                    <div className="p-3 bg-theme-accent bg-opacity-10 rounded-circle text-theme-accent border border-theme-accent border-opacity-20 shadow-lg">
-                      <Phone size={18} />
-                    </div>
+                    {profile.emergency_contact ? (
+                      <a 
+                        href={`tel:${profile.emergency_contact}`}
+                        title={`Call ${profile.emergency_contact}`}
+                        className="rounded-circle d-flex align-items-center justify-content-center text-decoration-none shadow-sm transition-all"
+                        style={{
+                          width: '46px',
+                          height: '46px',
+                          background: 'linear-gradient(135deg, var(--brand-orange) 0%, #d85a12 100%)',
+                          color: '#FFFFFF',
+                          border: '1px solid rgba(255, 255, 255, 0.3)',
+                          cursor: 'pointer',
+                          flexShrink: 0
+                        }}
+                      >
+                        <Phone size={20} color="#FFFFFF" strokeWidth={2.4} />
+                      </a>
+                    ) : (
+                      <div 
+                        className="rounded-circle d-flex align-items-center justify-content-center shadow-sm"
+                        style={{
+                          width: '46px',
+                          height: '46px',
+                          background: 'rgba(230, 115, 38, 0.15)',
+                          color: 'var(--brand-orange)',
+                          border: '1px solid rgba(230, 115, 38, 0.35)',
+                          flexShrink: 0
+                        }}
+                      >
+                        <Phone size={20} color="var(--brand-orange)" strokeWidth={2.4} />
+                      </div>
+                    )}
                   </div>
 
                   {/* Allergic Contraindications */}
@@ -198,11 +227,16 @@ function ProfileIdentity({
           <div className="d-flex flex-column gap-4">
             
             {/* A. Clinical Demographics Grid */}
-            <div className="glass-card p-3.5 text-start w-100 border-theme-accent border-opacity-15 bg-white-5" style={{ borderRadius: '16px' }}>
-              <h4 className="fw-bold d-flex align-items-center gap-2 mb-3.5 font-monospace" style={{ fontSize: '1.05rem', letterSpacing: '0.02em', color: 'var(--text-primary)' }}>
-                <Activity className="text-theme-accent" size={18} />
-                CLINICAL DEMOGRAPHICS
-              </h4>
+            <div className="glass-card p-4 text-start w-100" style={{ borderRadius: '16px' }}>
+              <div className="d-flex align-items-center justify-content-between mb-4 pb-2 border-bottom border-white-10">
+                <h4 className="fw-bold d-flex align-items-center gap-2 m-0" style={{ fontSize: '1.05rem', letterSpacing: '0.04em', color: 'var(--text-primary)' }}>
+                  <Activity className="text-theme-accent" size={20} />
+                  <span>CLINICAL DEMOGRAPHICS</span>
+                </h4>
+                <span className="badge rounded-pill px-2.5 py-1" style={{ background: 'var(--bg-card-tinted)', border: '1px solid var(--border)', fontSize: '0.7rem', color: 'var(--text-secondary)' }}>
+                  VERIFIED EHR
+                </span>
+              </div>
 
               {!isEditing ? (
                 <div className="row g-3">
@@ -210,11 +244,11 @@ function ProfileIdentity({
                   {/* Age Node */}
                   <div className="col-sm-4">
                     <div className="telemetry-node telemetry-node-age h-100">
-                      <div className="d-flex align-items-center gap-2 mb-1.5">
-                        <Calendar size={14} className="text-secondary" style={{ color: 'var(--accent-violet)' }} />
-                        <span className="text-secondary font-monospace" style={{ fontSize: '0.58rem', letterSpacing: '0.04em' }}>AGE</span>
+                      <div className="d-flex align-items-center gap-2 mb-2">
+                        <Calendar size={16} style={{ color: 'var(--accent-violet)' }} />
+                        <span className="text-secondary fw-semibold" style={{ fontSize: '0.72rem', letterSpacing: '0.05em' }}>AGE</span>
                       </div>
-                      <strong className="text-white fs-5 font-monospace">
+                      <strong className="fs-5 fw-bold" style={{ color: 'var(--text-primary)', fontFamily: 'var(--font-mono)' }}>
                         {profile.dob ? `${getAge(profile.dob)} Yrs` : 'N/A'}
                       </strong>
                     </div>
@@ -223,11 +257,11 @@ function ProfileIdentity({
                   {/* Biological Sex Node */}
                   <div className="col-sm-4">
                     <div className="telemetry-node telemetry-node-sex h-100">
-                      <div className="d-flex align-items-center gap-2 mb-1.5">
-                        <Dna size={14} className="text-secondary" style={{ color: 'var(--accent-coral)' }} />
-                        <span className="text-secondary font-monospace" style={{ fontSize: '0.58rem', letterSpacing: '0.04em' }}>GENDER</span>
+                      <div className="d-flex align-items-center gap-2 mb-2">
+                        <Dna size={16} style={{ color: 'var(--accent-coral)' }} />
+                        <span className="text-secondary fw-semibold" style={{ fontSize: '0.72rem', letterSpacing: '0.05em' }}>GENDER</span>
                       </div>
-                      <strong className="text-white fs-5 font-monospace">
+                      <strong className="fs-5 fw-bold" style={{ color: 'var(--text-primary)', fontFamily: 'var(--font-mono)' }}>
                         {profile.gender === 'M' ? 'Male' : profile.gender === 'F' ? 'Female' : 'N/A'}
                       </strong>
                     </div>
@@ -236,11 +270,11 @@ function ProfileIdentity({
                   {/* DOB Node */}
                   <div className="col-sm-4">
                     <div className="telemetry-node telemetry-node-dob h-100">
-                      <div className="d-flex align-items-center gap-2 mb-1.5">
-                        <Gift size={14} className="text-secondary" style={{ color: 'var(--accent-cyan)' }} />
-                        <span className="text-secondary font-monospace" style={{ fontSize: '0.58rem', letterSpacing: '0.04em' }}>DATE OF BIRTH</span>
+                      <div className="d-flex align-items-center gap-2 mb-2">
+                        <Gift size={16} style={{ color: 'var(--accent-cyan)' }} />
+                        <span className="text-secondary fw-semibold" style={{ fontSize: '0.72rem', letterSpacing: '0.05em' }}>DATE OF BIRTH</span>
                       </div>
-                      <strong className="text-white small font-monospace" style={{ fontSize: '0.88rem' }}>
+                      <strong className="fw-bold" style={{ color: 'var(--text-primary)', fontSize: '0.98rem', fontFamily: 'var(--font-mono)' }}>
                         {profile.dob || 'N/A'}
                       </strong>
                     </div>
@@ -249,11 +283,11 @@ function ProfileIdentity({
                   {/* Blood Group Node */}
                   <div className="col-sm-4">
                     <div className="telemetry-node telemetry-node-blood h-100">
-                      <div className="d-flex align-items-center gap-2 mb-1.5">
-                        <Droplet size={14} className="text-secondary" style={{ color: 'var(--brand-orange)' }} />
-                        <span className="text-secondary font-monospace" style={{ fontSize: '0.58rem', letterSpacing: '0.04em' }}>BLOOD GROUP</span>
+                      <div className="d-flex align-items-center gap-2 mb-2">
+                        <Droplet size={16} style={{ color: 'var(--brand-orange)' }} />
+                        <span className="text-secondary fw-semibold" style={{ fontSize: '0.72rem', letterSpacing: '0.05em' }}>BLOOD GROUP</span>
                       </div>
-                      <strong className="text-white fs-5 font-monospace">
+                      <strong className="fs-5 fw-bold" style={{ color: 'var(--brand-orange)', fontFamily: 'var(--font-mono)' }}>
                         {profile.blood_group || 'N/A'}
                       </strong>
                     </div>
@@ -262,11 +296,11 @@ function ProfileIdentity({
                   {/* Height Node */}
                   <div className="col-sm-4">
                     <div className="telemetry-node telemetry-node-height h-100">
-                      <div className="d-flex align-items-center gap-2 mb-1.5">
-                        <Ruler size={14} className="text-secondary" style={{ color: 'var(--accent-teal)' }} />
-                        <span className="text-secondary font-monospace" style={{ fontSize: '0.58rem', letterSpacing: '0.04em' }}>HEIGHT</span>
+                      <div className="d-flex align-items-center gap-2 mb-2">
+                        <Ruler size={16} style={{ color: 'var(--accent-teal)' }} />
+                        <span className="text-secondary fw-semibold" style={{ fontSize: '0.72rem', letterSpacing: '0.05em' }}>HEIGHT</span>
                       </div>
-                      <strong className="text-white fs-5 font-monospace">
+                      <strong className="fs-5 fw-bold" style={{ color: 'var(--text-primary)', fontFamily: 'var(--font-mono)' }}>
                         {profile.height ? `${profile.height} cm` : 'N/A'}
                       </strong>
                     </div>
@@ -275,11 +309,11 @@ function ProfileIdentity({
                   {/* Weight Node */}
                   <div className="col-sm-4">
                     <div className="telemetry-node telemetry-node-weight h-100">
-                      <div className="d-flex align-items-center gap-2 mb-1.5">
-                        <Scale size={14} className="text-secondary" style={{ color: 'var(--accent-teal)' }} />
-                        <span className="text-secondary font-monospace" style={{ fontSize: '0.58rem', letterSpacing: '0.04em' }}>WEIGHT</span>
+                      <div className="d-flex align-items-center gap-2 mb-2">
+                        <Scale size={16} style={{ color: 'var(--accent-emerald)' }} />
+                        <span className="text-secondary fw-semibold" style={{ fontSize: '0.72rem', letterSpacing: '0.05em' }}>WEIGHT</span>
                       </div>
-                      <strong className="text-white fs-5 font-monospace">
+                      <strong className="fs-5 fw-bold" style={{ color: 'var(--text-primary)', fontFamily: 'var(--font-mono)' }}>
                         {profile.weight ? `${profile.weight} kg` : 'N/A'}
                       </strong>
                     </div>
