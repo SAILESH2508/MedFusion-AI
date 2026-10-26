@@ -39,11 +39,11 @@ function isOpenNow(opening_hours) {
 }
 
 const TYPE_CONFIG = {
-  hospital:  { label: 'Hospitals',   icon: Building2,    color: '#EF4444', brightColor: '#F87171', glow: 'rgba(239, 68, 68, 0.25)', bg: 'rgba(239, 68, 68, 0.15)', border: 'rgba(239, 68, 68, 0.45)', tags: ['hospital'] },
-  clinic:    { label: 'Clinics',     icon: Stethoscope,  color: '#0EA5E9', brightColor: '#38BDF8', glow: 'rgba(14, 165, 233, 0.25)', bg: 'rgba(14, 165, 233, 0.15)', border: 'rgba(14, 165, 233, 0.45)', tags: ['clinic', 'doctors'] },
-  pharmacy:  { label: 'Pharmacy',    icon: Pill,         color: '#10B981', brightColor: '#34D399', glow: 'rgba(16, 185, 129, 0.25)', bg: 'rgba(16, 185, 129, 0.15)', border: 'rgba(16, 185, 129, 0.45)', tags: ['pharmacy', 'chemist'] },
-  dentist:   { label: 'Dentists',    icon: Sparkles,     color: '#A855F7', brightColor: '#C084FC', glow: 'rgba(168, 85, 247, 0.25)', bg: 'rgba(168, 85, 247, 0.15)', border: 'rgba(168, 85, 247, 0.45)', tags: ['dentist'] },
-  lab:       { label: 'Labs',        icon: FlaskConical, color: '#F59E0B', brightColor: '#FBBF24', glow: 'rgba(245, 158, 11, 0.25)', bg: 'rgba(245, 158, 11, 0.15)', border: 'rgba(245, 158, 11, 0.45)', tags: ['laboratory'] },
+  hospital:  { label: 'Hospitals',   singular: 'Hospital',  icon: Building2,    color: '#EF4444', brightColor: '#F87171', glow: 'rgba(239, 68, 68, 0.25)', bg: 'rgba(239, 68, 68, 0.15)', border: 'rgba(239, 68, 68, 0.45)', tags: ['hospital'] },
+  clinic:    { label: 'Clinics',     singular: 'Clinic',    icon: Stethoscope,  color: '#0EA5E9', brightColor: '#38BDF8', glow: 'rgba(14, 165, 233, 0.25)', bg: 'rgba(14, 165, 233, 0.15)', border: 'rgba(14, 165, 233, 0.45)', tags: ['clinic', 'doctors'] },
+  pharmacy:  { label: 'Pharmacies',  singular: 'Pharmacy',  icon: Pill,         color: '#10B981', brightColor: '#34D399', glow: 'rgba(16, 185, 129, 0.25)', bg: 'rgba(16, 185, 129, 0.15)', border: 'rgba(16, 185, 129, 0.45)', tags: ['pharmacy', 'chemist'] },
+  dentist:   { label: 'Dentists',    singular: 'Dentist',   icon: Sparkles,     color: '#A855F7', brightColor: '#C084FC', glow: 'rgba(168, 85, 247, 0.25)', bg: 'rgba(168, 85, 247, 0.15)', border: 'rgba(168, 85, 247, 0.45)', tags: ['dentist'] },
+  lab:       { label: 'Labs',        singular: 'Lab',       icon: FlaskConical, color: '#F59E0B', brightColor: '#FBBF24', glow: 'rgba(245, 158, 11, 0.25)', bg: 'rgba(245, 158, 11, 0.15)', border: 'rgba(245, 158, 11, 0.45)', tags: ['laboratory'] },
 };
 
 // (geocoding helpers removed — location is set directly, no async reverse-geocode)
@@ -132,14 +132,15 @@ function SOSPanel({ places, location, isPatient }) {
 }
 
 // ── Map Embed (OpenStreetMap iframe — no API key) ─────────────────────────
-// ── Export Emergency Sheet ────────────────────────────────────────────────
-function exportEmergencySheet(places, location) {
+// ── Export Emergency / Clinical Sheet ────────────────────────────────────
+function exportEmergencySheet(places, location, isDoctor = false) {
+  const title = isDoctor ? 'CLINICAL FACILITY & REFERRAL DIRECTORY' : 'EMERGENCY MEDICAL SHEET';
   const lines = [
     '============================================',
-    '   MEDFUSION AI — EMERGENCY MEDICAL SHEET',
+    `   MEDFUSION AI — ${title}`,
     '============================================',
     `Generated: ${new Date().toLocaleString()}`,
-    location ? `Your Location: ${location.lat.toFixed(5)}, ${location.lon.toFixed(5)}` : '',
+    location ? `Active GPS Area: ${location.displayName || `${location.lat.toFixed(5)}, ${location.lon.toFixed(5)}`}` : '',
     '',
     '--- NEAREST HOSPITALS ---',
     ...places
@@ -150,7 +151,7 @@ function exportEmergencySheet(places, location) {
           `${i + 1}. ${p.name}\n   Distance: ${p.distance < 1 ? `${Math.round(p.distance * 1000)}m` : `${p.distance.toFixed(1)}km`}\n   Phone: ${p.phone || 'N/A'}\n   Address: ${p.address || 'N/A'}\n   Directions: https://maps.google.com/?q=${p.lat},${p.lon}`
       ),
     '',
-    '--- NEAREST PHARMACY ---',
+    '--- NEAREST PHARMACIES ---',
     ...places
       .filter((p) => p.type === 'pharmacy')
       .slice(0, 3)
@@ -159,17 +160,17 @@ function exportEmergencySheet(places, location) {
           `${i + 1}. ${p.name}\n   Distance: ${p.distance < 1 ? `${Math.round(p.distance * 1000)}m` : `${p.distance.toFixed(1)}km`}\n   Phone: ${p.phone || 'N/A'}`
       ),
     '',
-    '--- NEAREST CLINICS ---',
+    '--- NEAREST CLINICS & LABS ---',
     ...places
-      .filter((p) => p.type === 'clinic')
-      .slice(0, 3)
+      .filter((p) => ['clinic', 'lab', 'dentist'].includes(p.type))
+      .slice(0, 4)
       .map(
         (p, i) =>
-          `${i + 1}. ${p.name}\n   Distance: ${p.distance < 1 ? `${Math.round(p.distance * 1000)}m` : `${p.distance.toFixed(1)}km`}\n   Phone: ${p.phone || 'N/A'}`
+          `${i + 1}. ${p.name} [${p.type.toUpperCase()}]\n   Distance: ${p.distance < 1 ? `${Math.round(p.distance * 1000)}m` : `${p.distance.toFixed(1)}km`}\n   Phone: ${p.phone || 'N/A'}`
       ),
     '',
     '============================================',
-    'MedFusion AI — Not a substitute for 112/911',
+    'MedFusion AI Healthcare Radar',
     '============================================',
   ];
 
@@ -177,13 +178,13 @@ function exportEmergencySheet(places, location) {
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url;
-  a.download = `MedFusion_Emergency_Sheet_${new Date().toISOString().split('T')[0]}.txt`;
+  a.download = `MedFusion_${isDoctor ? 'Clinical_Referral' : 'Emergency'}_Sheet_${new Date().toISOString().split('T')[0]}.txt`;
   a.click();
   URL.revokeObjectURL(url);
 }
 
 // ── PlaceCard ──────────────────────────────────────────────────────────────
-function PlaceCard({ place, isPatient, expanded, onToggle }) {
+function PlaceCard({ place, isLoggedIn, expanded, onToggle }) {
   const cfg = TYPE_CONFIG[place.type] || TYPE_CONFIG.clinic;
   const openStatus = isOpenNow(place.opening_hours);
 
@@ -209,7 +210,7 @@ function PlaceCard({ place, isPatient, expanded, onToggle }) {
             <p className="fw-bold m-0" style={{ fontSize: '0.88rem', lineHeight: 1.3, color: 'var(--text-primary)' }}>{place.name}</p>
             <div className="d-flex flex-wrap gap-1 mt-1">
               <span className="badge px-2 py-1" style={{ fontSize: '0.6rem', background: cfg.glow, border: `1px solid ${cfg.color}`, color: cfg.color, letterSpacing: '0.05em' }}>
-                {cfg.label.slice(0, -1).toUpperCase()}
+                {(cfg.singular || cfg.label).toUpperCase()}
               </span>
               {place.emergency && (
                 <span className="badge px-2 py-1 d-inline-flex align-items-center gap-1" style={{ fontSize: '0.6rem', background: 'rgba(185, 28, 28, 0.12)', border: '1px solid var(--accent-red)', color: 'var(--accent-red)' }}>
@@ -282,26 +283,36 @@ function PlaceCard({ place, isPatient, expanded, onToggle }) {
               {/* Phone / Directory Contact */}
               <div className="d-flex align-items-center gap-2 flex-wrap" style={{ color: 'var(--text-primary)' }}>
                 <Phone size={13} style={{ color: cfg.color, flexShrink: 0 }} />
-                {place.phone ? (
-                  <span>
-                    <strong style={{ color: 'var(--text-primary)' }}>Phone: </strong>
-                    <a href={`tel:${place.phone}`} style={{ color: 'var(--brand-blue)', fontWeight: 600, textDecoration: 'none' }} onClick={(e) => e.stopPropagation()}>
-                      {place.phone}
-                    </a>
-                  </span>
+                {isLoggedIn ? (
+                  place.phone ? (
+                    <span>
+                      <strong style={{ color: 'var(--text-primary)' }}>Phone: </strong>
+                      <a href={`tel:${place.phone}`} style={{ color: 'var(--brand-blue)', fontWeight: 600, textDecoration: 'none' }} onClick={(e) => e.stopPropagation()}>
+                        {place.phone}
+                      </a>
+                    </span>
+                  ) : (
+                    <span>
+                      <strong style={{ color: 'var(--text-primary)' }}>Phone: </strong>
+                      <span style={{ color: 'var(--text-secondary)' }}>Direct line not listed in OSM • </span>
+                      <a
+                        href={`https://www.google.com/search?q=${encodeURIComponent(place.name + ' contact phone number')}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        style={{ color: 'var(--brand-blue)', fontWeight: 600, textDecoration: 'underline' }}
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        Search Directory
+                      </a>
+                    </span>
+                  )
                 ) : (
                   <span>
                     <strong style={{ color: 'var(--text-primary)' }}>Phone: </strong>
-                    <span style={{ color: 'var(--text-secondary)' }}>Direct line not listed in OSM • </span>
-                    <a
-                      href={`https://www.google.com/search?q=${encodeURIComponent(place.name + ' contact phone number')}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      style={{ color: 'var(--brand-blue)', fontWeight: 600, textDecoration: 'underline' }}
-                      onClick={(e) => e.stopPropagation()}
-                    >
-                      Search Directory
-                    </a>
+                    <span style={{ color: 'var(--text-secondary)' }}>
+                      <Lock size={10} className="me-1" />
+                      Sign in to view direct phone line & one-tap calling
+                    </span>
                   </span>
                 )}
               </div>
@@ -339,25 +350,35 @@ function PlaceCard({ place, isPatient, expanded, onToggle }) {
                   <Navigation size={12} /> Directions
                 </a>
 
-                {place.phone ? (
-                  <a
-                    href={`tel:${place.phone}`}
-                    className="px-3 py-1.5 rounded font-monospace text-uppercase fw-bold text-decoration-none d-flex align-items-center gap-1.5"
-                    style={{ fontSize: '0.68rem', background: 'rgba(0,255,170,0.1)', border: '1px solid var(--accent-green)', color: 'var(--accent-green)' }}
-                    onClick={(e) => e.stopPropagation()}
-                  >
-                    <Phone size={12} /> Call
-                  </a>
+                {isLoggedIn ? (
+                  place.phone ? (
+                    <a
+                      href={`tel:${place.phone}`}
+                      className="px-3 py-1.5 rounded font-monospace text-uppercase fw-bold text-decoration-none d-flex align-items-center gap-1.5"
+                      style={{ fontSize: '0.68rem', background: 'rgba(0,255,170,0.1)', border: '1px solid var(--accent-green)', color: 'var(--accent-green)' }}
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      <Phone size={12} /> Call
+                    </a>
+                  ) : (
+                    <a
+                      href={`https://www.google.com/search?q=${encodeURIComponent(place.name + ' contact phone number')}`}
+                      target="_blank" rel="noopener noreferrer"
+                      className="px-3 py-1.5 rounded font-monospace text-uppercase fw-bold text-decoration-none d-flex align-items-center gap-1.5"
+                      style={{ fontSize: '0.68rem', background: 'rgba(56,189,248,0.1)', border: '1px solid var(--brand-blue)', color: 'var(--brand-blue)' }}
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      <Search size={12} /> Search Number
+                    </a>
+                  )
                 ) : (
-                  <a
-                    href={`https://www.google.com/search?q=${encodeURIComponent(place.name + ' contact phone number')}`}
-                    target="_blank" rel="noopener noreferrer"
-                    className="px-3 py-1.5 rounded font-monospace text-uppercase fw-bold text-decoration-none d-flex align-items-center gap-1.5"
-                    style={{ fontSize: '0.68rem', background: 'rgba(56,189,248,0.1)', border: '1px solid var(--brand-blue)', color: 'var(--brand-blue)' }}
-                    onClick={(e) => e.stopPropagation()}
+                  <span
+                    className="px-3 py-1.5 rounded font-monospace text-uppercase fw-bold d-flex align-items-center gap-1.5"
+                    style={{ fontSize: '0.68rem', background: 'var(--bg-card-hover)', border: '1px solid var(--border-color)', color: 'var(--text-secondary)', cursor: 'default' }}
+                    title="Sign in to unlock one-tap calling"
                   >
-                    <Search size={12} /> Search Number
-                  </a>
+                    <Lock size={11} /> Call (Sign in)
+                  </span>
                 )}
 
                 {place.website ? (
@@ -425,7 +446,9 @@ export default function NearbyMap({
 }) {
   const { theme } = useTheme();
   const isDark = theme === 'dark';
-  const isPatient = !!user;
+  const isLoggedIn = !!user;
+  const isDoctor = user?.role === 'Doctor';
+  const isPatient = user?.role === 'Patient';
   const { setSidebarContent } = useContext(SidebarContext);
 
   // Use persisted state from parent — survives navigation
@@ -436,13 +459,15 @@ export default function NearbyMap({
   const [loading, setLoading]         = useState(false);
   const [error, setError]             = useState(null);
 
+  // Clean guest map mechanism: starts with 3 core facility types by default for all roles
   const [activeTypes, _setActiveTypes] = useState(
     persistedActiveTypes || ['hospital', 'clinic', 'pharmacy']
   );
+  // Clean guest map mechanism: starts with 3 km radius by default for all roles
   const [radius, _setRadius]           = useState(
     persistedRadius !== null && persistedRadius !== undefined
       ? persistedRadius
-      : (isPatient ? 5000 : 3000)
+      : 3000
   );
   const [search, setSearch]           = useState('');
   const [expandedId, setExpandedId]   = useState(null);
@@ -593,7 +618,11 @@ export default function NearbyMap({
             Facility <span style={{ color: 'var(--brand-orange)' }}>Radar</span>
           </h2>
           <p className="m-0 mt-1.5" style={{ fontSize: '0.78rem', lineHeight: '1.35', color: 'rgba(255, 255, 255, 0.85)' }}>
-            {isPatient ? 'Live GPS radar with one-tap directions, emergency routing, and hospital contacts.' : 'Sign in for direct facility calling, emergency routing, and 15km extended radius.'}
+            {isDoctor
+              ? 'Clinical GPS facility radar for patient referrals, transfers, and specialist emergency routing.'
+              : isPatient
+              ? 'Live GPS radar with one-tap directions, emergency routing, and hospital contacts.'
+              : 'Sign in for direct facility calling, emergency routing, and 15km extended radius.'}
           </p>
         </div>
 
@@ -692,8 +721,8 @@ export default function NearbyMap({
           </div>
         </div>
 
-        {/* Nearest Hospital quick route */}
-        {isPatient && places.filter((p) => p.type === 'hospital').length > 0 && (
+        {/* Nearest Hospital quick route — available for logged-in doctors & patients */}
+        {isLoggedIn && places.filter((p) => p.type === 'hospital').length > 0 && (
           <div className="d-flex flex-column gap-2 mt-1">
             <h4 className="fw-bold mb-1" style={{ fontSize: '0.85rem', letterSpacing: '0.05em', color: '#FFFFFF' }}>
               <span className="font-monospace text-uppercase" style={{ letterSpacing: '0.06em', color: '#F87171' }}>Nearest Emergency</span>
@@ -704,11 +733,20 @@ export default function NearbyMap({
                 <p className="m-0 mt-1" style={{ fontSize: '0.74rem', color: 'rgba(255, 255, 255, 0.85)' }}>
                   {p.distance < 1 ? `${Math.round(p.distance * 1000)}m` : `${p.distance.toFixed(1)}km`} away
                 </p>
-                <a href={`https://www.google.com/maps/dir/?api=1&destination=${p.lat},${p.lon}`} target="_blank" rel="noopener noreferrer"
-                  className="d-flex align-items-center justify-content-center gap-1.5 mt-2.5 text-center py-1.5 rounded font-monospace text-uppercase text-decoration-none"
-                  style={{ fontSize: '0.72rem', background: 'rgba(220, 38, 38, 0.35)', border: '1px solid var(--accent-red)', color: '#FFFFFF', fontWeight: 700 }}>
-                  <Navigation size={12} /> Get Directions
-                </a>
+                <div className="d-flex gap-2 mt-2.5">
+                  <a href={`https://www.google.com/maps/dir/?api=1&destination=${p.lat},${p.lon}`} target="_blank" rel="noopener noreferrer"
+                    className="flex-grow-1 d-flex align-items-center justify-content-center gap-1.5 text-center py-1.5 rounded font-monospace text-uppercase text-decoration-none"
+                    style={{ fontSize: '0.72rem', background: 'rgba(220, 38, 38, 0.35)', border: '1px solid var(--accent-red)', color: '#FFFFFF', fontWeight: 700 }}>
+                    <Navigation size={12} /> Directions
+                  </a>
+                  {p.phone && (
+                    <a href={`tel:${p.phone}`}
+                      className="px-2.5 py-1.5 rounded font-monospace text-uppercase text-decoration-none d-flex align-items-center justify-content-center"
+                      style={{ fontSize: '0.72rem', background: 'rgba(0,255,170,0.1)', border: '1px solid var(--accent-green)', color: 'var(--accent-green)', fontWeight: 700 }}>
+                      <Phone size={12} />
+                    </a>
+                  )}
+                </div>
               </div>
             ))}
           </div>
@@ -716,7 +754,7 @@ export default function NearbyMap({
       </div>
     );
     return () => setSidebarContent(null);
-  }, [setSidebarContent, isPatient, places, activeTypes, location, radius, toggleType]);
+  }, [setSidebarContent, isLoggedIn, isDoctor, isPatient, places, activeTypes, location, radius, toggleType]);
 
   const filtered = places
     .filter((p) => p.name.toLowerCase().includes(search.toLowerCase()))
@@ -727,7 +765,7 @@ export default function NearbyMap({
   Object.keys(TYPE_CONFIG).forEach((k) => { counts[k] = places.filter((p) => p.type === k).length; });
 
   const handleExport = () => {
-    exportEmergencySheet(places, location);
+    exportEmergencySheet(places, location, isDoctor);
     setExportDone(true);
     setTimeout(() => setExportDone(false), 3000);
   };
@@ -762,21 +800,23 @@ export default function NearbyMap({
               <MapPin size={14} style={{ color: isDark ? '#F87171' : '#DC2626' }} />
             </div>
             <span className="font-monospace text-uppercase" style={{ fontSize: '0.68rem', letterSpacing: '0.14em', color: isDark ? '#F87171' : '#DC2626', fontWeight: 700 }}>
-              Medical Facility Radar &nbsp;·&nbsp; {location ? `${filtered.length} Results` : 'Offline Mode'}
+              {isDoctor ? 'Clinical Facility Radar' : 'Medical Facility Radar'} &nbsp;·&nbsp; {location ? `${filtered.length} Results` : 'Offline Mode'}
             </span>
           </div>
           <h1 className="fw-bolder m-0 mb-2" style={{ fontSize: '2rem', letterSpacing: '-0.03em', color: isDark ? '#FFFFFF' : '#0F172A', lineHeight: 1.1 }}>
-            Nearby <span style={{ background: 'linear-gradient(90deg, #DC2626, #EA580C)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Hospitals & Pharmacy</span>
+            Nearby <span style={{ background: 'linear-gradient(90deg, #DC2626, #EA580C)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Hospitals & Pharmacies</span>
           </h1>
           <p className="m-0" style={{ fontSize: '0.9rem', color: isDark ? 'rgba(255,255,255,0.65)' : '#475569', maxWidth: '520px', lineHeight: 1.5, fontWeight: isDark ? 400 : 500 }}>
-            {isPatient
+            {isDoctor
+              ? 'Clinical GPS radar for patient referrals, emergency transfers, diagnostic facilities, and hospital contacts.'
+              : isPatient
               ? 'Live GPS radar with one-tap directions, emergency routing, open status and hospital contacts.'
-              : 'Locate hospitals, clinics and pharmacy facilities near you. Sign in for emergency call routing & 15 km radius.'}
+              : 'Locate hospitals, clinics and pharmacies near you. Sign in for emergency call routing & 15 km radius.'}
           </p>
         </div>
 
-        {/* Export button — patients only */}
-        {isPatient && places.length > 0 && (
+        {/* Export button — available for logged-in Doctors & Patients */}
+        {isLoggedIn && places.length > 0 && (
           <button
             onClick={handleExport}
             className="d-flex align-items-center gap-2 px-4 py-2 rounded-3 font-monospace text-uppercase fw-bold flex-shrink-0"
@@ -794,22 +834,22 @@ export default function NearbyMap({
             }}
           >
             {exportDone ? <CheckCircle2 size={14} /> : <Download size={14} />}
-            {exportDone ? 'Saved!' : 'Export Emergency Sheet'}
+            {exportDone ? 'Saved!' : isDoctor ? 'Export Clinical Sheet' : 'Export Emergency Sheet'}
           </button>
         )}
       </div>
 
-      {/* ── SOS Panel ── */}
-      {isPatient && <SOSPanel places={places} location={location} isPatient={isPatient} />}
-
-      {/* ── Interactive Map ── */}
+      {/* ── Interactive Map — Exact mechanism of the guest map: clean, top-level, unobstructed ── */}
       {location && (
         <InteractiveMap
           location={location}
           places={filtered}
-          isPatient={isPatient}
+          isPatient={isLoggedIn}
         />
       )}
+
+      {/* ── SOS Emergency Fast Route (for logged-in Doctor & Patient) ── */}
+      {isLoggedIn && <SOSPanel places={places} location={location} isPatient={isLoggedIn} />}
 
       <div className="row g-4">
         {/* ── LEFT CONTROLS ── */}
@@ -896,7 +936,7 @@ export default function NearbyMap({
               </h5>
               <div className="d-flex flex-column gap-2">
                 {Object.entries(TYPE_CONFIG).map(([key, cfg]) => (
-                  isPatient || ['hospital', 'clinic', 'pharmacy'].includes(key) ? (
+                  isLoggedIn || ['hospital', 'clinic', 'pharmacy'].includes(key) ? (
                     <button
                       key={key}
                       onClick={() => toggleType(key)}
@@ -917,7 +957,7 @@ export default function NearbyMap({
                     </button>
                   ) : null
                 ))}
-                {!isPatient && (
+                {!isLoggedIn && (
                   <p className="text-secondary mt-1 mb-0 d-flex align-items-center gap-1" style={{ fontSize: '0.65rem' }}>
                     <Lock size={11} /> Sign in for Dentists & Labs
                   </p>
@@ -931,12 +971,12 @@ export default function NearbyMap({
                 <Radio size={14} className="text-info" /> SEARCH RADIUS
               </h5>
               <div className="d-flex align-items-center gap-3">
-                <input type="range" min={500} max={isPatient ? 15000 : 5000} step={500} value={radius} onChange={(e) => setRadius(Number(e.target.value))} style={{ margin: 0 }} aria-label="Search radius" />
+                <input type="range" min={500} max={isLoggedIn ? 15000 : 5000} step={500} value={radius} onChange={(e) => setRadius(Number(e.target.value))} style={{ margin: 0 }} aria-label="Search radius" />
                 <span className="text-info fw-bold font-monospace" style={{ minWidth: '52px', fontSize: '0.8rem' }}>
                   {radius >= 1000 ? `${(radius / 1000).toFixed(1)} km` : `${radius} m`}
                 </span>
               </div>
-              {!isPatient && <p className="text-secondary mt-2 mb-0" style={{ fontSize: '0.65rem' }}>Sign in to search up to 15 km</p>}
+              {!isLoggedIn && <p className="text-secondary mt-2 mb-0" style={{ fontSize: '0.65rem' }}>Sign in to search up to 15 km</p>}
             </div>
 
             {/* Google Maps link */}
@@ -966,7 +1006,7 @@ export default function NearbyMap({
                   style={{ background: 'transparent', border: 'none', color: 'var(--text-primary)', outline: 'none', width: '100%', fontSize: '0.83rem', padding: 0, marginBottom: 0 }}
                 />
               </div>
-              {isPatient && (
+              {isLoggedIn && (
                 <>
                   <select
                     value={sortBy} onChange={(e) => setSortBy(e.target.value)}
@@ -1033,7 +1073,7 @@ export default function NearbyMap({
                   <PlaceCard
                     key={place.id}
                     place={place}
-                    isPatient={isPatient}
+                    isLoggedIn={isLoggedIn}
                     expanded={expandedId === place.id}
                     onToggle={() => setExpandedId(expandedId === place.id ? null : place.id)}
                   />
@@ -1042,7 +1082,7 @@ export default function NearbyMap({
             )}
 
             {/* Guest upsell */}
-            {!isPatient && !loading && filtered.length > 0 && (
+            {!isLoggedIn && !loading && filtered.length > 0 && (
               <div className="mt-4 p-3 rounded d-flex align-items-start gap-2" style={{ background: 'var(--status-info-bg)', border: '1px solid var(--status-info-border)', fontSize: '0.75rem' }}>
                 <Lock size={14} className="text-info mt-1 flex-shrink-0" />
                 <p className="text-info font-monospace m-0">

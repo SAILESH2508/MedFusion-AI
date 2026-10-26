@@ -274,6 +274,26 @@ nav.bg-glass .btn-icon {
   color: rgba(255, 255, 255, 0.85) !important;
 }
 
+/* Ensure emergency QR dropdown panel inside nav has proper theme contrast */
+nav.bg-glass .emergency-qr-panel,
+.emergency-qr-panel {
+  color: var(--text-primary) !important;
+}
+
+nav.bg-glass .emergency-qr-panel a,
+.emergency-qr-panel a {
+  color: var(--text-secondary) !important;
+}
+
+.emergency-qr-panel button {
+  transition: all 0.15s ease;
+}
+
+.emergency-qr-panel button:hover:not(:disabled) {
+  opacity: 0.92;
+  filter: brightness(0.95);
+}
+
 /* Brand Logo: Clean, solid, medical authority */
 .brand-logo-blue {
   color: var(--text-on-dark) !important;
@@ -743,6 +763,18 @@ input:focus, select:focus, textarea:focus, .typeable-number-input:focus {
 input::placeholder, textarea::placeholder {
   color: var(--text-muted) !important;
   opacity: 0.85;
+}
+
+/* Auth modal inputs with embedded left & right icons */
+input.auth-input-field {
+  padding: 12px 14px 12px 42px !important;
+  margin-bottom: 0 !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
+}
+
+input.auth-input-field.auth-input-password {
+  padding-right: 44px !important;
 }
 
 option {

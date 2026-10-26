@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, createContext, useCallback } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate, Link, useLocation, NavLink as RouterNavLink } from 'react-router-dom';
-import { Activity, FileUp, Database, User, LogOut, Menu, X, Home, PanelLeft, Pill, Smile, Calendar, MessageSquare, MapPin, Sun, Moon, Salad, Cpu, QrCode, ShieldAlert, Stethoscope, HeartPulse, BrainCircuit, UtensilsCrossed, FlaskConical, Sprout } from 'lucide-react';
+import { Activity, FileUp, Database, User, LogOut, Menu, X, Home, PanelLeft, Pill, Smile, Calendar, MessageSquare, MapPin, Sun, Moon, Salad, Cpu, QrCode, ShieldAlert, Stethoscope, HeartPulse, BrainCircuit, UtensilsCrossed, FlaskConical, Sprout, Download } from 'lucide-react';
 import { AnimatePresence, motion } from 'framer-motion';
 
 // Pages
@@ -197,7 +197,7 @@ function AppContent({ user, login, logout }) {
 
       {isAuthOpen && (
         <div className="modal-overlay" onClick={handleCloseAuth}>
-          <div className="modal-container p-0 border-0 shadow-none bg-transparent" onClick={(e) => e.stopPropagation()} style={{ maxWidth: '480px' }}>
+          <div onClick={(e) => e.stopPropagation()} style={{ width: '100%', maxWidth: '480px' }}>
             <Auth login={login} initialPortal={authPortalType} onClose={handleCloseAuth} message={authMessage} />
           </div>
         </div>
@@ -334,6 +334,7 @@ function EmergencyQRDropdown({ user }) {
   const [isOpen, setIsOpen] = useState(false);
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [downloading, setDownloading] = useState(false);
   const btnRef = useRef(null);
   const panelRef = useRef(null);
 
@@ -389,6 +390,29 @@ function EmergencyQRDropdown({ user }) {
     ? `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(window.location.origin + '/emergency/' + token)}`
     : null;
 
+  const handleDownload = async () => {
+    if (!qrUrl || downloading) return;
+    setDownloading(true);
+    const downloadUrl = qrUrl.replace('200x200', '600x600');
+    try {
+      const response = await fetch(downloadUrl);
+      const blob = await response.blob();
+      const blobUrl = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = blobUrl;
+      const patientName = profile ? `${profile.first_name || ''}_${profile.last_name || ''}`.trim() : 'Patient';
+      link.download = `MedFusion_QR_${patientName || 'Emergency'}.png`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(blobUrl);
+    } catch {
+      window.open(downloadUrl, '_blank');
+    } finally {
+      setDownloading(false);
+    }
+  };
+
   return (
     <div style={{ position: 'relative' }}>
       <button
@@ -412,6 +436,8 @@ function EmergencyQRDropdown({ user }) {
       {isOpen && (
         <div
           ref={panelRef}
+          data-dropdown-panel="true"
+          className="emergency-qr-panel"
           style={{
             position: 'fixed',
             top: '60px',
@@ -444,9 +470,32 @@ function EmergencyQRDropdown({ user }) {
             <>
               <img src={qrUrl} alt="Emergency QR Code" style={{ width: '100%', borderRadius: '6px', border: '1px solid var(--border)', display: 'block' }} />
               <div style={{ display: 'flex', gap: '6px', marginTop: '10px', flexWrap: 'wrap' }}>
-                <button onClick={handleGenerate} disabled={loading} style={{ flex: 1, padding: '5px 8px', background: 'transparent', border: '1px solid var(--border)', borderRadius: '4px', fontSize: '0.64rem', cursor: 'pointer', color: 'var(--text-secondary)' }}>Regenerate</button>
-                <button onClick={handleRevoke} style={{ flex: 1, padding: '5px 8px', background: 'transparent', border: '1px solid var(--accent-red)', borderRadius: '4px', fontSize: '0.64rem', cursor: 'pointer', color: 'var(--accent-red)' }}>Revoke</button>
-                <a href={qrUrl.replace('200x200', '400x400')} download="MedFusion_QR.png" target="_blank" rel="noopener noreferrer" style={{ flex: 1, padding: '5px 8px', background: 'transparent', border: '1px solid var(--border)', borderRadius: '4px', fontSize: '0.64rem', color: 'var(--text-secondary)', textDecoration: 'none', textAlign: 'center' }}>Download</a>
+                <button type="button" onClick={handleGenerate} disabled={loading} style={{ flex: 1, padding: '5px 8px', background: 'transparent', border: '1px solid var(--border)', borderRadius: '4px', fontSize: '0.64rem', cursor: loading ? 'not-allowed' : 'pointer', color: 'var(--text-secondary)', fontWeight: 600 }}>{loading ? 'Regenerating…' : 'Regenerate'}</button>
+                <button type="button" onClick={handleRevoke} style={{ flex: 1, padding: '5px 8px', background: 'transparent', border: '1px solid var(--accent-red)', borderRadius: '4px', fontSize: '0.64rem', cursor: 'pointer', color: 'var(--accent-red)', fontWeight: 600 }}>Revoke</button>
+                <button
+                  type="button"
+                  onClick={handleDownload}
+                  disabled={downloading}
+                  style={{
+                    flex: 1,
+                    padding: '5px 8px',
+                    background: 'transparent',
+                    border: '1px solid var(--border)',
+                    borderRadius: '4px',
+                    fontSize: '0.64rem',
+                    cursor: downloading ? 'wait' : 'pointer',
+                    color: 'var(--text-secondary)',
+                    fontWeight: 600,
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '4px'
+                  }}
+                  title="Download high-resolution Emergency QR Code"
+                >
+                  <Download size={11} />
+                  <span>{downloading ? 'Saving…' : 'Download'}</span>
+                </button>
               </div>
             </>
           ) : (

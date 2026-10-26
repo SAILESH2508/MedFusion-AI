@@ -356,7 +356,7 @@ function Auth({ login, initialPortal: propInitialPortal = 'patient', onClose, me
                     <User 
                       size={16} 
                       className="position-absolute text-secondary" 
-                      style={{ top: '50%', transform: 'translateY(-50%)', left: '14px', pointerEvents: 'none' }} 
+                      style={{ top: '50%', transform: 'translateY(-50%)', left: '14px', pointerEvents: 'none', zIndex: 2 }} 
                     />
                     <input 
                       type="text" 
@@ -364,13 +364,12 @@ function Auth({ login, initialPortal: propInitialPortal = 'patient', onClose, me
                       value={name} 
                       onChange={(e) => setName(e.target.value)} 
                       required 
-                      className="w-100"
+                      className="w-100 auth-input-field"
                       style={{ 
                         background: 'var(--bg-input, #F7F5F1)',
                         border: '1px solid var(--border)',
                         color: 'var(--text-primary)',
                         borderRadius: '10px',
-                        padding: '11px 14px 11px 40px',
                         fontSize: '0.9rem',
                         outline: 'none',
                         transition: 'border-color 0.15s ease, box-shadow 0.15s ease'
@@ -397,7 +396,7 @@ function Auth({ login, initialPortal: propInitialPortal = 'patient', onClose, me
                   <Mail 
                     size={16} 
                     className="position-absolute text-secondary" 
-                    style={{ top: '50%', transform: 'translateY(-50%)', left: '14px', pointerEvents: 'none' }} 
+                    style={{ top: '50%', transform: 'translateY(-50%)', left: '14px', pointerEvents: 'none', zIndex: 2 }} 
                   />
                   <input 
                     type="email" 
@@ -405,13 +404,12 @@ function Auth({ login, initialPortal: propInitialPortal = 'patient', onClose, me
                     value={email} 
                     onChange={(e) => setEmail(e.target.value)} 
                     required 
-                    className="w-100"
+                    className="w-100 auth-input-field"
                     style={{ 
                       background: 'var(--bg-input, #F7F5F1)',
                       border: '1px solid var(--border)',
                       color: 'var(--text-primary)',
                       borderRadius: '10px',
-                      padding: '11px 14px 11px 40px',
                       fontSize: '0.9rem',
                       outline: 'none',
                       transition: 'border-color 0.15s ease, box-shadow 0.15s ease'
@@ -437,7 +435,7 @@ function Auth({ login, initialPortal: propInitialPortal = 'patient', onClose, me
                   <Lock 
                     size={16} 
                     className="position-absolute text-secondary" 
-                    style={{ top: '50%', transform: 'translateY(-50%)', left: '14px', pointerEvents: 'none' }} 
+                    style={{ top: '50%', transform: 'translateY(-50%)', left: '14px', pointerEvents: 'none', zIndex: 2 }} 
                   />
                   <input 
                     type={showPassword ? 'text' : 'password'} 
@@ -445,13 +443,12 @@ function Auth({ login, initialPortal: propInitialPortal = 'patient', onClose, me
                     value={password} 
                     onChange={(e) => setPassword(e.target.value)} 
                     required 
-                    className="w-100"
+                    className="w-100 auth-input-field auth-input-password"
                     style={{ 
                       background: 'var(--bg-input, #F7F5F1)',
                       border: '1px solid var(--border)',
                       color: 'var(--text-primary)',
                       borderRadius: '10px',
-                      padding: '11px 40px 11px 40px',
                       fontSize: '0.9rem',
                       outline: 'none',
                       transition: 'border-color 0.15s ease, box-shadow 0.15s ease'
@@ -463,7 +460,7 @@ function Auth({ login, initialPortal: propInitialPortal = 'patient', onClose, me
                     type="button" 
                     onClick={() => setShowPassword(!showPassword)}
                     className="position-absolute d-flex align-items-center justify-content-center p-0 border-0 bg-transparent text-secondary cursor-pointer"
-                    style={{ top: '50%', transform: 'translateY(-50%)', right: '14px' }}
+                    style={{ top: '50%', transform: 'translateY(-50%)', right: '14px', zIndex: 2 }}
                     aria-label={showPassword ? 'Hide password' : 'Show password'}
                   >
                     {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
@@ -489,7 +486,7 @@ function Auth({ login, initialPortal: propInitialPortal = 'patient', onClose, me
                       <ShieldCheck 
                         size={16} 
                         className="position-absolute text-secondary" 
-                        style={{ top: '50%', transform: 'translateY(-50%)', left: '14px', pointerEvents: 'none' }} 
+                        style={{ top: '50%', transform: 'translateY(-50%)', left: '14px', pointerEvents: 'none', zIndex: 2 }} 
                       />
                       <input 
                         type="text" 
@@ -497,13 +494,12 @@ function Auth({ login, initialPortal: propInitialPortal = 'patient', onClose, me
                         value={license} 
                         onChange={(e) => setLicense(e.target.value)} 
                         required 
-                        className="w-100 font-monospace"
+                        className="w-100 font-monospace auth-input-field"
                         style={{ 
                           background: 'var(--bg-input, #F7F5F1)',
                           border: '1px solid var(--border)',
                           color: 'var(--text-primary)',
                           borderRadius: '10px',
-                          padding: '11px 14px 11px 40px',
                           fontSize: '0.88rem',
                           outline: 'none',
                           transition: 'border-color 0.15s ease, box-shadow 0.15s ease'
