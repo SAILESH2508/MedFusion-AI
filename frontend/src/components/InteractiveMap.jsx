@@ -142,7 +142,7 @@ export default function InteractiveMap({ location, places, isPatient, onLocation
       const userMarker = L.marker([location.lat, location.lon], {
         icon: userIcon,
         zIndexOffset: 1000,
-        draggable: true,
+        draggable: false,
       })
         .addTo(map)
         .bindPopup(
@@ -157,28 +157,9 @@ export default function InteractiveMap({ location, places, isPatient, onLocation
           </div>`
         );
 
-      userMarker.on('dragend', (e) => {
-        const pt = e.target.getLatLng();
-        if (onLocationSelect) {
-          onLocationSelect({
-            lat: pt.lat,
-            lon: pt.lng,
-            source: 'marker_drag'
-          });
-        }
-      });
       userMarkerRef.current = userMarker;
 
-      // Click anywhere on map to set your exact location
-      map.on('click', (e) => {
-        if (onLocationSelect) {
-          onLocationSelect({
-            lat: e.latlng.lat,
-            lon: e.latlng.lng,
-            source: 'map_click'
-          });
-        }
-      });
+      // Map is view-only — location is set via GPS button or region presets, not by clicking the map
     });
 
     return () => {
@@ -204,9 +185,6 @@ export default function InteractiveMap({ location, places, isPatient, onLocation
           📍 ${popupText}
           <div style="font-size:0.68rem;color:#666;font-family:monospace;font-weight:normal;margin-top:2px">
             ${location.lat.toFixed(5)}°N, ${location.lon.toFixed(5)}°E
-          </div>
-          <div style="font-size:0.65rem;color:#0ea5e9;font-weight:600;margin-top:4px">
-            Drag pin or click map to move
           </div>
         </div>`
       );
