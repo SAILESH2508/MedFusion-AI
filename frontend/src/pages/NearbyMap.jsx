@@ -41,7 +41,7 @@ function isOpenNow(opening_hours) {
 const TYPE_CONFIG = {
   hospital:  { label: 'Hospitals',   icon: Building2,    color: '#EF4444', brightColor: '#F87171', glow: 'rgba(239, 68, 68, 0.25)', bg: 'rgba(239, 68, 68, 0.15)', border: 'rgba(239, 68, 68, 0.45)', tags: ['hospital'] },
   clinic:    { label: 'Clinics',     icon: Stethoscope,  color: '#0EA5E9', brightColor: '#38BDF8', glow: 'rgba(14, 165, 233, 0.25)', bg: 'rgba(14, 165, 233, 0.15)', border: 'rgba(14, 165, 233, 0.45)', tags: ['clinic', 'doctors'] },
-  pharmacy:  { label: 'Pharmacies',  icon: Pill,         color: '#10B981', brightColor: '#34D399', glow: 'rgba(16, 185, 129, 0.25)', bg: 'rgba(16, 185, 129, 0.15)', border: 'rgba(16, 185, 129, 0.45)', tags: ['pharmacy', 'chemist'] },
+  pharmacy:  { label: 'Pharmacy',    icon: Pill,         color: '#10B981', brightColor: '#34D399', glow: 'rgba(16, 185, 129, 0.25)', bg: 'rgba(16, 185, 129, 0.15)', border: 'rgba(16, 185, 129, 0.45)', tags: ['pharmacy', 'chemist'] },
   dentist:   { label: 'Dentists',    icon: Sparkles,     color: '#A855F7', brightColor: '#C084FC', glow: 'rgba(168, 85, 247, 0.25)', bg: 'rgba(168, 85, 247, 0.15)', border: 'rgba(168, 85, 247, 0.45)', tags: ['dentist'] },
   lab:       { label: 'Labs',        icon: FlaskConical, color: '#F59E0B', brightColor: '#FBBF24', glow: 'rgba(245, 158, 11, 0.25)', bg: 'rgba(245, 158, 11, 0.15)', border: 'rgba(245, 158, 11, 0.45)', tags: ['laboratory'] },
 };
@@ -150,7 +150,7 @@ function exportEmergencySheet(places, location) {
           `${i + 1}. ${p.name}\n   Distance: ${p.distance < 1 ? `${Math.round(p.distance * 1000)}m` : `${p.distance.toFixed(1)}km`}\n   Phone: ${p.phone || 'N/A'}\n   Address: ${p.address || 'N/A'}\n   Directions: https://maps.google.com/?q=${p.lat},${p.lon}`
       ),
     '',
-    '--- NEAREST PHARMACIES ---',
+    '--- NEAREST PHARMACY ---',
     ...places
       .filter((p) => p.type === 'pharmacy')
       .slice(0, 3)
@@ -501,11 +501,17 @@ export default function NearbyMap({
 
     navigator.geolocation.getCurrentPosition(
       (pos) => {
+        const pLat = pos.coords.latitude;
+        const pLon = pos.coords.longitude;
+        // Check proximity to Kamachipuram (approx within 4km)
+        const distToKamachi = haversineKm(pLat, pLon, 11.0065, 77.0645);
+        const isNearKamachi = distToKamachi <= 4.0;
+
         setLocation({
-          lat: pos.coords.latitude,
-          lon: pos.coords.longitude,
-          city: 'My Location',
-          displayName: `${pos.coords.latitude.toFixed(4)}°N, ${pos.coords.longitude.toFixed(4)}°E`,
+          lat: pLat,
+          lon: pLon,
+          city: isNearKamachi ? 'Kamachipuram' : 'Coimbatore',
+          displayName: isNearKamachi ? 'Kamachipuram, Ondipudur, Coimbatore' : `${pLat.toFixed(4)}°N, ${pLon.toFixed(4)}°E`,
           source: 'gps',
         });
         setLocLoading(false);
@@ -627,7 +633,7 @@ export default function NearbyMap({
                   onClick={() => toggleType(key)}
                   className={`disease-select-tile cursor-pointer ${isFilterActive ? 'active' : 'inactive'}`}
                   style={{
-                    padding: '11px 16px',
+                    padding: '8px 14px',
                     borderColor: isFilterActive ? cfg.brightColor : 'var(--border-color)',
                     opacity: isFilterActive ? 1 : 0.75,
                     transition: 'all 0.2s ease',
@@ -760,12 +766,12 @@ export default function NearbyMap({
             </span>
           </div>
           <h1 className="fw-bolder m-0 mb-2" style={{ fontSize: '2rem', letterSpacing: '-0.03em', color: isDark ? '#FFFFFF' : '#0F172A', lineHeight: 1.1 }}>
-            Nearby <span style={{ background: 'linear-gradient(90deg, #DC2626, #EA580C)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Hospitals & Pharmacies</span>
+            Nearby <span style={{ background: 'linear-gradient(90deg, #DC2626, #EA580C)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Hospitals & Pharmacy</span>
           </h1>
           <p className="m-0" style={{ fontSize: '0.9rem', color: isDark ? 'rgba(255,255,255,0.65)' : '#475569', maxWidth: '520px', lineHeight: 1.5, fontWeight: isDark ? 400 : 500 }}>
             {isPatient
               ? 'Live GPS radar with one-tap directions, emergency routing, open status and hospital contacts.'
-              : 'Locate hospitals, clinics and pharmacies near you. Sign in for emergency call routing & 15 km radius.'}
+              : 'Locate hospitals, clinics and pharmacy facilities near you. Sign in for emergency call routing & 15 km radius.'}
           </p>
         </div>
 
@@ -802,11 +808,6 @@ export default function NearbyMap({
           location={location}
           places={filtered}
           isPatient={isPatient}
-          onLocationSelect={(coords) => setLocation({
-            ...coords,
-            city: coords.city || 'My Location',
-            displayName: coords.displayName || `${coords.lat.toFixed(4)}°N, ${coords.lon.toFixed(4)}°E`,
-          })}
         />
       )}
 

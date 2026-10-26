@@ -11,30 +11,21 @@
  */
 import React, { useEffect, useRef, useState, useCallback } from 'react';
 import { Navigation, Layers, Crosshair, X } from 'lucide-react';
-
-// Leaflet CSS — inject once
-function ensureLeafletCSS() {
-  if (document.getElementById('leaflet-css')) return;
-  const link = document.createElement('link');
-  link.id   = 'leaflet-css';
-  link.rel  = 'stylesheet';
-  link.href = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css';
-  document.head.appendChild(link);
-}
+import 'leaflet/dist/leaflet.css';
 
 const TILE_LAYERS = {
   street: {
     label: 'Street',
     url: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
     attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-    maxZoom: 21,
+    maxZoom: 19,
     maxNativeZoom: 19,
   },
   satellite: {
     label: 'Satellite',
     url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
     attribution: '© Esri, DigitalGlobe, GeoEye, i-cubed',
-    maxZoom: 21,
+    maxZoom: 19,
     maxNativeZoom: 19,
   },
 };
@@ -78,14 +69,14 @@ function createIcon(L, type, isSelected) {
 // Pulsing "you are here" icon
 function createUserIcon(L) {
   const html = `
-    <div style="position:relative;width:20px;height:20px">
-      <div style="position:absolute;inset:0;border-radius:50%;background:rgba(91,159,224,0.25);animation:userPulse 1.5s infinite"></div>
-      <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:12px;height:12px;border-radius:50%;background:#5B9FE0;border:2px solid #fff;box-shadow:0 0 6px rgba(91,159,224,0.6)"></div>
+    <div style="position:relative;width:22px;height:22px">
+      <div style="position:absolute;inset:0;border-radius:50%;background:rgba(56,189,248,0.3);animation:userPulse 1.8s infinite"></div>
+      <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:14px;height:14px;border-radius:50%;background:#0284c7;border:2.5px solid #fff;box-shadow:0 0 8px rgba(2,132,199,0.8)"></div>
     </div>`;
-  return L.divIcon({ html, className: '', iconSize: [20, 20], iconAnchor: [10, 10] });
+  return L.divIcon({ html, className: '', iconSize: [22, 22], iconAnchor: [11, 11] });
 }
 
-export default function InteractiveMap({ location, places, isPatient, onLocationSelect }) {
+export default function InteractiveMap({ location, places, isPatient }) {
   const mapContainerRef = useRef(null);
   const mapRef          = useRef(null);
   const tileRef         = useRef(null);
@@ -93,6 +84,7 @@ export default function InteractiveMap({ location, places, isPatient, onLocation
   const userMarkerRef   = useRef(null);
   const routeLayerRef   = useRef(null);
 
+  const [mapReady, setMapReady]           = useState(false);
   const [tileLayer, setTileLayer]         = useState('street');
   const [selectedPlace, setSelectedPlace] = useState(null);
   const [routing, setRouting]             = useState(false);
@@ -101,8 +93,6 @@ export default function InteractiveMap({ location, places, isPatient, onLocation
   // ── Init map ─────────────────────────────────────────────────────────
   useEffect(() => {
     if (!location || !mapContainerRef.current || mapRef.current) return;
-
-    ensureLeafletCSS();
 
     import('leaflet').then((mod) => {
       const L = mod.default || mod;
@@ -118,7 +108,7 @@ export default function InteractiveMap({ location, places, isPatient, onLocation
       const map = L.map(mapContainerRef.current, {
         center:             [location.lat, location.lon],
         zoom:               15,
-        maxZoom:            21,
+        maxZoom:            19,
         zoomControl:        false,
         attributionControl: true,
       });
@@ -129,7 +119,7 @@ export default function InteractiveMap({ location, places, isPatient, onLocation
       // Street tile layer
       const tile = L.tileLayer(TILE_LAYERS.street.url, {
         attribution:   TILE_LAYERS.street.attribution,
-        maxZoom:       21,
+        maxZoom:       19,
         maxNativeZoom: 19,
         keepBuffer:    4,
       }).addTo(map);
@@ -137,7 +127,7 @@ export default function InteractiveMap({ location, places, isPatient, onLocation
       tileRef.current  = tile;
       mapRef.current   = map;
 
-      // User location marker (Draggable for pinpoint precision)
+      // User location marker (Clean, non-draggable pin for stability)
       const userIcon = createUserIcon(L);
       const userMarker = L.marker([location.lat, location.lon], {
         icon: userIcon,
@@ -151,27 +141,23 @@ export default function InteractiveMap({ location, places, isPatient, onLocation
             <div style="font-size:0.68rem;color:#666;font-family:monospace;font-weight:normal;margin-top:2px">
               ${location.lat.toFixed(5)}°N, ${location.lon.toFixed(5)}°E
             </div>
-            <div style="font-size:0.65rem;color:#0ea5e9;font-weight:600;margin-top:4px">
-              Drag pin or click map to move
-            </div>
           </div>`
         );
 
       userMarkerRef.current = userMarker;
-
-      // Map is view-only — location is set via GPS button or region presets, not by clicking the map
+      setMapReady(true);
     });
 
     return () => {
       if (mapRef.current) {
         mapRef.current.remove();
         mapRef.current = null;
+        setMapReady(false);
       }
     };
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-
-  // ── Pan map & update marker whenever location changes ─────────────────
+  // ── Pan map & update user marker whenever location changes ────────────
   useEffect(() => {
     if (!mapRef.current || !location) return;
 
@@ -201,23 +187,26 @@ export default function InteractiveMap({ location, places, isPatient, onLocation
 
       tileRef.current = L.tileLayer(cfg.url, {
           attribution:   cfg.attribution,
-          maxZoom:       21,
+          maxZoom:       19,
           maxNativeZoom: cfg.maxNativeZoom || 19,
           keepBuffer:    4,
         }).addTo(mapRef.current);
     });
   }, [tileLayer]);
 
-  // ── Update markers when places change ────────────────────────────────
+  // ── Update markers when places change or map becomes ready ────────────
   useEffect(() => {
-    if (!mapRef.current || places.length === 0) return;
+    if (!mapRef.current) return;
 
     import('leaflet').then((mod) => {
       const L = mod.default || mod;
+      if (!mapRef.current) return;
 
       // Remove old markers
       markersRef.current.forEach((m) => m.remove());
       markersRef.current = [];
+
+      if (!places || places.length === 0) return;
 
       places.forEach((place) => {
         const isSelected = selectedPlace?.id === place.id;
@@ -257,7 +246,7 @@ export default function InteractiveMap({ location, places, isPatient, onLocation
         markersRef.current.push(marker);
       });
     });
-  }, [places, selectedPlace]);
+  }, [places, selectedPlace, mapReady]);
 
   // ── Draw OSRM route ───────────────────────────────────────────────────
   const drawRoute = useCallback(async (dest) => {
@@ -266,95 +255,97 @@ export default function InteractiveMap({ location, places, isPatient, onLocation
     setRouteInfo(null);
 
     try {
-      import('leaflet').then(async (mod) => {
-        const L = mod.default || mod;
-        const url = `https://router.project-osrm.org/route/v1/driving/${location.lon},${location.lat};${dest.lon},${dest.lat}?overview=full&geometries=geojson`;
-        const res  = await fetch(url);
-        const data = await res.json();
+      const url = `https://router.project-osrm.org/route/v1/driving/${location.lon},${location.lat};${dest.lon},${dest.lat}?overview=full&geometries=geojson`;
+      const res = await fetch(url);
+      const data = await res.json();
 
-        if (data.code !== 'Ok' || !data.routes?.[0]) {
-          setRouting(false);
-          return;
-        }
-
+      if (data.routes && data.routes[0]) {
         const route = data.routes[0];
-        const distKm = (route.distance / 1000).toFixed(1);
-        const durMin = Math.round(route.duration / 60);
-        setRouteInfo({ distance: distKm, duration: durMin });
+        const coords = route.geometry.coordinates.map(([lng, lat]) => [lat, lng]);
 
-        // Remove old route
-        if (routeLayerRef.current) { routeLayerRef.current.remove(); }
+        import('leaflet').then((mod) => {
+          const L = mod.default || mod;
 
-        routeLayerRef.current = L.geoJSON(route.geometry, {
-          style: { color: '#00f5d4', weight: 5, opacity: 0.85, dashArray: null },
-        }).addTo(mapRef.current);
+          if (routeLayerRef.current) {
+            routeLayerRef.current.remove();
+          }
 
-        // Fit map to route
-        mapRef.current.fitBounds(routeLayerRef.current.getBounds(), { padding: [40, 40] });
-        setRouting(false);
-      });
-    } catch {
+          routeLayerRef.current = L.polyline(coords, {
+            color: '#38BDF8',
+            weight: 5,
+            opacity: 0.85,
+            dashArray: '8, 8',
+          }).addTo(mapRef.current);
+
+          mapRef.current.fitBounds(routeLayerRef.current.getBounds(), { padding: [40, 40] });
+        });
+
+        setRouteInfo({
+          distance: (route.distance / 1000).toFixed(1),
+          duration: Math.round(route.duration / 60),
+        });
+      }
+    } catch (err) {
+      console.warn('OSRM route failed:', err);
+    } finally {
       setRouting(false);
     }
   }, [location]);
 
-  const clearRoute = useCallback(() => {
+  const clearRoute = () => {
     if (routeLayerRef.current) {
       routeLayerRef.current.remove();
       routeLayerRef.current = null;
     }
     setRouteInfo(null);
-    setSelectedPlace(null);
-    if (mapRef.current && location) {
-      mapRef.current.setView([location.lat, location.lon], 15);
-    }
-  }, [location]);
+  };
 
-  const recenter = useCallback(() => {
+  const recenter = () => {
     if (mapRef.current && location) {
-      mapRef.current.setView([location.lat, location.lon], 15, { animate: true });
+      mapRef.current.flyTo([location.lat, location.lon], 15, { duration: 0.6 });
     }
-  }, [location]);
-
-  if (!location) return null;
+  };
 
   return (
-    <div className="glass-card glass-card--map p-3 mb-4" style={{ borderRadius: '14px' }}>
-      {/* Header row */}
-      <div className="d-flex align-items-center justify-content-between mb-3 flex-wrap gap-2">
-        <h5 className="fw-bold font-monospace m-0" style={{ fontSize: '0.88rem', letterSpacing: '0.06em', color: '#FFFFFF' }}>
-          INTERACTIVE MAP — {places.length} FACILITIES
-        </h5>
-        <div className="d-flex gap-2 align-items-center flex-wrap">
-          {/* Layer toggle */}
-          {Object.entries(TILE_LAYERS).map(([key, cfg]) => {
-            const isActive = tileLayer === key;
-            return (
-              <button
-                key={key}
-                onClick={() => setTileLayer(key)}
-                className="d-flex align-items-center gap-1 px-3 py-1.5 rounded-2 font-monospace"
-                style={{
-                  fontSize: '0.72rem',
-                  letterSpacing: '0.05em',
-                  cursor: 'pointer',
-                  fontWeight: isActive ? 700 : 600,
-                  background: isActive ? 'var(--brand-orange, #F4954A)' : 'rgba(255, 255, 255, 0.12)',
-                  border: isActive ? '1px solid var(--brand-orange, #F4954A)' : '1px solid rgba(255, 255, 255, 0.22)',
-                  color: '#FFFFFF',
-                  boxShadow: isActive ? '0 2px 8px rgba(244, 149, 74, 0.35)' : 'none',
-                  transition: 'all 0.2s ease',
-                }}
-              >
-                {cfg.label}
-              </button>
-            );
-          })}
+    <div className="glass-card glass-card--map p-3 mb-4" style={{ borderRadius: '12px' }}>
+      {/* Top bar controls */}
+      <div className="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-2">
+        <div className="d-flex align-items-center gap-2">
+          <span className="font-monospace fw-bold text-uppercase" style={{ fontSize: '0.8rem', color: '#FFFFFF', letterSpacing: '0.06em' }}>
+            Interactive Map
+          </span>
+          <span style={{ fontSize: '0.68rem', color: 'rgba(255, 255, 255, 0.7)' }}>
+            • {places.length} facilities
+          </span>
+        </div>
+
+        <div className="d-flex align-items-center gap-2">
+          {/* Tile layer toggle */}
+          <button
+            onClick={() => setTileLayer((prev) => (prev === 'street' ? 'satellite' : 'street'))}
+            className="d-flex align-items-center gap-1.5"
+            style={{
+              background: 'rgba(255, 255, 255, 0.12)',
+              border: '1px solid rgba(255, 255, 255, 0.22)',
+              borderRadius: '6px',
+              color: '#FFFFFF',
+              cursor: 'pointer',
+              fontSize: '0.72rem',
+              fontFamily: 'var(--font-mono)',
+              fontWeight: 600,
+              padding: '6px 10px',
+              transition: 'all 0.2s ease',
+            }}
+          >
+            <Layers size={13} />
+            <span>{tileLayer === 'street' ? 'Satellite View' : 'Street View'}</span>
+          </button>
+
           {/* Recenter */}
           <button
             onClick={recenter}
-            title="Re-center on my location"
-            aria-label="Re-centre map on my location"
+            aria-label="Re-center map"
+            title="Re-center on your location"
             style={{
               background: 'rgba(255, 255, 255, 0.12)',
               border: '1px solid rgba(255, 255, 255, 0.22)',
@@ -369,6 +360,7 @@ export default function InteractiveMap({ location, places, isPatient, onLocation
           >
             <Crosshair size={14} />
           </button>
+
           {/* Clear route */}
           {routeInfo && (
             <button
@@ -382,17 +374,15 @@ export default function InteractiveMap({ location, places, isPatient, onLocation
         </div>
       </div>
 
-      {/* Location accuracy tip */}
-      <div className="d-flex align-items-center justify-content-between px-3 py-1.5 rounded mb-2.5" style={{ background: 'rgba(56, 189, 248, 0.1)', border: '1px solid rgba(56, 189, 248, 0.25)', fontSize: '0.72rem' }}>
-        <span style={{ color: 'rgba(255, 255, 255, 0.85)' }}>
-          <strong style={{ color: '#38BDF8' }}>💡 Pinpoint Accuracy: </strong>
-          Click anywhere on the map or drag the blue marker to set your exact location.
+      {/* Location indicator bar */}
+      <div className="d-flex align-items-center justify-content-between px-3 py-1.5 rounded mb-2.5" style={{ background: 'rgba(56, 189, 248, 0.08)', border: '1px solid rgba(56, 189, 248, 0.2)', fontSize: '0.74rem' }}>
+        <span style={{ color: 'rgba(255, 255, 255, 0.88)' }}>
+          <strong style={{ color: '#38BDF8' }}>📍 Active Zone: </strong>
+          {location?.displayName || location?.city || `${location?.lat?.toFixed(4)}°N, ${location?.lon?.toFixed(4)}°E`}
         </span>
-        {location?.displayName && (
-          <span className="font-monospace text-truncate d-none d-md-inline" style={{ maxWidth: '280px', color: '#F4954A', fontSize: '0.68rem' }}>
-            📍 {location.displayName}
-          </span>
-        )}
+        <span className="font-monospace text-secondary" style={{ fontSize: '0.68rem' }}>
+          {places?.length || 0} facilities found
+        </span>
       </div>
 
       {/* Route info bar */}
@@ -420,9 +410,9 @@ export default function InteractiveMap({ location, places, isPatient, onLocation
           background: '#0a0f2a',
           position: 'relative',
           isolation: 'isolate',
-          transform: 'translateZ(0)',          /* own GPU compositing layer */
+          transform: 'translateZ(0)',
           WebkitTransform: 'translateZ(0)',
-          backfaceVisibility: 'hidden',        /* prevent subpixel blur */
+          backfaceVisibility: 'hidden',
           WebkitBackfaceVisibility: 'hidden',
         }}
       />
@@ -469,12 +459,15 @@ export default function InteractiveMap({ location, places, isPatient, onLocation
 
       {/* Legend */}
       <div className="d-flex flex-wrap align-items-center gap-3 mt-3 pt-2" style={{ borderTop: '1px solid rgba(255, 255, 255, 0.1)' }}>
-        {Object.entries(TYPE_COLORS).map(([type, color]) => (
-          <div key={type} className="d-flex align-items-center gap-1.5" style={{ fontSize: '0.74rem', color: '#FFFFFF', fontWeight: 600 }}>
-            <span style={{ width: '9px', height: '9px', borderRadius: '50%', background: color, display: 'inline-block', boxShadow: `0 0 6px ${color}88` }} />
-            <span>{type.charAt(0).toUpperCase() + type.slice(1)}</span>
-          </div>
-        ))}
+        {Object.entries(TYPE_COLORS).map(([type, color]) => {
+          const label = type === 'pharmacy' ? 'Pharmacy' : type.charAt(0).toUpperCase() + type.slice(1);
+          return (
+            <div key={type} className="d-flex align-items-center gap-1.5" style={{ fontSize: '0.74rem', color: '#FFFFFF', fontWeight: 600 }}>
+              <span style={{ width: '9px', height: '9px', borderRadius: '50%', background: color, display: 'inline-block', boxShadow: `0 0 6px ${color}88` }} />
+              <span>{label}</span>
+            </div>
+          );
+        })}
         <div className="d-flex align-items-center gap-1.5" style={{ fontSize: '0.74rem', color: '#FFFFFF', fontWeight: 600 }}>
           <span style={{ width: '9px', height: '9px', borderRadius: '50%', background: '#38BDF8', border: '2px solid #FFFFFF', display: 'inline-block', boxShadow: '0 0 6px rgba(56, 189, 248, 0.8)' }} />
           <span>You</span>
@@ -488,10 +481,6 @@ export default function InteractiveMap({ location, places, isPatient, onLocation
           100% { transform: scale(0.8); opacity: 0; }
         }
 
-        /* ── Compositing isolation ──────────────────────────────────────
-           Remove backdrop-filter from the map wrapper card so it doesn't
-           create a stacking context that gets composited over Leaflet's
-           GPU-accelerated tile pane during zoom animations.           */
         .glass-card--map {
           backdrop-filter: none !important;
           -webkit-backdrop-filter: none !important;
@@ -500,9 +489,6 @@ export default function InteractiveMap({ location, places, isPatient, onLocation
           color: #FFFFFF !important;
         }
 
-        /* ── Leaflet container — own compositing layer ──────────────────
-           Force the Leaflet root element onto its own GPU layer so the
-           browser never needs to re-composite it through a parent filter. */
         .leaflet-container {
           transform: translateZ(0) !important;
           -webkit-transform: translateZ(0) !important;
@@ -512,10 +498,6 @@ export default function InteractiveMap({ location, places, isPatient, onLocation
           text-rendering: optimizeLegibility !important;
         }
 
-        /* ── Tile & pane layers — no filter inheritance ─────────────────
-           Any filter (including backdrop-filter) on a parent creates a
-           new compositing layer that Leaflet's CSS3 transforms are then
-           rendered inside — causing blur during zoom. Strip all filters. */
         .leaflet-map-pane,
         .leaflet-tile-pane,
         .leaflet-overlay-pane,
@@ -530,10 +512,6 @@ export default function InteractiveMap({ location, places, isPatient, onLocation
           -webkit-backdrop-filter: none !important;
         }
 
-        /* ── Tile rendering — crisp pixels, no blur ─────────────────────
-           During CSS3 zoom Leaflet scales existing tiles before new ones
-           load. 'auto' lets the browser use bilinear filtering which keeps
-           text/labels sharp; 'pixelated' would make them blocky.        */
         .leaflet-tile {
           image-rendering: -webkit-optimize-contrast;
           image-rendering: optimizeQuality;
@@ -541,10 +519,6 @@ export default function InteractiveMap({ location, places, isPatient, onLocation
           will-change: transform;
         }
 
-        /* ── Zoom animation — GPU path, no subpixel shift ───────────────
-           will-change promotes the element to its own layer BEFORE the
-           animation starts, preventing the browser from needing to
-           re-rasterize through a parent filter mid-animation.           */
         .leaflet-zoom-animated {
           will-change: transform;
           transform-origin: 0 0;
@@ -552,9 +526,6 @@ export default function InteractiveMap({ location, places, isPatient, onLocation
           -webkit-backface-visibility: hidden;
         }
 
-        /* ── Marker & popup elements — force subpixel antialiasing ──────
-           div icons (our custom markers) must not inherit any blur from
-           parent stacking contexts. Force onto own GPU layer.           */
         .leaflet-marker-icon,
         .leaflet-div-icon,
         .leaflet-popup-content-wrapper,
@@ -570,7 +541,6 @@ export default function InteractiveMap({ location, places, isPatient, onLocation
           -webkit-font-smoothing: subpixel-antialiased;
         }
 
-        /* ── Popup styling ───────────────────────────────────────────── */
         .medfusion-popup .leaflet-popup-content-wrapper {
           border-radius: 10px !important;
           box-shadow: 0 8px 24px rgba(0,0,0,0.35) !important;
