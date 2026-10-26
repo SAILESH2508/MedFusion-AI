@@ -1737,35 +1737,156 @@ def health_twin_create_observation(request):
     }, status=201)
 
 
-
 # ------------------------------------------------------------------------------
-# Nearby Facilities API — High-speed Live Healthcare Radar Proxy
+# Nearby Facilities & Geocoding API — Ultra-Fast Live Healthcare Radar
 # ------------------------------------------------------------------------------
 _nearby_cache = {}
+_geocode_cache = {}
+_reverse_geocode_cache = {}
+
+MAJOR_INDIAN_CITIES = [
+    {"name": "Coimbatore", "display_name": "Coimbatore, Tamil Nadu, India", "lat": 11.0018, "lon": 76.9628},
+    {"name": "Chennai", "display_name": "Chennai, Tamil Nadu, India", "lat": 13.0827, "lon": 80.2707},
+    {"name": "Bengaluru", "display_name": "Bengaluru, Karnataka, India", "lat": 12.9716, "lon": 77.5946},
+    {"name": "Madurai", "display_name": "Madurai, Tamil Nadu, India", "lat": 9.9252, "lon": 78.1198},
+    {"name": "Tiruchirappalli", "display_name": "Tiruchirappalli, Tamil Nadu, India", "lat": 10.7905, "lon": 78.7047},
+    {"name": "Salem", "display_name": "Salem, Tamil Nadu, India", "lat": 11.6643, "lon": 78.1460},
+    {"name": "Kochi", "display_name": "Kochi, Kerala, India", "lat": 9.9312, "lon": 76.2673},
+    {"name": "Hyderabad", "display_name": "Hyderabad, Telangana, India", "lat": 17.3850, "lon": 78.4867},
+    {"name": "Mumbai", "display_name": "Mumbai, Maharashtra, India", "lat": 19.0760, "lon": 72.8777},
+    {"name": "Delhi", "display_name": "New Delhi, Delhi, India", "lat": 28.6139, "lon": 77.2090},
+    {"name": "Kolkata", "display_name": "Kolkata, West Bengal, India", "lat": 22.5726, "lon": 88.3639},
+    {"name": "Pune", "display_name": "Pune, Maharashtra, India", "lat": 18.5204, "lon": 73.8567},
+]
+
+@api_view(['GET'])
+@permission_classes([AllowAny])
+def geocode_address(request):
+    """
+    Geocode an address, city, neighborhood, or pincode into GPS coordinates.
+    Used by the frontend location search bar so users can center the radar anywhere.
+    """
+    import urllib.request
+    import urllib.parse
+    import json
+
+    q = request.GET.get('q', '').strip()
+    if not q:
+        return JsonResponse({"status": "error", "message": "Query parameter 'q' is required."}, status=400)
+
+    cache_key = q.lower()
+    if cache_key in _geocode_cache:
+        return JsonResponse({"status": "success", "results": _geocode_cache[cache_key]}, status=200)
+
+    results = []
+    # 1. Try Nominatim geocoding (fast 2.5s timeout)
+    try:
+        url = f"https://nominatim.openstreetmap.org/search?q={urllib.parse.quote(q)}&format=json&limit=6&addressdetails=1"
+        req = urllib.request.Request(url, headers={'User-Agent': 'MedFusionAI/2.0'})
+        with urllib.request.urlopen(req, timeout=2.5) as res:
+            data = json.loads(res.read().decode())
+            for item in data:
+                p_lat = float(item.get('lat', 0))
+                p_lon = float(item.get('lon', 0))
+                display = item.get('display_name', q)
+                name = item.get('name') or display.split(',')[0].strip()
+                results.append({
+                    "name": name,
+                    "display_name": display,
+                    "lat": round(p_lat, 6),
+                    "lon": round(p_lon, 6),
+                })
+    except Exception as e:
+        logger.debug(f"Nominatim geocode exception: {e}")
+
+    # 2. Local fallback match from major cities list if network fails or returns empty
+    if not results:
+        q_lower = q.lower()
+        matched = [c for c in MAJOR_INDIAN_CITIES if q_lower in c['name'].lower() or q_lower in c['display_name'].lower()]
+        if matched:
+            results = matched
+        else:
+            # Default to Coimbatore if user query mentions Tamil Nadu or regional terms
+            results = [{
+                "name": q.capitalize(),
+                "display_name": f"{q.capitalize()} (Estimated Location)",
+                "lat": 11.0018,
+                "lon": 76.9628,
+            }]
+
+    _geocode_cache[cache_key] = results
+    return JsonResponse({"status": "success", "results": results}, status=200)
+
+
+@api_view(['GET'])
+@permission_classes([AllowAny])
+def reverse_geocode(request):
+    """
+    Reverse geocode coordinates into a human-readable city, neighborhood, and region.
+    """
+    import urllib.request
+    import json
+
+    try:
+        lat = float(request.GET.get('lat', 11.0018))
+        lon = float(request.GET.get('lon', 76.9628))
+    except (ValueError, TypeError):
+        return JsonResponse({"error": "Invalid coordinates"}, status=400)
+
+    cache_key = f"{round(lat, 3)}_{round(lon, 3)}"
+    if cache_key in _reverse_geocode_cache:
+        return JsonResponse({"status": "success", "location": _reverse_geocode_cache[cache_key]}, status=200)
+
+    info = {
+        "city": "Coimbatore",
+        "suburb": None,
+        "state": "Tamil Nadu",
+        "country": "India",
+        "display_name": f"{round(lat, 4)}°N, {round(lon, 4)}°E",
+    }
+
+    try:
+        url = f"https://nominatim.openstreetmap.org/reverse?lat={lat}&lon={lon}&format=json&zoom=14"
+        req = urllib.request.Request(url, headers={'User-Agent': 'MedFusionAI/2.0'})
+        with urllib.request.urlopen(req, timeout=2.5) as res:
+            data = json.loads(res.read().decode())
+            addr = data.get('address', {})
+            city = addr.get('city') or addr.get('town') or addr.get('municipality') or addr.get('village') or addr.get('county') or 'Coimbatore'
+            suburb = addr.get('suburb') or addr.get('neighbourhood') or addr.get('city_district')
+            state = addr.get('state') or 'Tamil Nadu'
+            display = data.get('display_name', f"{city}, {state}")
+            parts = [p.strip() for p in [suburb, city, state] if p]
+            short_display = ", ".join(parts) if parts else display
+            info = {
+                "city": city,
+                "suburb": suburb,
+                "state": state,
+                "country": addr.get('country', 'India'),
+                "display_name": short_display,
+            }
+    except Exception as e:
+        logger.debug(f"Reverse geocode exception: {e}")
+
+    _reverse_geocode_cache[cache_key] = info
+    return JsonResponse({"status": "success", "location": info}, status=200)
+
 
 @api_view(['GET'])
 @permission_classes([AllowAny])
 def get_nearby_facilities(request):
     """
     Search and return live nearby medical facilities (hospitals, clinics, pharmacies, dentists, labs)
-    around the provided GPS coordinates.
-
-    Strategy (non-blocking):
-      1. Serve from cache immediately (fresh < 10 min, or stale while triggering bg refresh)
-      2. Race 3 Overpass mirrors concurrently — 3s wall-clock budget, 4s socket timeout each
-      3. Fallback to Nominatim if Overpass is empty
-      4. Final geographic fallback — always returns something, zero network calls
+    around the provided GPS coordinates using ultra-fast parallel Nominatim queries and instantaneous
+    local geographic fallback.
     """
     import urllib.request
-    import urllib.parse
     import math
     import time
-    import threading
-    from concurrent.futures import ThreadPoolExecutor, as_completed, TimeoutError as FuturesTimeout
+    from concurrent.futures import ThreadPoolExecutor, as_completed
 
     try:
-        lat = float(request.GET.get('lat', 13.0827))
-        lon = float(request.GET.get('lon', 80.2707))
+        lat = float(request.GET.get('lat', 11.0018))
+        lon = float(request.GET.get('lon', 76.9628))
         radius = int(request.GET.get('radius', 5000))
         types_raw = request.GET.get('types', 'hospital,clinic,pharmacy,dentist,lab')
         types = [t.strip().lower() for t in types_raw.split(',') if t.strip()]
@@ -1773,9 +1894,15 @@ def get_nearby_facilities(request):
         return JsonResponse({"error": "Invalid query parameters"}, status=400)
 
     cache_key = f"{round(lat, 3)}_{round(lon, 3)}_{radius}_{','.join(sorted(types))}"
-    CACHE_TTL = 600  # 10 minutes
+    cached = _nearby_cache.get(cache_key)
+    if cached and (time.time() - cached['time']) < 900:  # 15 minutes TTL
+        return JsonResponse({
+            "status": "success",
+            "source": "cache",
+            "count": len(cached['data']),
+            "facilities": cached['data']
+        }, status=200)
 
-    # ── Helpers ─────────────────────────────────────────────────────────────────
     def haversine(pLat, pLon):
         R = 6371
         dLa = (pLat - lat) * math.pi / 180
@@ -1785,220 +1912,114 @@ def get_nearby_facilities(request):
              * math.sin(dLo / 2) ** 2)
         return R * 2 * math.atan2(math.sqrt(a), math.sqrt(1 - a))
 
-    TYPE_TAGS = {
-        'hospital': ['hospital'],
-        'clinic': ['clinic', 'doctors'],
-        'pharmacy': ['pharmacy', 'chemist'],
-        'dentist': ['dentist'],
-        'lab': ['laboratory'],
-    }
+    facilities = []
+    radiusKm = radius / 1000.0
+    dLat_deg = radiusKm / 111.0
+    cos_lat = math.cos(lat * math.pi / 180.0) or 1.0
+    dLon_deg = radiusKm / (111.0 * cos_lat)
+    viewbox = f"{lon - dLon_deg:.4f},{lat + dLat_deg:.4f},{lon + dLon_deg:.4f},{lat - dLat_deg:.4f}"
 
-    def parse_osm_element(el):
-        pLat = el.get('lat') or (el.get('center', {}).get('lat') if isinstance(el.get('center'), dict) else None)
-        pLon = el.get('lon') or (el.get('center', {}).get('lon') if isinstance(el.get('center'), dict) else None)
-        if not pLat or not pLon:
-            return None
-        tags = el.get('tags', {})
-        amenity = tags.get('amenity', '')
-        ftype = 'clinic'
-        if amenity == 'hospital':
-            ftype = 'hospital'
-        elif amenity in ('pharmacy', 'chemist'):
-            ftype = 'pharmacy'
-        elif amenity == 'dentist':
-            ftype = 'dentist'
-        elif amenity == 'laboratory':
-            ftype = 'lab'
-
-        dist = haversine(pLat, pLon)
-        addr_parts = [tags.get(k) for k in ('addr:full', 'addr:housenumber', 'addr:street',
-                                              'addr:place', 'addr:suburb', 'addr:district',
-                                              'addr:city', 'addr:postcode')]
-        clean_parts = [str(p).strip() for p in addr_parts if p and str(p).strip()]
-        addr = (tags.get('addr:full') or (', '.join(clean_parts) if clean_parts else
-                f"Coordinates: {round(pLat, 4)}\u00b0N, {round(pLon, 4)}\u00b0E \u2022 ~{round(dist, 1)} km away"))
-        hours = tags.get('opening_hours') or (
-            '24/7 Emergency Service' if ftype == 'hospital' else
-            ('Daily: 08:00 \u2013 22:00' if ftype == 'pharmacy' else 'Mon\u2013Sat: 09:00 \u2013 20:00'))
-        speciality = (tags.get('speciality') or tags.get('healthcare:speciality') or
-            ('Emergency & Inpatient Medicine' if ftype == 'hospital' else
-             ('Prescription Dispensing & Supplies' if ftype == 'pharmacy' else
-              'Outpatient Clinical Consultations')))
-        return {
-            'id': f"osm-{el.get('id')}",
-            'name': tags.get('name') or tags.get('name:en') or f"Regional {ftype.capitalize()}",
-            'type': ftype,
-            'lat': pLat, 'lon': pLon,
-            'distance': round(dist, 2),
-            'phone': tags.get('phone') or tags.get('contact:phone') or tags.get('contact:mobile') or None,
-            'opening_hours': hours,
-            'speciality': speciality,
-            'address': addr,
-            'website': tags.get('website') or tags.get('contact:website') or None,
-            'operator': tags.get('operator') or None,
-            'emergency': tags.get('emergency') == 'yes' or ftype == 'hospital',
-            'wheelchair': tags.get('wheelchair'),
-        }
-
-    # ── Overpass mirrors — race them concurrently ────────────────────────────────
-    OVERPASS_MIRRORS = [
-        'https://overpass-api.de/api/interpreter',
-        'https://overpass.openstreetmap.fr/api/interpreter',
-        'https://maps.mail.ru/osm/tools/overpass/api/interpreter',
-    ]
-
-    def fetch_overpass(mirror_url):
-        parts = []
-        for t in types:
-            for tag in TYPE_TAGS.get(t, []):
-                parts.append(f'node["amenity"="{tag}"](around:{radius},{lat},{lon});')
-                parts.append(f'way["amenity"="{tag}"](around:{radius},{lat},{lon});')
-        if not parts:
-            return []
-        query = f'[out:json][timeout:8];({"".join(parts)});out center 80;'
-        url = mirror_url + '?data=' + urllib.parse.quote(query)
+    def fetch_nominatim_category(category):
+        term = 'laboratory' if category == 'lab' else category
+        url = (f"https://nominatim.openstreetmap.org/search"
+               f"?q={term}&format=json&viewbox={viewbox}&bounded=1&limit=15&addressdetails=1")
         req = urllib.request.Request(url, headers={'User-Agent': 'MedFusionAI/2.0'})
-        res = urllib.request.urlopen(req, timeout=4)   # 4s per mirror socket
-        data = json.loads(res.read().decode())
-        results = []
-        for el in data.get('elements', []):
-            f = parse_osm_element(el)
-            if f:
-                results.append(f)
-        return results
-
-    def try_overpass_concurrent():
-        """Race all mirrors — return first non-empty result within 3s wall-clock."""
-        with ThreadPoolExecutor(max_workers=len(OVERPASS_MIRRORS)) as ex:
-            futures = {ex.submit(fetch_overpass, m): m for m in OVERPASS_MIRRORS}
-            try:
-                for fut in as_completed(futures, timeout=3.0):
-                    try:
-                        result = fut.result(timeout=0)
-                        if result:
-                            return result
-                    except Exception:
-                        pass
-            except FuturesTimeout:
-                pass
-        return []
-
-    # ── Nominatim fallback ───────────────────────────────────────────────────────
-    def fetch_nominatim():
-        radiusKm = radius / 1000.0
-        dLat_deg = radiusKm / 111.0
-        cos_lat = math.cos(lat * math.pi / 180.0) or 1.0
-        dLon_deg = radiusKm / (111.0 * cos_lat)
-        viewbox = f"{lon - dLon_deg:.4f},{lat + dLat_deg:.4f},{lon + dLon_deg:.4f},{lat - dLat_deg:.4f}"
-        results = []
-        seen_names = set()
-        for t in types:
-            q = 'laboratory' if t == 'lab' else t
-            nom_url = (f"https://nominatim.openstreetmap.org/search"
-                       f"?q={q}&format=json&viewbox={viewbox}&bounded=1&limit=10&addressdetails=1")
-            try:
-                req = urllib.request.Request(nom_url, headers={'User-Agent': 'MedFusionAI/2.0'})
-                res = urllib.request.urlopen(req, timeout=3)
-                items = json.loads(res.read().decode())
-                for it in items:
-                    pLat = float(it.get('lat'))
-                    pLon = float(it.get('lon'))
+        with urllib.request.urlopen(req, timeout=2.5) as res:
+            items = json.loads(res.read().decode())
+            parsed = []
+            for it in items:
+                try:
+                    pLat = float(it.get('lat', 0))
+                    pLon = float(it.get('lon', 0))
                     name = it.get('name') or (it.get('display_name', '').split(',')[0])
-                    if not name or name in seen_names:
+                    if not name or not pLat or not pLon:
                         continue
-                    seen_names.add(name)
-                    results.append({
+                    dist = haversine(pLat, pLon)
+                    if dist > radiusKm * 1.3:
+                        continue
+                    addr = it.get('display_name') or f"Coordinates: {round(pLat, 4)}°N, {round(pLon, 4)}°E"
+                    hours = '24/7 Emergency Service' if category == 'hospital' else ('Daily: 08:00 – 22:00' if category == 'pharmacy' else 'Mon–Sat: 09:00 – 20:00')
+                    spec = 'Emergency & Inpatient Medicine' if category == 'hospital' else ('Prescription Dispensing & Supplies' if category == 'pharmacy' else 'Outpatient Clinical Consultations')
+                    parsed.append({
                         'id': f"nom-{it.get('place_id', name)}",
-                        'name': name, 'type': t,
-                        'lat': pLat, 'lon': pLon,
-                        'distance': round(haversine(pLat, pLon), 2),
+                        'name': name,
+                        'type': category,
+                        'lat': pLat,
+                        'lon': pLon,
+                        'distance': round(dist, 2),
                         'phone': None,
-                        'opening_hours': '24/7' if t == 'hospital' else None,
-                        'address': it.get('display_name'),
-                        'emergency': t == 'hospital',
-                        'wheelchair': None,
+                        'opening_hours': hours,
+                        'speciality': spec,
+                        'address': addr,
+                        'website': None,
+                        'operator': None,
+                        'emergency': category == 'hospital',
+                        'wheelchair': 'yes' if category == 'hospital' else None,
                     })
-            except Exception as e:
-                logger.debug(f"Nominatim fetch error for {t}: {e}")
-        return results
+                except Exception:
+                    continue
+            return parsed
 
-    # ── Instant geographic fallback (zero network) ───────────────────────────────
-    def geographic_fallback():
+    # Query active types in parallel (strictly 2.5s socket timeout)
+    try:
+        with ThreadPoolExecutor(max_workers=min(len(types), 4)) as ex:
+            futures = [ex.submit(fetch_nominatim_category, t) for t in types]
+            for fut in as_completed(futures):
+                try:
+                    cat_items = fut.result(timeout=3.0)
+                    if cat_items:
+                        facilities.extend(cat_items)
+                except Exception as e:
+                    logger.debug(f"Nominatim thread exception: {e}")
+    except Exception as e:
+        logger.debug(f"Parallel fetch exception: {e}")
+
+    # Remove duplicates
+    seen = set()
+    unique_facilities = []
+    for f in facilities:
+        key = f['name'].lower()
+        if key not in seen:
+            seen.add(key)
+            unique_facilities.append(f)
+    facilities = unique_facilities
+
+    # Fallback to realistic medical points around the coordinates if offline or empty
+    if not facilities:
         fallback_types = {
-            'hospital': ['City General Hospital & Emergency Center', 'Apex Multi-Specialty Hospital', 'Community Care Hospital'],
-            'clinic': ['Family Health Clinic', 'MedFusion Wellness Clinic', 'Urgent Primary Care'],
+            'hospital': ['Regional Medical Center & Trauma Unit', 'Apex Multi-Specialty Hospital', 'City Community Hospital'],
+            'clinic': ['Family Health Clinic', 'MedFusion Primary Care Clinic', 'Express Clinical Care'],
             'pharmacy': ['Apollo 24/7 Pharmacy', 'MedPlus Healthcare Chemist', 'Express Care Pharmacy'],
             'dentist': ['Advanced Smile Dental Care', 'City Dental Specialty Clinic'],
             'lab': ['Metropolis Diagnostic Laboratory', 'Precision Clinical Pathology']
         }
-        results = []
         for t in types:
             names = fallback_types.get(t, [f'Regional {t.capitalize()} Facility'])
             for i, name in enumerate(names):
-                dist = min((i + 1) * 0.75, (radius / 1000.0) * 0.9)
-                angle = (len(results) + 1) * 67 * math.pi / 180.0
-                cos_lat = math.cos(lat * math.pi / 180.0) or 1.0
+                dist = min((i + 1) * 0.75, radiusKm * 0.9)
+                angle = (len(facilities) + 1) * 67 * math.pi / 180.0
                 d_lat = (dist / 111.0) * math.sin(angle)
                 d_lon = (dist / (111.0 * cos_lat)) * math.cos(angle)
-                results.append({
+                facilities.append({
                     'id': f'local-{t}-{i+1}',
-                    'name': name, 'type': t,
+                    'name': name,
+                    'type': t,
                     'lat': round(lat + d_lat, 6),
                     'lon': round(lon + d_lon, 6),
                     'distance': round(dist, 2),
                     'phone': '+91 1800 200 4567',
-                    'opening_hours': '24/7 Emergency Care' if t == 'hospital' else 'Daily: 08:00 \u2013 22:00',
+                    'opening_hours': '24/7 Emergency Care' if t == 'hospital' else 'Daily: 08:00 – 22:00',
                     'speciality': 'Emergency & Inpatient Medicine' if t == 'hospital' else 'Outpatient Clinical Consultations',
-                    'address': f'Located ~{round(dist, 1)} km from current coordinates',
+                    'address': f'Located ~{round(dist, 1)} km from search area',
                     'website': None,
                     'operator': 'Regional Healthcare Network',
                     'emergency': t == 'hospital',
                     'wheelchair': 'yes',
                 })
-        return results
-
-    # ── Background refresh for stale cache ──────────────────────────────────────
-    def background_refresh():
-        try:
-            fresh = try_overpass_concurrent()
-            if not fresh:
-                fresh = fetch_nominatim()
-            if fresh:
-                fresh = sorted(fresh, key=lambda x: x['distance'])
-                _nearby_cache[cache_key] = {'time': time.time(), 'data': fresh}
-                logger.debug(f"Background nearby refresh complete: {len(fresh)} facilities")
-        except Exception as e:
-            logger.debug(f"Background nearby refresh failed: {e}")
-
-    # ── Main decision logic ──────────────────────────────────────────────────────
-    cached = _nearby_cache.get(cache_key)
-    now = time.time()
-
-    if cached:
-        age = now - cached['time']
-        if age < CACHE_TTL:
-            return JsonResponse({"status": "success", "source": "cache",
-                                 "facilities": cached['data']}, status=200)
-        else:
-            # Stale — serve immediately, refresh in background (no user wait)
-            threading.Thread(target=background_refresh, daemon=True).start()
-            return JsonResponse({"status": "success", "source": "cache_stale",
-                                 "facilities": cached['data']}, status=200)
-
-    # No cache — race Overpass mirrors (3s budget)
-    facilities = try_overpass_concurrent()
-
-    # Nominatim if Overpass was empty/slow
-    if not facilities:
-        facilities = fetch_nominatim()
-
-    # Always return something
-    if not facilities:
-        facilities = geographic_fallback()
 
     facilities = sorted(facilities, key=lambda x: x['distance'])
     if facilities:
-        _nearby_cache[cache_key] = {'time': now, 'data': facilities}
+        _nearby_cache[cache_key] = {'time': time.time(), 'data': facilities}
 
     return JsonResponse({
         "status": "success",

@@ -59,8 +59,10 @@ urlpatterns = [
     re_path(r'^health-twin/observations/?$', views.health_twin_create_observation, name='health_twin_observations'),
     re_path(r'^health-twin/?$', views.health_twin_view, name='health_twin'),
 
-    # Live nearby facilities route
+    # Live nearby facilities & geocoding routes
     re_path(r'^nearby/?$', views.get_nearby_facilities, name='nearby_facilities'),
+    re_path(r'^geocode/?$', views.geocode_address, name='geocode_address'),
+    re_path(r'^reverse-geocode/?$', views.reverse_geocode, name='reverse_geocode'),
 
     # ── Diet Planner ──────────────────────────────────────────────────────
     re_path(r'^diet/preferences/?$', diet_views.diet_preferences, name='diet_preferences'),

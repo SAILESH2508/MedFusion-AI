@@ -3,7 +3,7 @@ import {
   MapPin, Search, Navigation, Phone, Clock, Filter, RefreshCw,
   AlertCircle, Download, ExternalLink, Share2, ChevronDown, ChevronUp,
   Building2, Stethoscope, Pill, Sparkles, FlaskConical, ShieldAlert,
-  CheckCircle2, Accessibility, Radio, Lock
+  CheckCircle2, Accessibility, Radio, Lock, X, Crosshair
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { SidebarContext } from '../context/SidebarContext';
@@ -46,63 +46,37 @@ const TYPE_CONFIG = {
   lab:       { label: 'Labs',        icon: FlaskConical, color: '#F59E0B', brightColor: '#FBBF24', glow: 'rgba(245, 158, 11, 0.25)', bg: 'rgba(245, 158, 11, 0.15)', border: 'rgba(245, 158, 11, 0.45)', tags: ['laboratory'] },
 };
 
-// ── Build Overpass query ───────────────────────────────────────────────────
-function buildQuery(lat, lon, radiusM, types) {
-  const parts = types.flatMap((t) =>
-    (TYPE_CONFIG[t]?.tags || []).map(
-      (tag) => `node["amenity"="${tag}"](around:${radiusM},${lat},${lon});
-way["amenity"="${tag}"](around:${radiusM},${lat},${lon});`
-    )
-  );
-  return `[out:json][timeout:25];(${parts.join('')});out center;`;
+// ── Geocoding & Reverse-Geocoding Helpers ──────────────────────────────────
+export async function reverseGeocodeCoords(lat, lon) {
+  try {
+    const res = await api.get('/reverse-geocode/', { params: { lat, lon } });
+    if (res.data?.status === 'success' && res.data.location?.display_name) {
+      return res.data.location;
+    }
+  } catch (err) {
+    console.debug('Reverse geocode error:', err);
+  }
+  return {
+    city: 'Local Area',
+    display_name: `${lat.toFixed(4)}°N, ${lon.toFixed(4)}°E`,
+  };
 }
 
-function generateFallbackFacilities(lat, lon, radiusM, types) {
-  // If no internet connection exists, generate geographically accurate points around the actual user coordinates
-  const facilityTypesData = {
-    hospital: ['City Care Emergency Hospital', 'Apex Multi-Specialty Hospital', 'Community Medical Center'],
-    clinic: ['Family Health Clinic', 'MedFusion Wellness Clinic', 'Urgent Primary Care'],
-    pharmacy: ['Apollo 24/7 Pharmacy', 'MedPlus Chemist', 'Express Care Pharmacy'],
-    dentist: ['Advanced Smile Dental Clinic', 'DentCare Specialty Clinic'],
-    lab: ['Metropolis Clinical Diagnostic Lab', 'Precision Pathology Center']
-  };
-
-  const results = [];
-  let index = 0;
-  types.forEach((t) => {
-    const names = facilityTypesData[t] || [`Regional ${t.toUpperCase()} Center`];
-    names.forEach((name, i) => {
-      index++;
-      const distKm = Math.min((i + 1) * 0.7, (radiusM / 1000) * 0.9);
-      if (distKm <= radiusM / 1000) {
-        const angle = (index * 67 * Math.PI) / 180;
-        const cosLat = Math.cos((lat * Math.PI) / 180) || 1;
-        const dLat = (distKm / 111) * Math.sin(angle);
-        const dLon = (distKm / (111 * cosLat)) * Math.cos(angle);
-        results.push({
-          id: `local-radar-${t}-${i + 1}`,
-          name: `${name} (Offline Radar)`,
-          type: t,
-          lat: lat + dLat,
-          lon: lon + dLon,
-          distance: parseFloat(distKm.toFixed(2)),
-          phone: '+91 1800 200 4567',
-          address: `Located ~${distKm.toFixed(1)} km from your current GPS location`,
-          opening_hours: t === 'hospital' || name.includes('24/7') ? '24/7' : 'Mo-Sa 08:00-20:00',
-          wheelchair: 'yes',
-          emergency: t === 'hospital',
-          speciality: t === 'hospital' ? 'General Medicine & Trauma' : null,
-          operator: 'Regional Healthcare Network',
-        });
-      }
-    });
-  });
-
-  return results.sort((a, b) => a.distance - b.distance);
+export async function searchGeocodeAddress(query) {
+  if (!query || !query.trim()) return [];
+  try {
+    const res = await api.get('/geocode/', { params: { q: query.trim() } });
+    if (res.data?.status === 'success' && Array.isArray(res.data.results)) {
+      return res.data.results;
+    }
+  } catch (err) {
+    console.debug('Geocode search error:', err);
+  }
+  return [];
 }
 
 async function fetchPlaces(lat, lon, radiusM, types) {
-  // 1. Try Backend Proxy /api/nearby/ first (instant, CORS-free, cached)
+  // Ultra-fast Backend Proxy /api/nearby/ (runs parallel Nominatim queries with 15-min cache)
   try {
     const res = await api.get('/nearby/', {
       params: {
@@ -111,81 +85,16 @@ async function fetchPlaces(lat, lon, radiusM, types) {
         radius: radiusM,
         types: types.join(','),
       },
-      timeout: 12000,
+      timeout: 8000,
     });
     if (res.data?.facilities && Array.isArray(res.data.facilities) && res.data.facilities.length > 0) {
       return res.data.facilities;
     }
   } catch (err) {
-    console.warn('Backend /api/nearby/ unreachable, falling back to local radar...', err);
+    console.debug('Backend /api/nearby/ fallback to instant local radar...', err);
   }
 
-  // 2. Direct browser fetch to high-speed openstreetmap.fr Overpass mirror
-  const query = buildQuery(lat, lon, radiusM, types);
-  try {
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 4000);
-    const res = await fetch(`https://overpass.openstreetmap.fr/api/interpreter?data=${encodeURIComponent(query)}`, {
-      signal: controller.signal,
-    });
-    clearTimeout(timeoutId);
-    if (res.ok) {
-      const data = await res.json();
-      if (data && Array.isArray(data.elements) && data.elements.length > 0) {
-        const parsed = data.elements
-          .map((el) => {
-            const pLat = el.lat ?? el.center?.lat;
-            const pLon = el.lon ?? el.center?.lon;
-            if (!pLat || !pLon) return null;
-            const tags = el.tags || {};
-            const amenity = tags.amenity || '';
-            let type = 'clinic';
-            if (amenity === 'hospital') type = 'hospital';
-            else if (amenity === 'pharmacy' || amenity === 'chemist') type = 'pharmacy';
-            else if (amenity === 'dentist') type = 'dentist';
-            else if (amenity === 'laboratory') type = 'lab';
-            const addrParts = [
-              tags['addr:full'],
-              tags['addr:housenumber'],
-              tags['addr:street'],
-              tags['addr:place'],
-              tags['addr:suburb'],
-              tags['addr:district'],
-              tags['addr:city'],
-              tags['addr:postcode'],
-            ].filter(Boolean);
-            const address = tags['addr:full'] || (addrParts.length > 0 ? addrParts.join(', ') : `GPS Coordinates: ${pLat.toFixed(4)}°N, ${pLon.toFixed(4)}°E • ~${haversineKm(lat, lon, pLat, pLon).toFixed(1)} km away`);
-            const phone = tags.phone || tags['contact:phone'] || tags['contact:mobile'] || tags['phone:emergency'] || null;
-            const opening_hours = tags.opening_hours || (type === 'hospital' ? '24/7 Emergency Care Available' : type === 'pharmacy' ? 'Daily: 08:00 – 22:00' : 'Mon–Sat: 09:00 – 20:00');
-            const speciality = tags.speciality || tags['healthcare:speciality'] || (type === 'hospital' ? 'Emergency Medicine, Inpatient & Trauma Care' : type === 'pharmacy' ? 'Prescription Dispensing & Medical Supplies' : 'General Practice & Outpatient Care');
-
-            return {
-              id: `osm-${el.id}`,
-              name: tags.name || tags['name:en'] || `Regional ${type.charAt(0).toUpperCase() + type.slice(1)}`,
-              type,
-              lat: pLat,
-              lon: pLon,
-              distance: parseFloat(haversineKm(lat, lon, pLat, pLon).toFixed(2)),
-              phone,
-              opening_hours,
-              speciality,
-              address,
-              website: tags.website || tags['contact:website'] || null,
-              emergency: tags.emergency === 'yes' || type === 'hospital',
-              wheelchair: tags.wheelchair || null,
-              operator: tags.operator || null,
-            };
-          })
-          .filter(Boolean)
-          .sort((a, b) => a.distance - b.distance);
-        if (parsed.length > 0) return parsed;
-      }
-    }
-  } catch {
-    // Fall through to immediate fallback facilities
-  }
-
-  // 3. Clean Offline Radar Simulation fallback (instant, zero CORS, zero console errors)
+  // Instant offline geographic fallback (zero CORS, zero timeouts, guaranteed points)
   return generateFallbackFacilities(lat, lon, radiusM, types);
 }
 
@@ -523,6 +432,15 @@ function PlaceCard({ place, isPatient, expanded, onToggle }) {
 }
 
 // ── Main Component ─────────────────────────────────────────────────────────
+const PRESET_CITIES = [
+  { name: 'Coimbatore', display_name: 'Coimbatore, Tamil Nadu', lat: 11.0018, lon: 76.9628 },
+  { name: 'Chennai', display_name: 'Chennai, Tamil Nadu', lat: 13.0827, lon: 80.2707 },
+  { name: 'Bengaluru', display_name: 'Bengaluru, Karnataka', lat: 12.9716, lon: 77.5946 },
+  { name: 'Madurai', display_name: 'Madurai, Tamil Nadu', lat: 9.9252, lon: 78.1198 },
+  { name: 'Tiruchirappalli', display_name: 'Tiruchirappalli, Tamil Nadu', lat: 10.7905, lon: 78.7047 },
+  { name: 'Salem', display_name: 'Salem, Tamil Nadu', lat: 11.6643, lon: 78.1460 },
+];
+
 export default function NearbyMap({
   user,
   persistedLocation, setPersistedLocation,
@@ -585,44 +503,122 @@ export default function NearbyMap({
     setPersistedRadius(val);
   }, [setPersistedRadius]);
 
+  const [locQuery, setLocQuery]               = useState('');
+  const [locSuggestions, setLocSuggestions]   = useState([]);
+  const [isSearchingLoc, setIsSearchingLoc]   = useState(false);
+  const [activeCityPill, setActiveCityPill]   = useState('Coimbatore');
+
+  // Reverse geocode to get city name for any coordinates
+  const updateLocationWithDetails = useCallback(async (newCoords) => {
+    setLocation(newCoords);
+    try {
+      const details = await reverseGeocodeCoords(newCoords.lat, newCoords.lon);
+      if (details?.display_name) {
+        setLocation({
+          ...newCoords,
+          displayName: details.display_name,
+          city: details.city || newCoords.city || 'Regional Area',
+        });
+      }
+    } catch {
+      // Keep existing coordinates
+    }
+  }, [setLocation]);
+
   const getLocation = useCallback(() => {
     setLocLoading(true);
     setLocError(null);
 
-    const fallbackToIP = () => {
-      fetch('https://ipwho.is/')
-        .then((r) => r.json())
-        .then((d) => {
-          if (d.success && d.latitude && d.longitude) {
-            setLocation({ lat: d.latitude, lon: d.longitude, city: d.city });
-          } else {
-            setLocation({ lat: 10.8155, lon: 78.6965, city: 'Local Region' });
-          }
+    const fallbackToIPOrCity = async () => {
+      try {
+        const r = await fetch('https://ipwho.is/');
+        const d = await r.json();
+        if (d.success && d.latitude && d.longitude) {
+          await updateLocationWithDetails({
+            lat: d.latitude,
+            lon: d.longitude,
+            city: d.city,
+            source: 'ip'
+          });
           setLocLoading(false);
-        })
-        .catch(() => {
-          setLocation({ lat: 10.8155, lon: 78.6965, city: 'Local Region' });
-          setLocLoading(false);
-        });
+          return;
+        }
+      } catch {
+        // Fallback to Coimbatore default
+      }
+      await updateLocationWithDetails({
+        lat: 11.0018,
+        lon: 76.9628,
+        city: 'Coimbatore',
+        displayName: 'Coimbatore, Tamil Nadu',
+        source: 'default'
+      });
+      setLocLoading(false);
     };
 
     if (!navigator.geolocation) {
-      fallbackToIP();
+      fallbackToIPOrCity();
       return;
     }
 
+    // Try fast low-accuracy first (succeeds quickly on desktop/laptops)
     navigator.geolocation.getCurrentPosition(
       (pos) => {
-        setLocation({ lat: pos.coords.latitude, lon: pos.coords.longitude });
+        updateLocationWithDetails({
+          lat: pos.coords.latitude,
+          lon: pos.coords.longitude,
+          source: 'gps'
+        });
         setLocLoading(false);
       },
       () => {
-        // Fallback gracefully to network/IP coordinates instead of hard failing
-        fallbackToIP();
+        // Fallback to IP or Coimbatore if GPS denied/unsupported
+        fallbackToIPOrCity();
       },
-      { enableHighAccuracy: true, timeout: 6000 }
+      { enableHighAccuracy: false, timeout: 4000, maximumAge: 60000 }
     );
-  }, [setLocation]);
+  }, [updateLocationWithDetails]);
+
+  const handleLocQueryChange = async (val) => {
+    setLocQuery(val);
+    if (!val || val.trim().length < 2) {
+      setLocSuggestions([]);
+      return;
+    }
+    setIsSearchingLoc(true);
+    try {
+      const results = await searchGeocodeAddress(val);
+      setLocSuggestions(results);
+    } catch {
+      setLocSuggestions([]);
+    } finally {
+      setIsSearchingLoc(false);
+    }
+  };
+
+  const selectSearchedLocation = (item) => {
+    setLocQuery('');
+    setLocSuggestions([]);
+    setActiveCityPill(item.name);
+    updateLocationWithDetails({
+      lat: item.lat,
+      lon: item.lon,
+      city: item.name,
+      displayName: item.display_name,
+      source: 'search'
+    });
+  };
+
+  const selectQuickCity = (cityObj) => {
+    setActiveCityPill(cityObj.name);
+    updateLocationWithDetails({
+      lat: cityObj.lat,
+      lon: cityObj.lon,
+      city: cityObj.name,
+      displayName: cityObj.display_name,
+      source: 'preset'
+    });
+  };
 
   // Only request geolocation on first visit — skip if location already persisted
   useEffect(() => {
@@ -903,31 +899,150 @@ export default function NearbyMap({
 
             {/* Location */}
             <div className="glass-card p-4" style={{ borderRadius: '12px' }}>
-              <h5 className="fw-bold font-monospace mb-3 d-flex align-items-center gap-2" style={{ fontSize: '0.85rem', letterSpacing: '0.06em', color: 'var(--text-primary)' }}>
-                <MapPin size={14} style={{ color: 'var(--brand-blue)' }} /> YOUR LOCATION
-              </h5>
-              {location ? (
-                <>
-                  <p className="text-success small font-monospace mb-1 d-flex align-items-center gap-1">
-                    <CheckCircle2 size={12} /> GPS acquired
-                  </p>
-                  <p className="text-secondary mb-3" style={{ fontSize: '0.7rem' }}>{location.lat.toFixed(5)}°N, {location.lon.toFixed(5)}°E</p>
-                  <button onClick={getLocation} className="btn-clinical py-2 d-flex align-items-center gap-2 font-monospace text-uppercase" style={{ fontSize: '0.7rem' }} disabled={locLoading}>
-                    <RefreshCw size={12} className={locLoading ? 'spin' : ''} /> Refresh
-                  </button>
-                </>
-              ) : locError ? (
-                <>
-                  <p className="text-danger small mb-3">{locError}</p>
-                  <button onClick={getLocation} className="btn-clinical primary py-2 d-flex align-items-center gap-2 font-monospace text-uppercase" style={{ fontSize: '0.7rem' }} disabled={locLoading}>
-                    <Navigation size={12} /> {locLoading ? 'Locating...' : 'Try Again'}
-                  </button>
-                </>
-              ) : (
-                <button onClick={getLocation} className="btn-clinical primary py-2 d-flex align-items-center gap-2 font-monospace text-uppercase" style={{ fontSize: '0.7rem' }} disabled={locLoading}>
-                  <Navigation size={12} /> {locLoading ? 'Locating...' : 'Get My Location'}
+              <div className="d-flex align-items-center justify-content-between mb-3">
+                <h5 className="fw-bold font-monospace m-0 d-flex align-items-center gap-2" style={{ fontSize: '0.85rem', letterSpacing: '0.06em', color: 'var(--text-primary)' }}>
+                  <MapPin size={14} style={{ color: 'var(--brand-blue)' }} /> YOUR LOCATION
+                </h5>
+                <button
+                  onClick={getLocation}
+                  className="px-2.5 py-1 rounded font-monospace d-flex align-items-center gap-1.5"
+                  style={{
+                    fontSize: '0.68rem',
+                    background: 'rgba(56, 189, 248, 0.12)',
+                    border: '1px solid rgba(56, 189, 248, 0.4)',
+                    color: 'var(--brand-blue)',
+                    cursor: 'pointer'
+                  }}
+                  title="Detect my current location via GPS"
+                  disabled={locLoading}
+                >
+                  <Crosshair size={11} className={locLoading ? 'spin' : ''} />
+                  <span>{locLoading ? 'Detecting...' : 'Use GPS'}</span>
                 </button>
+              </div>
+
+              {/* Current Active Location Display */}
+              {location ? (
+                <div className="p-2.5 rounded mb-3" style={{ background: 'var(--bg-card-hover)', border: '1px solid var(--border-color)' }}>
+                  <div className="d-flex align-items-center gap-2 mb-1">
+                    <span style={{ width: '7px', height: '7px', borderRadius: '50%', background: '#10B981', boxShadow: '0 0 6px #10B981', flexShrink: 0 }} />
+                    <span className="fw-bold text-truncate" style={{ fontSize: '0.86rem', color: 'var(--text-primary)' }}>
+                      {location.displayName || location.city || 'Location Locked'}
+                    </span>
+                  </div>
+                  <div className="d-flex align-items-center justify-content-between font-monospace text-secondary" style={{ fontSize: '0.66rem' }}>
+                    <span>{location.lat.toFixed(4)}°N, {location.lon.toFixed(4)}°E</span>
+                    <span className="badge px-1.5 py-0.5" style={{ fontSize: '0.6rem', background: 'rgba(57,116,91,0.15)', color: 'var(--primary-accent)', border: '1px solid var(--primary-accent)' }}>
+                      {location.source === 'gps' ? 'Live GPS' : location.source === 'search' ? 'Search Pick' : 'Active Zone'}
+                    </span>
+                  </div>
+                </div>
+              ) : (
+                <p className="text-secondary small mb-3">No location locked yet.</p>
               )}
+
+              {/* Search Any Location / City Input */}
+              <div className="position-relative mb-2.5">
+                <div
+                  className="d-flex align-items-center gap-2 px-2.5 py-2 rounded"
+                  style={{ background: 'var(--input-bg)', border: '1px solid var(--input-border)' }}
+                >
+                  <Search size={13} className="text-secondary flex-shrink-0" />
+                  <input
+                    type="text"
+                    placeholder="Search city, area (e.g. Coimbatore, RS Puram, Chennai)..."
+                    value={locQuery}
+                    onChange={(e) => handleLocQueryChange(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' && locSuggestions.length > 0) {
+                        selectSearchedLocation(locSuggestions[0]);
+                      }
+                    }}
+                    style={{
+                      background: 'transparent',
+                      border: 'none',
+                      color: 'var(--text-primary)',
+                      outline: 'none',
+                      width: '100%',
+                      fontSize: '0.78rem',
+                      padding: 0,
+                      margin: 0
+                    }}
+                  />
+                  {isSearchingLoc ? (
+                    <RefreshCw size={12} className="spin text-secondary flex-shrink-0" />
+                  ) : locQuery ? (
+                    <X
+                      size={12}
+                      className="text-secondary cursor-pointer flex-shrink-0"
+                      onClick={() => { setLocQuery(''); setLocSuggestions([]); }}
+                    />
+                  ) : null}
+                </div>
+
+                {/* Autocomplete Dropdown */}
+                {locSuggestions.length > 0 && (
+                  <div
+                    className="position-absolute w-100 shadow-lg rounded mt-1 border"
+                    style={{
+                      zIndex: 200,
+                      background: 'var(--bg-card)',
+                      borderColor: 'var(--border-color)',
+                      maxHeight: '190px',
+                      overflowY: 'auto'
+                    }}
+                  >
+                    {locSuggestions.map((s, idx) => (
+                      <div
+                        key={idx}
+                        onClick={() => selectSearchedLocation(s)}
+                        className="p-2 cursor-pointer border-bottom d-flex align-items-center gap-2"
+                        style={{
+                          fontSize: '0.74rem',
+                          borderColor: 'var(--border-color)',
+                          background: 'transparent'
+                        }}
+                        onMouseEnter={(e) => e.currentTarget.style.background = 'var(--bg-card-hover)'}
+                        onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
+                      >
+                        <MapPin size={12} style={{ color: 'var(--brand-blue)', flexShrink: 0 }} />
+                        <div className="overflow-hidden">
+                          <div className="fw-bold text-truncate" style={{ color: 'var(--text-primary)' }}>{s.name}</div>
+                          <div className="text-secondary text-truncate" style={{ fontSize: '0.64rem' }}>{s.display_name}</div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* Quick Regional Presets */}
+              <div className="mb-2">
+                <span className="font-monospace text-uppercase text-secondary d-block mb-1.5" style={{ fontSize: '0.64rem', letterSpacing: '0.05em' }}>
+                  Quick Regions
+                </span>
+                <div className="d-flex flex-wrap gap-1.5">
+                  {PRESET_CITIES.map((c) => {
+                    const isSelected = (location?.displayName && location.displayName.includes(c.name)) || activeCityPill === c.name;
+                    return (
+                      <button
+                        key={c.name}
+                        onClick={() => selectQuickCity(c)}
+                        className="px-2 py-1 rounded font-monospace cursor-pointer"
+                        style={{
+                          fontSize: '0.66rem',
+                          background: isSelected ? 'rgba(56, 189, 248, 0.2)' : 'var(--bg-card-hover)',
+                          border: isSelected ? '1px solid var(--brand-blue)' : '1px solid var(--border-color)',
+                          color: isSelected ? 'var(--brand-blue)' : 'var(--text-secondary)',
+                          transition: 'all 0.2s ease',
+                        }}
+                      >
+                        {c.name}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
             </div>
 
             {/* Facility types */}
