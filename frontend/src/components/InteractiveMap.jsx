@@ -92,10 +92,19 @@ export default function InteractiveMap({ location, places, isPatient }) {
 
   // ── Init map ─────────────────────────────────────────────────────────
   useEffect(() => {
-    if (!location || !mapContainerRef.current || mapRef.current) return;
+    if (!location || !mapContainerRef.current) return;
+    if (mapRef.current) return;
+
+    let isCancelled = false;
 
     import('leaflet').then((mod) => {
+      if (isCancelled || !mapContainerRef.current) return;
       const L = mod.default || mod;
+
+      if (mapRef.current) return;
+      if (mapContainerRef.current._leaflet_id) {
+        delete mapContainerRef.current._leaflet_id;
+      }
 
       // Fix default icon path issue in bundlers
       delete L.Icon.Default.prototype._getIconUrl;
@@ -107,8 +116,9 @@ export default function InteractiveMap({ location, places, isPatient }) {
 
       const map = L.map(mapContainerRef.current, {
         center:             [location.lat, location.lon],
-        zoom:               15,
+        zoom:               14,
         maxZoom:            19,
+        minZoom:            10,
         zoomControl:        false,
         attributionControl: true,
       });
@@ -117,8 +127,8 @@ export default function InteractiveMap({ location, places, isPatient }) {
       L.control.zoom({ position: 'topright' }).addTo(map);
 
       // Street tile layer
-      const tile = L.tileLayer(TILE_LAYERS.street.url, {
-        attribution:   TILE_LAYERS.street.attribution,
+      const tile = L.tileLayer(TILE_LAYERS[tileLayer].url, {
+        attribution:   TILE_LAYERS[tileLayer].attribution,
         maxZoom:       19,
         maxNativeZoom: 19,
         keepBuffer:    4,
@@ -127,7 +137,7 @@ export default function InteractiveMap({ location, places, isPatient }) {
       tileRef.current  = tile;
       mapRef.current   = map;
 
-      // User location marker (Clean, non-draggable pin for stability)
+      // User location marker
       const userIcon = createUserIcon(L);
       const userMarker = L.marker([location.lat, location.lon], {
         icon: userIcon,
@@ -146,22 +156,35 @@ export default function InteractiveMap({ location, places, isPatient }) {
 
       userMarkerRef.current = userMarker;
       setMapReady(true);
+
+      // Invalidate size once rendered into layout
+      setTimeout(() => {
+        if (mapRef.current) {
+          mapRef.current.invalidateSize();
+        }
+      }, 250);
+    }).catch((err) => {
+      console.error('Failed to initialize Leaflet map:', err);
     });
 
     return () => {
+      isCancelled = true;
       if (mapRef.current) {
         mapRef.current.remove();
         mapRef.current = null;
-        setMapReady(false);
       }
+      if (mapContainerRef.current && mapContainerRef.current._leaflet_id) {
+        delete mapContainerRef.current._leaflet_id;
+      }
+      setMapReady(false);
     };
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [location?.lat, location?.lon]);
 
   // ── Pan map & update user marker whenever location changes ────────────
   useEffect(() => {
     if (!mapRef.current || !location) return;
 
-    mapRef.current.flyTo([location.lat, location.lon], 15, { duration: 0.8 });
+    mapRef.current.flyTo([location.lat, location.lon], 14, { duration: 0.8 });
 
     if (userMarkerRef.current) {
       userMarkerRef.current.setLatLng([location.lat, location.lon]);
@@ -196,7 +219,7 @@ export default function InteractiveMap({ location, places, isPatient }) {
 
   // ── Update markers when places change or map becomes ready ────────────
   useEffect(() => {
-    if (!mapRef.current) return;
+    if (!mapRef.current || !mapReady) return;
 
     import('leaflet').then((mod) => {
       const L = mod.default || mod;
@@ -207,6 +230,8 @@ export default function InteractiveMap({ location, places, isPatient }) {
       markersRef.current = [];
 
       if (!places || places.length === 0) return;
+
+      const group = [L.latLng(location.lat, location.lon)];
 
       places.forEach((place) => {
         const isSelected = selectedPlace?.id === place.id;
@@ -244,9 +269,16 @@ export default function InteractiveMap({ location, places, isPatient }) {
         });
 
         markersRef.current.push(marker);
+        group.push(L.latLng(place.lat, place.lon));
       });
+
+      // Fit map bounds to encompass user position and nearby facilities smoothly
+      if (group.length > 1) {
+        const bounds = L.latLngBounds(group);
+        mapRef.current.fitBounds(bounds, { padding: [40, 40], maxZoom: 15 });
+      }
     });
-  }, [places, selectedPlace, mapReady]);
+  }, [places, selectedPlace, mapReady, location?.lat, location?.lon]);
 
   // ── Draw OSRM route ───────────────────────────────────────────────────
   const drawRoute = useCallback(async (dest) => {
@@ -406,14 +438,12 @@ export default function InteractiveMap({ location, places, isPatient }) {
         ref={mapContainerRef}
         style={{
           height: '420px',
+          width: '100%',
           borderRadius: '10px',
           background: '#0a0f2a',
           position: 'relative',
-          isolation: 'isolate',
-          transform: 'translateZ(0)',
-          WebkitTransform: 'translateZ(0)',
-          backfaceVisibility: 'hidden',
-          WebkitBackfaceVisibility: 'hidden',
+          overflow: 'hidden',
+          zIndex: 1,
         }}
       />
 

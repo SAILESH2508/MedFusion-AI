@@ -72,12 +72,12 @@ function AppContent({ user, login, logout }) {
   const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
 
   // ── Persistent map state — lifted here so navigating away doesn't reset it ──
-  // Default to Kamachipuram, Coimbatore — updated when user searches or uses GPS
+  // Default to Coimbatore city center — updated when user searches or uses GPS
   const [mapLocation, setMapLocation] = useState({
-    lat: 11.0065,
-    lon: 77.0645,
+    lat: 11.0018,
+    lon: 76.9628,
     city: 'Coimbatore',
-    displayName: 'Kamachipuram, Ondipudur, Coimbatore',
+    displayName: 'Coimbatore, Tamil Nadu',
     source: 'default',
   });
   const [mapPlaces, setMapPlaces]     = useState([]);

@@ -340,7 +340,18 @@ function MedicalVault({
                         {parsedData.physician && (
                           <div className="mb-3.5 inner-vault-card">
                             <span className="text-secondary small d-block mb-0.5">PRESCRIBING PHYSICIAN</span>
-                            <strong className="text-white fs-6">Dr. {parsedData.physician}</strong>
+                            <strong className="text-white fs-6">
+                              {(() => {
+                                const phy = parsedData.physician;
+                                if (typeof phy === 'object' && phy !== null) {
+                                  const name = phy.name || '';
+                                  const extra = [phy.qualification, phy.specialty].filter(Boolean).join(', ');
+                                  const formatted = name && extra ? `${name} (${extra})` : (name || extra || 'Physician');
+                                  return formatted.startsWith('Dr') ? formatted : `Dr. ${formatted}`;
+                                }
+                                return String(phy).startsWith('Dr') ? phy : `Dr. ${phy}`;
+                              })()}
+                            </strong>
                           </div>
                         )}
 

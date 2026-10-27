@@ -1762,14 +1762,18 @@ function GuestDashboard({ openAuth }) {
                         exit={{ opacity: 0, y: -5 }}
                       >
                         <div className="row g-2">
-                          {safeList(result.remedies?.dietary_guidelines).map((item, idx) => (
-                            <div className="col-md-6" key={idx}>
-                              <div className="p-3 bg-white-10 bg-opacity-20 rounded border border-white-5 font-monospace text-secondary small h-100 d-flex gap-2" style={{ fontSize: '0.92rem' }}>
-                                <span>•</span>
-                                <span>{item}</span>
+                          {(() => {
+                            const dietItems = safeList(result.remedies?.dietary_guidelines);
+                            const colClass = dietItems.length === 1 ? 'col-12' : 'col-md-6';
+                            return dietItems.map((item, idx) => (
+                              <div className={colClass} key={idx}>
+                                <div className="p-3 bg-white-10 bg-opacity-20 rounded border border-white-5 font-monospace text-secondary small h-100 d-flex gap-2" style={{ fontSize: '0.92rem' }}>
+                                  <span>•</span>
+                                  <span>{item}</span>
+                                </div>
                               </div>
-                            </div>
-                          ))}
+                            ));
+                          })()}
                         </div>
                       </motion.div>
                     )}
@@ -1782,14 +1786,18 @@ function GuestDashboard({ openAuth }) {
                         exit={{ opacity: 0, y: -5 }}
                       >
                         <div className="row g-2">
-                          {safeList(result.remedies?.lifestyle_modifications).map((item, idx) => (
-                            <div className="col-md-6" key={idx}>
-                              <div className="p-3 bg-white-10 bg-opacity-20 rounded border border-white-5 font-monospace text-secondary small h-100 d-flex gap-2" style={{ fontSize: '0.92rem' }}>
-                                <span>•</span>
-                                <span>{item}</span>
+                          {(() => {
+                            const lifeItems = safeList(result.remedies?.lifestyle_modifications);
+                            const colClass = lifeItems.length === 1 ? 'col-12' : 'col-md-6';
+                            return lifeItems.map((item, idx) => (
+                              <div className={colClass} key={idx}>
+                                <div className="p-3 bg-white-10 bg-opacity-20 rounded border border-white-5 font-monospace text-secondary small h-100 d-flex gap-2" style={{ fontSize: '0.92rem' }}>
+                                  <span>•</span>
+                                  <span>{item}</span>
+                                </div>
                               </div>
-                            </div>
-                          ))}
+                            ));
+                          })()}
                         </div>
                       </motion.div>
                     )}

@@ -1870,7 +1870,49 @@ def reverse_geocode(request):
     if cache_key in _reverse_geocode_cache:
         return JsonResponse({"status": "success", "location": _reverse_geocode_cache[cache_key]}, status=200)
 
-    # ── Step 1: Check ALL known Coimbatore localities — return closest within 3 km ──
+    # ── Step 1: Query Nominatim for pinpoint landmark, college, building, or neighborhood accuracy ──
+    try:
+        url = f"https://nominatim.openstreetmap.org/reverse?lat={lat}&lon={lon}&format=json&zoom=18&addressdetails=1"
+        req = urllib.request.Request(url, headers={'User-Agent': 'MedFusionAI/2.0'})
+        with urllib.request.urlopen(req, timeout=3.5) as res:
+            data = json.loads(res.read().decode())
+            addr = data.get('address', {})
+            landmark = (
+                data.get('name')
+                or addr.get('amenity')
+                or addr.get('building')
+                or addr.get('college')
+                or addr.get('university')
+                or addr.get('hospital')
+                or addr.get('road')
+            )
+            suburb = addr.get('suburb') or addr.get('neighbourhood') or addr.get('village') or addr.get('city_district')
+            district = addr.get('state_district') or addr.get('city') or addr.get('town') or addr.get('municipality') or 'Coimbatore'
+            city = district
+            state = addr.get('state') or 'Tamil Nadu'
+
+            parts = []
+            if landmark and landmark != suburb and landmark != city:
+                parts.append(landmark)
+            if suburb and suburb != city and suburb not in parts:
+                parts.append(suburb)
+            if city and city not in parts:
+                parts.append(city)
+
+            display_name = ", ".join(parts) if parts else (data.get('display_name') or f"{city}, {state}")
+            info = {
+                "city": city,
+                "suburb": suburb or landmark,
+                "state": state,
+                "country": addr.get('country', 'India'),
+                "display_name": display_name,
+            }
+            _reverse_geocode_cache[cache_key] = info
+            return JsonResponse({"status": "success", "location": info}, status=200)
+    except Exception as e:
+        logger.debug(f"Nominatim reverse geocode exception: {e}")
+
+    # ── Step 2: Fallback to closest known local registry within 3 km ──
     best_locality = None
     best_dist_km  = float('inf')
     for k, loc in COIMBATORE_LOCALITIES.items():
@@ -1892,7 +1934,7 @@ def reverse_geocode(request):
         _reverse_geocode_cache[cache_key] = info
         return JsonResponse({"status": "success", "location": info}, status=200)
 
-    # ── Step 2: Nominatim fallback for coordinates outside the local registry ──
+    # ── Step 3: Generic safe coordinates fallback ──
     info = {
         "city": "Coimbatore",
         "suburb": None,
@@ -1900,29 +1942,6 @@ def reverse_geocode(request):
         "country": "India",
         "display_name": f"{round(lat, 4)}°N, {round(lon, 4)}°E",
     }
-
-    try:
-        url = f"https://nominatim.openstreetmap.org/reverse?lat={lat}&lon={lon}&format=json&zoom=14"
-        req = urllib.request.Request(url, headers={'User-Agent': 'MedFusionAI/2.0'})
-        with urllib.request.urlopen(req, timeout=2.5) as res:
-            data = json.loads(res.read().decode())
-            addr = data.get('address', {})
-            city = addr.get('city') or addr.get('town') or addr.get('municipality') or addr.get('village') or addr.get('county') or 'Coimbatore'
-            suburb = addr.get('suburb') or addr.get('neighbourhood') or addr.get('city_district')
-            state = addr.get('state') or 'Tamil Nadu'
-            display = data.get('display_name', f"{city}, {state}")
-            parts = [p.strip() for p in [suburb, city, state] if p]
-            short_display = ", ".join(parts) if parts else display
-            info = {
-                "city": city,
-                "suburb": suburb,
-                "state": state,
-                "country": addr.get('country', 'India'),
-                "display_name": short_display,
-            }
-    except Exception as e:
-        logger.debug(f"Reverse geocode exception: {e}")
-
     _reverse_geocode_cache[cache_key] = info
     return JsonResponse({"status": "success", "location": info}, status=200)
 

@@ -659,7 +659,7 @@ function Profile({ user, onUserUpdate }) {
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -15 }}
-            className="row g-4 mt-2 align-items-stretch vault-tab-row"
+            className="row g-4 mt-2 align-items-start vault-tab-row"
           >
             <div className="col-lg-6">
               <MedicalVault

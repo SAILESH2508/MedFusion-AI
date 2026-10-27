@@ -589,10 +589,20 @@ function DoctorDashboard({ user }) {
                         {patientDetails.prescriptions.map((rx, idx) => {
                           let ext = {};
                           try { ext = typeof rx.extracted_data === 'string' ? JSON.parse(rx.extracted_data) : rx.extracted_data; } catch(e) { console.error(e); }
+                          const physicianLabel = (() => {
+                            if (!ext?.physician) return 'Physician';
+                            if (typeof ext.physician === 'string') return ext.physician;
+                            if (typeof ext.physician === 'object') {
+                              const name = ext.physician.name || '';
+                              const extra = [ext.physician.qualification, ext.physician.specialty].filter(Boolean).join(', ');
+                              return name && extra ? `${name} (${extra})` : (name || extra || 'Physician');
+                            }
+                            return String(ext.physician);
+                          })();
                           return (
                             <div key={idx} className="p-3 bg-white-5 border border-white-5 rounded">
                               <div className="d-flex justify-content-between align-items-baseline">
-                                <span className="fw-bold d-inline-flex align-items-center gap-1.5" style={{ fontSize: '0.85rem', color: 'var(--text-primary)' }}><Stethoscope size={13} style={{ color: 'var(--brand-blue)' }} /> {ext?.physician || 'Physician'}</span>
+                                <span className="fw-bold d-inline-flex align-items-center gap-1.5" style={{ fontSize: '0.85rem', color: 'var(--text-primary)' }}><Stethoscope size={13} style={{ color: 'var(--brand-blue)' }} /> {physicianLabel}</span>
                                 <span className="text-secondary small" style={{ fontSize: '0.75rem' }}>{new Date(rx.created_at).toLocaleDateString()}</span>
                               </div>
                               <div className="mt-2 border-start border-theme-accent border-opacity-30 ps-2">

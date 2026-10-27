@@ -1856,3 +1856,10 @@ input[class*="typeable-number"] {
 code, kbd, samp, pre {
   font-family: var(--font-mono) !important;
 }
+
+/* ── Leaflet Interactive Map Custom Marker Styles ── */
+.medfusion-marker-icon {
+  background: transparent !important;
+  border: none !important;
+}
+

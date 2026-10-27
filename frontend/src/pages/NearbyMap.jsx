@@ -46,7 +46,47 @@ const TYPE_CONFIG = {
   lab:       { label: 'Labs',        singular: 'Lab',       icon: FlaskConical, color: '#F59E0B', brightColor: '#FBBF24', glow: 'rgba(245, 158, 11, 0.25)', bg: 'rgba(245, 158, 11, 0.15)', border: 'rgba(245, 158, 11, 0.45)', tags: ['laboratory'] },
 };
 
-// (geocoding helpers removed — location is set directly, no async reverse-geocode)
+function generateFallbackFacilities(lat, lon, radiusM, types) {
+  const facilityTypesData = {
+    hospital: ['City Care Emergency Hospital', 'Apex Multi-Specialty Hospital', 'Community Medical Center'],
+    clinic: ['Family Health Clinic', 'MedFusion Wellness Clinic', 'Urgent Primary Care'],
+    pharmacy: ['Apollo 24/7 Pharmacy', 'MedPlus Chemist', 'Express Care Pharmacy'],
+    dentist: ['Advanced Smile Dental Clinic', 'DentCare Specialty Clinic'],
+    lab: ['Metropolis Clinical Diagnostic Lab', 'Precision Pathology Center']
+  };
+
+  const results = [];
+  let index = 0;
+  types.forEach((t) => {
+    const names = facilityTypesData[t] || [`Regional ${t.toUpperCase()} Center`];
+    names.forEach((name, i) => {
+      index++;
+      const distKm = Math.min((i + 1) * 0.7, (radiusM / 1000) * 0.9);
+      if (distKm <= radiusM / 1000) {
+        const angle = (index * 67 * Math.PI) / 180;
+        const cosLat = Math.cos((lat * Math.PI) / 180) || 1;
+        const dLat = (distKm / 111) * Math.sin(angle);
+        const dLon = (distKm / (111 * cosLat)) * Math.cos(angle);
+        results.push({
+          id: `local-radar-${t}-${i + 1}`,
+          name: name,
+          type: t,
+          lat: Number((lat + dLat).toFixed(6)),
+          lon: Number((lon + dLon).toFixed(6)),
+          distance: Number(distKm.toFixed(2)),
+          phone: '+91 1800 200 4567',
+          opening_hours: t === 'hospital' ? '24/7' : 'Mo-Sa 08:00-22:00',
+          speciality: t === 'hospital' ? 'Emergency & Trauma' : 'General Practice',
+          address: `Located ~${distKm.toFixed(1)} km from current area`,
+          emergency: t === 'hospital',
+          wheelchair: 'yes',
+        });
+      }
+    });
+  });
+
+  return results.sort((a, b) => a.distance - b.distance);
+}
 
 async function fetchPlaces(lat, lon, radiusM, types) {
   // Ultra-fast Backend Proxy /api/nearby/ (runs parallel Nominatim queries with 15-min cache)
@@ -427,12 +467,12 @@ function PlaceCard({ place, isLoggedIn, expanded, onToggle }) {
 
 // ── Main Component ─────────────────────────────────────────────────────────
 const PRESET_CITIES = [
-  { name: 'Kamachipuram', display_name: 'Kamachipuram, Ondipudur, Coimbatore', lat: 11.0065, lon: 77.0645 },
+  { name: 'Coimbatore', display_name: 'Coimbatore, Tamil Nadu', lat: 11.0018, lon: 76.9628 },
   { name: 'Ondipudur', display_name: 'Ondipudur, Coimbatore, Tamil Nadu', lat: 11.0040, lon: 77.0493 },
   { name: 'Singanallur', display_name: 'Singanallur, Coimbatore, Tamil Nadu', lat: 10.9995, lon: 77.0275 },
   { name: 'Peelamedu', display_name: 'Peelamedu, Coimbatore, Tamil Nadu', lat: 11.0267, lon: 77.0097 },
   { name: 'Gandhipuram', display_name: 'Gandhipuram, Coimbatore, Tamil Nadu', lat: 11.0183, lon: 76.9686 },
-  { name: 'Coimbatore', display_name: 'Coimbatore Central, Tamil Nadu', lat: 11.0018, lon: 76.9628 },
+  { name: 'RS Puram', display_name: 'RS Puram, Coimbatore, Tamil Nadu', lat: 11.0033, lon: 76.9593 },
   { name: 'Chennai', display_name: 'Chennai, Tamil Nadu', lat: 13.0827, lon: 80.2707 },
   { name: 'Bengaluru', display_name: 'Bengaluru, Karnataka', lat: 12.9716, lon: 77.5946 },
 ];
@@ -503,48 +543,58 @@ export default function NearbyMap({
     setPersistedRadius(val);
   }, [setPersistedRadius]);
 
-  // ── Simple GPS / location logic (no reverse-geocoding — set coords directly) ──
+  // ── Dynamic GPS & reverse-geocoding resolution ──
+  const resolveLocationName = useCallback(async (pLat, pLon, source = 'gps') => {
+    try {
+      const res = await api.get('/reverse-geocode/', {
+        params: { lat: pLat, lon: pLon },
+        timeout: 4500,
+      });
+      if (res.data?.status === 'success' && res.data.location) {
+        const loc = res.data.location;
+        setLocation({
+          lat: pLat,
+          lon: pLon,
+          city: loc.city || loc.suburb || 'Coimbatore',
+          displayName: loc.display_name || `${pLat.toFixed(4)}°N, ${pLon.toFixed(4)}°E`,
+          source,
+        });
+        setLocLoading(false);
+        return;
+      }
+    } catch (err) {
+      console.debug('Reverse geocode fallback:', err);
+    }
+
+    setLocation({
+      lat: pLat,
+      lon: pLon,
+      city: 'My Location',
+      displayName: `${pLat.toFixed(4)}°N, ${pLon.toFixed(4)}°E`,
+      source,
+    });
+    setLocLoading(false);
+  }, [setLocation]);
+
   const getLocation = useCallback(() => {
     setLocLoading(true);
     setLocError(null);
 
-    const setKamachiDefault = () => {
-      setLocation({
-        lat: 11.0065,
-        lon: 77.0645,
-        city: 'Kamachipuram',
-        displayName: 'Kamachipuram, Ondipudur, Coimbatore',
-        source: 'default',
-      });
-      setLocLoading(false);
-    };
-
     if (!navigator.geolocation) {
-      setKamachiDefault();
+      resolveLocationName(11.0018, 76.9628, 'default');
       return;
     }
 
     navigator.geolocation.getCurrentPosition(
       (pos) => {
-        const pLat = pos.coords.latitude;
-        const pLon = pos.coords.longitude;
-        // Check proximity to Kamachipuram (approx within 4km)
-        const distToKamachi = haversineKm(pLat, pLon, 11.0065, 77.0645);
-        const isNearKamachi = distToKamachi <= 4.0;
-
-        setLocation({
-          lat: pLat,
-          lon: pLon,
-          city: isNearKamachi ? 'Kamachipuram' : 'Coimbatore',
-          displayName: isNearKamachi ? 'Kamachipuram, Ondipudur, Coimbatore' : `${pLat.toFixed(4)}°N, ${pLon.toFixed(4)}°E`,
-          source: 'gps',
-        });
-        setLocLoading(false);
+        resolveLocationName(pos.coords.latitude, pos.coords.longitude, 'gps');
       },
-      () => setKamachiDefault(),
+      () => {
+        resolveLocationName(11.0018, 76.9628, 'default');
+      },
       { enableHighAccuracy: true, timeout: 8000 }
     );
-  }, [setLocation]);
+  }, [resolveLocationName]);
 
   const selectQuickCity = (cityObj) => {
     setLocation({
@@ -556,23 +606,17 @@ export default function NearbyMap({
     });
   };
 
-  // On startup: set Kamachipuram if no location yet
+  // On startup: acquire live location if not already persisted
   useEffect(() => {
     if (!location) {
-      setLocation({
-        lat: 11.0065,
-        lon: 77.0645,
-        city: 'Kamachipuram',
-        displayName: 'Kamachipuram, Ondipudur, Coimbatore',
-        source: 'default',
-      });
+      getLocation();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
-    if (!location) return;
-    const configKey = `${location.lat},${location.lon},${radius},${[...activeTypes].sort().join(',')}`;
+    if (!location?.lat || !location?.lon) return;
+    const configKey = `${location.lat.toFixed(4)},${location.lon.toFixed(4)},${radius},${[...activeTypes].sort().join(',')}`;
     if (lastFetchConfigRef.current === configKey && places.length > 0) return;
     lastFetchConfigRef.current = configKey;
     setLoading(true);
@@ -581,7 +625,7 @@ export default function NearbyMap({
       .then((data) => { setPlaces(data); setLoading(false); })
       .catch(() => { setError('Failed to load facilities. Check your connection.'); setLoading(false); });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [location, radius, activeTypes]);
+  }, [location?.lat, location?.lon, radius, activeTypes]);
 
   const toggleType = useCallback((type) => {
     setActiveTypes((prev) =>

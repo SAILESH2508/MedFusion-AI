@@ -61,7 +61,14 @@ class AIService:
                 system_prompt="You are a Clinical Pharmacy Specialist. You output precision medical data in JSON format.",
             )
 
-            return self._parse_json(response_text)
+            data = self._parse_json(response_text)
+            if isinstance(data, dict):
+                phy = data.get('physician')
+                if isinstance(phy, dict):
+                    name = phy.get('name') or ''
+                    extra = ", ".join([str(v) for v in [phy.get('qualification'), phy.get('specialty')] if v])
+                    data['physician'] = f"{name} ({extra})" if name and extra else (name or extra or 'Physician')
+            return data
         except Exception as e:
             logger.error(f"Prescription Analysis failed: {e}")
             return self._get_fallback_vitals("Prescription analysis unavailable.")

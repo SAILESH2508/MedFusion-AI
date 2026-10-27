@@ -217,7 +217,7 @@ function VoiceExplainer({ text, label }) {
         className="text-secondary font-monospace m-0 mt-2"
         style={{ fontSize: '0.65rem', opacity: 0.55, lineHeight: '1.4' }}
       >
-        Translation powered by Gemini AI. Medical values and medication names are preserved.
+        Translation powered by MedFusion AI. Medical values and medication names are preserved.
       </p>
     </div>
   );

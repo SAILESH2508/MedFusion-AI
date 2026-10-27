@@ -465,21 +465,21 @@ export default function IntegratedGardenSection({
                         </div>
                       </div>
                     ) : (
-                      <div className="d-flex gap-1.5">
+                      <div className="d-flex align-items-center" style={{ gap: '8px' }}>
                         <button
                           onClick={() => handleLogActivity(action.type, action.points)}
                           disabled={isLoading}
                           className="btn-clinical primary d-flex align-items-center justify-content-center gap-1 font-monospace text-uppercase"
-                          style={{ fontSize: '0.66rem', borderRadius: '5px', padding: '4px 10px' }}
+                          style={{ fontSize: '0.68rem', borderRadius: '6px', padding: '6px 12px' }}
                         >
                           {isLoading ? <RefreshCw size={11} className="animate-spin" /> : <Plus size={11} />}
-                          <span>+ Log</span>
+                          <span>Log</span>
                         </button>
                         <button
                           onClick={() => { setSelectedActivityForNote(action.type); setActiveNote(''); }}
                           title="Add note with activity"
-                          className="btn-clinical secondary px-2 py-1.5"
-                          style={{ borderRadius: '6px' }}
+                          className="btn-clinical secondary d-flex align-items-center justify-content-center"
+                          style={{ borderRadius: '6px', padding: '6px 10px' }}
                         >
                           <Clock size={12} />
                         </button>

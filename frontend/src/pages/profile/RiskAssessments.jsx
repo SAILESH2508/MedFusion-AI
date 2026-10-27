@@ -24,7 +24,7 @@ function RiskAssessments({
         </div>
       </div>
 
-      <div className="d-flex flex-column gap-3 vault-list-container" style={{ maxHeight: '550px', overflowY: 'auto', paddingRight: '4px' }}>
+      <div className="d-flex flex-column gap-3 vault-list-container" style={{ maxHeight: '720px', overflowY: 'auto', paddingRight: '4px', paddingBottom: '16px' }}>
         {loadingHistory ? (
           <div className="text-center py-5 font-monospace text-secondary small">
             Retrieving risk assessments history...
