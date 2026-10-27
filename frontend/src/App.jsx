@@ -586,22 +586,8 @@ function Navbar({ user, logout, toggleSidebar, isSidebarPage, openAuth, navbarHe
             <NavLink to="/profile" icon={<User size={16} />} label="Profile" />
           )}
 
-          {/* Auth: Login or Logout */}
-          {user ? (
-            <>
-              {!isSidebarPage && (
-                <button
-                  onClick={logout}
-                  className="btn-icon p-2 border-0 bg-transparent"
-                  style={{ color: 'rgba(255,255,255,0.75)' }}
-                  aria-label="Log out"
-                  title="Log out"
-                >
-                  <LogOut size={17} />
-                </button>
-              )}
-            </>
-          ) : (
+          {/* Guest: Login button */}
+          {!user && (
             <button
               onClick={() => openAuth('patient')}
               className="btn-clinical primary px-3 py-1.5 font-monospace text-uppercase cursor-pointer"
@@ -613,6 +599,19 @@ function Navbar({ user, logout, toggleSidebar, isSidebarPage, openAuth, navbarHe
 
           {/* Emergency QR (Patients only) */}
           {user && user.role === 'Patient' && <EmergencyQRDropdown user={user} />}
+
+          {/* Logout — after QR Scanner, before Theme Toggle */}
+          {user && !isSidebarPage && (
+            <button
+              onClick={logout}
+              className="btn-icon p-2 border-0 bg-transparent"
+              style={{ color: 'rgba(255,255,255,0.75)' }}
+              aria-label="Log out"
+              title="Log out"
+            >
+              <LogOut size={17} />
+            </button>
+          )}
 
           {/* Theme Toggle — always far right */}
           <button

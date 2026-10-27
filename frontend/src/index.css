@@ -1235,7 +1235,7 @@ button.btn-icon:hover {
 }
 
 .app-sidebar .disease-select-tile *:not(.facility-count-badge):not(.facility-status-dot),
-.app-sidebar .facility-select-tile * {
+.app-sidebar .facility-select-tile *:not(.facility-count-badge):not(.facility-status-dot) {
   color: var(--text-on-dark, #E2E8F0) !important;
 }
 
@@ -1249,7 +1249,7 @@ button.btn-icon:hover {
 }
 
 .app-sidebar .disease-select-tile.inactive *:not(.facility-count-badge):not(.facility-status-dot),
-.app-sidebar .facility-select-tile.inactive * {
+.app-sidebar .facility-select-tile.inactive *:not(.facility-count-badge):not(.facility-status-dot) {
   color: #94A3B8 !important;
 }
 
