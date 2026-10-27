@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, createContext, useCallback } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate, Link, useLocation, NavLink as RouterNavLink } from 'react-router-dom';
-import { Activity, FileUp, Database, User, LogOut, Menu, X, Home, PanelLeft, Pill, Smile, Calendar, MessageSquare, MapPin, Sun, Moon, Salad, Cpu, QrCode, ShieldAlert, Stethoscope, HeartPulse, BrainCircuit, UtensilsCrossed, FlaskConical, Sprout, Download } from 'lucide-react';
+import { Activity, FileUp, User, LogOut, Menu, X, Home, PanelLeft, Pill, Smile, Calendar, MessageSquare, MapPin, Sun, Moon, Salad, Cpu, QrCode, ShieldAlert, HeartPulse, BrainCircuit, UtensilsCrossed, FlaskConical, Sprout, Download } from 'lucide-react';
 import { AnimatePresence, motion } from 'framer-motion';
 
 // Pages
@@ -516,36 +516,47 @@ function Navbar({ user, logout, toggleSidebar, isSidebarPage, openAuth, navbarHe
 
   return (
     <nav className="border-bottom border-white-10 bg-glass backdrop-blur w-100">
-      <div className="container d-flex justify-content-between align-items-center" style={{ height: '56px' }}>
-        <div className="d-flex align-items-center gap-2 flex-shrink-0">
+      {/* ── 3-Zone Desktop Layout: [Logo] [Nav Links] [Actions] ── */}
+      <div
+        className="d-flex align-items-center w-100"
+        style={{ height: '56px', padding: '0 24px', gap: '0' }}
+      >
+        {/* Zone 1: Brand Logo (far left, fixed width) */}
+        <div className="d-flex align-items-center gap-2 flex-shrink-0" style={{ minWidth: '180px' }}>
           {isSidebarPage && (
-            <button className="btn-icon d-md-none p-1" style={{ color: 'var(--text-primary)' }} onClick={toggleSidebar} aria-label="Toggle sidebar">
-              <PanelLeft size={24} />
+            <button
+              className="btn-icon d-md-none p-1"
+              style={{ color: 'rgba(255,255,255,0.85)' }}
+              onClick={toggleSidebar}
+              aria-label="Toggle sidebar"
+            >
+              <PanelLeft size={22} />
             </button>
           )}
           <Link to="/" className="text-decoration-none">
-            <h1 className="m-0 fw-bolder text-nowrap" style={{ fontSize: '1.35rem', letterSpacing: '-0.02em' }}>
+            <h1 className="m-0 fw-bolder text-nowrap" style={{ fontSize: '1.3rem', letterSpacing: '-0.02em' }}>
               <span className="brand-logo-blue">MEDFUSION</span><span className="brand-logo-orange">AI</span>
             </h1>
           </Link>
         </div>
 
-        {/* Desktop Nav — contextual per role, no duplicate Home link */}
-        <div className="d-none d-md-flex align-items-center gap-3">
+        {/* Zone 2: Navigation Links (center, grows to fill) */}
+        <div className="d-none d-md-flex align-items-center flex-grow-1" style={{ justifyContent: 'center', gap: '4px' }}>
           {/* Patient Nav */}
           {user && user.role === 'Patient' && (
             <>
               <NavLink to="/dashboard" icon={<HeartPulse size={16} />} label="Health Check" />
-              <NavLink to="/upload" icon={<FlaskConical size={16} />} label="Scanner" />
+              <NavLink to="/upload" icon={<FlaskConical size={16} />} label="AI Scanner" />
               <NavLink to="/digital-twin" icon={<BrainCircuit size={16} />} label="Digital Twin" />
               <NavLink to="/nearby" icon={<MapPin size={16} />} label="Nearby" />
             </>
           )}
-          {/* Doctor Nav */}
+          {/* Doctor Nav — Health Check | AI Scanner | Digital Twin | Nearby */}
           {user && user.role === 'Doctor' && (
             <>
-              <NavLink to="/dashboard" icon={<Stethoscope size={16} />} label="Patients" />
+              <NavLink to="/dashboard" icon={<HeartPulse size={16} />} label="Health Check" />
               <NavLink to="/upload" icon={<FlaskConical size={16} />} label="AI Scanner" />
+              <NavLink to="/digital-twin" icon={<BrainCircuit size={16} />} label="Digital Twin" />
               <NavLink to="/nearby" icon={<MapPin size={16} />} label="Nearby" />
             </>
           )}
@@ -554,110 +565,141 @@ function Navbar({ user, logout, toggleSidebar, isSidebarPage, openAuth, navbarHe
             <>
               <NavLink to="/dashboard" icon={<HeartPulse size={16} />} label="Health Check" />
               <NavLink to="/upload" icon={<FlaskConical size={16} />} label="AI Scanner" />
+              <NavLink to="/digital-twin" icon={<BrainCircuit size={16} />} label="Digital Twin" />
               <NavLink to="/nearby" icon={<MapPin size={16} />} label="Nearby" />
             </>
           )}
+        </div>
 
-          {/* Right-side utilities */}
-          <div style={{ width: '1px', height: '20px', background: 'var(--border)', margin: '0 2px' }} />
+        {/* Zone 3: Right-Side Actions (far right, fixed width) */}
+        <div className="d-none d-md-flex align-items-center flex-shrink-0" style={{ gap: '6px', minWidth: '180px', justifyContent: 'flex-end' }}>
+          {/* Divider */}
+          <div style={{ width: '1px', height: '20px', background: 'rgba(255,255,255,0.18)', margin: '0 4px' }} />
 
+          {/* Patient profile link (when NOT in nav as a section) */}
+          {user && user.role === 'Patient' && (
+            <NavLink to="/profile" icon={<User size={16} />} label="Profile" />
+          )}
+
+          {/* Doctor profile link */}
+          {user && user.role === 'Doctor' && (
+            <NavLink to="/profile" icon={<User size={16} />} label="Profile" />
+          )}
+
+          {/* Auth: Login or Logout */}
           {user ? (
             <>
-              <NavLink to="/profile" icon={<User size={16} />} label={user.role === 'Doctor' ? 'Vault' : 'Profile'} />
               {!isSidebarPage && (
-                <button onClick={logout} className="btn-icon p-2 border-0 bg-transparent" style={{ color: 'rgba(255, 255, 255, 0.82)' }} aria-label="Log out">
-                  <LogOut size={18} />
+                <button
+                  onClick={logout}
+                  className="btn-icon p-2 border-0 bg-transparent"
+                  style={{ color: 'rgba(255,255,255,0.75)' }}
+                  aria-label="Log out"
+                  title="Log out"
+                >
+                  <LogOut size={17} />
                 </button>
               )}
             </>
           ) : (
             <button
               onClick={() => openAuth('patient')}
-              className="btn-clinical primary px-3 py-1.5 text-decoration-none font-monospace text-uppercase cursor-pointer"
-              style={{ width: 'auto', fontSize: '0.82rem', borderRadius: '6px' }}
+              className="btn-clinical primary px-3 py-1.5 font-monospace text-uppercase cursor-pointer"
+              style={{ fontSize: '0.8rem', borderRadius: '6px', width: 'auto' }}
             >
               Login
             </button>
           )}
+
+          {/* Emergency QR (Patients only) */}
           {user && user.role === 'Patient' && <EmergencyQRDropdown user={user} />}
+
+          {/* Theme Toggle — always far right */}
           <button
             onClick={toggleTheme}
             className="btn-icon p-2 border-0 bg-transparent"
-            style={{ color: 'rgba(255, 255, 255, 0.85)' }}
+            style={{ color: 'rgba(255,255,255,0.85)' }}
             title={theme === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
             aria-label={theme === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
           >
-            {theme === 'dark' ? <Sun size={18} /> : <Moon size={18} />}
+            {theme === 'dark' ? <Sun size={17} /> : <Moon size={17} />}
           </button>
         </div>
 
-        {/* Mobile menu toggle */}
-        <button className="btn-icon d-md-none" style={{ color: '#FFFFFF' }} onClick={() => setIsOpen(!isOpen)} aria-label={isOpen ? 'Close menu' : 'Open menu'} aria-expanded={isOpen}>
-          {isOpen ? <X size={24} /> : <Menu size={24} />}
-        </button>
+        {/* Mobile: theme toggle + hamburger */}
+        <div className="d-md-none d-flex align-items-center gap-2 ms-auto">
+          <button
+            onClick={toggleTheme}
+            className="btn-icon p-1 border-0 bg-transparent"
+            style={{ color: 'rgba(255,255,255,0.85)' }}
+            aria-label={theme === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
+          >
+            {theme === 'dark' ? <Sun size={17} /> : <Moon size={17} />}
+          </button>
+          <button
+            className="btn-icon"
+            style={{ color: '#FFFFFF' }}
+            onClick={() => setIsOpen(!isOpen)}
+            aria-label={isOpen ? 'Close menu' : 'Open menu'}
+            aria-expanded={isOpen}
+          >
+            {isOpen ? <X size={22} /> : <Menu size={22} />}
+          </button>
+        </div>
       </div>
-      
-      {/* Mobile Nav */}
+
+      {/* Mobile Nav Drawer */}
       <AnimatePresence>
         {isOpen && (
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
             className="d-md-none position-absolute w-100 border-bottom p-4 z-index-1000"
             style={{ background: 'var(--bg-surface)', borderColor: 'var(--border)' }}
           >
-             <div className="d-flex flex-column gap-3">
-               <MobileNavLink to="/" label="Home" onClick={() => setIsOpen(false)} />
-                {user && user.role === 'Doctor' && (
-                  <>
-                    <MobileNavLink to="/dashboard" label="Patient Registry" onClick={() => setIsOpen(false)} />
-                    <MobileNavLink to="/upload" label="Clinical Ingestion" onClick={() => setIsOpen(false)} />
-                    <MobileNavLink to="/nearby" label="Nearby Facilities" onClick={() => setIsOpen(false)} />
-                  </>
-                )}
-                {user && user.role === 'Patient' && (
-                  <>
-                    <MobileNavLink to="/dashboard" label="AI Health Check" onClick={() => setIsOpen(false)} />
-                    <MobileNavLink to="/upload" label="AI Report Scanner" onClick={() => setIsOpen(false)} />
-                    <MobileNavLink to="/digital-twin" label="Digital Twin" onClick={() => setIsOpen(false)} />
-                    <MobileNavLink to="/nearby" label="Nearby Facilities" onClick={() => setIsOpen(false)} />
-                  </>
-                )}
-                {!user && (
-                  <>
-                    <MobileNavLink to="/dashboard" label="AI Health Check" onClick={() => setIsOpen(false)} />
-                    <MobileNavLink to="/upload" label="AI Report Scanner" onClick={() => setIsOpen(false)} />
-                    <MobileNavLink to="/nearby" label="Nearby" onClick={() => setIsOpen(false)} />
-                  </>
-                )}
-                {user ? (
-                   <>
-                     <div className="d-flex align-items-center justify-content-between border-bottom border-white-5 py-2">
-                       <MobileNavLink to="/profile" label={isDoctor ? "Credentials Vault" : "My Profile"} onClick={() => setIsOpen(false)} />
-                     </div>
-                     <button onClick={logout} className="text-start p-0 border-0 bg-transparent text-danger mt-2">Logout</button>
-                   </>
-                ) : (
-                    <button 
-                      onClick={() => { setIsOpen(false); openAuth('patient'); }} 
-                      className="btn-clinical primary p-2 text-center rounded text-decoration-none font-monospace text-uppercase cursor-pointer"
-                      style={{ width: '100%', fontSize: '0.88rem', borderRadius: '6px' }}
-                    >
-                      Login
-                    </button>
-                )}
-                <button
-                  onClick={toggleTheme}
-                  className="btn-icon p-2 border-0 bg-transparent opacity-70 mt-2 d-flex align-items-center"
-                  style={{ color: 'var(--text-primary)' }}
-                  title={theme === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
-                  aria-label={theme === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
-                >
-                  {theme === 'dark' ? <Sun size={20} /> : <Moon size={20} />}
-                  <span className="ms-2" style={{ fontSize: '0.9rem' }}>{theme === 'dark' ? 'Light Mode' : 'Dark Mode'}</span>
+            <div className="d-flex flex-column gap-3">
+              <MobileNavLink to="/" label="Home" onClick={() => setIsOpen(false)} />
+              {user && user.role === 'Doctor' && (
+                <>
+                  <MobileNavLink to="/dashboard" label="Health Check" onClick={() => setIsOpen(false)} />
+                  <MobileNavLink to="/upload" label="AI Scanner" onClick={() => setIsOpen(false)} />
+                  <MobileNavLink to="/digital-twin" label="Digital Twin" onClick={() => setIsOpen(false)} />
+                  <MobileNavLink to="/nearby" label="Nearby" onClick={() => setIsOpen(false)} />
+                  <MobileNavLink to="/profile" label="Profile" onClick={() => setIsOpen(false)} />
+                </>
+              )}
+              {user && user.role === 'Patient' && (
+                <>
+                  <MobileNavLink to="/dashboard" label="Health Check" onClick={() => setIsOpen(false)} />
+                  <MobileNavLink to="/upload" label="AI Scanner" onClick={() => setIsOpen(false)} />
+                  <MobileNavLink to="/digital-twin" label="Digital Twin" onClick={() => setIsOpen(false)} />
+                  <MobileNavLink to="/nearby" label="Nearby" onClick={() => setIsOpen(false)} />
+                  <MobileNavLink to="/profile" label="Profile" onClick={() => setIsOpen(false)} />
+                </>
+              )}
+              {!user && (
+                <>
+                  <MobileNavLink to="/dashboard" label="Health Check" onClick={() => setIsOpen(false)} />
+                  <MobileNavLink to="/upload" label="AI Scanner" onClick={() => setIsOpen(false)} />
+                  <MobileNavLink to="/digital-twin" label="Digital Twin" onClick={() => setIsOpen(false)} />
+                  <MobileNavLink to="/nearby" label="Nearby" onClick={() => setIsOpen(false)} />
+                </>
+              )}
+              {user ? (
+                <button onClick={logout} className="text-start p-0 border-0 bg-transparent text-danger mt-2">
+                  Logout
                 </button>
-             </div>
+              ) : (
+                <button
+                  onClick={() => { setIsOpen(false); openAuth('patient'); }}
+                  className="btn-clinical primary p-2 text-center font-monospace text-uppercase cursor-pointer"
+                  style={{ width: '100%', fontSize: '0.88rem', borderRadius: '6px' }}
+                >
+                  Login
+                </button>
+              )}
+            </div>
           </motion.div>
         )}
       </AnimatePresence>
