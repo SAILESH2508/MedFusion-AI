@@ -1518,7 +1518,7 @@ function PatientDashboard({ user }) {
             </span>
           </div>
           <h1 className="fw-bolder m-0 mb-2" style={{ fontSize: '2rem', letterSpacing: '-0.03em', color: isDark ? '#FFFFFF' : '#0F172A', lineHeight: 1.1, fontFamily: 'var(--font-main)' }}>
-            Clinical <span style={{ background: selectedDisease === 'heart_attack' ? 'linear-gradient(90deg, #DC2626, #EA580C)' : selectedDisease === 'diabetes' ? 'linear-gradient(90deg, #059669, #0284C7)' : 'linear-gradient(90deg, #9333EA, #DB2777)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Risk Diagnostics</span>
+            Clinical <span style={{ background: selectedDisease === 'heart_attack' ? 'linear-gradient(90deg, #DC2626, #EA580C)' : selectedDisease === 'diabetes' ? 'linear-gradient(90deg, #059669, #0284C7)' : 'linear-gradient(90deg, #9333EA, #DB2777)', WebkitBackgroundClip: 'text', backgroundClip: 'text', WebkitTextFillColor: 'transparent', color: 'transparent', display: 'inline-block' }}>Risk Diagnostics</span>
           </h1>
           <p className="m-0" style={{ fontSize: '0.9rem', color: isDark ? 'rgba(255,255,255,0.65)' : '#475569', maxWidth: '560px', lineHeight: 1.5, fontWeight: isDark ? 400 : 500 }}>
             Input your vitals and biomarkers to run an AI-powered disease risk prediction. Get personalised dietary, lifestyle and clinical recommendations.
@@ -1915,7 +1915,10 @@ function PatientDashboard({ user }) {
                             letterSpacing: '-0.02em',
                             background: 'linear-gradient(90deg, #DC2626, #EA580C)',
                             WebkitBackgroundClip: 'text',
+                            backgroundClip: 'text',
                             WebkitTextFillColor: 'transparent',
+                            color: 'transparent',
+                            display: 'inline-block',
                           }}>
                           Diagnostic Clinical Synthesis
                         </h3>

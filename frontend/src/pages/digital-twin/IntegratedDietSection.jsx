@@ -561,7 +561,10 @@ export default function IntegratedDietSection({ user, onActivityLogged }) {
                       fontFamily: 'var(--font-main)',
                       background: 'linear-gradient(90deg, #DC2626, #EA580C)',
                       WebkitBackgroundClip: 'text',
+                      backgroundClip: 'text',
                       WebkitTextFillColor: 'transparent',
+                      color: 'transparent',
+                      display: 'inline-block',
                       letterSpacing: '-0.01em',
                     }}
                   >
