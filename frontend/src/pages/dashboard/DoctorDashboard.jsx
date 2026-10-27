@@ -214,10 +214,10 @@ function DoctorDashboard({ user }) {
               Clinical Practitioner
             </span>
           </div>
-          <h2 className="fw-bolder fs-6 m-0" style={{ letterSpacing: '-0.02em', fontSize: '1.2rem', color: '#FFFFFF' }}>
+          <h2 className="fw-bolder fs-6 m-0" style={{ letterSpacing: '-0.02em', fontSize: '1.2rem', color: 'var(--text-on-dark, #E2E8F0)' }}>
             Clinical <span style={{ color: '#38BDF8' }}>Examiner</span>
           </h2>
-          <p className="m-0 mt-2" style={{ fontSize: '0.84rem', lineHeight: '1.4', color: 'rgba(255, 255, 255, 0.88)' }}>
+          <p className="m-0 mt-2" style={{ fontSize: '0.84rem', lineHeight: '1.4', color: 'rgba(255, 255, 255, 0.72)' }}>
             Logged in as Dr. {user.full_name || "Examiner"}. Select patients to review diagnostics, pathology and write clinical recommendations.
           </p>
         </div>
@@ -226,23 +226,23 @@ function DoctorDashboard({ user }) {
           /* DIRECTORY VIEW: Practice Analytics */
           <div className="reveal d-flex flex-column gap-4">
             <div>
-              <h4 className="fw-bold mb-3 font-monospace text-uppercase" style={{ fontSize: '0.9rem', letterSpacing: '0.05em', color: '#FFFFFF' }}>
+              <h4 className="fw-bold mb-3 font-monospace text-uppercase" style={{ fontSize: '0.9rem', letterSpacing: '0.05em', color: 'var(--text-on-dark, #E2E8F0)' }}>
                 <span style={{ color: '#38BDF8' }}>Practice Overview</span>
               </h4>
               <div className="d-flex flex-column gap-2">
                 <div className="p-3 rounded d-flex justify-content-between align-items-center font-monospace" style={{ border: '1px solid rgba(14, 165, 233, 0.35)', borderLeft: '4px solid #0EA5E9', background: 'rgba(14, 165, 233, 0.08)' }}>
                   <span className="small fw-bold" style={{ fontSize: '0.74rem', color: '#7DD3FC' }}>REGISTERED PATIENTS</span>
-                  <span className="fw-bold" style={{ color: '#FFFFFF', fontSize: '1.05rem' }}>{patients.length}</span>
+                  <span className="fw-bold" style={{ color: 'var(--text-on-dark, #E2E8F0)', fontSize: '1.05rem' }}>{patients.length}</span>
                 </div>
                 <div className="p-3 rounded d-flex justify-content-between align-items-center font-monospace" style={{ border: '1px solid rgba(16, 185, 129, 0.35)', borderLeft: '4px solid #10B981', background: 'rgba(16, 185, 129, 0.08)' }}>
                   <span className="small fw-bold" style={{ fontSize: '0.74rem', color: '#6EE7B7' }}>PATHOLOGY REPORTS</span>
-                  <span className="fw-bold" style={{ color: '#FFFFFF', fontSize: '1.05rem' }}>
+                  <span className="fw-bold" style={{ color: 'var(--text-on-dark, #E2E8F0)', fontSize: '1.05rem' }}>
                     {patients.reduce((acc, p) => acc + (p.pathology_count || 0), 0)}
                   </span>
                 </div>
                 <div className="p-3 rounded d-flex justify-content-between align-items-center font-monospace" style={{ border: '1px solid rgba(168, 85, 247, 0.35)', borderLeft: '4px solid #A855F7', background: 'rgba(168, 85, 247, 0.08)' }}>
                   <span className="small fw-bold" style={{ fontSize: '0.74rem', color: '#D8B4FE' }}>AI DISEASE RUNS</span>
-                  <span className="fw-bold" style={{ color: '#FFFFFF', fontSize: '1.05rem' }}>
+                  <span className="fw-bold" style={{ color: 'var(--text-on-dark, #E2E8F0)', fontSize: '1.05rem' }}>
                     {patients.reduce((acc, p) => acc + (p.prediction_count || 0), 0)}
                   </span>
                 </div>
@@ -258,7 +258,7 @@ function DoctorDashboard({ user }) {
               style={{ 
                 fontSize: '0.82rem', 
                 background: 'rgba(14, 165, 233, 0.16)', 
-                color: '#FFFFFF', 
+                color: 'var(--text-on-dark, #E2E8F0)', 
                 border: '1px solid #38BDF8',
                 borderRadius: '8px',
                 boxShadow: 'none'
@@ -269,12 +269,12 @@ function DoctorDashboard({ user }) {
 
             <div className="p-3 rounded font-monospace" style={{ border: '1px solid rgba(249, 115, 22, 0.45)', borderLeft: '4px solid #F97316', background: 'rgba(249, 115, 22, 0.08)' }}>
               <span className="fw-bold font-monospace text-uppercase d-block mb-1.5" style={{ fontSize: '0.72rem', color: '#FB923C' }}>Active Session Case</span>
-              <span className="fw-bold d-block" style={{ fontSize: '0.92rem', color: '#FFFFFF' }}>{selectedPatient.name.toUpperCase()}</span>
-              <span className="small d-block mt-1" style={{ fontSize: '0.74rem', color: 'rgba(255, 255, 255, 0.75)' }}>ID: MF-P-{selectedPatient.id} // DOB: {selectedPatient.dob || '1995-08-12'}</span>
+              <span className="fw-bold d-block" style={{ fontSize: '0.92rem', color: 'var(--text-on-dark, #E2E8F0)' }}>{selectedPatient.name.toUpperCase()}</span>
+              <span className="small d-block mt-1" style={{ fontSize: '0.74rem', color: 'rgba(255, 255, 255, 0.72)' }}>ID: MF-P-{selectedPatient.id} // DOB: {selectedPatient.dob || '1995-08-12'}</span>
             </div>
 
             <div>
-              <h4 className="fw-bold mb-3 font-monospace text-uppercase" style={{ fontSize: '0.9rem', letterSpacing: '0.05em', color: '#FFFFFF' }}>
+              <h4 className="fw-bold mb-3 font-monospace text-uppercase" style={{ fontSize: '0.9rem', letterSpacing: '0.05em', color: 'var(--text-on-dark, #E2E8F0)' }}>
                 <span style={{ color: 'var(--brand-orange)' }}>EHR Navigation Map</span>
               </h4>
               <div className="d-flex flex-column gap-2">
@@ -292,14 +292,14 @@ function DoctorDashboard({ user }) {
                       const el = document.getElementById(`section-${section.id}`);
                       if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
                     }}
-                    className="btn-clinical w-100 py-2.5 px-3 text-start d-flex align-items-center gap-2.5 font-monospace cursor-pointer"
+                    className="btn-clinical w-100 py-2 px-3 text-start d-flex align-items-center gap-2.5 font-monospace cursor-pointer"
                     style={{ 
-                      fontSize: '0.82rem', 
+                      fontSize: '0.80rem', 
                       borderRadius: '8px',
                       background: section.bg,
                       border: `1px solid ${section.border}`,
                       borderLeft: `3px solid ${section.color}`,
-                      color: '#FFFFFF',
+                      color: 'var(--text-on-dark, #E2E8F0)',
                       boxShadow: 'none'
                     }}
                   >

@@ -490,20 +490,20 @@ function PatientDashboard({ user }) {
               Diagnostic Engine
             </span>
           </div>
-          <h2 className="fw-bolder fs-6 m-0" style={{ letterSpacing: '-0.02em', fontSize: '1.2rem', color: '#FFFFFF' }}>
+          <h2 className="fw-bolder fs-6 m-0" style={{ letterSpacing: '-0.02em', fontSize: '1.2rem', color: 'var(--text-on-dark, #E2E8F0)' }}>
             AI Health <span style={{ color: 'var(--brand-orange)' }}>Diagnostics</span>
           </h2>
-          <p className="m-0 mt-2" style={{ fontSize: '0.84rem', lineHeight: '1.4', color: 'rgba(255, 255, 255, 0.88)' }}>
+          <p className="m-0 mt-2" style={{ fontSize: '0.84rem', lineHeight: '1.4', color: 'rgba(255, 255, 255, 0.72)' }}>
             Enter your medical numbers and symptoms to check your health risks instantly.
           </p>
         </div>
 
         {/* Screening Profile selector */}
         <div className="mt-1">
-          <h4 className="fw-bold mb-3" style={{ fontSize: '1rem', letterSpacing: '0.05em', color: '#FFFFFF' }}>
-            <span className="font-monospace text-uppercase" style={{ letterSpacing: '0.06em', color: '#FFFFFF' }}>Screening Profile</span>
+          <h4 className="fw-bold mb-3" style={{ fontSize: '0.92rem', letterSpacing: '0.05em', color: 'var(--text-on-dark, #E2E8F0)' }}>
+            <span className="font-monospace text-uppercase" style={{ letterSpacing: '0.06em', color: 'var(--text-on-dark, #E2E8F0)' }}>Screening Profile</span>
           </h4>
-          <div className="d-flex flex-column gap-2.5 mt-2">
+          <div className="d-flex flex-column gap-2 mt-2">
             {displayedPredictors.map((disease) => {
               const diseaseClass = disease.id === 'heart_attack' ? 'heart' : disease.id === 'diabetes' ? 'diabetes' : 'cancer';
               const isSelected = selectedDisease === disease.id;
@@ -512,9 +512,9 @@ function PatientDashboard({ user }) {
                   key={disease.id}
                   onClick={() => handleDiseaseSelect(disease.id)}
                   className={`disease-select-tile cursor-pointer ${diseaseClass} ${isSelected ? 'active' : 'inactive'} ${isAnalyzing ? 'opacity-50 cursor-not-allowed' : ''}`}
-                  style={{ padding: '14px 18px' }}
+                  style={{ padding: '10px 14px' }}
                 >
-                  <div className="d-flex align-items-center justify-content-start gap-3 font-monospace fw-bold text-uppercase" style={{ fontSize: '0.86rem' }}>
+                  <div className="d-flex align-items-center justify-content-start gap-2.5 font-monospace fw-bold text-uppercase" style={{ fontSize: '0.80rem' }}>
                     <div className="disease-icon-box">
                       {disease.icon}
                     </div>

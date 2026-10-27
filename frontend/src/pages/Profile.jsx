@@ -231,25 +231,25 @@ function Profile({ user, onUserUpdate }) {
                 Practitioner Vault
               </span>
             </div>
-            <h2 className="fw-bolder fs-6 m-0" style={{ letterSpacing: '-0.02em', fontSize: '1.2rem', color: '#FFFFFF' }}>
+            <h2 className="fw-bolder fs-6 m-0" style={{ letterSpacing: '-0.02em', fontSize: '1.2rem', color: 'var(--text-on-dark, #E2E8F0)' }}>
               Doctor <span style={{ color: '#38BDF8' }}>Credentials</span>
             </h2>
-            <p className="m-0 mt-2" style={{ fontSize: '0.84rem', lineHeight: '1.4', color: 'rgba(255, 255, 255, 0.88)' }}>
+            <p className="m-0 mt-2" style={{ fontSize: '0.84rem', lineHeight: '1.4', color: 'rgba(255, 255, 255, 0.72)' }}>
               Verify credential profiles and clinical practicing registry statistics.
             </p>
           </div>
           <div className="mt-1">
-            <h4 className="fw-bold mb-3" style={{ fontSize: '1rem', letterSpacing: '0.05em', color: '#FFFFFF' }}>
-              <span className="font-monospace text-uppercase" style={{ letterSpacing: '0.06em', color: '#FFFFFF' }}>Vault Sections</span>
+            <h4 className="fw-bold mb-3" style={{ fontSize: '0.92rem', letterSpacing: '0.05em', color: 'var(--text-on-dark, #E2E8F0)' }}>
+              <span className="font-monospace text-uppercase" style={{ letterSpacing: '0.06em', color: 'var(--text-on-dark, #E2E8F0)' }}>Vault Sections</span>
             </h4>
-            <div className="d-flex flex-column gap-2.5 mt-2">
+            <div className="d-flex flex-column gap-2 mt-2">
               <div
                 className="disease-select-tile active diabetes"
-                style={{ padding: '14px 18px' }}
+                style={{ padding: '10px 14px' }}
               >
-                <div className="d-flex align-items-center justify-content-start gap-3 font-monospace fw-bold text-uppercase" style={{ fontSize: '0.86rem' }}>
+                <div className="d-flex align-items-center justify-content-start gap-2.5 font-monospace fw-bold text-uppercase" style={{ fontSize: '0.80rem' }}>
                   <div className="disease-icon-box">
-                    <User size={18} />
+                    <User size={16} />
                   </div>
                   <span>Clinical Profile</span>
                 </div>
@@ -271,22 +271,22 @@ function Profile({ user, onUserUpdate }) {
                 Patient Vault
               </span>
             </div>
-            <h2 className="fw-bolder fs-6 m-0" style={{ letterSpacing: '-0.02em', fontSize: '1.2rem', color: '#FFFFFF' }}>
+            <h2 className="fw-bolder fs-6 m-0" style={{ letterSpacing: '-0.02em', fontSize: '1.2rem', color: 'var(--text-on-dark, #E2E8F0)' }}>
               Health <span style={{ color: '#818CF8' }}>Vault Console</span>
             </h2>
-            <p className="m-0 mt-2" style={{ fontSize: '0.84rem', lineHeight: '1.4', color: 'rgba(255, 255, 255, 0.88)' }}>
+            <p className="m-0 mt-2" style={{ fontSize: '0.84rem', lineHeight: '1.4', color: 'rgba(255, 255, 255, 0.72)' }}>
               Manage clinical profiles, review biomarker history, and manage medical records.
             </p>
           </div>
 
           <div className="mt-1">
-            <h4 className="fw-bold mb-3" style={{ fontSize: '1rem', letterSpacing: '0.05em', color: '#FFFFFF' }}>
-              <span className="font-monospace text-uppercase" style={{ letterSpacing: '0.06em', color: '#FFFFFF' }}>Portal Sections</span>
+            <h4 className="fw-bold mb-3" style={{ fontSize: '0.92rem', letterSpacing: '0.05em', color: 'var(--text-on-dark, #E2E8F0)' }}>
+              <span className="font-monospace text-uppercase" style={{ letterSpacing: '0.06em', color: 'var(--text-on-dark, #E2E8F0)' }}>Portal Sections</span>
             </h4>
-            <div className="d-flex flex-column gap-2.5 mt-2">
+            <div className="d-flex flex-column gap-2 mt-2">
               {[
-                { id: 'identity', label: 'Profile & Vitals', icon: <User size={18} />, theme: 'identity' },
-                { id: 'vault', label: 'Medical Vault & History', icon: <FileUp size={18} />, theme: 'cancer' },
+                { id: 'identity', label: 'Profile & Vitals', icon: <User size={16} />, theme: 'identity' },
+                { id: 'vault', label: 'Medical Vault & History', icon: <FileUp size={16} />, theme: 'cancer' },
               ].map((tab) => {
                 const isSelected = activeTab === tab.id;
                 return (
@@ -294,9 +294,9 @@ function Profile({ user, onUserUpdate }) {
                     key={tab.id}
                     onClick={() => setActiveTab(tab.id)}
                     className={`disease-select-tile cursor-pointer ${tab.theme} ${isSelected ? 'active' : 'inactive'}`}
-                    style={{ padding: '14px 18px' }}
+                    style={{ padding: '10px 14px' }}
                   >
-                    <div className="d-flex align-items-center justify-content-start gap-3 font-monospace fw-bold text-uppercase" style={{ fontSize: '0.86rem' }}>
+                    <div className="d-flex align-items-center justify-content-start gap-2.5 font-monospace fw-bold text-uppercase" style={{ fontSize: '0.80rem' }}>
                       <div className="disease-icon-box">
                         {tab.icon}
                       </div>

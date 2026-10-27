@@ -4,7 +4,7 @@ import {
   Sprout, Leaf, TreeDeciduous, Flower2, ShieldCheck, Footprints,
   Flame, Pill, UtensilsCrossed, Activity, HeartPulse, Stethoscope,
   Trophy, Award, Sparkles, Clock, CheckCircle2, Plus, RefreshCw,
-  Info, AlertCircle, ChevronRight, Check
+  Info, AlertCircle, ChevronRight, Check, X
 } from 'lucide-react';
 import { api } from '../../services/api';
 
@@ -435,32 +435,32 @@ export default function IntegratedGardenSection({
 
                   <div className="mt-2">
                     {isNoteActive ? (
-                      <div>
+                      <div className="d-flex flex-column gap-1">
                         <input
                           type="text"
-                          placeholder="Optional note"
+                          placeholder="Optional note..."
                           value={activeNote}
                           onChange={e => setActiveNote(e.target.value)}
                           onKeyDown={e => e.key === 'Enter' && handleLogActivity(action.type, action.points, activeNote)}
-                          className="w-100 bg-transparent border rounded px-2 py-1 font-monospace mb-1.5"
-                          style={{ fontSize: '0.72rem', color: 'var(--text-primary)', borderColor: 'var(--border)' }}
+                          className="w-100 bg-transparent border rounded-2 px-2 py-1 font-monospace"
+                          style={{ fontSize: '0.7rem', color: 'var(--text-primary)', borderColor: action.color, outline: 'none' }}
                           autoFocus
                         />
-                        <div className="d-flex gap-1">
+                        <div className="d-flex gap-1.5">
                           <button
                             onClick={() => handleLogActivity(action.type, action.points, activeNote)}
                             disabled={isLoading}
-                            className="btn-clinical primary flex-grow-1 py-1 font-monospace text-uppercase"
-                            style={{ fontSize: '0.66rem', borderRadius: '6px' }}
+                            className="btn-clinical primary d-flex align-items-center justify-content-center gap-1 font-monospace text-uppercase flex-grow-1"
+                            style={{ fontSize: '0.64rem', borderRadius: '5px', padding: '5px 8px' }}
                           >
                             {isLoading ? 'Saving...' : 'Confirm'}
                           </button>
                           <button
                             onClick={() => { setSelectedActivityForNote(null); setActiveNote(''); }}
-                            className="btn-clinical secondary py-1 px-2 font-monospace"
-                            style={{ fontSize: '0.66rem', borderRadius: '6px' }}
+                            className="btn-clinical secondary d-flex align-items-center justify-content-center"
+                            style={{ fontSize: '0.64rem', borderRadius: '5px', padding: '5px 7px', flexShrink: 0 }}
                           >
-                            ✕
+                            <X size={11} />
                           </button>
                         </div>
                       </div>

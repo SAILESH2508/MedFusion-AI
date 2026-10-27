@@ -177,7 +177,7 @@ export default function DigitalTwin({ user, openAuth }) {
   /* ─── Sidebar Console Builder (Profile Page Process Pattern) ─── */
   useEffect(() => {
     setSidebarContent(
-      <div className="d-flex flex-column gap-4 pt-2">
+      <div className="d-flex flex-column gap-3 pt-1">
         {/* Console Header Card */}
         <div className="glass-card p-3.5 mb-1 reveal" style={{ borderRadius: '12px', border: '1px solid rgba(14, 165, 233, 0.4)', background: 'rgba(14, 165, 233, 0.08)' }}>
           <div className="d-flex align-items-center gap-2 mb-2">
@@ -188,18 +188,18 @@ export default function DigitalTwin({ user, openAuth }) {
               Physiological Engine
             </span>
           </div>
-          <h2 className="fw-bolder fs-6 m-0" style={{ letterSpacing: '-0.02em', fontSize: '1.2rem', color: '#FFFFFF' }}>
+          <h2 className="fw-bolder fs-6 m-0" style={{ letterSpacing: '-0.02em', fontSize: '1.2rem', color: 'rgba(255,255,255,0.92)' }}>
             Digital Twin <span style={{ color: '#38BDF8' }}>Console</span>
           </h2>
-          <p className="m-0 mt-2" style={{ fontSize: '0.84rem', lineHeight: '1.4', color: 'rgba(255, 255, 255, 0.88)' }}>
+          <p className="m-0 mt-2" style={{ fontSize: '0.84rem', lineHeight: '1.4', color: 'rgba(255,255,255,0.72)' }}>
             Unified clinical anatomical systems, metabolic nutrition, and wellness habit engine.
           </p>
         </div>
 
         {/* Primary Twin Sections (Clickable Navigation) */}
         <div className="mt-1">
-          <h4 className="fw-bold mb-3" style={{ fontSize: '1rem', letterSpacing: '0.05em', color: '#FFFFFF' }}>
-            <span className="font-monospace text-uppercase" style={{ letterSpacing: '0.06em', color: '#FFFFFF' }}>Twin Sections</span>
+          <h4 className="fw-bold mb-3" style={{ fontSize: '0.88rem', letterSpacing: '0.05em', color: 'rgba(255,255,255,0.75)' }}>
+            <span className="font-monospace text-uppercase" style={{ letterSpacing: '0.06em', color: 'rgba(255,255,255,0.75)' }}>Twin Sections</span>
           </h4>
           <div className="d-flex flex-column gap-2.5 mt-2">
             {TWIN_TABS.map((tab) => {
@@ -209,9 +209,9 @@ export default function DigitalTwin({ user, openAuth }) {
                   key={tab.id}
                   onClick={() => handleTabChange(tab.id)}
                   className={`disease-select-tile cursor-pointer ${tab.theme} ${isSelected ? 'active' : 'inactive'}`}
-                  style={{ padding: '14px 18px' }}
+                  style={{ padding: '9px 12px' }}
                 >
-                  <div className="d-flex align-items-center justify-content-start gap-3 font-monospace fw-bold text-uppercase" style={{ fontSize: '0.86rem' }}>
+                  <div className="d-flex align-items-center justify-content-start gap-2 font-monospace fw-bold text-uppercase" style={{ fontSize: '0.78rem', letterSpacing: '0.04em', whiteSpace: 'nowrap' }}>
                     <div className="disease-icon-box">
                       {tab.icon}
                     </div>
@@ -237,18 +237,18 @@ export default function DigitalTwin({ user, openAuth }) {
               </div>
               <div className="p-2.5 rounded font-monospace" style={{ background: 'rgba(255, 255, 255, 0.04)', border: '1px solid rgba(255, 255, 255, 0.12)', fontSize: '0.74rem' }}>
                 <div className="d-flex justify-content-between mb-1.5">
-                  <span style={{ color: 'rgba(255, 255, 255, 0.82)' }}>Optimal Systems:</span>
+                  <span style={{ color: 'rgba(255,255,255,0.68)' }}>Optimal Systems:</span>
                   <strong style={{ color: '#34d399' }}>{patientData.system_metrics?.optimal_count ?? 8}/8</strong>
                 </div>
                 <div className="d-flex justify-content-between">
-                  <span style={{ color: 'rgba(255, 255, 255, 0.82)' }}>Active Selection:</span>
+                  <span style={{ color: 'rgba(255,255,255,0.68)' }}>Active Selection:</span>
                   <strong style={{ color: '#38BDF8', textTransform: 'capitalize' }}>{selectedOrgan}</strong>
                 </div>
               </div>
             </div>
 
             <div className="p-3 text-center rounded" style={{ border: '1px solid rgba(255, 255, 255, 0.14)', background: 'rgba(255, 255, 255, 0.05)' }}>
-              <span className="font-monospace d-block mb-2" style={{ fontSize: '0.74rem', color: 'rgba(255, 255, 255, 0.85)' }}>
+              <span className="font-monospace d-block mb-2" style={{ fontSize: '0.74rem', color: 'rgba(255,255,255,0.72)' }}>
                 Advanced Diagnostics
               </span>
               <button
@@ -274,7 +274,7 @@ export default function DigitalTwin({ user, openAuth }) {
                   7-Day Engine
                 </span>
               </div>
-              <p className="font-monospace mb-2" style={{ fontSize: '0.74rem', lineHeight: '1.4', color: 'rgba(255, 255, 255, 0.85)' }}>
+              <p className="font-monospace mb-2" style={{ fontSize: '0.74rem', lineHeight: '1.4', color: 'rgba(255,255,255,0.72)' }}>
                 Personalized meals aligned with verified patient EHR vitals, lab reports, and medication regimens.
               </p>
               <div className="p-2.5 rounded font-monospace" style={{ background: 'rgba(255, 255, 255, 0.04)', border: '1px solid rgba(255, 255, 255, 0.12)', fontSize: '0.74rem' }}>
@@ -282,7 +282,7 @@ export default function DigitalTwin({ user, openAuth }) {
                   <span style={{ color: 'rgba(255, 255, 255, 0.82)' }}>Cross-Module Synergy:</span>
                   <strong style={{ color: '#34d399' }}>+5 pts/meal</strong>
                 </div>
-                <div style={{ fontSize: '0.68rem', color: 'rgba(255, 255, 255, 0.72)' }}>
+                <div style={{ fontSize: '0.68rem', color: 'rgba(255,255,255,0.62)' }}>
                   Completed meals automatically grow your wellness habit streak.
                 </div>
               </div>
@@ -310,15 +310,15 @@ export default function DigitalTwin({ user, openAuth }) {
                     <StageIcon size={18} />
                   </div>
                   <div>
-                    <div className="fw-bold" style={{ fontSize: '0.85rem', color: '#FFFFFF' }}>
+                    <div className="fw-bold" style={{ fontSize: '0.85rem', color: 'rgba(255,255,255,0.90)' }}>
                       {stageMeta.name}
                     </div>
-                    <div className="font-monospace" style={{ fontSize: '0.72rem', color: 'rgba(255, 255, 255, 0.8)' }}>
+                    <div className="font-monospace" style={{ fontSize: '0.72rem', color: 'rgba(255,255,255,0.62)' }}>
                       {gardenData.total_points} total points
                     </div>
                   </div>
                 </div>
-                <div className="d-flex justify-content-between font-monospace" style={{ fontSize: '0.72rem', color: 'rgba(255, 255, 255, 0.85)' }}>
+                <div className="d-flex justify-content-between font-monospace" style={{ fontSize: '0.72rem', color: 'rgba(255,255,255,0.68)' }}>
                   <span>Streak: <strong style={{ color: '#FBBF24' }}>{gardenData.current_streak} days</strong></span>
                   <span>Best: {gardenData.best_streak} days</span>
                 </div>
@@ -334,16 +334,16 @@ export default function DigitalTwin({ user, openAuth }) {
                 Digital Twin Pillars
               </span>
               <div className="d-flex flex-column gap-1.5 font-monospace" style={{ fontSize: '0.76rem' }}>
-                <div className="p-2.5 rounded d-flex align-items-center justify-content-between" style={{ background: 'rgba(14, 165, 233, 0.08)', border: '1px solid rgba(14, 165, 233, 0.28)', borderLeft: '3px solid #0EA5E9', color: '#FFFFFF' }}>
-                  <span style={{ color: '#FFFFFF', fontWeight: 600 }}>1. Clinical Organs</span>
+                <div className="p-2.5 rounded d-flex align-items-center justify-content-between" style={{ background: 'rgba(14, 165, 233, 0.08)', border: '1px solid rgba(14, 165, 233, 0.28)', borderLeft: '3px solid #0EA5E9', color: 'rgba(255,255,255,0.88)' }}>
+                  <span style={{ color: 'rgba(255,255,255,0.88)', fontWeight: 600 }}>1. Clinical Organs</span>
                   <strong style={{ color: '#38BDF8' }}>8 Systems</strong>
                 </div>
-                <div className="p-2.5 rounded d-flex align-items-center justify-content-between" style={{ background: 'rgba(16, 185, 129, 0.08)', border: '1px solid rgba(16, 185, 129, 0.28)', borderLeft: '3px solid #10B981', color: '#FFFFFF' }}>
-                  <span style={{ color: '#FFFFFF', fontWeight: 600 }}>2. Nutrition Regimen</span>
+                <div className="p-2.5 rounded d-flex align-items-center justify-content-between" style={{ background: 'rgba(16, 185, 129, 0.08)', border: '1px solid rgba(16, 185, 129, 0.28)', borderLeft: '3px solid #10B981', color: 'rgba(255,255,255,0.88)' }}>
+                  <span style={{ color: 'rgba(255,255,255,0.88)', fontWeight: 600 }}>2. Nutrition Regimen</span>
                   <strong style={{ color: '#34d399' }}>7-Day Plan</strong>
                 </div>
-                <div className="p-2.5 rounded d-flex align-items-center justify-content-between" style={{ background: 'rgba(245, 158, 11, 0.08)', border: '1px solid rgba(245, 158, 11, 0.28)', borderLeft: '3px solid #F59E0B', color: '#FFFFFF' }}>
-                  <span style={{ color: '#FFFFFF', fontWeight: 600 }}>3. Wellness Habits</span>
+                <div className="p-2.5 rounded d-flex align-items-center justify-content-between" style={{ background: 'rgba(245, 158, 11, 0.08)', border: '1px solid rgba(245, 158, 11, 0.28)', borderLeft: '3px solid #F59E0B', color: 'rgba(255,255,255,0.88)' }}>
+                  <span style={{ color: 'rgba(255,255,255,0.88)', fontWeight: 600 }}>3. Wellness Habits</span>
                   <strong style={{ color: '#fbbf24' }}>{gardenData.current_streak}d Streak</strong>
                 </div>
               </div>

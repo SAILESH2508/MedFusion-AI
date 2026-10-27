@@ -304,10 +304,10 @@ function Upload({ user }) {
               AI Ingestion Scanner
             </span>
           </div>
-          <h2 className="fw-bolder fs-6 m-0" style={{ letterSpacing: '-0.02em', fontSize: '1.2rem', color: '#FFFFFF' }}>
+          <h2 className="fw-bolder fs-6 m-0" style={{ letterSpacing: '-0.02em', fontSize: '1.2rem', color: 'var(--text-on-dark, #E2E8F0)' }}>
             AI Medical <span style={{ color: 'var(--brand-orange)' }}>Scanner</span>
           </h2>
-          <p className="m-0 mt-2" style={{ fontSize: '0.84rem', lineHeight: '1.4', color: 'rgba(255, 255, 255, 0.88)' }}>
+          <p className="m-0 mt-2" style={{ fontSize: '0.84rem', lineHeight: '1.4', color: 'rgba(255, 255, 255, 0.72)' }}>
             {docType.includes('Rx')
               ? 'Upload a prescription photo to extract drug names, dosages and schedules instantly.'
               : 'Upload a lab report to extract biomarker values and get a clinical interpretation.'}
@@ -316,10 +316,10 @@ function Upload({ user }) {
 
         {/* Scan type selector — disease-select-tile style */}
         <div className="mt-1">
-          <h4 className="fw-bold mb-3" style={{ fontSize: '1rem', color: '#FFFFFF' }}>
-            <span className="font-monospace text-uppercase" style={{ letterSpacing: '0.06em', color: '#FFFFFF' }}>Scan Type</span>
+          <h4 className="fw-bold mb-3" style={{ fontSize: '0.92rem', color: 'var(--text-on-dark, #E2E8F0)' }}>
+            <span className="font-monospace text-uppercase" style={{ letterSpacing: '0.06em', color: 'var(--text-on-dark, #E2E8F0)' }}>Scan Type</span>
           </h4>
-          <div className="d-flex flex-column gap-2.5 mt-2">
+          <div className="d-flex flex-column gap-2 mt-2">
             {[
               { id: 'Rx',        label: 'Prescription (Rx)',      icon: <Pill size={16} />,     theme: 'prescription' },
               { id: 'Pathology', label: 'Lab Report (Pathology)', icon: <Database size={16} />, theme: 'lab' },
@@ -330,9 +330,9 @@ function Upload({ user }) {
                   key={id}
                   onClick={() => { if (!loading) { setDocType(id === 'Rx' ? 'Prescription (Rx)' : 'Lab Report (Pathology)'); setResult(null); } }}
                   className={`disease-select-tile cursor-pointer ${theme} ${isSelected ? 'active' : 'inactive'} ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
-                  style={{ padding: '14px 18px' }}
+                  style={{ padding: '10px 14px' }}
                 >
-                  <div className="d-flex align-items-center justify-content-start gap-3 font-monospace fw-bold text-uppercase" style={{ fontSize: '0.86rem' }}>
+                  <div className="d-flex align-items-center justify-content-start gap-2.5 font-monospace fw-bold text-uppercase" style={{ fontSize: '0.80rem' }}>
                     <div className="disease-icon-box">
                       {icon}
                     </div>
@@ -347,8 +347,8 @@ function Upload({ user }) {
         {/* Doctor patient selector */}
         {user && user.role === 'Doctor' && (
           <div>
-            <h4 className="fw-bold mb-2" style={{ fontSize: '1.05rem', color: '#FFFFFF' }}>
-              <span className="font-monospace text-uppercase" style={{ letterSpacing: '0.06em', color: '#FFFFFF' }}>Target Patient</span>
+            <h4 className="fw-bold mb-2" style={{ fontSize: '0.92rem', color: 'var(--text-on-dark, #E2E8F0)' }}>
+              <span className="font-monospace text-uppercase" style={{ letterSpacing: '0.06em', color: 'var(--text-on-dark, #E2E8F0)' }}>Target Patient</span>
             </h4>
             <select value={selectedPatientId} onChange={(e) => setSelectedPatientId(e.target.value)} className="w-100" style={{ fontSize: '0.82rem' }}>
               <option value="" disabled>-- Select Registered Patient --</option>

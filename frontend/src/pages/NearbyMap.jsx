@@ -638,9 +638,9 @@ export default function NearbyMap({
   // Sidebar injection
   useEffect(() => {
     setSidebarContent(
-      <div className="d-flex flex-column gap-2.5 pt-1">
+      <div className="d-flex flex-column gap-2 pt-1-1">
         {/* Sleek Medical Header Console inside Sidebar — unified across MedFusion AI */}
-        <div className="glass-card p-3 reveal" style={{ borderRadius: '12px', border: '1px solid rgba(244, 149, 74, 0.4)', background: 'rgba(244, 149, 74, 0.08)' }}>
+        <div className="glass-card p-2.5 reveal" style={{ borderRadius: '12px', border: '1px solid rgba(244, 149, 74, 0.4)', background: 'rgba(244, 149, 74, 0.08)' }}>
           <div className="d-flex align-items-center gap-2 mb-1.5">
             <div style={{
               width: '26px',
@@ -658,7 +658,7 @@ export default function NearbyMap({
               Live GPS Radar
             </span>
           </div>
-          <h2 className="fw-bolder fs-6 m-0" style={{ letterSpacing: '-0.02em', fontSize: '1.1rem', color: '#FFFFFF' }}>
+          <h2 className="fw-bolder fs-6 m-0" style={{ letterSpacing: '-0.02em', fontSize: '1.1rem', color: 'var(--text-on-dark, #E2E8F0)' }}>
             Facility <span style={{ color: 'var(--brand-orange)' }}>Radar</span>
           </h2>
           <p className="m-0 mt-1.5" style={{ fontSize: '0.78rem', lineHeight: '1.35', color: 'rgba(255, 255, 255, 0.85)' }}>
@@ -676,14 +676,14 @@ export default function NearbyMap({
             Active Search Zone
           </span>
           <div className="d-flex align-items-center justify-content-between">
-            <span className="fw-bold d-block" style={{ fontSize: '0.88rem', color: '#FFFFFF' }}>
+            <span className="fw-bold d-block" style={{ fontSize: '0.88rem', color: 'var(--text-on-dark, #E2E8F0)' }}>
               {location ? 'GPS Locked' : 'Locating…'}
             </span>
-            <span style={{ background: 'rgba(56, 189, 248, 0.22)', border: '1px solid #38BDF8', color: '#FFFFFF', padding: '1px 7px', borderRadius: '16px', fontSize: '0.64rem', fontFamily: 'var(--font-mono)', fontWeight: 700 }}>
+            <span style={{ background: 'rgba(56, 189, 248, 0.22)', border: '1px solid #38BDF8', color: 'var(--text-on-dark, #E2E8F0)', padding: '1px 7px', borderRadius: '16px', fontSize: '0.64rem', fontFamily: 'var(--font-mono)', fontWeight: 700 }}>
               {(radius / 1000).toFixed(0)} KM RADIUS
             </span>
           </div>
-          <div className="d-flex gap-2.5 mt-1.5 pt-1.5 border-top border-white-5" style={{ fontSize: '0.68rem', color: 'rgba(255, 255, 255, 0.75)' }}>
+          <div className="d-flex gap-2.5 mt-1.5 pt-1.5 border-top border-white-5" style={{ fontSize: '0.68rem', color: 'rgba(255,255,255,0.65)' }}>
             <span>{places.length} Total Found</span>
             <span>•</span>
             <span>{activeTypes.length} Active Types</span>
@@ -692,8 +692,8 @@ export default function NearbyMap({
 
         {/* Live Facilities Selector using standard disease-select-tile pattern */}
         <div className="mt-1">
-          <h4 className="fw-bold mb-2" style={{ fontSize: '0.92rem', letterSpacing: '0.05em', color: '#FFFFFF' }}>
-            <span className="font-monospace text-uppercase" style={{ letterSpacing: '0.06em', color: '#FFFFFF' }}>Live Facilities</span>
+          <h4 className="fw-bold mb-2" style={{ fontSize: '0.92rem', letterSpacing: '0.05em', color: 'var(--text-on-dark, #E2E8F0)' }}>
+            <span className="font-monospace text-uppercase" style={{ letterSpacing: '0.06em', color: 'var(--text-on-dark, #E2E8F0)' }}>Live Facilities</span>
           </h4>
           <div className="d-flex flex-column gap-1.5">
             {Object.entries(TYPE_CONFIG).map(([key, cfg]) => {
@@ -735,7 +735,7 @@ export default function NearbyMap({
                         <IconComponent size={15} />
                       </div>
                       <span style={{
-                        color: isFilterActive ? '#FFFFFF' : 'rgba(255, 255, 255, 0.88)',
+                        color: isFilterActive ? 'rgba(255,255,255,0.95)' : 'rgba(255,255,255,0.72)',
                         letterSpacing: '0.04em',
                         transition: 'color 0.18s ease',
                       }}>
@@ -772,19 +772,19 @@ export default function NearbyMap({
         {/* Nearest Hospital quick route — available for logged-in doctors & patients */}
         {isLoggedIn && places.filter((p) => p.type === 'hospital').length > 0 && (
           <div className="d-flex flex-column gap-2 mt-1">
-            <h4 className="fw-bold mb-1" style={{ fontSize: '0.85rem', letterSpacing: '0.05em', color: '#FFFFFF' }}>
+            <h4 className="fw-bold mb-1" style={{ fontSize: '0.85rem', letterSpacing: '0.05em', color: 'var(--text-on-dark, #E2E8F0)' }}>
               <span className="font-monospace text-uppercase" style={{ letterSpacing: '0.06em', color: '#F87171' }}>Nearest Emergency</span>
             </h4>
             {places.filter((p) => p.type === 'hospital').slice(0, 1).map((p) => (
               <div key={p.id} className="p-3 rounded-3" style={{ background: 'rgba(220, 38, 38, 0.18)', border: '1px solid rgba(220, 38, 38, 0.45)' }}>
-                <p className="fw-bold m-0" style={{ fontSize: '0.88rem', color: '#FFFFFF' }}>{p.name}</p>
-                <p className="m-0 mt-1" style={{ fontSize: '0.74rem', color: 'rgba(255, 255, 255, 0.85)' }}>
+                <p className="fw-bold m-0" style={{ fontSize: '0.88rem', color: 'var(--text-on-dark, #E2E8F0)' }}>{p.name}</p>
+                <p className="m-0 mt-1" style={{ fontSize: '0.74rem', color: 'rgba(255,255,255,0.72)' }}>
                   {p.distance < 1 ? `${Math.round(p.distance * 1000)}m` : `${p.distance.toFixed(1)}km`} away
                 </p>
                 <div className="d-flex gap-2 mt-2.5">
                   <a href={`https://www.google.com/maps/dir/?api=1&destination=${p.lat},${p.lon}`} target="_blank" rel="noopener noreferrer"
                     className="flex-grow-1 d-flex align-items-center justify-content-center gap-1.5 text-center py-1.5 rounded font-monospace text-uppercase text-decoration-none"
-                    style={{ fontSize: '0.72rem', background: 'rgba(220, 38, 38, 0.35)', border: '1px solid var(--accent-red)', color: '#FFFFFF', fontWeight: 700 }}>
+                    style={{ fontSize: '0.72rem', background: 'rgba(220, 38, 38, 0.35)', border: '1px solid var(--accent-red)', color: 'var(--text-on-dark, #E2E8F0)', fontWeight: 700 }}>
                     <Navigation size={12} /> Directions
                   </a>
                   {p.phone && (

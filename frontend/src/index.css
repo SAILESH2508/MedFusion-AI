@@ -347,26 +347,20 @@ nav.bg-glass .emergency-qr-panel a,
 .app-sidebar h4,
 .app-sidebar h5,
 .app-sidebar h6 {
-  color: #FFFFFF !important;
+  color: rgba(255, 255, 255, 0.92) !important;
 }
-
 .app-sidebar .text-secondary {
-  color: rgba(255, 255, 255, 0.90) !important;
+  color: rgba(255, 255, 255, 0.62) !important;
 }
-
 .app-sidebar .text-muted {
-  color: rgba(255, 255, 255, 0.85) !important;
+  color: rgba(255, 255, 255, 0.48) !important;
 }
-
 .app-sidebar .text-white {
-  color: #FFFFFF !important;
+  color: rgba(255, 255, 255, 0.92) !important;
 }
-
 .app-sidebar p {
-  color: rgba(255, 255, 255, 0.90);
-}
-
-.app-sidebar .glass-card {
+  color: rgba(255, 255, 255, 0.68);
+}.app-sidebar .glass-card {
   background: rgba(255, 255, 255, 0.08) !important;
   border-color: rgba(255, 255, 255, 0.16) !important;
   color: #FFFFFF !important;
@@ -1216,11 +1210,39 @@ button.btn-icon:hover {
   filter: none !important;
 }
 
-.app-sidebar .disease-select-tile {
+/* Sidebar Tiles Default Reset: Strictly NO stark white background and NO black text */
+.app-sidebar .disease-select-tile,
+.app-sidebar .facility-select-tile {
   box-shadow: none !important;
+  text-shadow: none !important;
+  filter: none !important;
   transition: all 0.18s cubic-bezier(0.4, 0, 0.2, 1) !important;
   border-radius: 9px !important;
+  background: rgba(255, 255, 255, 0.05) !important;
+  border: 1px solid rgba(255, 255, 255, 0.14) !important;
+  border-left: 3.5px solid rgba(255, 255, 255, 0.4) !important;
+  color: rgba(255, 255, 255, 0.92) !important;
 }
+
+.app-sidebar .disease-select-tile *,
+.app-sidebar .facility-select-tile * {
+  color: rgba(255, 255, 255, 0.92) !important;
+}
+
+.app-sidebar .disease-select-tile.inactive,
+.app-sidebar .facility-select-tile.inactive {
+  background: rgba(255, 255, 255, 0.04) !important;
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+  border-left: 3.5px solid rgba(255, 255, 255, 0.35) !important;
+  color: rgba(255, 255, 255, 0.82) !important;
+  opacity: 1 !important;
+}
+
+.app-sidebar .disease-select-tile.inactive *,
+.app-sidebar .facility-select-tile.inactive * {
+  color: rgba(255, 255, 255, 0.82) !important;
+}
+
 
 /* Icon box inside sidebar tiles */
 .app-sidebar .disease-icon-box {
@@ -1723,14 +1745,14 @@ button.btn-icon:hover {
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(26, 40, 64, 0.70) !important;
-  backdrop-filter: none !important;
-  -webkit-backdrop-filter: none !important;
+  background: rgba(26, 40, 64, 0.72) !important;
+  backdrop-filter: blur(4px) !important;
+  -webkit-backdrop-filter: blur(4px) !important;
   z-index: 2000;
   display: flex;
   justify-content: center;
-  align-items: flex-start;
-  padding: 40px 16px;
+  align-items: center;
+  padding: 24px 16px;
   overflow-y: auto;
 }
 
