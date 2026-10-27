@@ -39,6 +39,26 @@ function GuestUpload({ openAuth }) {
   const [error, setError] = useState('');
   const [isDragging, setIsDragging] = useState(false);
 
+  // Guest Identification Info State (synced with localStorage & GuestDashboard)
+  const [guestName, setGuestName] = useState(() => {
+    try { return localStorage.getItem('medfusion_guest_name') || ''; } catch { return ''; }
+  });
+  const [guestEmail, setGuestEmail] = useState(() => {
+    try { return localStorage.getItem('medfusion_guest_email') || ''; } catch { return ''; }
+  });
+
+  const handleGuestNameChange = (e) => {
+    const val = e.target.value;
+    setGuestName(val);
+    try { localStorage.setItem('medfusion_guest_name', val); } catch (err) {}
+  };
+
+  const handleGuestEmailChange = (e) => {
+    const val = e.target.value;
+    setGuestEmail(val);
+    try { localStorage.setItem('medfusion_guest_email', val); } catch (err) {}
+  };
+
   // Generate and cleanup object URLs for image previews
   useEffect(() => {
     if (!file) {
@@ -125,6 +145,12 @@ function GuestUpload({ openAuth }) {
     try {
       const formData = new FormData();
       formData.append('file', file);
+      if (guestEmail && guestEmail.trim()) {
+        formData.append('guest_email', guestEmail.trim());
+      }
+      if (guestName && guestName.trim()) {
+        formData.append('guest_name', guestName.trim());
+      }
       
       const endpoint = docType.includes('Rx') ? '/prescriptions/upload/' : '/pathology/analyze/';
       const res = await api.post(endpoint, formData, {
@@ -369,6 +395,68 @@ function GuestUpload({ openAuth }) {
                     <X size={16} />
                   </button>
                 )}
+              </div>
+
+              {/* Guest Identification Info Card — matches Guest Predict Portal */}
+              <div className="p-3.5 mb-4 rounded-3" style={{ background: 'var(--bg-card-tinted)', border: '1px solid rgba(244, 149, 74, 0.35)', borderLeft: '4px solid var(--brand-orange)' }}>
+                <div className="d-flex align-items-center justify-content-between mb-2">
+                  <h4 className="fw-bold m-0 d-flex align-items-center gap-2" style={{ fontSize: '0.96rem', color: '#FFFFFF' }}>
+                    <User size={17} style={{ color: 'var(--brand-orange)' }} />
+                    <span style={{ color: 'var(--brand-orange)' }}>Guest Identification Info</span>
+                  </h4>
+                  <span className="badge font-monospace" style={{ background: 'rgba(244, 149, 74, 0.18)', color: '#FFFFFF', border: '1px solid rgba(244, 149, 74, 0.4)', fontSize: '0.66rem', boxShadow: 'none' }}>
+                    Guest Mode
+                  </span>
+                </div>
+                <p className="text-secondary font-monospace mb-3" style={{ fontSize: '0.82rem', lineHeight: '1.4' }}>
+                  Guest Portal: Enter your name and email to save your extracted prescription or pathology report in the database.
+                </p>
+                <div className="row g-3">
+                  <div className="col-12 col-md-6">
+                    <div className="p-2.5 rounded-2" style={{ background: 'var(--bg-surface)', border: '1px solid var(--border)' }}>
+                      <label className="small text-secondary fw-semibold mb-1.5 font-monospace d-block" style={{ fontSize: '0.74rem' }}>Full Name</label>
+                      <input 
+                        type="text" 
+                        placeholder="e.g. John Doe"
+                        value={guestName}
+                        onChange={handleGuestNameChange}
+                        style={{
+                          width: '100%',
+                          background: 'var(--bg-input)',
+                          border: '1px solid var(--border)',
+                          borderRadius: '6px',
+                          color: 'var(--text-primary)',
+                          padding: '8px 12px',
+                          fontSize: '0.86rem',
+                          outline: 'none',
+                          fontFamily: 'var(--font-mono)'
+                        }}
+                      />
+                    </div>
+                  </div>
+                  <div className="col-12 col-md-6">
+                    <div className="p-2.5 rounded-2" style={{ background: 'var(--bg-surface)', border: '1px solid var(--border)' }}>
+                      <label className="small text-secondary fw-semibold mb-1.5 font-monospace d-block" style={{ fontSize: '0.74rem' }}>Email Address</label>
+                      <input 
+                        type="email" 
+                        placeholder="e.g. john.doe@example.com"
+                        value={guestEmail}
+                        onChange={handleGuestEmailChange}
+                        style={{
+                          width: '100%',
+                          background: 'var(--bg-input)',
+                          border: '1px solid var(--border)',
+                          borderRadius: '6px',
+                          color: 'var(--text-primary)',
+                          padding: '8px 12px',
+                          fontSize: '0.86rem',
+                          outline: 'none',
+                          fontFamily: 'var(--font-mono)'
+                        }}
+                      />
+                    </div>
+                  </div>
+                </div>
               </div>
 
               {/* Upload Dropzone — shown when no file is selected */}

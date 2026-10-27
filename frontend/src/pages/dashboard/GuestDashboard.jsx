@@ -44,9 +44,13 @@ function GuestDashboard({ openAuth }) {
   const { setSidebarContent } = useContext(SidebarContext);
   const [selectedDisease, setSelectedDisease] = useState('heart_attack');
 
-  // Guest Profile & Consolidated Records State
-  const [guestName, setGuestName] = useState('');
-  const [guestEmail, setGuestEmail] = useState('');
+  // Guest Profile & Consolidated Records State (synced with localStorage & GuestUpload)
+  const [guestName, setGuestName] = useState(() => {
+    try { return localStorage.getItem('medfusion_guest_name') || ''; } catch { return ''; }
+  });
+  const [guestEmail, setGuestEmail] = useState(() => {
+    try { return localStorage.getItem('medfusion_guest_email') || ''; } catch { return ''; }
+  });
   const [predictionsHistory, setPredictionsHistory] = useState([]);
   const [prescriptions, setPrescriptions] = useState([]);
   const [pathologyReports, setPathologyReports] = useState([]);
@@ -1422,7 +1426,12 @@ function GuestDashboard({ openAuth }) {
                           type="text" 
                           placeholder="e.g. John Doe"
                           value={guestName}
-                          onChange={(e) => { setGuestName(e.target.value); setHasChanges(true); }}
+                          onChange={(e) => { 
+                            const val = e.target.value;
+                            setGuestName(val); 
+                            setHasChanges(true); 
+                            try { localStorage.setItem('medfusion_guest_name', val); } catch (err) {}
+                          }}
                           style={{
                             width: '100%',
                             background: 'var(--bg-input)',
@@ -1444,7 +1453,12 @@ function GuestDashboard({ openAuth }) {
                           type="email" 
                           placeholder="e.g. john.doe@example.com"
                           value={guestEmail}
-                          onChange={(e) => { setGuestEmail(e.target.value); setHasChanges(true); }}
+                          onChange={(e) => { 
+                            const val = e.target.value;
+                            setGuestEmail(val); 
+                            setHasChanges(true); 
+                            try { localStorage.setItem('medfusion_guest_email', val); } catch (err) {}
+                          }}
                           style={{
                             width: '100%',
                             background: 'var(--bg-input)',
