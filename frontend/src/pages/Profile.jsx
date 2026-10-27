@@ -222,25 +222,35 @@ function Profile({ user, onUserUpdate }) {
     if (user && user.role === 'Doctor') {
       setSidebarContent(
         <div className="d-flex flex-column gap-4 pt-2">
-          <div className="glass-card p-4 mb-2 reveal border-theme-accent border-opacity-15 bg-white-5" style={{ borderRadius: '12px' }}>
-            <h2 className="fw-bolder fs-6 m-0" style={{ letterSpacing: '-0.02em', fontSize: '1.25rem', color: 'var(--text-on-dark)' }}>
-              Doctor <span className="text-theme-accent">Credentials</span>
+          <div className="glass-card p-3.5 mb-1 reveal" style={{ borderRadius: '12px', border: '1px solid rgba(14, 165, 233, 0.4)', background: 'rgba(14, 165, 233, 0.08)' }}>
+            <div className="d-flex align-items-center gap-2 mb-2">
+              <div style={{ width: '26px', height: '26px', borderRadius: '7px', background: 'rgba(14, 165, 233, 0.22)', border: '1px solid #0EA5E9', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                <User size={14} style={{ color: '#38BDF8' }} />
+              </div>
+              <span style={{ fontSize: '0.68rem', fontFamily: 'var(--font-mono)', color: '#38BDF8', letterSpacing: '0.06em', textTransform: 'uppercase', fontWeight: 700 }}>
+                Practitioner Vault
+              </span>
+            </div>
+            <h2 className="fw-bolder fs-6 m-0" style={{ letterSpacing: '-0.02em', fontSize: '1.2rem', color: '#FFFFFF' }}>
+              Doctor <span style={{ color: '#38BDF8' }}>Credentials</span>
             </h2>
-            <p className="text-secondary m-0 mt-2" style={{ fontSize: '0.88rem', lineHeight: '1.4' }}>
+            <p className="m-0 mt-2" style={{ fontSize: '0.84rem', lineHeight: '1.4', color: 'rgba(255, 255, 255, 0.88)' }}>
               Verify credential profiles and clinical practicing registry statistics.
             </p>
           </div>
-          <div className="mt-2">
-            <h4 className="fw-bold mb-3" style={{ fontSize: '1.05rem', letterSpacing: '0.05em', color: 'var(--text-on-dark)' }}>
-              <span className="text-theme-accent font-monospace text-uppercase" style={{ letterSpacing: '0.06em' }}>Vault Sections</span>
+          <div className="mt-1">
+            <h4 className="fw-bold mb-3" style={{ fontSize: '1rem', letterSpacing: '0.05em', color: '#FFFFFF' }}>
+              <span className="font-monospace text-uppercase" style={{ letterSpacing: '0.06em', color: '#FFFFFF' }}>Vault Sections</span>
             </h4>
-            <div className="d-flex flex-column gap-3 mt-3">
+            <div className="d-flex flex-column gap-2.5 mt-2">
               <div
-                className="disease-select-tile active heart"
-                style={{ padding: '16px 20px' }}
+                className="disease-select-tile active diabetes"
+                style={{ padding: '14px 18px' }}
               >
-                <div className="d-flex align-items-center justify-content-start gap-3 font-monospace fw-bold text-uppercase" style={{ fontSize: '0.9rem' }}>
-                  <User size={20} />
+                <div className="d-flex align-items-center justify-content-start gap-3 font-monospace fw-bold text-uppercase" style={{ fontSize: '0.86rem' }}>
+                  <div className="disease-icon-box">
+                    <User size={18} />
+                  </div>
                   <span>Clinical Profile</span>
                 </div>
               </div>
@@ -252,37 +262,44 @@ function Profile({ user, onUserUpdate }) {
     } else {
       setSidebarContent(
         <div className="d-flex flex-column gap-4 pt-2">
-          <div className="glass-card p-4 mb-2 reveal border-theme-accent border-opacity-15 bg-white-5" style={{ borderRadius: '12px' }}>
-            <h2 className="fw-bolder fs-6 m-0" style={{ letterSpacing: '-0.02em', fontSize: '1.25rem', color: 'var(--text-on-dark)' }}>
-              Health <span className="text-theme-accent">Vault Console</span>
+          <div className="glass-card p-3.5 mb-1 reveal" style={{ borderRadius: '12px', border: '1px solid rgba(99, 102, 241, 0.4)', background: 'rgba(99, 102, 241, 0.08)' }}>
+            <div className="d-flex align-items-center gap-2 mb-2">
+              <div style={{ width: '26px', height: '26px', borderRadius: '7px', background: 'rgba(99, 102, 241, 0.22)', border: '1px solid #6366F1', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                <Database size={14} style={{ color: '#818CF8' }} />
+              </div>
+              <span style={{ fontSize: '0.68rem', fontFamily: 'var(--font-mono)', color: '#818CF8', letterSpacing: '0.06em', textTransform: 'uppercase', fontWeight: 700 }}>
+                Patient Vault
+              </span>
+            </div>
+            <h2 className="fw-bolder fs-6 m-0" style={{ letterSpacing: '-0.02em', fontSize: '1.2rem', color: '#FFFFFF' }}>
+              Health <span style={{ color: '#818CF8' }}>Vault Console</span>
             </h2>
-            <p className="text-secondary m-0 mt-2" style={{ fontSize: '0.88rem', lineHeight: '1.4' }}>
-              Manage clinical profiles, run health risk diagnostics, scan doctor prescriptions, or chat with AI.
+            <p className="m-0 mt-2" style={{ fontSize: '0.84rem', lineHeight: '1.4', color: 'rgba(255, 255, 255, 0.88)' }}>
+              Manage clinical profiles, review biomarker history, and manage medical records.
             </p>
           </div>
 
-          <div className="mt-2">
-            <h4 className="fw-bold mb-3" style={{ fontSize: '1.05rem', letterSpacing: '0.05em', color: 'var(--text-on-dark)' }}>
-              <span className="text-theme-accent font-monospace text-uppercase" style={{ letterSpacing: '0.06em' }}>Portal Sections</span>
+          <div className="mt-1">
+            <h4 className="fw-bold mb-3" style={{ fontSize: '1rem', letterSpacing: '0.05em', color: '#FFFFFF' }}>
+              <span className="font-monospace text-uppercase" style={{ letterSpacing: '0.06em', color: '#FFFFFF' }}>Portal Sections</span>
             </h4>
-            <div className="d-flex flex-column gap-2 mt-2">
+            <div className="d-flex flex-column gap-2.5 mt-2">
               {[
-                { id: 'identity', label: 'Profile & Vitals', icon: <User size={18} /> },
-                { id: 'vault', label: 'Medical Vault & History', icon: <FileUp size={18} /> },
+                { id: 'identity', label: 'Profile & Vitals', icon: <User size={18} />, theme: 'identity' },
+                { id: 'vault', label: 'Medical Vault & History', icon: <FileUp size={18} />, theme: 'cancer' },
               ].map((tab) => {
-                const tabThemeClasses = {
-                  identity: 'theme-general-active',
-                  vault: 'theme-cancer-active',
-                };
+                const isSelected = activeTab === tab.id;
                 return (
                   <div
                     key={tab.id}
                     onClick={() => setActiveTab(tab.id)}
-                    className={`disease-select-tile cursor-pointer ${activeTab === tab.id ? `active ${tabThemeClasses[tab.id]}` : 'inactive'}`}
-                    style={{ padding: '10px 16px' }}
+                    className={`disease-select-tile cursor-pointer ${tab.theme} ${isSelected ? 'active' : 'inactive'}`}
+                    style={{ padding: '14px 18px' }}
                   >
-                    <div className="d-flex align-items-center justify-content-start gap-2.5 font-monospace fw-bold text-uppercase" style={{ fontSize: '0.82rem' }}>
-                      {tab.icon}
+                    <div className="d-flex align-items-center justify-content-start gap-3 font-monospace fw-bold text-uppercase" style={{ fontSize: '0.86rem' }}>
+                      <div className="disease-icon-box">
+                        {tab.icon}
+                      </div>
                       <span>{tab.label}</span>
                     </div>
                   </div>

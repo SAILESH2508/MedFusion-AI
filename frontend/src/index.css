@@ -1202,24 +1202,440 @@ button.btn-icon:hover {
   color: var(--text-secondary) !important;
 }
 
-/* Explicit sidebar disease-select-tile rules to ensure full visibility when clicked/inactive */
-.app-sidebar .disease-select-tile.active {
-  background: rgba(255, 255, 255, 0.15) !important;
-  border-color: var(--primary-accent) !important;
+/* ── Explicit Colorful Sidebar Styles (No Glow) ────────────────────────── */
+
+/* Strictly remove any glow, blur halos, and text shadows from all sidebar elements */
+.app-sidebar,
+.app-sidebar *,
+.app-sidebar .disease-select-tile,
+.app-sidebar .glass-card,
+.app-sidebar .btn-clinical,
+.app-sidebar .badge {
+  box-shadow: none !important;
+  text-shadow: none !important;
+  filter: none !important;
 }
 
-.app-sidebar .disease-select-tile.active * {
+.app-sidebar .disease-select-tile {
+  box-shadow: none !important;
+  transition: all 0.18s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  border-radius: 9px !important;
+}
+
+/* Icon box inside sidebar tiles */
+.app-sidebar .disease-icon-box {
+  width: 32px;
+  height: 32px;
+  border-radius: 7px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: all 0.18s ease;
+}
+
+/* 1. Heart Attack / Cardiology (Crimson Red) */
+.app-sidebar .disease-select-tile.heart,
+.app-sidebar .disease-select-tile.theme-heart-active {
+  border-left-width: 4px !important;
+}
+
+.app-sidebar .disease-select-tile.heart.active,
+.app-sidebar .disease-select-tile.theme-heart-active.active {
+  background: rgba(239, 68, 68, 0.18) !important;
+  border: 1.5px solid #EF4444 !important;
+  border-left: 4px solid #EF4444 !important;
+  color: #FFFFFF !important;
+}
+.app-sidebar .disease-select-tile.heart.active *,
+.app-sidebar .disease-select-tile.theme-heart-active.active * {
+  color: #FFFFFF !important;
+}
+.app-sidebar .disease-select-tile.heart.active .disease-icon-box {
+  background: #EF4444 !important;
+  border: 1px solid #F87171 !important;
   color: #FFFFFF !important;
 }
 
-.app-sidebar .disease-select-tile.inactive {
-  background: rgba(255, 255, 255, 0.04) !important;
-  border-color: rgba(255, 255, 255, 0.12) !important;
-  opacity: 0.85;
+.app-sidebar .disease-select-tile.heart.inactive,
+.app-sidebar .disease-select-tile.theme-heart-active.inactive {
+  background: rgba(239, 68, 68, 0.07) !important;
+  border: 1px solid rgba(239, 68, 68, 0.32) !important;
+  border-left: 3px solid rgba(239, 68, 68, 0.75) !important;
+  color: #FEE2E2 !important;
+  opacity: 1 !important;
+}
+.app-sidebar .disease-select-tile.heart.inactive:hover {
+  background: rgba(239, 68, 68, 0.13) !important;
+  border-color: #EF4444 !important;
+}
+.app-sidebar .disease-select-tile.heart.inactive * {
+  color: #FEE2E2 !important;
+}
+.app-sidebar .disease-select-tile.heart.inactive svg {
+  color: #F87171 !important;
+}
+.app-sidebar .disease-select-tile.heart.inactive .disease-icon-box {
+  background: rgba(239, 68, 68, 0.18) !important;
+  border: 1px solid rgba(239, 68, 68, 0.45) !important;
+  color: #F87171 !important;
 }
 
-.app-sidebar .disease-select-tile.inactive * {
-  color: rgba(255, 255, 255, 0.75) !important;
+/* 2. Diabetes / Metabolic (Cyan / Sky Blue) */
+.app-sidebar .disease-select-tile.diabetes,
+.app-sidebar .disease-select-tile.theme-diabetes-active {
+  border-left-width: 4px !important;
+}
+
+.app-sidebar .disease-select-tile.diabetes.active,
+.app-sidebar .disease-select-tile.theme-diabetes-active.active {
+  background: rgba(14, 165, 233, 0.18) !important;
+  border: 1.5px solid #0EA5E9 !important;
+  border-left: 4px solid #0EA5E9 !important;
+  color: #FFFFFF !important;
+}
+.app-sidebar .disease-select-tile.diabetes.active *,
+.app-sidebar .disease-select-tile.theme-diabetes-active.active * {
+  color: #FFFFFF !important;
+}
+.app-sidebar .disease-select-tile.diabetes.active .disease-icon-box {
+  background: #0EA5E9 !important;
+  border: 1px solid #38BDF8 !important;
+  color: #FFFFFF !important;
+}
+
+.app-sidebar .disease-select-tile.diabetes.inactive,
+.app-sidebar .disease-select-tile.theme-diabetes-active.inactive {
+  background: rgba(14, 165, 233, 0.07) !important;
+  border: 1px solid rgba(14, 165, 233, 0.32) !important;
+  border-left: 3px solid rgba(14, 165, 233, 0.75) !important;
+  color: #E0F2FE !important;
+  opacity: 1 !important;
+}
+.app-sidebar .disease-select-tile.diabetes.inactive:hover {
+  background: rgba(14, 165, 233, 0.13) !important;
+  border-color: #0EA5E9 !important;
+}
+.app-sidebar .disease-select-tile.diabetes.inactive * {
+  color: #E0F2FE !important;
+}
+.app-sidebar .disease-select-tile.diabetes.inactive svg {
+  color: #38BDF8 !important;
+}
+.app-sidebar .disease-select-tile.diabetes.inactive .disease-icon-box {
+  background: rgba(14, 165, 233, 0.18) !important;
+  border: 1px solid rgba(14, 165, 233, 0.45) !important;
+  color: #38BDF8 !important;
+}
+
+/* 3. Cancer / Oncology (Vibrant Purple / Violet) */
+.app-sidebar .disease-select-tile.cancer,
+.app-sidebar .disease-select-tile.theme-cancer-active {
+  border-left-width: 4px !important;
+}
+
+.app-sidebar .disease-select-tile.cancer.active,
+.app-sidebar .disease-select-tile.theme-cancer-active.active {
+  background: rgba(168, 85, 247, 0.18) !important;
+  border: 1.5px solid #A855F7 !important;
+  border-left: 4px solid #A855F7 !important;
+  color: #FFFFFF !important;
+}
+.app-sidebar .disease-select-tile.cancer.active *,
+.app-sidebar .disease-select-tile.theme-cancer-active.active * {
+  color: #FFFFFF !important;
+}
+.app-sidebar .disease-select-tile.cancer.active .disease-icon-box {
+  background: #A855F7 !important;
+  border: 1px solid #C084FC !important;
+  color: #FFFFFF !important;
+}
+
+.app-sidebar .disease-select-tile.cancer.inactive,
+.app-sidebar .disease-select-tile.theme-cancer-active.inactive {
+  background: rgba(168, 85, 247, 0.07) !important;
+  border: 1px solid rgba(168, 85, 247, 0.32) !important;
+  border-left: 3px solid rgba(168, 85, 247, 0.75) !important;
+  color: #F3E8FF !important;
+  opacity: 1 !important;
+}
+.app-sidebar .disease-select-tile.cancer.inactive:hover {
+  background: rgba(168, 85, 247, 0.13) !important;
+  border-color: #A855F7 !important;
+}
+.app-sidebar .disease-select-tile.cancer.inactive * {
+  color: #F3E8FF !important;
+}
+.app-sidebar .disease-select-tile.cancer.inactive svg {
+  color: #C084FC !important;
+}
+.app-sidebar .disease-select-tile.cancer.inactive .disease-icon-box {
+  background: rgba(168, 85, 247, 0.18) !important;
+  border: 1px solid rgba(168, 85, 247, 0.45) !important;
+  color: #C084FC !important;
+}
+
+/* 4. Prescription (Rx) (Warm Orange / Amber) */
+.app-sidebar .disease-select-tile.prescription {
+  border-left-width: 4px !important;
+}
+
+.app-sidebar .disease-select-tile.prescription.active {
+  background: rgba(249, 115, 22, 0.18) !important;
+  border: 1.5px solid #F97316 !important;
+  border-left: 4px solid #F97316 !important;
+  color: #FFFFFF !important;
+}
+.app-sidebar .disease-select-tile.prescription.active * {
+  color: #FFFFFF !important;
+}
+.app-sidebar .disease-select-tile.prescription.active .disease-icon-box {
+  background: #F97316 !important;
+  border: 1px solid #FB923C !important;
+  color: #FFFFFF !important;
+}
+
+.app-sidebar .disease-select-tile.prescription.inactive {
+  background: rgba(249, 115, 22, 0.07) !important;
+  border: 1px solid rgba(249, 115, 22, 0.32) !important;
+  border-left: 3px solid rgba(249, 115, 22, 0.75) !important;
+  color: #FFEDD5 !important;
+  opacity: 1 !important;
+}
+.app-sidebar .disease-select-tile.prescription.inactive:hover {
+  background: rgba(249, 115, 22, 0.13) !important;
+  border-color: #F97316 !important;
+}
+.app-sidebar .disease-select-tile.prescription.inactive * {
+  color: #FFEDD5 !important;
+}
+.app-sidebar .disease-select-tile.prescription.inactive svg {
+  color: #FB923C !important;
+}
+.app-sidebar .disease-select-tile.prescription.inactive .disease-icon-box {
+  background: rgba(249, 115, 22, 0.18) !important;
+  border: 1px solid rgba(249, 115, 22, 0.45) !important;
+  color: #FB923C !important;
+}
+
+/* 5. Lab Reports (Pathology) (Emerald / Teal) */
+.app-sidebar .disease-select-tile.lab {
+  border-left-width: 4px !important;
+}
+
+.app-sidebar .disease-select-tile.lab.active {
+  background: rgba(16, 185, 129, 0.18) !important;
+  border: 1.5px solid #10B981 !important;
+  border-left: 4px solid #10B981 !important;
+  color: #FFFFFF !important;
+}
+.app-sidebar .disease-select-tile.lab.active * {
+  color: #FFFFFF !important;
+}
+.app-sidebar .disease-select-tile.lab.active .disease-icon-box {
+  background: #10B981 !important;
+  border: 1px solid #34D399 !important;
+  color: #FFFFFF !important;
+}
+
+.app-sidebar .disease-select-tile.lab.inactive {
+  background: rgba(16, 185, 129, 0.07) !important;
+  border: 1px solid rgba(16, 185, 129, 0.32) !important;
+  border-left: 3px solid rgba(16, 185, 129, 0.75) !important;
+  color: #D1FAE5 !important;
+  opacity: 1 !important;
+}
+.app-sidebar .disease-select-tile.lab.inactive:hover {
+  background: rgba(16, 185, 129, 0.13) !important;
+  border-color: #10B981 !important;
+}
+.app-sidebar .disease-select-tile.lab.inactive * {
+  color: #D1FAE5 !important;
+}
+.app-sidebar .disease-select-tile.lab.inactive svg {
+  color: #34D399 !important;
+}
+.app-sidebar .disease-select-tile.lab.inactive .disease-icon-box {
+  background: rgba(16, 185, 129, 0.18) !important;
+  border: 1px solid rgba(16, 185, 129, 0.45) !important;
+  color: #34D399 !important;
+}
+
+/* 6. General / Identity / Profile (Indigo / Blue) */
+.app-sidebar .disease-select-tile.identity,
+.app-sidebar .disease-select-tile.theme-general-active {
+  border-left-width: 4px !important;
+}
+
+.app-sidebar .disease-select-tile.identity.active,
+.app-sidebar .disease-select-tile.theme-general-active.active {
+  background: rgba(99, 102, 241, 0.18) !important;
+  border: 1.5px solid #6366F1 !important;
+  border-left: 4px solid #6366F1 !important;
+  color: #FFFFFF !important;
+}
+.app-sidebar .disease-select-tile.identity.active *,
+.app-sidebar .disease-select-tile.theme-general-active.active * {
+  color: #FFFFFF !important;
+}
+.app-sidebar .disease-select-tile.identity.active .disease-icon-box,
+.app-sidebar .disease-select-tile.theme-general-active.active .disease-icon-box {
+  background: #6366F1 !important;
+  border: 1px solid #818CF8 !important;
+  color: #FFFFFF !important;
+}
+
+.app-sidebar .disease-select-tile.identity.inactive,
+.app-sidebar .disease-select-tile.theme-general-active.inactive {
+  background: rgba(99, 102, 241, 0.07) !important;
+  border: 1px solid rgba(99, 102, 241, 0.32) !important;
+  border-left: 3px solid rgba(99, 102, 241, 0.75) !important;
+  color: #EEF2FF !important;
+  opacity: 1 !important;
+}
+.app-sidebar .disease-select-tile.identity.inactive:hover,
+.app-sidebar .disease-select-tile.theme-general-active.inactive:hover {
+  background: rgba(99, 102, 241, 0.13) !important;
+  border-color: #6366F1 !important;
+}
+.app-sidebar .disease-select-tile.identity.inactive *,
+.app-sidebar .disease-select-tile.theme-general-active.inactive * {
+  color: #EEF2FF !important;
+}
+.app-sidebar .disease-select-tile.identity.inactive svg,
+.app-sidebar .disease-select-tile.theme-general-active.inactive svg {
+  color: #818CF8 !important;
+}
+.app-sidebar .disease-select-tile.identity.inactive .disease-icon-box,
+.app-sidebar .disease-select-tile.theme-general-active.inactive .disease-icon-box {
+  background: rgba(99, 102, 241, 0.18) !important;
+  border: 1px solid rgba(99, 102, 241, 0.45) !important;
+  color: #818CF8 !important;
+}
+
+/* 7. Twin Sections Tabs */
+.app-sidebar .disease-select-tile.twin-tab-organs.active {
+  background: rgba(14, 165, 233, 0.18) !important;
+  border: 1.5px solid #0EA5E9 !important;
+  border-left: 4px solid #0EA5E9 !important;
+  color: #FFFFFF !important;
+}
+.app-sidebar .disease-select-tile.twin-tab-organs.active .disease-icon-box {
+  background: #0EA5E9 !important;
+  border: 1px solid #38BDF8 !important;
+  color: #FFFFFF !important;
+}
+.app-sidebar .disease-select-tile.twin-tab-organs.inactive {
+  background: rgba(14, 165, 233, 0.07) !important;
+  border: 1px solid rgba(14, 165, 233, 0.32) !important;
+  border-left: 3px solid rgba(14, 165, 233, 0.75) !important;
+  color: #E0F2FE !important;
+  opacity: 1 !important;
+}
+.app-sidebar .disease-select-tile.twin-tab-organs.inactive:hover {
+  background: rgba(14, 165, 233, 0.13) !important;
+  border-color: #0EA5E9 !important;
+}
+.app-sidebar .disease-select-tile.twin-tab-organs.inactive svg {
+  color: #38BDF8 !important;
+}
+.app-sidebar .disease-select-tile.twin-tab-organs.inactive .disease-icon-box {
+  background: rgba(14, 165, 233, 0.18) !important;
+  border: 1px solid rgba(14, 165, 233, 0.45) !important;
+  color: #38BDF8 !important;
+}
+
+.app-sidebar .disease-select-tile.twin-tab-diet.active {
+  background: rgba(16, 185, 129, 0.18) !important;
+  border: 1.5px solid #10B981 !important;
+  border-left: 4px solid #10B981 !important;
+  color: #FFFFFF !important;
+}
+.app-sidebar .disease-select-tile.twin-tab-diet.active .disease-icon-box {
+  background: #10B981 !important;
+  border: 1px solid #34D399 !important;
+  color: #FFFFFF !important;
+}
+.app-sidebar .disease-select-tile.twin-tab-diet.inactive {
+  background: rgba(16, 185, 129, 0.07) !important;
+  border: 1px solid rgba(16, 185, 129, 0.32) !important;
+  border-left: 3px solid rgba(16, 185, 129, 0.75) !important;
+  color: #D1FAE5 !important;
+  opacity: 1 !important;
+}
+.app-sidebar .disease-select-tile.twin-tab-diet.inactive:hover {
+  background: rgba(16, 185, 129, 0.13) !important;
+  border-color: #10B981 !important;
+}
+.app-sidebar .disease-select-tile.twin-tab-diet.inactive svg {
+  color: #34D399 !important;
+}
+.app-sidebar .disease-select-tile.twin-tab-diet.inactive .disease-icon-box {
+  background: rgba(16, 185, 129, 0.18) !important;
+  border: 1px solid rgba(16, 185, 129, 0.45) !important;
+  color: #34D399 !important;
+}
+
+.app-sidebar .disease-select-tile.twin-tab-garden.active {
+  background: rgba(245, 158, 11, 0.18) !important;
+  border: 1.5px solid #F59E0B !important;
+  border-left: 4px solid #F59E0B !important;
+  color: #FFFFFF !important;
+}
+.app-sidebar .disease-select-tile.twin-tab-garden.active .disease-icon-box {
+  background: #F59E0B !important;
+  border: 1px solid #FBBF24 !important;
+  color: #FFFFFF !important;
+}
+.app-sidebar .disease-select-tile.twin-tab-garden.inactive {
+  background: rgba(245, 158, 11, 0.07) !important;
+  border: 1px solid rgba(245, 158, 11, 0.32) !important;
+  border-left: 3px solid rgba(245, 158, 11, 0.75) !important;
+  color: #FEF3C7 !important;
+  opacity: 1 !important;
+}
+.app-sidebar .disease-select-tile.twin-tab-garden.inactive:hover {
+  background: rgba(245, 158, 11, 0.13) !important;
+  border-color: #F59E0B !important;
+}
+.app-sidebar .disease-select-tile.twin-tab-garden.inactive svg {
+  color: #FBBF24 !important;
+}
+.app-sidebar .disease-select-tile.twin-tab-garden.inactive .disease-icon-box {
+  background: rgba(245, 158, 11, 0.18) !important;
+  border: 1px solid rgba(245, 158, 11, 0.45) !important;
+  color: #FBBF24 !important;
+}
+
+.app-sidebar .disease-select-tile.twin-tab-overview.active {
+  background: rgba(168, 85, 247, 0.18) !important;
+  border: 1.5px solid #A855F7 !important;
+  border-left: 4px solid #A855F7 !important;
+  color: #FFFFFF !important;
+}
+.app-sidebar .disease-select-tile.twin-tab-overview.active .disease-icon-box {
+  background: #A855F7 !important;
+  border: 1px solid #C084FC !important;
+  color: #FFFFFF !important;
+}
+.app-sidebar .disease-select-tile.twin-tab-overview.inactive {
+  background: rgba(168, 85, 247, 0.07) !important;
+  border: 1px solid rgba(168, 85, 247, 0.32) !important;
+  border-left: 3px solid rgba(168, 85, 247, 0.75) !important;
+  color: #F3E8FF !important;
+  opacity: 1 !important;
+}
+.app-sidebar .disease-select-tile.twin-tab-overview.inactive:hover {
+  background: rgba(168, 85, 247, 0.13) !important;
+  border-color: #A855F7 !important;
+}
+.app-sidebar .disease-select-tile.twin-tab-overview.inactive svg {
+  color: #C084FC !important;
+}
+.app-sidebar .disease-select-tile.twin-tab-overview.inactive .disease-icon-box {
+  background: rgba(168, 85, 247, 0.18) !important;
+  border: 1px solid rgba(168, 85, 247, 0.45) !important;
+  color: #C084FC !important;
 }
 
 /* ── 6. Meaningful Clinical Risk Indicators & Status Labels ──────────────── */

@@ -43,10 +43,10 @@ const ORGANS = [
 
 /* ─── Twin Primary Sections (Sidebar Navigation) ─── */
 const TWIN_TABS = [
-  { id: 'organs',   label: 'Clinical Anatomy & Organs', icon: <HeartPulse size={18} />, theme: 'theme-general-active' },
-  { id: 'diet',     label: 'Metabolic Nutrition & Diet', icon: <Salad size={18} />,     theme: 'theme-diabetes-active' },
-  { id: 'garden',   label: 'Wellness Habits & Garden',  icon: <Sprout size={18} />,    theme: 'theme-heart-active' },
-  { id: 'overview', label: 'Health Overview',           icon: <BarChart3 size={18} />, theme: 'theme-cancer-active' },
+  { id: 'organs',   label: 'Clinical Anatomy & Organs', icon: <HeartPulse size={18} />, theme: 'twin-tab-organs' },
+  { id: 'diet',     label: 'Metabolic Nutrition & Diet', icon: <Salad size={18} />,     theme: 'twin-tab-diet' },
+  { id: 'garden',   label: 'Wellness Habits & Garden',  icon: <Sprout size={18} />,    theme: 'twin-tab-garden' },
+  { id: 'overview', label: 'Health Overview',           icon: <BarChart3 size={18} />, theme: 'twin-tab-overview' },
 ];
 
 export default function DigitalTwin({ user, openAuth }) {
@@ -179,32 +179,42 @@ export default function DigitalTwin({ user, openAuth }) {
     setSidebarContent(
       <div className="d-flex flex-column gap-4 pt-2">
         {/* Console Header Card */}
-        <div className="glass-card p-4 mb-2 reveal border-theme-accent border-opacity-15 bg-white-5" style={{ borderRadius: '12px' }}>
-          <h2 className="fw-bolder fs-6 m-0" style={{ letterSpacing: '-0.02em', fontSize: '1.25rem', color: 'var(--text-on-dark)' }}>
-            Digital Twin <span className="text-theme-accent">Console</span>
+        <div className="glass-card p-3.5 mb-1 reveal" style={{ borderRadius: '12px', border: '1px solid rgba(14, 165, 233, 0.4)', background: 'rgba(14, 165, 233, 0.08)' }}>
+          <div className="d-flex align-items-center gap-2 mb-2">
+            <div style={{ width: '26px', height: '26px', borderRadius: '7px', background: 'rgba(14, 165, 233, 0.22)', border: '1px solid #0EA5E9', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+              <HeartPulse size={14} style={{ color: '#38BDF8' }} />
+            </div>
+            <span style={{ fontSize: '0.68rem', fontFamily: 'var(--font-mono)', color: '#38BDF8', letterSpacing: '0.06em', textTransform: 'uppercase', fontWeight: 700 }}>
+              Physiological Engine
+            </span>
+          </div>
+          <h2 className="fw-bolder fs-6 m-0" style={{ letterSpacing: '-0.02em', fontSize: '1.2rem', color: '#FFFFFF' }}>
+            Digital Twin <span style={{ color: '#38BDF8' }}>Console</span>
           </h2>
-          <p className="text-secondary m-0 mt-2" style={{ fontSize: '0.88rem', lineHeight: '1.4' }}>
+          <p className="m-0 mt-2" style={{ fontSize: '0.84rem', lineHeight: '1.4', color: 'rgba(255, 255, 255, 0.88)' }}>
             Unified clinical anatomical systems, metabolic nutrition, and wellness habit engine.
           </p>
         </div>
 
         {/* Primary Twin Sections (Clickable Navigation) */}
         <div className="mt-1">
-          <h4 className="fw-bold mb-3" style={{ fontSize: '1.05rem', letterSpacing: '0.05em', color: 'var(--text-on-dark)' }}>
-            <span className="text-theme-accent font-monospace text-uppercase" style={{ letterSpacing: '0.06em' }}>Twin Sections</span>
+          <h4 className="fw-bold mb-3" style={{ fontSize: '1rem', letterSpacing: '0.05em', color: '#FFFFFF' }}>
+            <span className="font-monospace text-uppercase" style={{ letterSpacing: '0.06em', color: '#FFFFFF' }}>Twin Sections</span>
           </h4>
-          <div className="d-flex flex-column gap-2 mt-2">
+          <div className="d-flex flex-column gap-2.5 mt-2">
             {TWIN_TABS.map((tab) => {
               const isSelected = activeTab === tab.id;
               return (
                 <div
                   key={tab.id}
                   onClick={() => handleTabChange(tab.id)}
-                  className={`disease-select-tile cursor-pointer ${isSelected ? `active ${tab.theme}` : 'inactive'}`}
-                  style={{ padding: '12px 16px' }}
+                  className={`disease-select-tile cursor-pointer ${tab.theme} ${isSelected ? 'active' : 'inactive'}`}
+                  style={{ padding: '14px 18px' }}
                 >
-                  <div className="d-flex align-items-center justify-content-start gap-2.5 font-monospace fw-bold text-uppercase" style={{ fontSize: '0.82rem' }}>
-                    {tab.icon}
+                  <div className="d-flex align-items-center justify-content-start gap-3 font-monospace fw-bold text-uppercase" style={{ fontSize: '0.86rem' }}>
+                    <div className="disease-icon-box">
+                      {tab.icon}
+                    </div>
                     <span>{tab.label}</span>
                   </div>
                 </div>
@@ -216,35 +226,35 @@ export default function DigitalTwin({ user, openAuth }) {
         {/* ── Active Tab Contextual Sub-Tools in Sidebar ── */}
         {activeTab === 'organs' && (
           <div className="d-flex flex-column gap-3">
-            <div className="glass-card p-3" style={{ borderRadius: '12px', border: '1px solid rgba(255, 255, 255, 0.16)', background: 'rgba(255, 255, 255, 0.08)' }}>
+            <div className="p-3 rounded" style={{ border: '1px solid rgba(14, 165, 233, 0.35)', borderLeft: '4px solid #0EA5E9', background: 'rgba(14, 165, 233, 0.08)' }}>
               <div className="d-flex align-items-center justify-content-between mb-2">
-                <span className="font-monospace text-uppercase" style={{ fontSize: '0.68rem', color: 'var(--brand-orange)', letterSpacing: '0.05em' }}>
+                <span className="font-monospace text-uppercase fw-bold" style={{ fontSize: '0.72rem', color: '#38BDF8', letterSpacing: '0.05em' }}>
                   Anatomical Status
                 </span>
-                <span className="badge" style={{ background: 'rgba(255, 255, 255, 0.15)', color: '#FFFFFF', border: '1px solid rgba(255, 255, 255, 0.3)', fontSize: '0.64rem' }}>
+                <span className="badge" style={{ background: 'rgba(14, 165, 233, 0.22)', color: '#38BDF8', border: '1px solid #0EA5E9', fontSize: '0.64rem', boxShadow: 'none' }}>
                   8 Systems
                 </span>
               </div>
-              <div className="p-2.5 rounded font-monospace" style={{ background: 'rgba(255, 255, 255, 0.08)', border: '1px solid rgba(255, 255, 255, 0.16)', fontSize: '0.74rem' }}>
+              <div className="p-2.5 rounded font-monospace" style={{ background: 'rgba(255, 255, 255, 0.04)', border: '1px solid rgba(255, 255, 255, 0.12)', fontSize: '0.74rem' }}>
                 <div className="d-flex justify-content-between mb-1.5">
                   <span style={{ color: 'rgba(255, 255, 255, 0.82)' }}>Optimal Systems:</span>
                   <strong style={{ color: '#34d399' }}>{patientData.system_metrics?.optimal_count ?? 8}/8</strong>
                 </div>
                 <div className="d-flex justify-content-between">
                   <span style={{ color: 'rgba(255, 255, 255, 0.82)' }}>Active Selection:</span>
-                  <strong style={{ color: 'var(--brand-orange)', textTransform: 'capitalize' }}>{selectedOrgan}</strong>
+                  <strong style={{ color: '#38BDF8', textTransform: 'capitalize' }}>{selectedOrgan}</strong>
                 </div>
               </div>
             </div>
 
-            <div className="glass-card p-3 text-center" style={{ borderRadius: '12px', border: '1px solid rgba(255, 255, 255, 0.16)', background: 'rgba(255, 255, 255, 0.08)' }}>
-              <span className="font-monospace d-block mb-2" style={{ fontSize: '0.72rem', color: 'rgba(255, 255, 255, 0.82)' }}>
+            <div className="p-3 text-center rounded" style={{ border: '1px solid rgba(255, 255, 255, 0.14)', background: 'rgba(255, 255, 255, 0.05)' }}>
+              <span className="font-monospace d-block mb-2" style={{ fontSize: '0.74rem', color: 'rgba(255, 255, 255, 0.85)' }}>
                 Advanced Diagnostics
               </span>
               <button
                 onClick={() => setDrawerOpen(true)}
-                className="btn-clinical primary w-100 py-2 d-flex align-items-center justify-content-center gap-1.5 font-monospace text-uppercase cursor-pointer"
-                style={{ fontSize: '0.74rem', borderRadius: '8px' }}
+                className="btn-clinical w-100 py-2 d-flex align-items-center justify-content-center gap-1.5 font-monospace text-uppercase cursor-pointer"
+                style={{ fontSize: '0.74rem', borderRadius: '8px', background: '#0EA5E9', border: '1px solid #38BDF8', color: '#FFFFFF', boxShadow: 'none' }}
               >
                 <LayoutGrid size={13} />
                 <span>Diagnostic Modules</span>
@@ -255,19 +265,19 @@ export default function DigitalTwin({ user, openAuth }) {
 
         {activeTab === 'diet' && (
           <div className="d-flex flex-column gap-3">
-            <div className="glass-card p-3" style={{ borderRadius: '12px', border: '1px solid rgba(255, 255, 255, 0.16)', background: 'rgba(255, 255, 255, 0.08)' }}>
+            <div className="p-3 rounded" style={{ border: '1px solid rgba(16, 185, 129, 0.35)', borderLeft: '4px solid #10B981', background: 'rgba(16, 185, 129, 0.08)' }}>
               <div className="d-flex align-items-center justify-content-between mb-2">
-                <span className="font-monospace text-uppercase" style={{ fontSize: '0.68rem', color: 'var(--brand-orange)', letterSpacing: '0.05em' }}>
+                <span className="font-monospace text-uppercase fw-bold" style={{ fontSize: '0.72rem', color: '#34D399', letterSpacing: '0.05em' }}>
                   Metabolic Nutrition
                 </span>
-                <span className="badge" style={{ background: 'rgba(13, 148, 136, 0.25)', color: '#2dd4bf', border: '1px solid rgba(45, 212, 191, 0.4)', fontSize: '0.64rem' }}>
+                <span className="badge" style={{ background: 'rgba(16, 185, 129, 0.22)', color: '#34D399', border: '1px solid #10B981', fontSize: '0.64rem', boxShadow: 'none' }}>
                   7-Day Engine
                 </span>
               </div>
               <p className="font-monospace mb-2" style={{ fontSize: '0.74rem', lineHeight: '1.4', color: 'rgba(255, 255, 255, 0.85)' }}>
                 Personalized meals aligned with verified patient EHR vitals, lab reports, and medication regimens.
               </p>
-              <div className="p-2.5 rounded font-monospace" style={{ background: 'rgba(255, 255, 255, 0.08)', border: '1px solid rgba(255, 255, 255, 0.16)', fontSize: '0.74rem' }}>
+              <div className="p-2.5 rounded font-monospace" style={{ background: 'rgba(255, 255, 255, 0.04)', border: '1px solid rgba(255, 255, 255, 0.12)', fontSize: '0.74rem' }}>
                 <div className="d-flex justify-content-between mb-1.5">
                   <span style={{ color: 'rgba(255, 255, 255, 0.82)' }}>Cross-Module Synergy:</span>
                   <strong style={{ color: '#34d399' }}>+5 pts/meal</strong>
@@ -286,17 +296,17 @@ export default function DigitalTwin({ user, openAuth }) {
           const StageIcon = stageMeta.icon;
           return (
             <div className="d-flex flex-column gap-3">
-              <div className="glass-card p-3" style={{ borderRadius: '12px', border: '1px solid rgba(255, 255, 255, 0.16)', background: 'rgba(255, 255, 255, 0.08)' }}>
+              <div className="p-3 rounded" style={{ border: '1px solid rgba(245, 158, 11, 0.35)', borderLeft: '4px solid #F59E0B', background: 'rgba(245, 158, 11, 0.08)' }}>
                 <div className="d-flex align-items-center justify-content-between mb-2">
-                  <span className="font-monospace text-uppercase" style={{ fontSize: '0.68rem', color: 'var(--brand-orange)', letterSpacing: '0.05em' }}>
+                  <span className="font-monospace text-uppercase fw-bold" style={{ fontSize: '0.72rem', color: '#FBBF24', letterSpacing: '0.05em' }}>
                     Habit Level
                   </span>
-                  <span className="badge" style={{ background: 'rgba(255, 255, 255, 0.12)', color: 'rgba(255, 255, 255, 0.9)', border: '1px solid rgba(255, 255, 255, 0.2)', fontSize: '0.64rem' }}>
+                  <span className="badge" style={{ background: 'rgba(245, 158, 11, 0.22)', color: '#FBBF24', border: '1px solid #F59E0B', fontSize: '0.64rem', boxShadow: 'none' }}>
                     Stage {stageIdx + 1}/7
                   </span>
                 </div>
                 <div className="d-flex align-items-center gap-2 mb-2">
-                  <div className="p-2 rounded-2" style={{ background: 'rgba(255, 255, 255, 0.08)', border: `1px solid ${stageMeta.color}`, color: stageMeta.color }}>
+                  <div className="p-2 rounded-2" style={{ background: 'rgba(245, 158, 11, 0.15)', border: `1px solid ${stageMeta.color}`, color: stageMeta.color }}>
                     <StageIcon size={18} />
                   </div>
                   <div>
@@ -309,7 +319,7 @@ export default function DigitalTwin({ user, openAuth }) {
                   </div>
                 </div>
                 <div className="d-flex justify-content-between font-monospace" style={{ fontSize: '0.72rem', color: 'rgba(255, 255, 255, 0.85)' }}>
-                  <span>Streak: <strong className="text-theme-accent">{gardenData.current_streak} days</strong></span>
+                  <span>Streak: <strong style={{ color: '#FBBF24' }}>{gardenData.current_streak} days</strong></span>
                   <span>Best: {gardenData.best_streak} days</span>
                 </div>
               </div>
@@ -319,20 +329,20 @@ export default function DigitalTwin({ user, openAuth }) {
 
         {activeTab === 'overview' && (
           <div className="d-flex flex-column gap-3">
-            <div className="glass-card p-3" style={{ borderRadius: '12px', border: '1px solid rgba(255, 255, 255, 0.16)', background: 'rgba(255, 255, 255, 0.08)' }}>
-              <span className="font-monospace text-uppercase d-block mb-2" style={{ fontSize: '0.68rem', color: 'var(--brand-orange)', letterSpacing: '0.05em' }}>
+            <div className="p-3 rounded" style={{ border: '1px solid rgba(168, 85, 247, 0.35)', borderLeft: '4px solid #A855F7', background: 'rgba(168, 85, 247, 0.08)' }}>
+              <span className="font-monospace text-uppercase d-block mb-2 fw-bold" style={{ fontSize: '0.72rem', color: '#C084FC', letterSpacing: '0.05em' }}>
                 Digital Twin Pillars
               </span>
               <div className="d-flex flex-column gap-1.5 font-monospace" style={{ fontSize: '0.76rem' }}>
-                <div className="p-2.5 rounded d-flex align-items-center justify-content-between" style={{ background: 'rgba(255, 255, 255, 0.08)', border: '1px solid rgba(255, 255, 255, 0.16)', color: '#FFFFFF' }}>
+                <div className="p-2.5 rounded d-flex align-items-center justify-content-between" style={{ background: 'rgba(14, 165, 233, 0.08)', border: '1px solid rgba(14, 165, 233, 0.28)', borderLeft: '3px solid #0EA5E9', color: '#FFFFFF' }}>
                   <span style={{ color: '#FFFFFF', fontWeight: 600 }}>1. Clinical Organs</span>
-                  <strong style={{ color: 'var(--brand-orange)' }}>8 Systems</strong>
+                  <strong style={{ color: '#38BDF8' }}>8 Systems</strong>
                 </div>
-                <div className="p-2.5 rounded d-flex align-items-center justify-content-between" style={{ background: 'rgba(255, 255, 255, 0.08)', border: '1px solid rgba(255, 255, 255, 0.16)', color: '#FFFFFF' }}>
+                <div className="p-2.5 rounded d-flex align-items-center justify-content-between" style={{ background: 'rgba(16, 185, 129, 0.08)', border: '1px solid rgba(16, 185, 129, 0.28)', borderLeft: '3px solid #10B981', color: '#FFFFFF' }}>
                   <span style={{ color: '#FFFFFF', fontWeight: 600 }}>2. Nutrition Regimen</span>
                   <strong style={{ color: '#34d399' }}>7-Day Plan</strong>
                 </div>
-                <div className="p-2.5 rounded d-flex align-items-center justify-content-between" style={{ background: 'rgba(255, 255, 255, 0.08)', border: '1px solid rgba(255, 255, 255, 0.16)', color: '#FFFFFF' }}>
+                <div className="p-2.5 rounded d-flex align-items-center justify-content-between" style={{ background: 'rgba(245, 158, 11, 0.08)', border: '1px solid rgba(245, 158, 11, 0.28)', borderLeft: '3px solid #F59E0B', color: '#FFFFFF' }}>
                   <span style={{ color: '#FFFFFF', fontWeight: 600 }}>3. Wellness Habits</span>
                   <strong style={{ color: '#fbbf24' }}>{gardenData.current_streak}d Streak</strong>
                 </div>

@@ -249,11 +249,19 @@ function GuestUpload({ openAuth }) {
       <div className="d-flex flex-column gap-4 pt-2">
 
         {/* Sleek Medical Header Console inside Sidebar — exactly like Health Check */}
-        <div className="glass-card p-4 mb-2 reveal border-theme-accent border-opacity-15 bg-white-5" style={{ borderRadius: '12px' }}>
-          <h2 className="fw-bolder fs-6 m-0" style={{ letterSpacing: '-0.02em', fontSize: '1.25rem', color: '#FFFFFF' }}>
+        <div className="glass-card p-3.5 mb-1 reveal" style={{ borderRadius: '12px', border: '1px solid rgba(244, 149, 74, 0.4)', background: 'rgba(244, 149, 74, 0.08)' }}>
+          <div className="d-flex align-items-center gap-2 mb-2">
+            <div style={{ width: '26px', height: '26px', borderRadius: '7px', background: 'rgba(244, 149, 74, 0.22)', border: '1px solid #F97316', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+              <Sparkles size={14} style={{ color: '#F97316' }} />
+            </div>
+            <span style={{ fontSize: '0.68rem', fontFamily: 'var(--font-mono)', color: '#FB923C', letterSpacing: '0.06em', textTransform: 'uppercase', fontWeight: 700 }}>
+              Guest Ingestion Scanner
+            </span>
+          </div>
+          <h2 className="fw-bolder fs-6 m-0" style={{ letterSpacing: '-0.02em', fontSize: '1.2rem', color: '#FFFFFF' }}>
             AI Medical <span style={{ color: 'var(--brand-orange)' }}>Scanner</span>
           </h2>
-          <p className="m-0 mt-2" style={{ fontSize: '0.88rem', lineHeight: '1.4', color: 'rgba(255, 255, 255, 0.88)' }}>
+          <p className="m-0 mt-2" style={{ fontSize: '0.84rem', lineHeight: '1.4', color: 'rgba(255, 255, 255, 0.88)' }}>
             {docType.includes('Rx')
               ? 'Upload a prescription photo to extract drug names, dosages and schedules instantly.'
               : 'Upload a lab report to extract biomarker values and get a clinical interpretation.'}
@@ -261,27 +269,32 @@ function GuestUpload({ openAuth }) {
         </div>
 
         {/* Scan Type selector using disease-select-tile pattern */}
-        <div className="mt-2">
-          <h4 className="fw-bold mb-3" style={{ fontSize: '1.05rem', color: '#FFFFFF' }}>
+        <div className="mt-1">
+          <h4 className="fw-bold mb-3" style={{ fontSize: '1rem', color: '#FFFFFF' }}>
             <span className="font-monospace text-uppercase" style={{ letterSpacing: '0.06em', color: '#FFFFFF' }}>Scan Type</span>
           </h4>
-          <div className="d-flex flex-column gap-3 mt-3">
+          <div className="d-flex flex-column gap-2.5 mt-2">
             {[
               { id: 'Rx',        label: 'Prescription (Rx)',      icon: <Pill size={16} />,     theme: 'prescription' },
               { id: 'Pathology', label: 'Lab Report (Pathology)', icon: <Database size={16} />, theme: 'lab' },
-            ].map(({ id, label, icon, theme }) => (
-              <div
-                key={id}
-                onClick={() => { if (!loading) { setDocType(id === 'Rx' ? 'Prescription (Rx)' : 'Lab Report (Pathology)'); setResult(null); } }}
-                className={`disease-select-tile cursor-pointer ${docType.includes(id) ? `active ${theme}` : 'inactive'} ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
-                style={{ padding: '16px 20px' }}
-              >
-                <div className="d-flex align-items-center justify-content-start gap-3 font-monospace fw-bold text-uppercase" style={{ fontSize: '0.9rem' }}>
-                  {icon}
-                  <span>{label}</span>
+            ].map(({ id, label, icon, theme }) => {
+              const isSelected = docType.includes(id);
+              return (
+                <div
+                  key={id}
+                  onClick={() => { if (!loading) { setDocType(id === 'Rx' ? 'Prescription (Rx)' : 'Lab Report (Pathology)'); setResult(null); } }}
+                  className={`disease-select-tile cursor-pointer ${theme} ${isSelected ? 'active' : 'inactive'} ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
+                  style={{ padding: '14px 18px' }}
+                >
+                  <div className="d-flex align-items-center justify-content-start gap-3 font-monospace fw-bold text-uppercase" style={{ fontSize: '0.86rem' }}>
+                    <div className="disease-icon-box">
+                      {icon}
+                    </div>
+                    <span>{label}</span>
+                  </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
 

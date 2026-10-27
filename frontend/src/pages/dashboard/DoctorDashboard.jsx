@@ -205,11 +205,19 @@ function DoctorDashboard({ user }) {
     setSidebarContent(
       <div className="d-flex flex-column gap-4 pt-2">
         {/* Header Console */}
-        <div className="glass-card p-4 mb-2 reveal border-theme-accent border-opacity-15 bg-white-5" style={{ borderRadius: '12px' }}>
-          <h2 className="fw-bolder fs-6 m-0" style={{ letterSpacing: '-0.02em', fontSize: '1.25rem', color: '#FFFFFF' }}>
-            Clinical <span style={{ color: 'var(--brand-orange)' }}>Examiner</span>
+        <div className="glass-card p-3.5 mb-1 reveal" style={{ borderRadius: '12px', border: '1px solid rgba(14, 165, 233, 0.4)', background: 'rgba(14, 165, 233, 0.08)' }}>
+          <div className="d-flex align-items-center gap-2 mb-2">
+            <div style={{ width: '26px', height: '26px', borderRadius: '7px', background: 'rgba(14, 165, 233, 0.22)', border: '1px solid #0EA5E9', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+              <Stethoscope size={14} style={{ color: '#38BDF8' }} />
+            </div>
+            <span style={{ fontSize: '0.68rem', fontFamily: 'var(--font-mono)', color: '#38BDF8', letterSpacing: '0.06em', textTransform: 'uppercase', fontWeight: 700 }}>
+              Clinical Practitioner
+            </span>
+          </div>
+          <h2 className="fw-bolder fs-6 m-0" style={{ letterSpacing: '-0.02em', fontSize: '1.2rem', color: '#FFFFFF' }}>
+            Clinical <span style={{ color: '#38BDF8' }}>Examiner</span>
           </h2>
-          <p className="m-0 mt-2" style={{ fontSize: '0.88rem', lineHeight: '1.4', color: 'rgba(255, 255, 255, 0.88)' }}>
+          <p className="m-0 mt-2" style={{ fontSize: '0.84rem', lineHeight: '1.4', color: 'rgba(255, 255, 255, 0.88)' }}>
             Logged in as Dr. {user.full_name || "Examiner"}. Select patients to review diagnostics, pathology and write clinical recommendations.
           </p>
         </div>
@@ -219,21 +227,21 @@ function DoctorDashboard({ user }) {
           <div className="reveal d-flex flex-column gap-4">
             <div>
               <h4 className="fw-bold mb-3 font-monospace text-uppercase" style={{ fontSize: '0.9rem', letterSpacing: '0.05em', color: '#FFFFFF' }}>
-                <span style={{ color: 'var(--brand-orange)' }}>Practice Overview</span>
+                <span style={{ color: '#38BDF8' }}>Practice Overview</span>
               </h4>
               <div className="d-flex flex-column gap-2">
-                <div className="p-3 bg-white-5 rounded border border-white-5 d-flex justify-content-between align-items-center font-monospace">
-                  <span className="small" style={{ fontSize: '0.74rem', color: 'rgba(255, 255, 255, 0.85)' }}>REGISTERED PATIENTS</span>
+                <div className="p-3 rounded d-flex justify-content-between align-items-center font-monospace" style={{ border: '1px solid rgba(14, 165, 233, 0.35)', borderLeft: '4px solid #0EA5E9', background: 'rgba(14, 165, 233, 0.08)' }}>
+                  <span className="small fw-bold" style={{ fontSize: '0.74rem', color: '#7DD3FC' }}>REGISTERED PATIENTS</span>
                   <span className="fw-bold" style={{ color: '#FFFFFF', fontSize: '1.05rem' }}>{patients.length}</span>
                 </div>
-                <div className="p-3 bg-white-5 rounded border border-white-5 d-flex justify-content-between align-items-center font-monospace">
-                  <span className="small" style={{ fontSize: '0.74rem', color: 'rgba(255, 255, 255, 0.85)' }}>PATHOLOGY REPORTS</span>
+                <div className="p-3 rounded d-flex justify-content-between align-items-center font-monospace" style={{ border: '1px solid rgba(16, 185, 129, 0.35)', borderLeft: '4px solid #10B981', background: 'rgba(16, 185, 129, 0.08)' }}>
+                  <span className="small fw-bold" style={{ fontSize: '0.74rem', color: '#6EE7B7' }}>PATHOLOGY REPORTS</span>
                   <span className="fw-bold" style={{ color: '#FFFFFF', fontSize: '1.05rem' }}>
                     {patients.reduce((acc, p) => acc + (p.pathology_count || 0), 0)}
                   </span>
                 </div>
-                <div className="p-3 bg-white-5 rounded border border-white-5 d-flex justify-content-between align-items-center font-monospace">
-                  <span className="small" style={{ fontSize: '0.74rem', color: 'rgba(255, 255, 255, 0.85)' }}>AI DISEASE RUNS</span>
+                <div className="p-3 rounded d-flex justify-content-between align-items-center font-monospace" style={{ border: '1px solid rgba(168, 85, 247, 0.35)', borderLeft: '4px solid #A855F7', background: 'rgba(168, 85, 247, 0.08)' }}>
+                  <span className="small fw-bold" style={{ fontSize: '0.74rem', color: '#D8B4FE' }}>AI DISEASE RUNS</span>
                   <span className="fw-bold" style={{ color: '#FFFFFF', fontSize: '1.05rem' }}>
                     {patients.reduce((acc, p) => acc + (p.prediction_count || 0), 0)}
                   </span>
@@ -246,35 +254,36 @@ function DoctorDashboard({ user }) {
           <div className="reveal d-flex flex-column gap-3 animate-fadeIn">
             <button 
               onClick={() => setSelectedPatient(null)}
-              className="btn-clinical w-100 py-2.5 d-flex align-items-center justify-content-center gap-2 font-monospace text-uppercase"
+              className="btn-clinical w-100 py-2.5 d-flex align-items-center justify-content-center gap-2 font-monospace text-uppercase cursor-pointer"
               style={{ 
                 fontSize: '0.82rem', 
-                background: 'rgba(255, 255, 255, 0.14)', 
+                background: 'rgba(14, 165, 233, 0.16)', 
                 color: '#FFFFFF', 
-                border: '1px solid rgba(255, 255, 255, 0.28)',
-                boxShadow: '0 2px 8px rgba(0, 0, 0, 0.2)'
+                border: '1px solid #38BDF8',
+                borderRadius: '8px',
+                boxShadow: 'none'
               }}
             >
               ← Patient Directory
             </button>
 
-            <div className="p-3 bg-white-5 border border-theme-accent border-opacity-15 rounded bg-opacity-20 font-monospace">
-              <span className="fw-bold font-monospace text-uppercase d-block mb-1.5" style={{ fontSize: '0.72rem', color: 'var(--brand-orange)' }}>Active Session Case</span>
-              <span className="fw-bold d-block" style={{ fontSize: '0.88rem', color: 'var(--text-primary)' }}>{selectedPatient.name.toUpperCase()}</span>
-              <span className="text-secondary small d-block">ID: MF-P-{selectedPatient.id} // DOB: {selectedPatient.dob || '1995-08-12'}</span>
+            <div className="p-3 rounded font-monospace" style={{ border: '1px solid rgba(249, 115, 22, 0.45)', borderLeft: '4px solid #F97316', background: 'rgba(249, 115, 22, 0.08)' }}>
+              <span className="fw-bold font-monospace text-uppercase d-block mb-1.5" style={{ fontSize: '0.72rem', color: '#FB923C' }}>Active Session Case</span>
+              <span className="fw-bold d-block" style={{ fontSize: '0.92rem', color: '#FFFFFF' }}>{selectedPatient.name.toUpperCase()}</span>
+              <span className="small d-block mt-1" style={{ fontSize: '0.74rem', color: 'rgba(255, 255, 255, 0.75)' }}>ID: MF-P-{selectedPatient.id} // DOB: {selectedPatient.dob || '1995-08-12'}</span>
             </div>
 
             <div>
-              <h4 className="fw-bold mb-3 font-monospace text-uppercase" style={{ fontSize: '0.9rem', letterSpacing: '0.05em', color: 'var(--text-primary)' }}>
+              <h4 className="fw-bold mb-3 font-monospace text-uppercase" style={{ fontSize: '0.9rem', letterSpacing: '0.05em', color: '#FFFFFF' }}>
                 <span style={{ color: 'var(--brand-orange)' }}>EHR Navigation Map</span>
               </h4>
               <div className="d-flex flex-column gap-2">
                 {[
-                  { id: 'profile', label: 'Clinical Profile', icon: <User size={15} /> },
-                  { id: 'prescriptions', label: 'Prescription Logs', icon: <FileText size={15} /> },
-                  { id: 'pathology', label: 'Pathology Reports', icon: <Database size={15} /> },
-                  { id: 'predictions', label: 'AI Disease Risks', icon: <Activity size={15} /> },
-                  { id: 'formulate', label: 'Issue Regimen', icon: <Sparkles size={15} /> },
+                  { id: 'profile', label: 'Clinical Profile', icon: <User size={15} />, color: '#3B82F6', light: '#60A5FA', border: 'rgba(59, 130, 246, 0.4)', bg: 'rgba(59, 130, 246, 0.10)' },
+                  { id: 'prescriptions', label: 'Prescription Logs', icon: <FileText size={15} />, color: '#F97316', light: '#FB923C', border: 'rgba(249, 115, 22, 0.4)', bg: 'rgba(249, 115, 22, 0.10)' },
+                  { id: 'pathology', label: 'Pathology Reports', icon: <Database size={15} />, color: '#14B8A6', light: '#2DD4BF', border: 'rgba(20, 184, 166, 0.4)', bg: 'rgba(20, 184, 166, 0.10)' },
+                  { id: 'predictions', label: 'AI Disease Risks', icon: <Activity size={15} />, color: '#F43F5E', light: '#FB7185', border: 'rgba(244, 63, 94, 0.4)', bg: 'rgba(244, 63, 94, 0.10)' },
+                  { id: 'formulate', label: 'Issue Regimen', icon: <Sparkles size={15} />, color: '#F59E0B', light: '#FBBF24', border: 'rgba(245, 158, 11, 0.4)', bg: 'rgba(245, 158, 11, 0.10)' },
                 ].map(section => (
                   <button
                     key={section.id}
@@ -283,10 +292,18 @@ function DoctorDashboard({ user }) {
                       const el = document.getElementById(`section-${section.id}`);
                       if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
                     }}
-                    className="btn-clinical border border-white-5 bg-white-5 text-secondary w-100 py-2.5 px-3 text-start d-flex align-items-center gap-2.5 font-monospace"
-                    style={{ fontSize: '0.82rem', borderRadius: '8px' }}
+                    className="btn-clinical w-100 py-2.5 px-3 text-start d-flex align-items-center gap-2.5 font-monospace cursor-pointer"
+                    style={{ 
+                      fontSize: '0.82rem', 
+                      borderRadius: '8px',
+                      background: section.bg,
+                      border: `1px solid ${section.border}`,
+                      borderLeft: `3px solid ${section.color}`,
+                      color: '#FFFFFF',
+                      boxShadow: 'none'
+                    }}
                   >
-                    {section.icon}
+                    <span style={{ color: section.light, display: 'flex', alignItems: 'center' }}>{section.icon}</span>
                     <span>{section.label}</span>
                   </button>
                 ))}

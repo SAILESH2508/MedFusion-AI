@@ -452,36 +452,48 @@ function GuestDashboard({ openAuth }) {
     setSidebarContent(
       <div className="d-flex flex-column gap-4 pt-2">
         {/* Sleek Medical Header Console inside Sidebar */}
-        <div className="glass-card p-4 mb-2 reveal border-theme-accent border-opacity-15 bg-white-5" style={{ borderRadius: '12px' }}>
-          <h2 className="fw-bolder fs-6 m-0" style={{ letterSpacing: '-0.02em', fontSize: '1.25rem', color: '#FFFFFF' }}>
+        <div className="glass-card p-3.5 mb-1 reveal" style={{ borderRadius: '12px', border: '1px solid rgba(244, 149, 74, 0.4)', background: 'rgba(244, 149, 74, 0.08)' }}>
+          <div className="d-flex align-items-center gap-2 mb-2">
+            <div style={{ width: '26px', height: '26px', borderRadius: '7px', background: 'rgba(244, 149, 74, 0.22)', border: '1px solid #F97316', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+              <Cpu size={14} style={{ color: '#F97316' }} />
+            </div>
+            <span style={{ fontSize: '0.68rem', fontFamily: 'var(--font-mono)', color: '#FB923C', letterSpacing: '0.06em', textTransform: 'uppercase', fontWeight: 700 }}>
+              Guest Screening Engine
+            </span>
+          </div>
+          <h2 className="fw-bolder fs-6 m-0" style={{ letterSpacing: '-0.02em', fontSize: '1.2rem', color: '#FFFFFF' }}>
             AI Health <span style={{ color: 'var(--brand-orange)' }}>Diagnostics</span>
           </h2>
-          <p className="m-0 mt-2" style={{ fontSize: '0.88rem', lineHeight: '1.4', color: 'rgba(255, 255, 255, 0.88)' }}>
+          <p className="m-0 mt-2" style={{ fontSize: '0.84rem', lineHeight: '1.4', color: 'rgba(255, 255, 255, 0.88)' }}>
             Enter your medical numbers and symptoms to check your health risks instantly.
           </p>
         </div>
 
         {/* Screening Profile selector */}
-        <div className="mt-2">
-          <h4 className="fw-bold mb-3" style={{ fontSize: '1.05rem', letterSpacing: '0.05em', color: '#FFFFFF' }}>
+        <div className="mt-1">
+          <h4 className="fw-bold mb-3" style={{ fontSize: '1rem', letterSpacing: '0.05em', color: '#FFFFFF' }}>
             <span className="font-monospace text-uppercase" style={{ letterSpacing: '0.06em', color: '#FFFFFF' }}>Screening Profile</span>
           </h4>
-          <div className="d-flex flex-column gap-3 mt-3">
-            {displayedPredictors.map((disease) => (
-              <div 
-                key={disease.id}
-                onClick={() => handleDiseaseSelect(disease.id)}
-                className={`disease-select-tile cursor-pointer ${
-                  selectedDisease === disease.id ? `active ${disease.id === 'heart_attack' ? 'heart' : disease.id === 'diabetes' ? 'diabetes' : 'cancer'}` : 'inactive'
-                } ${isAnalyzing ? 'opacity-50 cursor-not-allowed' : ''}`}
-                style={{ padding: '16px 20px' }}
-              >
-                <div className="d-flex align-items-center justify-content-start gap-3 font-monospace fw-bold text-uppercase" style={{ fontSize: '0.9rem' }}>
-                  {disease.icon}
-                  <span>{disease.label}</span>
+          <div className="d-flex flex-column gap-2.5 mt-2">
+            {displayedPredictors.map((disease) => {
+              const diseaseClass = disease.id === 'heart_attack' ? 'heart' : disease.id === 'diabetes' ? 'diabetes' : 'cancer';
+              const isSelected = selectedDisease === disease.id;
+              return (
+                <div 
+                  key={disease.id}
+                  onClick={() => handleDiseaseSelect(disease.id)}
+                  className={`disease-select-tile cursor-pointer ${diseaseClass} ${isSelected ? 'active' : 'inactive'} ${isAnalyzing ? 'opacity-50 cursor-not-allowed' : ''}`}
+                  style={{ padding: '14px 18px' }}
+                >
+                  <div className="d-flex align-items-center justify-content-start gap-3 font-monospace fw-bold text-uppercase" style={{ fontSize: '0.86rem' }}>
+                    <div className="disease-icon-box">
+                      {disease.icon}
+                    </div>
+                    <span>{disease.label}</span>
+                  </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
           {allPredictors.length > displayedPredictors.length && (
             <div className="mt-3 text-center">

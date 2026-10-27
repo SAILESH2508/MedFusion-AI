@@ -259,8 +259,8 @@ function Sidebar({ user, logout, sidebarContent, isOpen, toggleSidebar, openAuth
                 className="avatar-circle"
                 style={{
                   background: getAvatarGradient(user),
-                  boxShadow: '0 2px 10px rgba(0,0,0,0.3)',
-                  border: '1.5px solid rgba(255,255,255,0.25)',
+                  boxShadow: 'none',
+                  border: '2px solid rgba(255,255,255,0.4)',
                 }}
               >
                 {getInitials(user.full_name, user.email)}
@@ -274,7 +274,7 @@ function Sidebar({ user, logout, sidebarContent, isOpen, toggleSidebar, openAuth
                 </span>
               </div>
             </div>
-            <button onClick={logout} className="btn-icon p-2 border-0 bg-transparent text-white opacity-70 hover-opacity-100 transition-all" aria-label="Log out">
+            <button onClick={logout} className="btn-icon p-2 border-0 bg-transparent text-white opacity-70 hover-opacity-100 transition-all cursor-pointer" aria-label="Log out">
               <LogOut size={24} />
             </button>
           </div>
@@ -285,9 +285,9 @@ function Sidebar({ user, logout, sidebarContent, isOpen, toggleSidebar, openAuth
                 className="avatar-circle"
                 style={{
                   background: getAvatarGradient(null),
-                  border: '1px solid rgba(255,255,255,0.2)',
+                  border: '1.5px solid rgba(255,255,255,0.3)',
                   color: '#FFFFFF',
-                  boxShadow: '0 2px 8px rgba(0,0,0,0.25)',
+                  boxShadow: 'none',
                 }}
               >
                 GS
@@ -305,7 +305,7 @@ function Sidebar({ user, logout, sidebarContent, isOpen, toggleSidebar, openAuth
               onClick={() => openAuth('patient')} 
               aria-label="Log in"
               className="btn-clinical primary px-3 py-1.5 text-decoration-none text-white font-monospace text-uppercase cursor-pointer w-auto-override" 
-              style={{ fontSize: '0.72rem' }}
+              style={{ fontSize: '0.72rem', boxShadow: 'none' }}
             >
               Login
             </button>

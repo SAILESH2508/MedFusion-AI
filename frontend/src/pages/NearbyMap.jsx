@@ -640,21 +640,21 @@ export default function NearbyMap({
     setSidebarContent(
       <div className="d-flex flex-column gap-2.5 pt-1">
         {/* Sleek Medical Header Console inside Sidebar — unified across MedFusion AI */}
-        <div className="glass-card p-3 reveal border-theme-accent border-opacity-15 bg-white-5" style={{ borderRadius: '12px' }}>
+        <div className="glass-card p-3 reveal" style={{ borderRadius: '12px', border: '1px solid rgba(244, 149, 74, 0.4)', background: 'rgba(244, 149, 74, 0.08)' }}>
           <div className="d-flex align-items-center gap-2 mb-1.5">
             <div style={{
               width: '26px',
               height: '26px',
               borderRadius: '6px',
-              background: 'linear-gradient(135deg, rgba(244,149,74,0.3) 0%, rgba(56,189,248,0.3) 100%)',
-              border: '1px solid rgba(244,149,74,0.4)',
+              background: 'rgba(244, 149, 74, 0.25)',
+              border: '1px solid #F97316',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
             }}>
-              <Radio size={13} style={{ color: 'var(--brand-orange)' }} />
+              <Radio size={13} style={{ color: '#F97316' }} />
             </div>
-            <span style={{ fontSize: '0.64rem', fontFamily: 'var(--font-mono)', color: 'var(--brand-orange)', letterSpacing: '0.08em', textTransform: 'uppercase', fontWeight: 700 }}>
+            <span style={{ fontSize: '0.64rem', fontFamily: 'var(--font-mono)', color: '#FB923C', letterSpacing: '0.08em', textTransform: 'uppercase', fontWeight: 700 }}>
               Live GPS Radar
             </span>
           </div>
@@ -671,15 +671,15 @@ export default function NearbyMap({
         </div>
 
         {/* Active Search Zone Status Card */}
-        <div className="p-2.5 bg-white-5 border border-theme-accent border-opacity-15 rounded bg-opacity-20 font-monospace">
-          <span className="fw-bold font-monospace text-uppercase d-block mb-1" style={{ fontSize: '0.68rem', color: 'var(--brand-orange)' }}>
+        <div className="p-2.5 rounded font-monospace" style={{ border: '1px solid rgba(56, 189, 248, 0.35)', borderLeft: '4px solid #38BDF8', background: 'rgba(56, 189, 248, 0.08)' }}>
+          <span className="fw-bold font-monospace text-uppercase d-block mb-1" style={{ fontSize: '0.68rem', color: '#38BDF8' }}>
             Active Search Zone
           </span>
           <div className="d-flex align-items-center justify-content-between">
-            <span className="fw-bold d-block" style={{ fontSize: '0.88rem', color: 'var(--text-primary)' }}>
+            <span className="fw-bold d-block" style={{ fontSize: '0.88rem', color: '#FFFFFF' }}>
               {location ? 'GPS Locked' : 'Locating…'}
             </span>
-            <span style={{ background: 'rgba(56, 189, 248, 0.2)', border: '1px solid #38BDF8', color: '#FFFFFF', padding: '1px 6px', borderRadius: '16px', fontSize: '0.64rem', fontFamily: 'var(--font-mono)', fontWeight: 700 }}>
+            <span style={{ background: 'rgba(56, 189, 248, 0.22)', border: '1px solid #38BDF8', color: '#FFFFFF', padding: '1px 7px', borderRadius: '16px', fontSize: '0.64rem', fontFamily: 'var(--font-mono)', fontWeight: 700 }}>
               {(radius / 1000).toFixed(0)} KM RADIUS
             </span>
           </div>
@@ -707,9 +707,12 @@ export default function NearbyMap({
                   className={`disease-select-tile cursor-pointer ${isFilterActive ? 'active' : 'inactive'}`}
                   style={{
                     padding: '8px 14px',
-                    borderColor: isFilterActive ? cfg.brightColor : 'var(--border-color)',
-                    opacity: isFilterActive ? 1 : 0.75,
-                    transition: 'all 0.2s ease',
+                    borderColor: isFilterActive ? cfg.brightColor : cfg.border,
+                    borderLeft: `4px solid ${isFilterActive ? (cfg.brightColor || cfg.color) : cfg.color}`,
+                    background: isFilterActive ? cfg.bg : 'rgba(255, 255, 255, 0.04)',
+                    boxShadow: 'none',
+                    opacity: 1,
+                    transition: 'all 0.18s ease',
                   }}
                   title={`Click to ${isFilterActive ? 'hide' : 'show'} ${cfg.label} on map`}
                 >
@@ -719,22 +722,22 @@ export default function NearbyMap({
                         width: '28px',
                         height: '28px',
                         borderRadius: '6px',
-                        background: isFilterActive ? cfg.bg : 'rgba(148, 163, 184, 0.1)',
-                        border: `1px solid ${isFilterActive ? cfg.border : 'var(--border-color)'}`,
+                        background: isFilterActive ? cfg.color : 'rgba(255, 255, 255, 0.08)',
+                        border: `1px solid ${isFilterActive ? cfg.brightColor : cfg.border}`,
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
-                        color: isFilterActive ? cfg.brightColor : 'var(--text-secondary)',
+                        color: isFilterActive ? '#FFFFFF' : (cfg.brightColor || cfg.color),
                         flexShrink: 0,
-                        boxShadow: isFilterActive ? 'var(--shadow-sm)' : 'none',
-                        transition: 'all 0.2s ease',
+                        boxShadow: 'none',
+                        transition: 'all 0.18s ease',
                       }}>
                         <IconComponent size={15} />
                       </div>
                       <span style={{
-                        color: isFilterActive ? 'var(--text-primary)' : 'var(--text-secondary)',
+                        color: isFilterActive ? '#FFFFFF' : 'rgba(255, 255, 255, 0.88)',
                         letterSpacing: '0.04em',
-                        transition: 'color 0.2s ease',
+                        transition: 'color 0.18s ease',
                       }}>
                         {cfg.label}
                       </span>
@@ -744,18 +747,19 @@ export default function NearbyMap({
                         className="fw-bold font-monospace px-2 py-0.5 rounded"
                         style={{
                           fontSize: '0.82rem',
-                          background: isFilterActive ? cfg.bg : 'var(--bg-card-tinted)',
-                          color: isFilterActive ? (cfg.brightColor || cfg.color) : 'var(--text-secondary)',
-                          border: `1px solid ${isFilterActive ? cfg.border : 'var(--border-color)'}`,
-                          transition: 'all 0.2s ease',
+                          background: isFilterActive ? cfg.color : 'rgba(255, 255, 255, 0.06)',
+                          color: isFilterActive ? '#FFFFFF' : (cfg.brightColor || cfg.color),
+                          border: `1px solid ${isFilterActive ? cfg.brightColor : cfg.border}`,
+                          boxShadow: 'none',
+                          transition: 'all 0.18s ease',
                         }}
                       >
                         {count}
                       </span>
                       {isFilterActive ? (
-                        <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: cfg.brightColor || cfg.color, boxShadow: `0 0 8px ${cfg.brightColor || cfg.color}`, flexShrink: 0 }} />
+                        <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: cfg.brightColor || cfg.color, boxShadow: 'none', flexShrink: 0 }} />
                       ) : (
-                        <span style={{ width: '5px', height: '5px', borderRadius: '50%', background: 'var(--text-disabled, #94a3b8)', opacity: 0.5, flexShrink: 0 }} />
+                        <span style={{ width: '5px', height: '5px', borderRadius: '50%', background: 'var(--text-disabled, #94a3b8)', opacity: 0.5, boxShadow: 'none', flexShrink: 0 }} />
                       )}
                     </div>
                   </div>
