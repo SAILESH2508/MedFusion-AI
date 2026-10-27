@@ -1,89 +1,13 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
-  Sprout, Leaf, TreeDeciduous, Flower2, ShieldCheck, Footprints,
-  Flame, Pill, UtensilsCrossed, Activity, HeartPulse, Stethoscope,
+  Sprout, Leaf, Flower2, ShieldCheck,
+  Flame, Pill, UtensilsCrossed, Activity,
   Trophy, Award, Sparkles, Clock, CheckCircle2, Plus, RefreshCw,
   Info, AlertCircle, ChevronRight, Check, X
 } from 'lucide-react';
 import { api } from '../../services/api';
-
-/* ─── Stage Definitions with Professional Vector Icons (No Emojis) ─── */
-export const GARDEN_STAGES = [
-  { stage: 0, name: 'Seed', icon: Sprout, color: '#10b981', threshold: 0, next: 50, description: 'The foundation of your preventive wellness routine.' },
-  { stage: 1, name: 'Sprout', icon: Leaf, color: '#38bdf8', threshold: 50, next: 150, description: 'Early adherence habits taking root through daily care.' },
-  { stage: 2, name: 'Small Plant', icon: Sprout, color: '#14b8a6', threshold: 150, next: 300, description: 'Clinical consistency established across key metrics.' },
-  { stage: 3, name: 'Growing Plant', icon: TreeDeciduous, color: '#10b981', threshold: 300, next: 500, description: 'Robust routine stability and sustained lifestyle adherence.' },
-  { stage: 4, name: 'Flowering Plant', icon: Flower2, color: '#f59e0b', threshold: 500, next: 750, description: 'Active metabolic resilience and positive biomarker trajectory.' },
-  { stage: 5, name: 'Mature Plant', icon: Flower2, color: '#ec4899', threshold: 750, next: 1000, description: 'Regimen mastery with high engagement across clinical goals.' },
-  { stage: 6, name: 'Personal Health Garden', icon: ShieldCheck, color: '#8b5cf6', threshold: 1000, next: null, description: 'A comprehensive, lifelong ecosystem of self-care and vitals balance.' },
-];
-
-/* ─── 5 Clinical Habit Actions ─── */
-export const GARDEN_ACTIONS = [
-  {
-    type: 'medication_taken',
-    label: 'Medication Taken',
-    points: 10,
-    icon: Pill,
-    color: '#38bdf8',
-    bg: 'rgba(56, 189, 248, 0.1)',
-    border: 'rgba(56, 189, 248, 0.3)',
-    description: 'Confirmed prescribed medication dosage',
-  },
-  {
-    type: 'meal_completed',
-    label: 'Meal Completed',
-    points: 5,
-    icon: UtensilsCrossed,
-    color: '#10b981',
-    bg: 'rgba(16, 185, 129, 0.1)',
-    border: 'rgba(16, 185, 129, 0.3)',
-    description: 'Adhered to nutritional plan meal slot',
-  },
-  {
-    type: 'symptom_logged',
-    label: 'Symptom Logged',
-    points: 5,
-    icon: Stethoscope,
-    color: '#f59e0b',
-    bg: 'rgba(245, 158, 11, 0.1)',
-    border: 'rgba(245, 158, 11, 0.3)',
-    description: 'Recorded observation, vital sign, or symptom',
-  },
-  {
-    type: 'activity_completed',
-    label: 'Activity Done',
-    points: 10,
-    icon: Activity,
-    color: '#ec4899',
-    bg: 'rgba(236, 72, 153, 0.1)',
-    border: 'rgba(236, 72, 153, 0.3)',
-    description: 'Completed physical therapy, walk, or workout',
-  },
-  {
-    type: 'checkin',
-    label: 'Health Check-in',
-    points: 5,
-    icon: HeartPulse,
-    color: '#a78bfa',
-    bg: 'rgba(167, 139, 250, 0.1)',
-    border: 'rgba(167, 139, 250, 0.3)',
-    description: 'Daily health status affirmation',
-  },
-];
-
-/* ─── Vector Achievements Meta ─── */
-export const GARDEN_ACHIEVEMENTS = [
-  { id: 'first_step', name: 'First Step', icon: Footprints, desc: 'First daily health check-in logged' },
-  { id: 'three_day', name: '3-Day Growth', icon: Sprout, desc: 'Maintained a 3-day active habit streak' },
-  { id: 'one_week', name: 'One Week Strong', icon: Leaf, desc: 'Maintained a 7-day health habit streak' },
-  { id: 'consistency', name: 'Consistency Builder', icon: Flame, desc: 'Maintained a 30-day health habit streak' },
-  { id: 'med_champ', name: 'Medication Champion', icon: Pill, desc: 'Earned 50+ points in medication adherence' },
-  { id: 'healthy_plate', name: 'Healthy Plate', icon: UtensilsCrossed, desc: 'Completed 20 logged meals from diet plan' },
-  { id: 'active_bloom', name: 'Active Bloom', icon: Activity, desc: 'Logged 10 activity & rehabilitation sessions' },
-  { id: 'garden_keeper', name: 'Garden Keeper', icon: ShieldCheck, desc: 'Reached 500+ total cumulative wellness points' },
-];
+import { GARDEN_STAGES, GARDEN_ACTIONS, GARDEN_ACHIEVEMENTS } from './gardenConstants';
 
 export default function IntegratedGardenSection({
   gardenData,
@@ -435,53 +359,62 @@ export default function IntegratedGardenSection({
 
                   <div className="mt-2">
                     {isNoteActive ? (
-                      <div className="d-flex flex-column gap-1">
+                      <div className="d-flex flex-column gap-2">
                         <input
                           type="text"
-                          placeholder="Optional note..."
+                          placeholder="Add clinical note..."
                           value={activeNote}
                           onChange={e => setActiveNote(e.target.value)}
                           onKeyDown={e => e.key === 'Enter' && handleLogActivity(action.type, action.points, activeNote)}
-                          className="w-100 bg-transparent border rounded-2 px-2 py-1 font-monospace"
-                          style={{ fontSize: '0.7rem', color: 'var(--text-primary)', borderColor: action.color, outline: 'none' }}
+                          className="w-100 bg-transparent border rounded-2 px-2.5 py-1.5 font-monospace"
+                          style={{
+                            fontSize: '0.74rem',
+                            color: 'var(--text-primary)',
+                            borderColor: action.border,
+                            background: 'rgba(15, 23, 42, 0.04)',
+                            outline: 'none',
+                          }}
                           autoFocus
                         />
-                        <div className="d-flex gap-1.5">
+                        <div className="d-flex align-items-center gap-2">
                           <button
                             onClick={() => handleLogActivity(action.type, action.points, activeNote)}
                             disabled={isLoading}
-                            className="btn-clinical primary d-flex align-items-center justify-content-center gap-1 font-monospace text-uppercase flex-grow-1"
-                            style={{ fontSize: '0.64rem', borderRadius: '5px', padding: '5px 8px' }}
+                            className="btn-clinical primary d-flex align-items-center justify-content-center gap-1.5 font-monospace text-uppercase flex-grow-1"
+                            style={{ fontSize: '0.7rem', borderRadius: '6px', padding: '6px 10px' }}
                           >
-                            {isLoading ? 'Saving...' : 'Confirm'}
+                            {isLoading ? <RefreshCw size={12} className="animate-spin" /> : <Check size={12} />}
+                            <span>{isLoading ? 'Saving...' : 'Confirm'}</span>
                           </button>
                           <button
                             onClick={() => { setSelectedActivityForNote(null); setActiveNote(''); }}
-                            className="btn-clinical secondary d-flex align-items-center justify-content-center"
-                            style={{ fontSize: '0.64rem', borderRadius: '5px', padding: '5px 7px', flexShrink: 0 }}
+                            className="btn-clinical secondary d-flex align-items-center justify-content-center gap-1 font-monospace text-uppercase"
+                            style={{ fontSize: '0.7rem', borderRadius: '6px', padding: '6px 10px', flexShrink: 0 }}
+                            title="Cancel"
                           >
-                            <X size={11} />
+                            <X size={12} />
+                            <span>Cancel</span>
                           </button>
                         </div>
                       </div>
                     ) : (
-                      <div className="d-flex align-items-center" style={{ gap: '8px' }}>
+                      <div className="d-flex align-items-center gap-2">
                         <button
                           onClick={() => handleLogActivity(action.type, action.points)}
                           disabled={isLoading}
-                          className="btn-clinical primary d-flex align-items-center justify-content-center gap-1 font-monospace text-uppercase"
-                          style={{ fontSize: '0.68rem', borderRadius: '6px', padding: '6px 12px' }}
+                          className="btn-clinical primary d-flex align-items-center justify-content-center gap-1.5 font-monospace text-uppercase flex-grow-1"
+                          style={{ fontSize: '0.7rem', borderRadius: '6px', padding: '6px 10px' }}
                         >
-                          {isLoading ? <RefreshCw size={11} className="animate-spin" /> : <Plus size={11} />}
-                          <span>Log</span>
+                          {isLoading ? <RefreshCw size={12} className="animate-spin" /> : <Plus size={12} />}
+                          <span>Log Habit</span>
                         </button>
                         <button
                           onClick={() => { setSelectedActivityForNote(action.type); setActiveNote(''); }}
                           title="Add note with activity"
                           className="btn-clinical secondary d-flex align-items-center justify-content-center"
-                          style={{ borderRadius: '6px', padding: '6px 10px' }}
+                          style={{ borderRadius: '6px', padding: '6px 10px', flexShrink: 0 }}
                         >
-                          <Clock size={12} />
+                          <Clock size={13} />
                         </button>
                       </div>
                     )}

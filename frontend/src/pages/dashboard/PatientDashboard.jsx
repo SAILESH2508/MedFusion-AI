@@ -34,7 +34,7 @@ const safeList = (val) => {
   if (!val) return [];
   if (Array.isArray(val)) return val;
   if (typeof val === 'string') {
-    const lines = val.split('\n').map(s => s.trim().replace(/^[•\-\*]\s*/, '')).filter(Boolean);
+    const lines = val.split('\n').map(s => s.trim().replace(/^[•\-*]\s*/, '')).filter(Boolean);
     return lines.length > 0 ? lines : [val];
   }
   if (typeof val === 'object') return Object.values(val).map(String);
@@ -1522,7 +1522,7 @@ function PatientDashboard({ user }) {
 
         <div style={{ position: 'relative', zIndex: 1 }}>
           <div className="d-flex align-items-center gap-2 mb-2">
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '28px', height: '28px', borderRadius: '8px', background: selectedDisease === 'heart_attack' ? (isDark ? 'rgba(239,68,68,0.18)' : 'rgba(239,68,68,0.12)') : selectedDisease === 'diabetes' ? (isDark ? 'rgba(16,185,129,0.18)' : 'rgba(168,85,247,0.12)') : (isDark ? 'rgba(168,85,247,0.18)' : 'rgba(168,85,247,0.12)'), border: `1px solid ${selectedDisease === 'heart_attack' ? 'rgba(239,68,68,0.35)' : selectedDisease === 'diabetes' ? 'rgba(16,185,129,0.35)' : 'rgba(168,85,247,0.35)'}` }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '28px', height: '28px', borderRadius: '8px', background: selectedDisease === 'heart_attack' ? (isDark ? 'rgba(239,68,68,0.18)' : 'rgba(239,68,68,0.12)') : selectedDisease === 'diabetes' ? (isDark ? 'rgba(16,185,129,0.18)' : 'rgba(16,185,129,0.12)') : (isDark ? 'rgba(168,85,247,0.18)' : 'rgba(168,85,247,0.12)'), border: `1px solid ${selectedDisease === 'heart_attack' ? 'rgba(239,68,68,0.35)' : selectedDisease === 'diabetes' ? 'rgba(16,185,129,0.35)' : 'rgba(168,85,247,0.35)'}` }}>
               <Heart size={14} style={{ color: selectedDisease === 'heart_attack' ? '#DC2626' : selectedDisease === 'diabetes' ? '#059669' : '#9333EA' }} />
             </div>
             <span className="font-monospace text-uppercase" style={{ fontSize: '0.68rem', letterSpacing: '0.14em', color: selectedDisease === 'heart_attack' ? (isDark ? '#F87171' : '#DC2626') : selectedDisease === 'diabetes' ? (isDark ? '#34D399' : '#059669') : (isDark ? '#C084FC' : '#9333EA'), fontWeight: 700 }}>
@@ -1530,7 +1530,7 @@ function PatientDashboard({ user }) {
             </span>
           </div>
           <h1 className="fw-bolder m-0 mb-2" style={{ fontSize: '2rem', letterSpacing: '-0.03em', color: isDark ? '#FFFFFF' : '#0F172A', lineHeight: 1.1, fontFamily: 'var(--font-main)' }}>
-            Clinical <span style={{ background: selectedDisease === 'heart_attack' ? 'linear-gradient(90deg, #DC2626, #EA580C)' : selectedDisease === 'diabetes' ? 'linear-gradient(90deg, #059669, #0284C7)' : 'linear-gradient(90deg, #9333EA, #DB2777)', WebkitBackgroundClip: 'text', backgroundClip: 'text', WebkitTextFillColor: 'transparent', color: 'transparent', display: 'inline-block' }}>Risk Diagnostics</span>
+            Clinical <span className={selectedDisease === 'heart_attack' ? 'text-gradient-heart' : selectedDisease === 'diabetes' ? 'text-gradient-diabetes' : 'text-gradient-cancer'}>Risk Diagnostics</span>
           </h1>
           <p className="m-0" style={{ fontSize: '0.9rem', color: isDark ? 'rgba(255,255,255,0.65)' : '#475569', maxWidth: '560px', lineHeight: 1.5, fontWeight: isDark ? 400 : 500 }}>
             Input your vitals and biomarkers to run an AI-powered disease risk prediction. Get personalised dietary, lifestyle and clinical recommendations.
@@ -1920,17 +1920,11 @@ function PatientDashboard({ user }) {
                           style={{ fontSize: '0.64rem', letterSpacing: '0.12em', color: 'var(--brand-orange)' }}>
                           dx � Clinical Reasoning
                         </span>
-                        <h3 className="fw-bolder m-0"
+                        <h3 className="fw-bolder m-0 text-gradient-heart"
                           style={{
                             fontSize: '1.25rem',
                             fontFamily: 'var(--font-main)',
                             letterSpacing: '-0.02em',
-                            background: 'linear-gradient(90deg, #DC2626, #EA580C)',
-                            WebkitBackgroundClip: 'text',
-                            backgroundClip: 'text',
-                            WebkitTextFillColor: 'transparent',
-                            color: 'transparent',
-                            display: 'inline-block',
                           }}>
                           Diagnostic Clinical Synthesis
                         </h3>

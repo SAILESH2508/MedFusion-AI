@@ -351,8 +351,19 @@ function DoctorDashboard({ user }) {
               ) : (
                 <div className="d-flex flex-column gap-3 overflow-auto flex-grow-1 pe-2" style={{ minHeight: 0 }}>
                   {/* Search bar */}
-                  <div className="position-relative flex-shrink-0">
-                    <Search size={14} className="position-absolute text-secondary" style={{ left: '12px', top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none' }} />
+                  <div style={{ position: 'relative', flexShrink: 0 }}>
+                    <Search
+                      size={14}
+                      style={{
+                        position: 'absolute',
+                        left: '12px',
+                        top: '50%',
+                        transform: 'translateY(-50%)',
+                        pointerEvents: 'none',
+                        color: 'var(--text-muted)',
+                        zIndex: 1,
+                      }}
+                    />
                     <input
                       type="text"
                       value={patientSearch}
@@ -360,7 +371,7 @@ function DoctorDashboard({ user }) {
                       placeholder="Search by name, email or ID..."
                       aria-label="Search patients by name, email or ID"
                       className="w-100 font-monospace bg-transparent rounded border border-white-10"
-                      style={{ padding: '10px 12px 10px 34px', fontSize: '0.82rem', outline: 'none', color: 'var(--text-primary)' }}
+                      style={{ padding: '10px 12px 10px 34px', fontSize: '0.82rem', outline: 'none', color: 'var(--text-primary)', display: 'block' }}
                     />
                   </div>
 

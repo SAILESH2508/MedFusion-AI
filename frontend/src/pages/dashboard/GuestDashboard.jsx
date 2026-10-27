@@ -33,7 +33,7 @@ const safeList = (val) => {
   if (!val) return [];
   if (Array.isArray(val)) return val;
   if (typeof val === 'string') {
-    const lines = val.split('\n').map(s => s.trim().replace(/^[•\-\*]\s*/, '')).filter(Boolean);
+    const lines = val.split('\n').map(s => s.trim().replace(/^[•\-*]\s*/, '')).filter(Boolean);
     return lines.length > 0 ? lines : [val];
   }
   if (typeof val === 'object') return Object.values(val).map(String);
@@ -1430,7 +1430,7 @@ function GuestDashboard({ openAuth }) {
                             const val = e.target.value;
                             setGuestName(val); 
                             setHasChanges(true); 
-                            try { localStorage.setItem('medfusion_guest_name', val); } catch (err) {}
+                            try { localStorage.setItem('medfusion_guest_name', val); } catch (_e) { /* ignore storage errors */ }
                           }}
                           style={{
                             width: '100%',
@@ -1457,7 +1457,7 @@ function GuestDashboard({ openAuth }) {
                             const val = e.target.value;
                             setGuestEmail(val); 
                             setHasChanges(true); 
-                            try { localStorage.setItem('medfusion_guest_email', val); } catch (err) {}
+                            try { localStorage.setItem('medfusion_guest_email', val); } catch (_e) { /* ignore storage errors */ }
                           }}
                           style={{
                             width: '100%',

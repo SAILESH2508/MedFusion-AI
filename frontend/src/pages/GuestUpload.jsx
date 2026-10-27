@@ -53,13 +53,13 @@ function GuestUpload({ openAuth }) {
   const handleGuestNameChange = (e) => {
     const val = e.target.value;
     setGuestName(val);
-    try { localStorage.setItem('medfusion_guest_name', val); } catch (err) {}
+    try { localStorage.setItem('medfusion_guest_name', val); } catch (_e) { /* ignore storage errors */ }
   };
 
   const handleGuestEmailChange = (e) => {
     const val = e.target.value;
     setGuestEmail(val);
-    try { localStorage.setItem('medfusion_guest_email', val); } catch (err) {}
+    try { localStorage.setItem('medfusion_guest_email', val); } catch (_e) { /* ignore storage errors */ }
   };
 
   // Generate and cleanup object URLs for image previews

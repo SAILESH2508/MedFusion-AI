@@ -555,16 +555,10 @@ export default function IntegratedDietSection({ user, onActivityLogged }) {
                 {/* Day + calorie target row */}
                 <div className="d-flex align-items-center justify-content-between">
                   <h4
-                    className="fw-bolder m-0"
+                    className="fw-bolder m-0 text-gradient-heart"
                     style={{
                       fontSize: '1rem',
                       fontFamily: 'var(--font-main)',
-                      background: 'linear-gradient(90deg, #DC2626, #EA580C)',
-                      WebkitBackgroundClip: 'text',
-                      backgroundClip: 'text',
-                      WebkitTextFillColor: 'transparent',
-                      color: 'transparent',
-                      display: 'inline-block',
                       letterSpacing: '-0.01em',
                     }}
                   >

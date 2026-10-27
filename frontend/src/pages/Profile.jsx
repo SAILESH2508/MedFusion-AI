@@ -110,6 +110,11 @@ function Profile({ user, onUserUpdate }) {
   // Stats for doctors
   const [docStats, setDocStats] = useState({ patientCount: 0, rxCount: 0, pathCount: 0 });
 
+  // Drug safety advisor states
+  const [safetyLoading, setSafetyLoading] = useState(false);
+  const [safetyError, setSafetyError] = useState('');
+  const [safetyReport, setSafetyReport] = useState(null);
+
   // -------------------------------------------------------------
   // DATA SYNC AND LOADING LOGIC
   // -------------------------------------------------------------
@@ -599,7 +604,7 @@ function Profile({ user, onUserUpdate }) {
             </span>
           </div>
           <h1 className="fw-bolder m-0 mb-2" style={{ fontSize: '2rem', letterSpacing: '-0.03em', color: isDark ? '#FFFFFF' : '#0F172A', lineHeight: 1.1, fontFamily: 'var(--font-main)' }}>
-            Health <span style={{ background: 'linear-gradient(90deg, #DC2626, #EA580C)', WebkitBackgroundClip: 'text', backgroundClip: 'text', WebkitTextFillColor: 'transparent', color: 'transparent', display: 'inline-block' }}>Profile</span>
+            Health <span className="text-gradient-heart">Profile</span>
           </h1>
           <p className="m-0" style={{ fontSize: '0.9rem', color: isDark ? 'rgba(255,255,255,0.65)' : '#475569', maxWidth: '520px', lineHeight: 1.5, fontWeight: isDark ? 400 : 500 }}>
             Manage your clinical identity, medical history vault, risk assessments, and emergency QR card — all secured in one place.

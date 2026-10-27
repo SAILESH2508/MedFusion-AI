@@ -173,11 +173,14 @@ export default function InteractiveMap({ location, places, isPatient }) {
         mapRef.current.remove();
         mapRef.current = null;
       }
-      if (mapContainerRef.current && mapContainerRef.current._leaflet_id) {
-        delete mapContainerRef.current._leaflet_id;
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+      const container = mapContainerRef.current;
+      if (container && container._leaflet_id) {
+        delete container._leaflet_id;
       }
       setMapReady(false);
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [location?.lat, location?.lon]);
 
   // ── Pan map & update user marker whenever location changes ────────────
@@ -198,7 +201,7 @@ export default function InteractiveMap({ location, places, isPatient }) {
         </div>`
       );
     }
-  }, [location?.lat, location?.lon, location?.displayName, location?.city]);
+  }, [location]);
 
   // ── Update tile layer ─────────────────────────────────────────────────
   useEffect(() => {
