@@ -39,11 +39,11 @@ function isOpenNow(opening_hours) {
 }
 
 const TYPE_CONFIG = {
-  hospital:  { label: 'Hospitals',   singular: 'Hospital',  icon: Building2,    color: '#EF4444', brightColor: '#F87171', glow: 'rgba(239, 68, 68, 0.25)', bg: 'rgba(239, 68, 68, 0.15)', border: 'rgba(239, 68, 68, 0.45)', tags: ['hospital'] },
-  clinic:    { label: 'Clinics',     singular: 'Clinic',    icon: Stethoscope,  color: '#0EA5E9', brightColor: '#38BDF8', glow: 'rgba(14, 165, 233, 0.25)', bg: 'rgba(14, 165, 233, 0.15)', border: 'rgba(14, 165, 233, 0.45)', tags: ['clinic', 'doctors'] },
-  pharmacy:  { label: 'Pharmacies',  singular: 'Pharmacy',  icon: Pill,         color: '#10B981', brightColor: '#34D399', glow: 'rgba(16, 185, 129, 0.25)', bg: 'rgba(16, 185, 129, 0.15)', border: 'rgba(16, 185, 129, 0.45)', tags: ['pharmacy', 'chemist'] },
-  dentist:   { label: 'Dentists',    singular: 'Dentist',   icon: Sparkles,     color: '#A855F7', brightColor: '#C084FC', glow: 'rgba(168, 85, 247, 0.25)', bg: 'rgba(168, 85, 247, 0.15)', border: 'rgba(168, 85, 247, 0.45)', tags: ['dentist'] },
-  lab:       { label: 'Labs',        singular: 'Lab',       icon: FlaskConical, color: '#F59E0B', brightColor: '#FBBF24', glow: 'rgba(245, 158, 11, 0.25)', bg: 'rgba(245, 158, 11, 0.15)', border: 'rgba(245, 158, 11, 0.45)', tags: ['laboratory'] },
+  hospital:  { label: 'Hospitals',   singular: 'Hospital',  theme: 'facility-hospital',  icon: Building2,    color: '#EF4444', brightColor: '#F87171', glow: 'rgba(239, 68, 68, 0.25)',    bg: 'rgba(239, 68, 68, 0.15)',    border: 'rgba(239, 68, 68, 0.45)',    tags: ['hospital'] },
+  clinic:    { label: 'Clinics',     singular: 'Clinic',    theme: 'facility-clinic',    icon: Stethoscope,  color: '#0EA5E9', brightColor: '#38BDF8', glow: 'rgba(14, 165, 233, 0.25)',  bg: 'rgba(14, 165, 233, 0.15)',  border: 'rgba(14, 165, 233, 0.45)',  tags: ['clinic', 'doctors'] },
+  pharmacy:  { label: 'Pharmacies',  singular: 'Pharmacy',  theme: 'facility-pharmacy',  icon: Pill,         color: '#10B981', brightColor: '#34D399', glow: 'rgba(16, 185, 129, 0.25)',  bg: 'rgba(16, 185, 129, 0.15)',  border: 'rgba(16, 185, 129, 0.45)',  tags: ['pharmacy', 'chemist'] },
+  dentist:   { label: 'Dentists',    singular: 'Dentist',   theme: 'facility-dentist',   icon: Sparkles,     color: '#A855F7', brightColor: '#C084FC', glow: 'rgba(168, 85, 247, 0.25)',  bg: 'rgba(168, 85, 247, 0.15)',  border: 'rgba(168, 85, 247, 0.45)',  tags: ['dentist'] },
+  lab:       { label: 'Labs',        singular: 'Lab',       theme: 'facility-lab',       icon: FlaskConical, color: '#F59E0B', brightColor: '#FBBF24', glow: 'rgba(245, 158, 11, 0.25)',   bg: 'rgba(245, 158, 11, 0.15)',   border: 'rgba(245, 158, 11, 0.45)',   tags: ['laboratory'] },
 };
 
 function generateFallbackFacilities(lat, lon, radiusM, types) {
@@ -638,11 +638,11 @@ export default function NearbyMap({
   // Sidebar injection
   useEffect(() => {
     setSidebarContent(
-      <div className="d-flex flex-column gap-2.5 pt-1">
+      <div className="d-flex flex-column gap-4 pt-2">
         {/* Sleek Medical Header Console inside Sidebar */}
-        <div className="glass-card p-2.5" style={{ borderRadius: '12px', border: '1px solid rgba(244, 149, 74, 0.35)', background: 'rgba(244, 149, 74, 0.08)' }}>
-          <div className="d-flex align-items-center justify-content-between mb-1.5">
-            <div className="d-flex align-items-center gap-1.5">
+        <div className="glass-card p-3" style={{ borderRadius: '14px', border: '1px solid rgba(244, 149, 74, 0.35)', background: 'rgba(244, 149, 74, 0.08)' }}>
+          <div className="d-flex align-items-center justify-content-between mb-2">
+            <div className="d-flex align-items-center gap-2">
               <div style={{
                 width: '24px',
                 height: '24px',
@@ -675,7 +675,7 @@ export default function NearbyMap({
           <h2 className="fw-bolder fs-6 m-0" style={{ letterSpacing: '-0.02em', fontSize: '1.05rem', color: 'var(--text-on-dark, #E2E8F0)' }}>
             Medical <span style={{ color: 'var(--brand-orange)' }}>Radar</span>
           </h2>
-          <div className="d-flex align-items-center justify-content-between mt-1.5 pt-1.5" style={{ borderTop: '1px solid rgba(148, 163, 184, 0.15)', fontSize: '0.7rem', color: '#94A3B8', fontFamily: 'var(--font-mono)' }}>
+          <div className="d-flex align-items-center justify-content-between mt-2 pt-2" style={{ borderTop: '1px solid rgba(148, 163, 184, 0.15)', fontSize: '0.72rem', color: '#94A3B8', fontFamily: 'var(--font-mono)' }}>
             <span>{places.length} locations found</span>
             <span style={{ color: location ? '#34D399' : '#F59E0B' }}>
               ● {location ? (location.city || 'GPS Locked') : 'Locating...'}
@@ -684,16 +684,16 @@ export default function NearbyMap({
         </div>
 
         {/* Live Facilities Filter Selector */}
-        <div className="mt-1">
-          <div className="d-flex align-items-center justify-content-between mb-1.5 px-0.5">
-            <span className="font-monospace text-uppercase fw-bold" style={{ fontSize: '0.66rem', letterSpacing: '0.08em', color: '#94A3B8' }}>
+        <div>
+          <div className="d-flex align-items-center justify-content-between mb-2 px-1">
+            <span className="font-monospace text-uppercase fw-bold" style={{ fontSize: '0.67rem', letterSpacing: '0.09em', color: '#94A3B8' }}>
               Facility Filter
             </span>
-            <span className="font-monospace" style={{ fontSize: '0.62rem', color: '#64748B' }}>
+            <span className="font-monospace" style={{ fontSize: '0.64rem', color: '#64748B' }}>
               {activeTypes.length} Active
             </span>
           </div>
-          <div className="d-flex flex-column gap-1.5">
+          <div className="d-flex flex-column gap-2">
             {Object.entries(TYPE_CONFIG).map(([key, cfg]) => {
               const IconComponent = cfg.icon;
               const count = places.filter((p) => p.type === key).length;
@@ -702,12 +702,9 @@ export default function NearbyMap({
                 <div
                   key={key}
                   onClick={() => toggleType(key)}
-                  className={`disease-select-tile cursor-pointer ${isFilterActive ? 'active' : 'inactive'}`}
+                  className={`disease-select-tile cursor-pointer ${cfg.theme} ${isFilterActive ? 'active' : 'inactive'}`}
                   style={{
-                    padding: '7px 12px',
-                    borderColor: isFilterActive ? cfg.brightColor : 'rgba(148, 163, 184, 0.18)',
-                    borderLeft: `3.5px solid ${isFilterActive ? (cfg.brightColor || cfg.color) : 'rgba(148, 163, 184, 0.3)'}`,
-                    background: isFilterActive ? cfg.bg : 'rgba(15, 23, 42, 0.45)',
+                    padding: '10px 14px',
                     boxShadow: 'none',
                     transition: 'all 0.18s ease',
                   }}
@@ -715,33 +712,36 @@ export default function NearbyMap({
                 >
                   <div className="d-flex align-items-center justify-content-between font-monospace fw-bold text-uppercase" style={{ fontSize: '0.8rem' }}>
                     <div className="d-flex align-items-center gap-2">
-                      <div style={{
-                        width: '24px',
-                        height: '24px',
-                        borderRadius: '5px',
-                        background: isFilterActive ? cfg.glow : 'rgba(15, 23, 42, 0.6)',
-                        border: `1px solid ${isFilterActive ? cfg.brightColor : 'rgba(148, 163, 184, 0.2)'}`,
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        color: isFilterActive ? (cfg.brightColor || cfg.color) : '#94A3B8',
-                        flexShrink: 0,
-                        transition: 'all 0.18s ease',
-                      }}>
-                        <IconComponent size={13} />
+                      <div
+                        className="disease-icon-box"
+                        style={{
+                          width: '26px',
+                          height: '26px',
+                          borderRadius: '6px',
+                          flexShrink: 0,
+                          background: isFilterActive ? cfg.glow : 'rgba(15, 23, 42, 0.6)',
+                          border: `1px solid ${isFilterActive ? cfg.brightColor : 'rgba(148, 163, 184, 0.2)'}`,
+                          color: isFilterActive ? (cfg.brightColor || cfg.color) : '#94A3B8',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          transition: 'all 0.18s ease',
+                        }}
+                      >
+                        <IconComponent size={14} />
                       </div>
                       <span style={{
                         color: isFilterActive ? 'var(--text-on-dark, #E2E8F0)' : '#94A3B8',
                         letterSpacing: '0.04em',
-                        fontSize: '0.78rem',
+                        fontSize: '0.8rem',
                         transition: 'color 0.18s ease',
                       }}>
                         {cfg.label}
                       </span>
                     </div>
-                    <div className="d-flex align-items-center gap-1.5">
+                    <div className="d-flex align-items-center gap-2">
                       <span
-                        className="fw-bold font-monospace px-1.5 py-0.5 rounded"
+                        className="facility-count-badge fw-bold font-monospace px-1.5 py-0.5 rounded"
                         style={{
                           fontSize: '0.74rem',
                           background: isFilterActive ? 'rgba(15, 23, 42, 0.7)' : 'rgba(15, 23, 42, 0.4)',
@@ -752,7 +752,7 @@ export default function NearbyMap({
                       >
                         {count}
                       </span>
-                      <span style={{
+                      <span className="facility-status-dot" style={{
                         width: '5px',
                         height: '5px',
                         borderRadius: '50%',
@@ -769,16 +769,16 @@ export default function NearbyMap({
         </div>
 
         {/* Quick Radius Selection in Sidebar */}
-        <div className="p-2.5 rounded font-monospace mt-1" style={{ border: '1px solid rgba(148, 163, 184, 0.16)', background: 'rgba(15, 23, 42, 0.5)' }}>
-          <div className="d-flex align-items-center justify-content-between mb-1.5">
-            <span style={{ fontSize: '0.64rem', letterSpacing: '0.06em', textTransform: 'uppercase', color: '#94A3B8', fontWeight: 600 }}>
+        <div className="p-3 rounded font-monospace" style={{ border: '1px solid rgba(148, 163, 184, 0.16)', background: 'rgba(15, 23, 42, 0.5)' }}>
+          <div className="d-flex align-items-center justify-content-between mb-2">
+            <span style={{ fontSize: '0.66rem', letterSpacing: '0.07em', textTransform: 'uppercase', color: '#94A3B8', fontWeight: 600 }}>
               Quick Radius
             </span>
-            <span style={{ fontSize: '0.68rem', color: '#38BDF8', fontWeight: 700 }}>
+            <span style={{ fontSize: '0.7rem', color: '#38BDF8', fontWeight: 700 }}>
               {(radius / 1000).toFixed(1)} km
             </span>
           </div>
-          <div className="d-flex gap-1">
+          <div className="d-flex gap-1.5">
             {[1000, 3000, 5000, 10000].map((rVal) => (
               <button
                 key={rVal}
@@ -851,7 +851,7 @@ export default function NearbyMap({
             </span>
           </div>
           <h1 className="fw-bolder m-0 mb-2" style={{ fontSize: '2rem', letterSpacing: '-0.03em', color: isDark ? '#FFFFFF' : '#0F172A', lineHeight: 1.1 }}>
-            Nearby <span style={{ background: 'linear-gradient(90deg, #DC2626, #EA580C)', WebkitBackgroundClip: 'text', backgroundClip: 'text', WebkitTextFillColor: 'transparent', color: 'transparent', display: 'inline-block' }}>Hospitals & Pharmacies</span>
+            Nearby <span className="text-gradient-heart">Hospitals & Pharmacies</span>
           </h1>
           <p className="m-0" style={{ fontSize: '0.9rem', color: isDark ? 'rgba(255,255,255,0.65)' : '#475569', maxWidth: '520px', lineHeight: 1.5, fontWeight: isDark ? 400 : 500 }}>
             {isDoctor
@@ -1045,12 +1045,12 @@ export default function NearbyMap({
           <div className="glass-card p-4" style={{ borderRadius: '12px' }}>
             {/* Search + filters row */}
             <div className="d-flex align-items-center gap-2 mb-3 flex-wrap">
-              <div className="d-flex align-items-center gap-2 flex-grow-1" style={{ background: 'var(--input-bg)', border: '1px solid var(--input-border)', borderRadius: '8px', padding: '8px 12px' }}>
+              <div className="search-input-wrapper d-flex align-items-center gap-2 flex-grow-1" style={{ background: 'var(--input-bg)', border: '1px solid var(--input-border)', borderRadius: '8px', padding: '8px 12px' }}>
                 <Search size={14} className="text-secondary" />
                 <input
                   type="text" placeholder="Search facilities..."
                   value={search} onChange={(e) => setSearch(e.target.value)}
-                  style={{ background: 'transparent', border: 'none', color: 'var(--text-primary)', outline: 'none', width: '100%', fontSize: '0.83rem', padding: 0, marginBottom: 0 }}
+                  style={{ color: 'var(--text-primary)', width: '100%', fontSize: '0.83rem' }}
                 />
               </div>
               {isLoggedIn && (

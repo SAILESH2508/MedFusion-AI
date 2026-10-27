@@ -24,11 +24,14 @@ import {
 } from 'lucide-react';
 import { api } from '../services/api';
 import { SidebarContext } from '../context/SidebarContext';
+import { useTheme } from '../context/useTheme';
 import { getHasShownGuestPopup, setHasShownGuestPopup } from '../services/utils';
 import MedicalReadingBar from '../components/MedicalReadingBar';
 
 function GuestUpload({ openAuth }) {
   const { setSidebarContent } = useContext(SidebarContext);
+  const { theme } = useTheme();
+  const isDark = theme === 'dark';
   const [file, setFile] = useState(null);
   const [previewUrl, setPreviewUrl] = useState(null);
   const [docType, setDocType] = useState('Prescription (Rx)');
@@ -371,6 +374,46 @@ function GuestUpload({ openAuth }) {
 
   return (
     <div className="reveal px-1 w-100 theme-general">
+      {/* ── Top Header Banner ─────────────────────────────────────── */}
+      <div
+        className="mb-4 position-relative overflow-hidden"
+        style={{
+          borderRadius: '20px',
+          padding: '28px 32px',
+          background: isDark
+            ? 'linear-gradient(135deg, #0a0a0a 0%, #0f1a0f 35%, #1a1200 65%, #0a0a0a 100%)'
+            : '#FFFFFF',
+          border: isDark
+            ? '1px solid rgba(244, 149, 74, 0.3)'
+            : '1px solid rgba(244, 149, 74, 0.25)',
+          boxShadow: isDark
+            ? '0 0 40px rgba(244, 149, 74, 0.1), inset 0 1px 0 rgba(255,255,255,0.06)'
+            : '0 4px 20px rgba(244, 149, 74, 0.08), 0 1px 4px rgba(0, 0, 0, 0.04)',
+          transition: 'all 0.3s ease',
+        }}
+      >
+        {/* Glow blobs */}
+        <div style={{ position: 'absolute', top: '-20px', right: '60px', width: '180px', height: '180px', borderRadius: '50%', background: `radial-gradient(circle, rgba(244,149,74,${isDark ? '0.15' : '0.1'}) 0%, transparent 70%)`, pointerEvents: 'none' }} />
+        <div style={{ position: 'absolute', bottom: '-30px', left: '160px', width: '140px', height: '140px', borderRadius: '50%', background: `radial-gradient(circle, rgba(56,189,248,${isDark ? '0.12' : '0.1'}) 0%, transparent 70%)`, pointerEvents: 'none' }} />
+
+        <div style={{ position: 'relative', zIndex: 1 }}>
+          <div className="d-flex align-items-center gap-2 mb-2">
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '28px', height: '28px', borderRadius: '8px', background: isDark ? 'rgba(244,149,74,0.2)' : 'rgba(244,149,74,0.12)', border: '1px solid rgba(244,149,74,0.4)' }}>
+              <Cpu size={14} style={{ color: '#E07B39' }} />
+            </div>
+            <span className="font-monospace text-uppercase" style={{ fontSize: '0.68rem', letterSpacing: '0.14em', color: isDark ? 'var(--brand-orange)' : '#D9681E', fontWeight: 700 }}>
+              Optical Clinical OCR &nbsp;·&nbsp; Guest AI Scanner
+            </span>
+          </div>
+          <h1 className="fw-bolder m-0 mb-2" style={{ fontSize: '2rem', letterSpacing: '-0.03em', color: isDark ? '#FFFFFF' : '#0F172A', lineHeight: 1.1, fontFamily: 'var(--font-main)' }}>
+            AI Medical <span className="text-gradient-heart">Report & Scanner</span>
+          </h1>
+          <p className="m-0" style={{ fontSize: '0.9rem', color: isDark ? 'rgba(255,255,255,0.65)' : '#475569', maxWidth: '560px', lineHeight: 1.5, fontWeight: isDark ? 400 : 500 }}>
+            Upload a photo or scanned PDF of any prescription or lab report. The neural OCR engine extracts drug names, dosages, biomarkers and safety flags in under 10 seconds.
+          </p>
+        </div>
+      </div>
+
       {/* ── Main Expanded Workspace ──────────────────────────────────── */}
       <div className="row g-4 align-items-stretch">
         
