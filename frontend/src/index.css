@@ -359,38 +359,39 @@ nav.bg-glass .emergency-qr-panel a,
   color: rgba(255, 255, 255, 0.92) !important;
 }
 .app-sidebar p {
-  color: rgba(255, 255, 255, 0.68);
-}.app-sidebar .glass-card {
-  background: rgba(255, 255, 255, 0.08) !important;
-  border-color: rgba(255, 255, 255, 0.16) !important;
-  color: #FFFFFF !important;
+  color: #94A3B8;
+}
+.app-sidebar .glass-card {
+  background: rgba(15, 23, 42, 0.65) !important;
+  border-color: rgba(148, 163, 184, 0.16) !important;
+  color: var(--text-on-dark, #E2E8F0) !important;
 }
 
 .app-sidebar .glass-card h1,
 .app-sidebar .glass-card h2,
 .app-sidebar .glass-card h3,
 .app-sidebar .glass-card h4 {
-  color: #FFFFFF !important;
+  color: var(--text-on-dark, #E2E8F0) !important;
 }
 
 .app-sidebar .glass-card p {
-  color: rgba(255, 255, 255, 0.88) !important;
+  color: #94A3B8 !important;
 }
 
-/* Force elements with inline text colors in sidebar to remain bright & legible, excluding tiles with their own card background */
+/* Force elements with inline text colors in sidebar to remain legible on dark background */
 .app-sidebar [style*="color: var(--text-primary)"]:not(.disease-select-tile *):not(.disease-select-tile),
 .app-sidebar [style*="color:var(--text-primary)"]:not(.disease-select-tile *):not(.disease-select-tile) {
-  color: #FFFFFF !important;
+  color: var(--text-on-dark, #E2E8F0) !important;
 }
 
 .app-sidebar [style*="color: var(--text-secondary)"]:not(.disease-select-tile *):not(.disease-select-tile),
 .app-sidebar [style*="color:var(--text-secondary)"]:not(.disease-select-tile *):not(.disease-select-tile) {
-  color: rgba(255, 255, 255, 0.90) !important;
+  color: #94A3B8 !important;
 }
 
 .app-sidebar [style*="color: var(--text-muted)"]:not(.disease-select-tile *):not(.disease-select-tile),
 .app-sidebar [style*="color:var(--text-muted)"]:not(.disease-select-tile *):not(.disease-select-tile) {
-  color: rgba(255, 255, 255, 0.85) !important;
+  color: #64748B !important;
 }
 
 .app-sidebar [style*="rgba(255, 255, 255, 0.65)"],
@@ -399,55 +400,55 @@ nav.bg-glass .emergency-qr-panel a,
 .app-sidebar [style*="rgba(255,255,255,0.58)"],
 .app-sidebar [style*="rgba(255, 255, 255, 0.7)"],
 .app-sidebar [style*="rgba(255,255,255,0.7)"] {
-  color: rgba(255, 255, 255, 0.92) !important;
+  color: var(--text-on-dark, #E2E8F0) !important;
 }
 
 .app-sidebar .bg-white-5,
 .app-sidebar .bg-white-10 {
-  background: rgba(255, 255, 255, 0.08) !important;
-  border-color: rgba(255, 255, 255, 0.14) !important;
-  color: #FFFFFF !important;
+  background: rgba(15, 23, 42, 0.55) !important;
+  border-color: rgba(148, 163, 184, 0.16) !important;
+  color: var(--text-on-dark, #E2E8F0) !important;
 }
 
 .app-sidebar [style*="background: var(--bg-surface)"],
 .app-sidebar [style*="background:var(--bg-surface)"],
 .app-sidebar [style*="background: var(--bg-card)"],
 .app-sidebar [style*="background:var(--bg-card)"] {
-  background: rgba(255, 255, 255, 0.08) !important;
-  border-color: rgba(255, 255, 255, 0.16) !important;
-  color: #FFFFFF !important;
+  background: rgba(15, 23, 42, 0.55) !important;
+  border-color: rgba(148, 163, 184, 0.16) !important;
+  color: var(--text-on-dark, #E2E8F0) !important;
 }
 
 .app-sidebar select {
-  background: rgba(255, 255, 255, 0.1) !important;
-  border: 1px solid rgba(255, 255, 255, 0.2) !important;
-  color: #FFFFFF !important;
+  background: rgba(15, 23, 42, 0.75) !important;
+  border: 1px solid rgba(148, 163, 184, 0.22) !important;
+  color: var(--text-on-dark, #E2E8F0) !important;
   padding: 8px 10px;
   border-radius: 6px;
 }
 
 .app-sidebar select option {
-  background: #1E3A5F !important;
-  color: #FFFFFF !important;
+  background: #0F172A !important;
+  color: var(--text-on-dark, #E2E8F0) !important;
 }
 
-/* Sidebar Buttons & Badges: High-contrast translucent glass on dark navy background */
+/* Sidebar Buttons & Badges: High-contrast translucent surface */
 .app-sidebar .btn-clinical:not(.primary):not(.secondary) {
-  background: rgba(255, 255, 255, 0.12) !important;
-  border: 1px solid rgba(255, 255, 255, 0.25) !important;
-  color: #FFFFFF !important;
+  background: rgba(15, 23, 42, 0.7) !important;
+  border: 1px solid rgba(148, 163, 184, 0.25) !important;
+  color: var(--text-on-dark, #E2E8F0) !important;
 }
 
 .app-sidebar .btn-clinical:not(.primary):not(.secondary):hover:not(:disabled) {
-  background: rgba(255, 255, 255, 0.22) !important;
-  border-color: rgba(255, 255, 255, 0.45) !important;
-  color: #FFFFFF !important;
+  background: rgba(30, 41, 59, 0.8) !important;
+  border-color: rgba(148, 163, 184, 0.45) !important;
+  color: var(--text-on-dark, #E2E8F0) !important;
 }
 
 .app-sidebar .badge {
-  background: rgba(255, 255, 255, 0.15) !important;
-  border: 1px solid rgba(255, 255, 255, 0.28) !important;
-  color: #FFFFFF !important;
+  background: rgba(15, 23, 42, 0.6) !important;
+  border: 1px solid rgba(148, 163, 184, 0.2) !important;
+  color: var(--text-on-dark, #E2E8F0) !important;
 }
 
 .main-content-wrapper {
@@ -1218,29 +1219,29 @@ button.btn-icon:hover {
   filter: none !important;
   transition: all 0.18s cubic-bezier(0.4, 0, 0.2, 1) !important;
   border-radius: 9px !important;
-  background: rgba(255, 255, 255, 0.05) !important;
-  border: 1px solid rgba(255, 255, 255, 0.14) !important;
-  border-left: 3.5px solid rgba(255, 255, 255, 0.4) !important;
-  color: rgba(255, 255, 255, 0.92) !important;
+  background: rgba(15, 23, 42, 0.55) !important;
+  border: 1px solid rgba(148, 163, 184, 0.16) !important;
+  border-left: 3.5px solid rgba(148, 163, 184, 0.35) !important;
+  color: var(--text-on-dark, #E2E8F0) !important;
 }
 
 .app-sidebar .disease-select-tile *,
 .app-sidebar .facility-select-tile * {
-  color: rgba(255, 255, 255, 0.92) !important;
+  color: var(--text-on-dark, #E2E8F0) !important;
 }
 
 .app-sidebar .disease-select-tile.inactive,
 .app-sidebar .facility-select-tile.inactive {
-  background: rgba(255, 255, 255, 0.04) !important;
-  border: 1px solid rgba(255, 255, 255, 0.12) !important;
-  border-left: 3.5px solid rgba(255, 255, 255, 0.35) !important;
-  color: rgba(255, 255, 255, 0.82) !important;
+  background: rgba(15, 23, 42, 0.35) !important;
+  border: 1px solid rgba(148, 163, 184, 0.1) !important;
+  border-left: 3.5px solid rgba(148, 163, 184, 0.25) !important;
+  color: #94A3B8 !important;
   opacity: 1 !important;
 }
 
 .app-sidebar .disease-select-tile.inactive *,
 .app-sidebar .facility-select-tile.inactive * {
-  color: rgba(255, 255, 255, 0.82) !important;
+  color: #94A3B8 !important;
 }
 
 

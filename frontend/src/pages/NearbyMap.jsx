@@ -638,63 +638,61 @@ export default function NearbyMap({
   // Sidebar injection
   useEffect(() => {
     setSidebarContent(
-      <div className="d-flex flex-column gap-2 pt-1-1">
-        {/* Sleek Medical Header Console inside Sidebar — unified across MedFusion AI */}
-        <div className="glass-card p-2.5 reveal" style={{ borderRadius: '12px', border: '1px solid rgba(244, 149, 74, 0.4)', background: 'rgba(244, 149, 74, 0.08)' }}>
-          <div className="d-flex align-items-center gap-2 mb-1.5">
-            <div style={{
-              width: '26px',
-              height: '26px',
-              borderRadius: '6px',
-              background: 'rgba(244, 149, 74, 0.25)',
-              border: '1px solid #F97316',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-            }}>
-              <Radio size={13} style={{ color: '#F97316' }} />
+      <div className="d-flex flex-column gap-2.5 pt-1">
+        {/* Sleek Medical Header Console inside Sidebar */}
+        <div className="glass-card p-2.5" style={{ borderRadius: '12px', border: '1px solid rgba(244, 149, 74, 0.35)', background: 'rgba(244, 149, 74, 0.08)' }}>
+          <div className="d-flex align-items-center justify-content-between mb-1.5">
+            <div className="d-flex align-items-center gap-1.5">
+              <div style={{
+                width: '24px',
+                height: '24px',
+                borderRadius: '6px',
+                background: 'rgba(244, 149, 74, 0.22)',
+                border: '1px solid #F97316',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}>
+                <Radio size={12} style={{ color: '#F97316' }} />
+              </div>
+              <span style={{ fontSize: '0.64rem', fontFamily: 'var(--font-mono)', color: '#FB923C', letterSpacing: '0.08em', textTransform: 'uppercase', fontWeight: 700 }}>
+                Facility Radar
+              </span>
             </div>
-            <span style={{ fontSize: '0.64rem', fontFamily: 'var(--font-mono)', color: '#FB923C', letterSpacing: '0.08em', textTransform: 'uppercase', fontWeight: 700 }}>
-              Live GPS Radar
+            <span style={{
+              background: 'rgba(15, 23, 42, 0.65)',
+              border: '1px solid rgba(56, 189, 248, 0.35)',
+              color: '#38BDF8',
+              padding: '1px 7px',
+              borderRadius: '12px',
+              fontSize: '0.62rem',
+              fontFamily: 'var(--font-mono)',
+              fontWeight: 700
+            }}>
+              {(radius / 1000).toFixed(0)} KM
             </span>
           </div>
-          <h2 className="fw-bolder fs-6 m-0" style={{ letterSpacing: '-0.02em', fontSize: '1.1rem', color: 'var(--text-on-dark, #E2E8F0)' }}>
-            Facility <span style={{ color: 'var(--brand-orange)' }}>Radar</span>
+          <h2 className="fw-bolder fs-6 m-0" style={{ letterSpacing: '-0.02em', fontSize: '1.05rem', color: 'var(--text-on-dark, #E2E8F0)' }}>
+            Medical <span style={{ color: 'var(--brand-orange)' }}>Radar</span>
           </h2>
-          <p className="m-0 mt-1.5" style={{ fontSize: '0.78rem', lineHeight: '1.35', color: 'rgba(255, 255, 255, 0.85)' }}>
-            {isDoctor
-              ? 'Clinical GPS facility radar for patient referrals, transfers, and specialist emergency routing.'
-              : isPatient
-              ? 'Live GPS radar with one-tap directions, emergency routing, and hospital contacts.'
-              : 'Sign in for direct facility calling, emergency routing, and 15km extended radius.'}
-          </p>
-        </div>
-
-        {/* Active Search Zone Status Card */}
-        <div className="p-2.5 rounded font-monospace" style={{ border: '1px solid rgba(56, 189, 248, 0.35)', borderLeft: '4px solid #38BDF8', background: 'rgba(56, 189, 248, 0.08)' }}>
-          <span className="fw-bold font-monospace text-uppercase d-block mb-1" style={{ fontSize: '0.68rem', color: '#38BDF8' }}>
-            Active Search Zone
-          </span>
-          <div className="d-flex align-items-center justify-content-between">
-            <span className="fw-bold d-block" style={{ fontSize: '0.88rem', color: 'var(--text-on-dark, #E2E8F0)' }}>
-              {location ? 'GPS Locked' : 'Locating…'}
+          <div className="d-flex align-items-center justify-content-between mt-1.5 pt-1.5" style={{ borderTop: '1px solid rgba(148, 163, 184, 0.15)', fontSize: '0.7rem', color: '#94A3B8', fontFamily: 'var(--font-mono)' }}>
+            <span>{places.length} locations found</span>
+            <span style={{ color: location ? '#34D399' : '#F59E0B' }}>
+              ● {location ? (location.city || 'GPS Locked') : 'Locating...'}
             </span>
-            <span style={{ background: 'rgba(56, 189, 248, 0.22)', border: '1px solid #38BDF8', color: 'var(--text-on-dark, #E2E8F0)', padding: '1px 7px', borderRadius: '16px', fontSize: '0.64rem', fontFamily: 'var(--font-mono)', fontWeight: 700 }}>
-              {(radius / 1000).toFixed(0)} KM RADIUS
-            </span>
-          </div>
-          <div className="d-flex gap-2.5 mt-1.5 pt-1.5 border-top border-white-5" style={{ fontSize: '0.68rem', color: 'rgba(255,255,255,0.65)' }}>
-            <span>{places.length} Total Found</span>
-            <span>•</span>
-            <span>{activeTypes.length} Active Types</span>
           </div>
         </div>
 
-        {/* Live Facilities Selector using standard disease-select-tile pattern */}
+        {/* Live Facilities Filter Selector */}
         <div className="mt-1">
-          <h4 className="fw-bold mb-2" style={{ fontSize: '0.92rem', letterSpacing: '0.05em', color: 'var(--text-on-dark, #E2E8F0)' }}>
-            <span className="font-monospace text-uppercase" style={{ letterSpacing: '0.06em', color: 'var(--text-on-dark, #E2E8F0)' }}>Live Facilities</span>
-          </h4>
+          <div className="d-flex align-items-center justify-content-between mb-1.5 px-0.5">
+            <span className="font-monospace text-uppercase fw-bold" style={{ fontSize: '0.66rem', letterSpacing: '0.08em', color: '#94A3B8' }}>
+              Facility Filter
+            </span>
+            <span className="font-monospace" style={{ fontSize: '0.62rem', color: '#64748B' }}>
+              {activeTypes.length} Active
+            </span>
+          </div>
           <div className="d-flex flex-column gap-1.5">
             {Object.entries(TYPE_CONFIG).map(([key, cfg]) => {
               const IconComponent = cfg.icon;
@@ -706,61 +704,62 @@ export default function NearbyMap({
                   onClick={() => toggleType(key)}
                   className={`disease-select-tile cursor-pointer ${isFilterActive ? 'active' : 'inactive'}`}
                   style={{
-                    padding: '8px 14px',
-                    borderColor: isFilterActive ? cfg.brightColor : cfg.border,
-                    borderLeft: `4px solid ${isFilterActive ? (cfg.brightColor || cfg.color) : cfg.color}`,
-                    background: isFilterActive ? cfg.bg : 'rgba(255, 255, 255, 0.04)',
+                    padding: '7px 12px',
+                    borderColor: isFilterActive ? cfg.brightColor : 'rgba(148, 163, 184, 0.18)',
+                    borderLeft: `3.5px solid ${isFilterActive ? (cfg.brightColor || cfg.color) : 'rgba(148, 163, 184, 0.3)'}`,
+                    background: isFilterActive ? cfg.bg : 'rgba(15, 23, 42, 0.45)',
                     boxShadow: 'none',
-                    opacity: 1,
                     transition: 'all 0.18s ease',
                   }}
                   title={`Click to ${isFilterActive ? 'hide' : 'show'} ${cfg.label} on map`}
                 >
-                  <div className="d-flex align-items-center justify-content-between font-monospace fw-bold text-uppercase" style={{ fontSize: '0.84rem' }}>
-                    <div className="d-flex align-items-center gap-2.5">
+                  <div className="d-flex align-items-center justify-content-between font-monospace fw-bold text-uppercase" style={{ fontSize: '0.8rem' }}>
+                    <div className="d-flex align-items-center gap-2">
                       <div style={{
-                        width: '28px',
-                        height: '28px',
-                        borderRadius: '6px',
-                        background: isFilterActive ? cfg.color : 'rgba(255, 255, 255, 0.08)',
-                        border: `1px solid ${isFilterActive ? cfg.brightColor : cfg.border}`,
+                        width: '24px',
+                        height: '24px',
+                        borderRadius: '5px',
+                        background: isFilterActive ? cfg.glow : 'rgba(15, 23, 42, 0.6)',
+                        border: `1px solid ${isFilterActive ? cfg.brightColor : 'rgba(148, 163, 184, 0.2)'}`,
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
-                        color: isFilterActive ? '#FFFFFF' : (cfg.brightColor || cfg.color),
+                        color: isFilterActive ? (cfg.brightColor || cfg.color) : '#94A3B8',
                         flexShrink: 0,
-                        boxShadow: 'none',
                         transition: 'all 0.18s ease',
                       }}>
-                        <IconComponent size={15} />
+                        <IconComponent size={13} />
                       </div>
                       <span style={{
-                        color: isFilterActive ? 'rgba(255,255,255,0.95)' : 'rgba(255,255,255,0.72)',
+                        color: isFilterActive ? 'var(--text-on-dark, #E2E8F0)' : '#94A3B8',
                         letterSpacing: '0.04em',
+                        fontSize: '0.78rem',
                         transition: 'color 0.18s ease',
                       }}>
                         {cfg.label}
                       </span>
                     </div>
-                    <div className="d-flex align-items-center gap-2">
+                    <div className="d-flex align-items-center gap-1.5">
                       <span
-                        className="fw-bold font-monospace px-2 py-0.5 rounded"
+                        className="fw-bold font-monospace px-1.5 py-0.5 rounded"
                         style={{
-                          fontSize: '0.82rem',
-                          background: isFilterActive ? cfg.color : 'rgba(255, 255, 255, 0.06)',
-                          color: isFilterActive ? '#FFFFFF' : (cfg.brightColor || cfg.color),
-                          border: `1px solid ${isFilterActive ? cfg.brightColor : cfg.border}`,
-                          boxShadow: 'none',
+                          fontSize: '0.74rem',
+                          background: isFilterActive ? 'rgba(15, 23, 42, 0.7)' : 'rgba(15, 23, 42, 0.4)',
+                          color: isFilterActive ? (cfg.brightColor || cfg.color) : '#64748B',
+                          border: `1px solid ${isFilterActive ? cfg.brightColor : 'rgba(148, 163, 184, 0.15)'}`,
                           transition: 'all 0.18s ease',
                         }}
                       >
                         {count}
                       </span>
-                      {isFilterActive ? (
-                        <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: cfg.brightColor || cfg.color, boxShadow: 'none', flexShrink: 0 }} />
-                      ) : (
-                        <span style={{ width: '5px', height: '5px', borderRadius: '50%', background: 'var(--text-disabled, #94a3b8)', opacity: 0.5, boxShadow: 'none', flexShrink: 0 }} />
-                      )}
+                      <span style={{
+                        width: '5px',
+                        height: '5px',
+                        borderRadius: '50%',
+                        background: isFilterActive ? (cfg.brightColor || cfg.color) : '#64748B',
+                        opacity: isFilterActive ? 1 : 0.4,
+                        flexShrink: 0
+                      }} />
                     </div>
                   </div>
                 </div>
@@ -769,40 +768,40 @@ export default function NearbyMap({
           </div>
         </div>
 
-        {/* Nearest Hospital quick route — available for logged-in doctors & patients */}
-        {isLoggedIn && places.filter((p) => p.type === 'hospital').length > 0 && (
-          <div className="d-flex flex-column gap-2 mt-1">
-            <h4 className="fw-bold mb-1" style={{ fontSize: '0.85rem', letterSpacing: '0.05em', color: 'var(--text-on-dark, #E2E8F0)' }}>
-              <span className="font-monospace text-uppercase" style={{ letterSpacing: '0.06em', color: '#F87171' }}>Nearest Emergency</span>
-            </h4>
-            {places.filter((p) => p.type === 'hospital').slice(0, 1).map((p) => (
-              <div key={p.id} className="p-3 rounded-3" style={{ background: 'rgba(220, 38, 38, 0.18)', border: '1px solid rgba(220, 38, 38, 0.45)' }}>
-                <p className="fw-bold m-0" style={{ fontSize: '0.88rem', color: 'var(--text-on-dark, #E2E8F0)' }}>{p.name}</p>
-                <p className="m-0 mt-1" style={{ fontSize: '0.74rem', color: 'rgba(255,255,255,0.72)' }}>
-                  {p.distance < 1 ? `${Math.round(p.distance * 1000)}m` : `${p.distance.toFixed(1)}km`} away
-                </p>
-                <div className="d-flex gap-2 mt-2.5">
-                  <a href={`https://www.google.com/maps/dir/?api=1&destination=${p.lat},${p.lon}`} target="_blank" rel="noopener noreferrer"
-                    className="flex-grow-1 d-flex align-items-center justify-content-center gap-1.5 text-center py-1.5 rounded font-monospace text-uppercase text-decoration-none"
-                    style={{ fontSize: '0.72rem', background: 'rgba(220, 38, 38, 0.35)', border: '1px solid var(--accent-red)', color: 'var(--text-on-dark, #E2E8F0)', fontWeight: 700 }}>
-                    <Navigation size={12} /> Directions
-                  </a>
-                  {p.phone && (
-                    <a href={`tel:${p.phone}`}
-                      className="px-2.5 py-1.5 rounded font-monospace text-uppercase text-decoration-none d-flex align-items-center justify-content-center"
-                      style={{ fontSize: '0.72rem', background: 'rgba(0,255,170,0.1)', border: '1px solid var(--accent-green)', color: 'var(--accent-green)', fontWeight: 700 }}>
-                      <Phone size={12} />
-                    </a>
-                  )}
-                </div>
-              </div>
+        {/* Quick Radius Selection in Sidebar */}
+        <div className="p-2.5 rounded font-monospace mt-1" style={{ border: '1px solid rgba(148, 163, 184, 0.16)', background: 'rgba(15, 23, 42, 0.5)' }}>
+          <div className="d-flex align-items-center justify-content-between mb-1.5">
+            <span style={{ fontSize: '0.64rem', letterSpacing: '0.06em', textTransform: 'uppercase', color: '#94A3B8', fontWeight: 600 }}>
+              Quick Radius
+            </span>
+            <span style={{ fontSize: '0.68rem', color: '#38BDF8', fontWeight: 700 }}>
+              {(radius / 1000).toFixed(1)} km
+            </span>
+          </div>
+          <div className="d-flex gap-1">
+            {[1000, 3000, 5000, 10000].map((rVal) => (
+              <button
+                key={rVal}
+                onClick={() => setRadius(rVal)}
+                className="flex-grow-1 py-1 rounded font-monospace text-center cursor-pointer"
+                style={{
+                  fontSize: '0.65rem',
+                  fontWeight: 600,
+                  background: radius === rVal ? 'rgba(56, 189, 248, 0.22)' : 'rgba(15, 23, 42, 0.6)',
+                  border: radius === rVal ? '1px solid #38BDF8' : '1px solid rgba(148, 163, 184, 0.16)',
+                  color: radius === rVal ? '#38BDF8' : '#94A3B8',
+                  transition: 'all 0.15s ease',
+                }}
+              >
+                {(rVal / 1000).toFixed(0)}k
+              </button>
             ))}
           </div>
-        )}
+        </div>
       </div>
     );
     return () => setSidebarContent(null);
-  }, [setSidebarContent, isLoggedIn, isDoctor, isPatient, places, activeTypes, location, radius, toggleType]);
+  }, [setSidebarContent, places, activeTypes, location, radius, toggleType, setRadius]);
 
   const filtered = places
     .filter((p) => p.name.toLowerCase().includes(search.toLowerCase()))
