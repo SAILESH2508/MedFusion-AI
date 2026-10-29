@@ -351,27 +351,31 @@ function DoctorDashboard({ user }) {
               ) : (
                 <div className="d-flex flex-column gap-3 overflow-auto flex-grow-1 pe-2" style={{ minHeight: 0 }}>
                   {/* Search bar */}
-                  <div style={{ position: 'relative', flexShrink: 0 }}>
-                    <Search
-                      size={14}
-                      style={{
-                        position: 'absolute',
-                        left: '12px',
-                        top: '50%',
-                        transform: 'translateY(-50%)',
-                        pointerEvents: 'none',
-                        color: 'var(--text-muted)',
-                        zIndex: 1,
-                      }}
-                    />
+                  <div
+                    className="d-flex align-items-center gap-2"
+                    style={{
+                      flexShrink: 0,
+                      background: 'var(--bg-surface)',
+                      border: '1px solid var(--border)',
+                      borderRadius: '8px',
+                      padding: '8px 12px',
+                    }}
+                  >
+                    <Search size={14} style={{ color: 'var(--text-muted)', flexShrink: 0 }} />
                     <input
                       type="text"
                       value={patientSearch}
                       onChange={e => setPatientSearch(e.target.value)}
                       placeholder="Search by name, email or ID..."
                       aria-label="Search patients by name, email or ID"
-                      className="w-100 font-monospace bg-transparent rounded border border-white-10"
-                      style={{ padding: '10px 12px 10px 34px', fontSize: '0.82rem', outline: 'none', color: 'var(--text-primary)', display: 'block' }}
+                      className="font-monospace bg-transparent border-0"
+                      style={{
+                        flex: 1,
+                        fontSize: '0.82rem',
+                        outline: 'none',
+                        color: 'var(--text-primary)',
+                        minWidth: 0,
+                      }}
                     />
                   </div>
 

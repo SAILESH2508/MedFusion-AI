@@ -245,10 +245,10 @@ function ProfileIdentity({
                   <div className="col-sm-4">
                     <div className="telemetry-node telemetry-node-age h-100">
                       <div className="d-flex align-items-center gap-2 mb-2">
-                        <Calendar size={16} style={{ color: 'var(--accent-violet)' }} />
+                        <Calendar size={15} style={{ color: '#8B5CF6' }} />
                         <span className="text-secondary fw-semibold" style={{ fontSize: '0.72rem', letterSpacing: '0.05em' }}>AGE</span>
                       </div>
-                      <strong className="fs-5 fw-bold" style={{ color: 'var(--text-primary)', fontFamily: 'var(--font-mono)' }}>
+                      <strong className="fs-5 fw-bold" style={{ color: '#8B5CF6', fontFamily: 'var(--font-mono)' }}>
                         {profile.dob ? `${getAge(profile.dob)} Yrs` : 'N/A'}
                       </strong>
                     </div>
@@ -258,10 +258,10 @@ function ProfileIdentity({
                   <div className="col-sm-4">
                     <div className="telemetry-node telemetry-node-sex h-100">
                       <div className="d-flex align-items-center gap-2 mb-2">
-                        <Dna size={16} style={{ color: 'var(--accent-coral)' }} />
+                        <Dna size={15} style={{ color: '#F08080' }} />
                         <span className="text-secondary fw-semibold" style={{ fontSize: '0.72rem', letterSpacing: '0.05em' }}>GENDER</span>
                       </div>
-                      <strong className="fs-5 fw-bold" style={{ color: 'var(--text-primary)', fontFamily: 'var(--font-mono)' }}>
+                      <strong className="fs-5 fw-bold" style={{ color: '#F08080', fontFamily: 'var(--font-mono)' }}>
                         {profile.gender === 'M' ? 'Male' : profile.gender === 'F' ? 'Female' : 'N/A'}
                       </strong>
                     </div>
@@ -271,10 +271,10 @@ function ProfileIdentity({
                   <div className="col-sm-4">
                     <div className="telemetry-node telemetry-node-dob h-100">
                       <div className="d-flex align-items-center gap-2 mb-2">
-                        <Gift size={16} style={{ color: 'var(--accent-cyan)' }} />
+                        <Gift size={15} style={{ color: '#22C5E0' }} />
                         <span className="text-secondary fw-semibold" style={{ fontSize: '0.72rem', letterSpacing: '0.05em' }}>DATE OF BIRTH</span>
                       </div>
-                      <strong className="fw-bold" style={{ color: 'var(--text-primary)', fontSize: '0.98rem', fontFamily: 'var(--font-mono)' }}>
+                      <strong className="fw-bold" style={{ color: '#22C5E0', fontSize: '0.98rem', fontFamily: 'var(--font-mono)' }}>
                         {profile.dob || 'N/A'}
                       </strong>
                     </div>
@@ -284,7 +284,7 @@ function ProfileIdentity({
                   <div className="col-sm-4">
                     <div className="telemetry-node telemetry-node-blood h-100">
                       <div className="d-flex align-items-center gap-2 mb-2">
-                        <Droplet size={16} style={{ color: 'var(--brand-orange)' }} />
+                        <Droplet size={15} style={{ color: 'var(--brand-orange)' }} />
                         <span className="text-secondary fw-semibold" style={{ fontSize: '0.72rem', letterSpacing: '0.05em' }}>BLOOD GROUP</span>
                       </div>
                       <strong className="fs-5 fw-bold" style={{ color: 'var(--brand-orange)', fontFamily: 'var(--font-mono)' }}>
@@ -297,10 +297,10 @@ function ProfileIdentity({
                   <div className="col-sm-4">
                     <div className="telemetry-node telemetry-node-height h-100">
                       <div className="d-flex align-items-center gap-2 mb-2">
-                        <Ruler size={16} style={{ color: 'var(--accent-teal)' }} />
+                        <Ruler size={15} style={{ color: '#2DB8B0' }} />
                         <span className="text-secondary fw-semibold" style={{ fontSize: '0.72rem', letterSpacing: '0.05em' }}>HEIGHT</span>
                       </div>
-                      <strong className="fs-5 fw-bold" style={{ color: 'var(--text-primary)', fontFamily: 'var(--font-mono)' }}>
+                      <strong className="fs-5 fw-bold" style={{ color: '#2DB8B0', fontFamily: 'var(--font-mono)' }}>
                         {profile.height ? `${profile.height} cm` : 'N/A'}
                       </strong>
                     </div>
@@ -310,10 +310,10 @@ function ProfileIdentity({
                   <div className="col-sm-4">
                     <div className="telemetry-node telemetry-node-weight h-100">
                       <div className="d-flex align-items-center gap-2 mb-2">
-                        <Scale size={16} style={{ color: 'var(--accent-emerald)' }} />
+                        <Scale size={15} style={{ color: '#34C97A' }} />
                         <span className="text-secondary fw-semibold" style={{ fontSize: '0.72rem', letterSpacing: '0.05em' }}>WEIGHT</span>
                       </div>
-                      <strong className="fs-5 fw-bold" style={{ color: 'var(--text-primary)', fontFamily: 'var(--font-mono)' }}>
+                      <strong className="fs-5 fw-bold" style={{ color: '#34C97A', fontFamily: 'var(--font-mono)' }}>
                         {profile.weight ? `${profile.weight} kg` : 'N/A'}
                       </strong>
                     </div>
@@ -384,10 +384,10 @@ function ProfileIdentity({
                   <div className="target-node target-node-hydration p-3 h-100 d-flex flex-column justify-content-between" style={{ minHeight: '102px' }}>
                     <div className="d-flex align-items-center justify-content-between mb-1.5">
                       <span className="text-secondary d-block small" style={{ fontSize: '0.6rem', letterSpacing: '0.04em' }}>HYDRATION</span>
-                      <Droplet size={14} style={{ color: 'var(--brand-blue)' }} />
+                      <Droplet size={14} style={{ color: '#5B9FE0' }} />
                     </div>
                     <div>
-                      <strong className="fs-6 d-block mt-0.5" style={{ color: 'var(--text-primary)' }}>
+                      <strong className="fs-6 d-block mt-0.5" style={{ color: '#5B9FE0' }}>
                         {profile.weight ? (parseFloat(profile.weight) * 35 / 1000).toFixed(1) : '2.5'} L
                       </strong>
                       <span className="text-muted d-block" style={{ fontSize: '0.55rem', opacity: 0.6 }}>35ml/kg baseline</span>
@@ -403,7 +403,7 @@ function ProfileIdentity({
                       <Flame size={14} style={{ color: 'var(--brand-orange)' }} />
                     </div>
                     <div>
-                      <strong className="fs-6 d-block mt-0.5" style={{ color: 'var(--text-primary)' }}>
+                      <strong className="fs-6 d-block mt-0.5" style={{ color: 'var(--brand-orange)' }}>
                         {profile.weight && profile.height && profile.dob ? 
                           Math.round(10 * parseFloat(profile.weight) + 6.25 * parseFloat(profile.height) - 5 * getAge(profile.dob) + (profile.gender === 'M' ? 5 : -161))
                           : '1,800'} kcal
@@ -418,10 +418,10 @@ function ProfileIdentity({
                   <div className="target-node target-node-sleep p-3 h-100 d-flex flex-column justify-content-between" style={{ minHeight: '102px' }}>
                     <div className="d-flex align-items-center justify-content-between mb-1.5">
                       <span className="text-secondary d-block small" style={{ fontSize: '0.6rem', letterSpacing: '0.04em' }}>OPTIMAL SLEEP</span>
-                      <Clock size={14} style={{ color: 'var(--accent-teal)' }} />
+                      <Clock size={14} style={{ color: '#2DB8B0' }} />
                     </div>
                     <div>
-                      <strong className="fs-6 d-block mt-0.5" style={{ color: 'var(--text-primary)' }}>7.5 - 8.5 Hrs</strong>
+                      <strong className="fs-6 d-block mt-0.5" style={{ color: '#2DB8B0' }}>7.5 - 8.5 Hrs</strong>
                       <span className="text-muted d-block" style={{ fontSize: '0.55rem', opacity: 0.6 }}>Circadian cycle</span>
                     </div>
                   </div>
@@ -432,10 +432,10 @@ function ProfileIdentity({
                   <div className="target-node target-node-cardio p-3 h-100 d-flex flex-column justify-content-between" style={{ minHeight: '102px' }}>
                     <div className="d-flex align-items-center justify-content-between mb-1.5">
                       <span className="text-secondary d-block small" style={{ fontSize: '0.6rem', letterSpacing: '0.04em' }}>CARDIO TARGET</span>
-                      <Activity size={14} style={{ color: 'var(--accent-red)' }} />
+                      <Activity size={14} style={{ color: '#F56565' }} />
                     </div>
                     <div>
-                      <strong className="fs-6 d-block mt-0.5" style={{ color: 'var(--text-primary)' }}>150 Min / Wk</strong>
+                      <strong className="fs-6 d-block mt-0.5" style={{ color: '#F56565' }}>150 Min / Wk</strong>
                       <span className="text-muted d-block" style={{ fontSize: '0.55rem', opacity: 0.6 }}>AHA standard</span>
                     </div>
                   </div>

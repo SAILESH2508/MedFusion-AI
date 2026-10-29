@@ -551,21 +551,19 @@ function Navbar({ user, logout, toggleSidebar, isSidebarPage, openAuth, navbarHe
               <NavLink to="/nearby" icon={<MapPin size={16} />} label="Nearby" />
             </>
           )}
-          {/* Doctor Nav — Health Check | AI Scanner | Digital Twin | Nearby */}
+          {/* Doctor Nav — no Digital Twin (patient-personal feature) */}
           {user && user.role === 'Doctor' && (
             <>
               <NavLink to="/dashboard" icon={<HeartPulse size={16} />} label="Health Check" />
               <NavLink to="/upload" icon={<FlaskConical size={16} />} label="AI Scanner" />
-              <NavLink to="/digital-twin" icon={<BrainCircuit size={16} />} label="Digital Twin" />
               <NavLink to="/nearby" icon={<MapPin size={16} />} label="Nearby" />
             </>
           )}
-          {/* Guest Nav */}
+          {/* Guest Nav — no Digital Twin (requires patient account) */}
           {!user && (
             <>
               <NavLink to="/dashboard" icon={<HeartPulse size={16} />} label="Health Check" />
               <NavLink to="/upload" icon={<FlaskConical size={16} />} label="AI Scanner" />
-              <NavLink to="/digital-twin" icon={<BrainCircuit size={16} />} label="Digital Twin" />
               <NavLink to="/nearby" icon={<MapPin size={16} />} label="Nearby" />
             </>
           )}
@@ -663,7 +661,6 @@ function Navbar({ user, logout, toggleSidebar, isSidebarPage, openAuth, navbarHe
                 <>
                   <MobileNavLink to="/dashboard" label="Health Check" onClick={() => setIsOpen(false)} />
                   <MobileNavLink to="/upload" label="AI Scanner" onClick={() => setIsOpen(false)} />
-                  <MobileNavLink to="/digital-twin" label="Digital Twin" onClick={() => setIsOpen(false)} />
                   <MobileNavLink to="/nearby" label="Nearby" onClick={() => setIsOpen(false)} />
                   <MobileNavLink to="/profile" label="Profile" onClick={() => setIsOpen(false)} />
                 </>
@@ -681,7 +678,6 @@ function Navbar({ user, logout, toggleSidebar, isSidebarPage, openAuth, navbarHe
                 <>
                   <MobileNavLink to="/dashboard" label="Health Check" onClick={() => setIsOpen(false)} />
                   <MobileNavLink to="/upload" label="AI Scanner" onClick={() => setIsOpen(false)} />
-                  <MobileNavLink to="/digital-twin" label="Digital Twin" onClick={() => setIsOpen(false)} />
                   <MobileNavLink to="/nearby" label="Nearby" onClick={() => setIsOpen(false)} />
                 </>
               )}
@@ -710,7 +706,10 @@ function NavLink({ to, icon, label }) {
   return (
     <RouterNavLink
       to={to}
-      className="text-decoration-none d-flex align-items-center gap-2 transition-all px-2.5 py-1.5 rounded-2"
+      end
+      className={({ isActive }) =>
+        `text-decoration-none d-flex align-items-center gap-2 transition-all px-2.5 py-1.5 rounded-2${isActive ? ' nav-link-active' : ''}`
+      }
       style={({ isActive }) => ({
         color: isActive ? '#FFFFFF' : 'rgba(255, 255, 255, 0.78)',
         fontWeight: isActive ? 700 : 500,
@@ -728,7 +727,10 @@ function MobileNavLink({ to, label, onClick }) {
   return (
     <RouterNavLink
       to={to}
-      className="text-decoration-none fs-5 py-2 border-bottom border-white-5 d-block"
+      end
+      className={({ isActive }) =>
+        `text-decoration-none fs-5 py-2 border-bottom border-white-5 d-block${isActive ? ' nav-link-active' : ''}`
+      }
       style={({ isActive }) => ({
         color: isActive ? 'var(--primary-accent)' : 'var(--text-secondary)',
         fontWeight: isActive ? 700 : 500,

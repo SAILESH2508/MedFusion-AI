@@ -380,16 +380,16 @@ export default function IntegratedGardenSection({
                           <button
                             onClick={() => handleLogActivity(action.type, action.points, activeNote)}
                             disabled={isLoading}
-                            className="btn-clinical primary d-flex align-items-center justify-content-center gap-1.5 font-monospace text-uppercase flex-grow-1"
-                            style={{ fontSize: '0.7rem', borderRadius: '6px', padding: '6px 10px' }}
+                            className="btn-clinical primary d-flex align-items-center gap-1.5 font-monospace text-uppercase"
+                            style={{ fontSize: '0.7rem', borderRadius: '6px', padding: '6px 14px', width: 'auto' }}
                           >
                             {isLoading ? <RefreshCw size={12} className="animate-spin" /> : <Check size={12} />}
                             <span>{isLoading ? 'Saving...' : 'Confirm'}</span>
                           </button>
                           <button
                             onClick={() => { setSelectedActivityForNote(null); setActiveNote(''); }}
-                            className="btn-clinical secondary d-flex align-items-center justify-content-center gap-1 font-monospace text-uppercase"
-                            style={{ fontSize: '0.7rem', borderRadius: '6px', padding: '6px 10px', flexShrink: 0 }}
+                            className="btn-clinical secondary d-flex align-items-center gap-1 font-monospace text-uppercase"
+                            style={{ fontSize: '0.7rem', borderRadius: '6px', padding: '6px 10px', width: 'auto' }}
                             title="Cancel"
                           >
                             <X size={12} />
@@ -402,11 +402,11 @@ export default function IntegratedGardenSection({
                         <button
                           onClick={() => handleLogActivity(action.type, action.points)}
                           disabled={isLoading}
-                          className="btn-clinical primary d-flex align-items-center justify-content-center gap-1.5 font-monospace text-uppercase flex-grow-1"
-                          style={{ fontSize: '0.7rem', borderRadius: '6px', padding: '6px 10px' }}
+                          className="btn-clinical primary d-flex align-items-center gap-1.5 font-monospace text-uppercase"
+                          style={{ fontSize: '0.7rem', borderRadius: '6px', padding: '6px 14px', width: 'auto' }}
                         >
                           {isLoading ? <RefreshCw size={12} className="animate-spin" /> : <Plus size={12} />}
-                          <span>Log Habit</span>
+                          <span>{isLoading ? 'Logging...' : 'Log'}</span>
                         </button>
                         <button
                           onClick={() => { setSelectedActivityForNote(action.type); setActiveNote(''); }}

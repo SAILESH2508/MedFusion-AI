@@ -304,32 +304,40 @@ function MedicalVault({
             } catch (e) { parsedAnalysis = {}; }
 
             return (
-              <div key={recKey} className="vault-record-card font-monospace hover-border-accent" style={{ fontSize: '0.88rem' }}>
+              <div key={recKey} className="vault-record-card font-monospace hover-border-accent" style={{
+                fontSize: '0.88rem',
+                borderLeft: `3px solid ${isRx ? '#5B9FE0' : '#10B981'}`,
+              }}>
                 <div className="d-flex justify-content-between align-items-center cursor-pointer" onClick={() => setExpandedId(isExpanded ? null : recKey)}>
                   <div className="d-flex align-items-center gap-3">
-                    <div className={`p-2.5 rounded-circle ${isRx ? 'bg-info bg-opacity-10 text-info' : 'bg-success bg-opacity-10 text-success'}`}>
-                      {isRx ? <FileText size={18} /> : <Database size={18} />}
+                    <div className="p-2 rounded-3 d-flex align-items-center justify-content-center flex-shrink-0" style={{
+                      width: '38px', height: '38px',
+                      background: isRx ? 'rgba(91,159,224,0.15)' : 'rgba(16,185,129,0.15)',
+                      border: `1px solid ${isRx ? 'rgba(91,159,224,0.4)' : 'rgba(16,185,129,0.4)'}`,
+                      color: isRx ? '#5B9FE0' : '#10B981',
+                    }}>
+                      {isRx ? <FileText size={16} /> : <Database size={16} />}
                     </div>
                     <div>
-                      <strong className="text-white text-uppercase fs-6">
+                      <strong className="text-uppercase" style={{ fontSize: '0.82rem', color: isRx ? '#5B9FE0' : '#10B981' }}>
                         {isRx ? 'Physician Prescription' : 'Lab Pathology Report'}
                       </strong>
-                      <span className="text-secondary small d-block font-monospace mt-1">Archived: {new Date(record.created_at).toLocaleString([], { hour12: false })}</span>
+                      <span className="text-secondary small d-block font-monospace mt-0.5" style={{ fontSize: '0.72rem' }}>
+                        Archived: {new Date(record.created_at).toLocaleString([], { hour12: false })}
+                      </span>
                     </div>
                   </div>
-                  <div className="d-flex align-items-center gap-3">
-                    <span className="text-secondary d-none d-sm-inline">Record ID: <strong className="text-white">#{record.id}</strong></span>
-                    <span className={`badge px-3 py-1.5 ${isRx ? 'badge-clinical-info' : 'badge-clinical-success'}`} style={{ fontSize: '0.75rem' }}>
-                      {isRx ? 'PRESCRIPTION' : 'LAB_PATHOLOGY'}
+                  <div className="d-flex align-items-center gap-2">
+                    <span className={`badge px-2.5 py-1 font-monospace`} style={{
+                      fontSize: '0.68rem',
+                      background: isRx ? 'rgba(91,159,224,0.15)' : 'rgba(16,185,129,0.15)',
+                      color: isRx ? '#5B9FE0' : '#10B981',
+                      border: `1px solid ${isRx ? 'rgba(91,159,224,0.4)' : 'rgba(16,185,129,0.4)'}`,
+                      letterSpacing: '0.04em',
+                    }}>
+                      {isRx ? 'PRESCRIPTION' : 'PATHOLOGY'}
                     </span>
-                    <ChevronDown
-                      size={20}
-                      className="text-secondary"
-                      style={{
-                        transform: isExpanded ? 'rotate(180deg)' : 'rotate(0deg)',
-                        transition: 'transform 0.25s ease'
-                      }}
-                    />
+                    <ChevronDown size={16} className="text-secondary" style={{ transform: isExpanded ? 'rotate(180deg)' : 'rotate(0deg)', transition: 'transform 0.25s ease' }} />
                   </div>
                 </div>
 

@@ -1679,7 +1679,7 @@ button.btn-icon:hover {
   border-left: 4px solid #EF4444 !important;
   color: var(--text-on-dark, #E2E8F0) !important;
 }
-.app-sidebar .disease-select-tile.facility-hospital.active * { color: var(--text-on-dark, #E2E8F0) !important; }
+.app-sidebar .disease-select-tile.facility-hospital.active *:not(.facility-count-badge):not(.facility-status-dot) { color: var(--text-on-dark, #E2E8F0) !important; }
 .app-sidebar .disease-select-tile.facility-hospital.inactive {
   background: rgba(239, 68, 68, 0.07) !important;
   border: 1px solid rgba(239, 68, 68, 0.3) !important;
@@ -1687,7 +1687,7 @@ button.btn-icon:hover {
   color: #FEE2E2 !important;
   opacity: 1 !important;
 }
-.app-sidebar .disease-select-tile.facility-hospital.inactive * { color: #FEE2E2 !important; }
+.app-sidebar .disease-select-tile.facility-hospital.inactive *:not(.facility-count-badge):not(.facility-status-dot) { color: #FEE2E2 !important; }
 .app-sidebar .disease-select-tile.facility-hospital.inactive:hover { background: rgba(239, 68, 68, 0.13) !important; border-color: #EF4444 !important; }
 
 /* Clinic — Sky Blue */
@@ -1697,7 +1697,7 @@ button.btn-icon:hover {
   border-left: 4px solid #0EA5E9 !important;
   color: var(--text-on-dark, #E2E8F0) !important;
 }
-.app-sidebar .disease-select-tile.facility-clinic.active * { color: var(--text-on-dark, #E2E8F0) !important; }
+.app-sidebar .disease-select-tile.facility-clinic.active *:not(.facility-count-badge):not(.facility-status-dot) { color: var(--text-on-dark, #E2E8F0) !important; }
 .app-sidebar .disease-select-tile.facility-clinic.inactive {
   background: rgba(14, 165, 233, 0.07) !important;
   border: 1px solid rgba(14, 165, 233, 0.3) !important;
@@ -1705,7 +1705,7 @@ button.btn-icon:hover {
   color: #E0F2FE !important;
   opacity: 1 !important;
 }
-.app-sidebar .disease-select-tile.facility-clinic.inactive * { color: #E0F2FE !important; }
+.app-sidebar .disease-select-tile.facility-clinic.inactive *:not(.facility-count-badge):not(.facility-status-dot) { color: #E0F2FE !important; }
 .app-sidebar .disease-select-tile.facility-clinic.inactive:hover { background: rgba(14, 165, 233, 0.13) !important; border-color: #0EA5E9 !important; }
 
 /* Pharmacy — Emerald Green */
@@ -1715,7 +1715,7 @@ button.btn-icon:hover {
   border-left: 4px solid #10B981 !important;
   color: var(--text-on-dark, #E2E8F0) !important;
 }
-.app-sidebar .disease-select-tile.facility-pharmacy.active * { color: var(--text-on-dark, #E2E8F0) !important; }
+.app-sidebar .disease-select-tile.facility-pharmacy.active *:not(.facility-count-badge):not(.facility-status-dot) { color: var(--text-on-dark, #E2E8F0) !important; }
 .app-sidebar .disease-select-tile.facility-pharmacy.inactive {
   background: rgba(16, 185, 129, 0.07) !important;
   border: 1px solid rgba(16, 185, 129, 0.3) !important;
@@ -1723,7 +1723,7 @@ button.btn-icon:hover {
   color: #D1FAE5 !important;
   opacity: 1 !important;
 }
-.app-sidebar .disease-select-tile.facility-pharmacy.inactive * { color: #D1FAE5 !important; }
+.app-sidebar .disease-select-tile.facility-pharmacy.inactive *:not(.facility-count-badge):not(.facility-status-dot) { color: #D1FAE5 !important; }
 .app-sidebar .disease-select-tile.facility-pharmacy.inactive:hover { background: rgba(16, 185, 129, 0.13) !important; border-color: #10B981 !important; }
 
 /* Dentist — Violet Purple */
@@ -1733,7 +1733,7 @@ button.btn-icon:hover {
   border-left: 4px solid #A855F7 !important;
   color: var(--text-on-dark, #E2E8F0) !important;
 }
-.app-sidebar .disease-select-tile.facility-dentist.active * { color: var(--text-on-dark, #E2E8F0) !important; }
+.app-sidebar .disease-select-tile.facility-dentist.active *:not(.facility-count-badge):not(.facility-status-dot) { color: var(--text-on-dark, #E2E8F0) !important; }
 .app-sidebar .disease-select-tile.facility-dentist.inactive {
   background: rgba(168, 85, 247, 0.07) !important;
   border: 1px solid rgba(168, 85, 247, 0.3) !important;
@@ -1741,7 +1741,7 @@ button.btn-icon:hover {
   color: #F3E8FF !important;
   opacity: 1 !important;
 }
-.app-sidebar .disease-select-tile.facility-dentist.inactive * { color: #F3E8FF !important; }
+.app-sidebar .disease-select-tile.facility-dentist.inactive *:not(.facility-count-badge):not(.facility-status-dot) { color: #F3E8FF !important; }
 .app-sidebar .disease-select-tile.facility-dentist.inactive:hover { background: rgba(168, 85, 247, 0.13) !important; border-color: #A855F7 !important; }
 
 /* Lab — Amber / Gold */
@@ -1751,7 +1751,7 @@ button.btn-icon:hover {
   border-left: 4px solid #F59E0B !important;
   color: var(--text-on-dark, #E2E8F0) !important;
 }
-.app-sidebar .disease-select-tile.facility-lab.active * { color: var(--text-on-dark, #E2E8F0) !important; }
+.app-sidebar .disease-select-tile.facility-lab.active *:not(.facility-count-badge):not(.facility-status-dot) { color: var(--text-on-dark, #E2E8F0) !important; }
 .app-sidebar .disease-select-tile.facility-lab.inactive {
   background: rgba(245, 158, 11, 0.07) !important;
   border: 1px solid rgba(245, 158, 11, 0.3) !important;
@@ -1759,7 +1759,7 @@ button.btn-icon:hover {
   color: #FEF3C7 !important;
   opacity: 1 !important;
 }
-.app-sidebar .disease-select-tile.facility-lab.inactive * { color: #FEF3C7 !important; }
+.app-sidebar .disease-select-tile.facility-lab.inactive *:not(.facility-count-badge):not(.facility-status-dot) { color: #FEF3C7 !important; }
 .app-sidebar .disease-select-tile.facility-lab.inactive:hover { background: rgba(245, 158, 11, 0.13) !important; border-color: #F59E0B !important; }
 
 /* ── 6. Meaningful Clinical Risk Indicators & Status Labels ──────────────── */
@@ -2434,3 +2434,17 @@ code, kbd, samp, pre {
   border: none !important;
 }
 
+
+/* ── Telemetry Node Per-Field Accent Colors ──────────────────────────────── */
+.telemetry-node-age   { border-left: 3px solid #8B5CF6 !important; background: linear-gradient(135deg, rgba(139,92,246,0.06) 0%, var(--bg-card) 100%) !important; }
+.telemetry-node-sex   { border-left: 3px solid #F08080 !important; background: linear-gradient(135deg, rgba(240,128,128,0.06) 0%, var(--bg-card) 100%) !important; }
+.telemetry-node-dob   { border-left: 3px solid #22C5E0 !important; background: linear-gradient(135deg, rgba(34,197,224,0.06) 0%, var(--bg-card) 100%) !important; }
+.telemetry-node-blood { border-left: 3px solid #F4954A !important; background: linear-gradient(135deg, rgba(244,149,74,0.07) 0%, var(--bg-card) 100%) !important; }
+.telemetry-node-height{ border-left: 3px solid #2DB8B0 !important; background: linear-gradient(135deg, rgba(45,184,176,0.06) 0%, var(--bg-card) 100%) !important; }
+.telemetry-node-weight{ border-left: 3px solid #34C97A !important; background: linear-gradient(135deg, rgba(52,201,122,0.06) 0%, var(--bg-card) 100%) !important; }
+
+/* ── Target Node Per-Field Accent Colors ─────────────────────────────────── */
+.target-node-hydration { border-left: 3px solid #5B9FE0 !important; background: linear-gradient(135deg, rgba(91,159,224,0.07) 0%, var(--bg-card) 100%) !important; }
+.target-node-bmr       { border-left: 3px solid #F4954A !important; background: linear-gradient(135deg, rgba(244,149,74,0.07) 0%, var(--bg-card) 100%) !important; }
+.target-node-sleep     { border-left: 3px solid #2DB8B0 !important; background: linear-gradient(135deg, rgba(45,184,176,0.07) 0%, var(--bg-card) 100%) !important; }
+.target-node-cardio    { border-left: 3px solid #F56565 !important; background: linear-gradient(135deg, rgba(245,101,101,0.07) 0%, var(--bg-card) 100%) !important; }

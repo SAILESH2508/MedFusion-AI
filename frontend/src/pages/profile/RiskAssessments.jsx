@@ -62,35 +62,58 @@ function RiskAssessments({
               }
             }
 
+            const riskColor = record.risk_level === 'HIGH' || record.risk_level === 'CRITICAL'
+              ? '#F56565'
+              : record.risk_level === 'MODERATE'
+              ? '#F59E0B'
+              : '#10B981';
+
+            const diseaseColor = record.disease_type?.includes('heart') || record.disease_type?.includes('cardiac')
+              ? '#F56565'
+              : record.disease_type?.includes('diabetes')
+              ? '#10B981'
+              : record.disease_type?.includes('cancer')
+              ? '#A855F7'
+              : '#F56565';
+
             return (
-              <div key={record.id} className="vault-record-card font-monospace hover-border-accent" style={{ fontSize: '0.88rem' }}>
+              <div key={record.id} className="vault-record-card font-monospace hover-border-accent" style={{
+                fontSize: '0.88rem',
+                borderLeft: `3px solid ${diseaseColor}`,
+              }}>
                 <div className="d-flex justify-content-between align-items-center cursor-pointer" onClick={() => setExpandedHistId(isExpanded ? null : record.id)}>
                   <div className="d-flex align-items-center gap-3">
-                    <div className="bg-white-10 p-2.5 rounded-circle text-theme-accent">
-                      <Heart size={18} />
+                    <div className="p-2 rounded-3 d-flex align-items-center justify-content-center flex-shrink-0" style={{
+                      width: '38px', height: '38px',
+                      background: `${diseaseColor}18`,
+                      border: `1px solid ${diseaseColor}40`,
+                      color: diseaseColor,
+                    }}>
+                      <Heart size={16} />
                     </div>
                     <div>
-                      <strong className="text-uppercase fs-6" style={{ color: 'var(--text-primary)' }}>{record.disease_type.replace(/_/g, ' ')} Risk Profile</strong>
-                      <span className="text-secondary small d-block font-monospace mt-1">Generated: {new Date(record.created_at).toLocaleString([], { hour12: false })}</span>
+                      <strong className="text-uppercase" style={{ fontSize: '0.82rem', color: diseaseColor }}>
+                        {record.disease_type.replace(/_/g, ' ')} Risk Profile
+                      </strong>
+                      <span className="text-secondary small d-block font-monospace mt-0.5" style={{ fontSize: '0.72rem' }}>
+                        Generated: {new Date(record.created_at).toLocaleString([], { hour12: false })}
+                      </span>
                     </div>
                   </div>
-                  <div className="d-flex align-items-center gap-4">
-                    <span className="text-secondary d-none d-sm-inline">Risk Index: <strong style={{ color: 'var(--text-primary)' }}>{record.risk_score}%</strong></span>
-                    <span className={`badge px-3 py-1.5 ${
-                      record.risk_level === 'HIGH' || record.risk_level === 'CRITICAL' 
-                        ? 'badge-clinical-danger' 
-                        : record.risk_level === 'MODERATE' 
-                        ? 'badge-clinical-warning' 
-                        : 'badge-clinical-success'
-                    }`} style={{ fontSize: '0.78rem' }}>{record.risk_level}</span>
-                    <ChevronDown
-                      size={20}
-                      className="text-secondary"
-                      style={{
-                        transform: isExpanded ? 'rotate(180deg)' : 'rotate(0deg)',
-                        transition: 'transform 0.25s ease'
-                      }}
-                    />
+                  <div className="d-flex align-items-center gap-2">
+                    <span className="font-monospace" style={{ fontSize: '0.72rem', color: 'var(--text-secondary)' }}>
+                      <strong style={{ color: riskColor }}>{record.risk_score}%</strong>
+                    </span>
+                    <span className="badge font-monospace px-2.5 py-1" style={{
+                      fontSize: '0.68rem',
+                      background: `${riskColor}18`,
+                      color: riskColor,
+                      border: `1px solid ${riskColor}40`,
+                      letterSpacing: '0.04em',
+                    }}>
+                      {record.risk_level}
+                    </span>
+                    <ChevronDown size={16} className="text-secondary" style={{ transform: isExpanded ? 'rotate(180deg)' : 'rotate(0deg)', transition: 'transform 0.25s ease' }} />
                   </div>
                 </div>
                 
