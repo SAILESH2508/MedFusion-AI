@@ -600,7 +600,7 @@ function Profile({ user, onUserUpdate }) {
               <User size={14} style={{ color: isDark ? '#34d399' : '#059669' }} />
             </div>
             <span className="font-monospace text-uppercase" style={{ fontSize: '0.68rem', letterSpacing: '0.14em', color: isDark ? '#34d399' : '#059669', fontWeight: 700 }}>
-              Patient Identity Vault &nbsp;·&nbsp; {profile?.vault_id || `MF-P-${user?.id || '—'}`}
+              Patient Identity Vault — {profile?.vault_id || `MF-P-${user?.id || '—'}`}
             </span>
           </div>
           <h1 className="fw-bolder m-0 mb-2" style={{ fontSize: '2rem', letterSpacing: '-0.03em', color: isDark ? '#FFFFFF' : '#0F172A', lineHeight: 1.1, fontFamily: 'var(--font-main)' }}>

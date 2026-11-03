@@ -4,7 +4,13 @@ import os
 import random
 import datetime
 from typing import Dict, Any, List, Optional
-from .llm_provider import llm_provider
+from .llm_provider import (
+    llm_provider,
+    AIProviderError,
+    AIQuotaExceededError,
+    AIServiceUnavailableError,
+    AIInvalidInputError
+)
 from google.genai import types
 
 logger = logging.getLogger(__name__)
@@ -16,7 +22,8 @@ class AIService:
     ) -> Dict[str, Any]:
         """
         Extract structured medical data from a prescription image.
-        Uses Gemini 1.5 Flash as primary for its strong vision-to-text capabilities.
+        Uses primary high-precision vision LLM.
+        Never fabricates fictional medicine names or dosages.
         """
         prompt = """
         Analyze this medical prescription image carefully. Extract all medicines and their full schedule.
@@ -30,7 +37,7 @@ class AIService:
               "frequency": "e.g. Once daily, Twice daily, TID, QID",
               "frequency_number": 2,
               "timing": "Before food" or "After food" or "With food" (choose based on instructions; default to "After food" if not specified),
-              "times_of_day": ["morning", "night"] (use any combination of: "morning", "afternoon", "evening", "night" â€” must match frequency_number count),
+              "times_of_day": ["morning", "night"] (use any combination of: "morning", "afternoon", "evening", "night" — must match frequency_number count),
               "type": "e.g. Antibiotic, Antacid, Analgesic",
               "description": "Brief clinical purpose of this medicine"
             }
@@ -42,12 +49,10 @@ class AIService:
         }
 
         Rules:
+        - If no medicines can be identified, "medicines" MUST be an empty list [].
+        - DO NOT invent, hallucinate, or fabricate any medicine names, dosages, or instructions.
         - timing MUST be one of: "Before food", "After food", "With food"
         - times_of_day MUST be a list with exactly frequency_number elements chosen from: "morning", "afternoon", "evening", "night"
-        - If frequency is once daily â†’ times_of_day has 1 item (typically "morning")
-        - If twice daily â†’ ["morning", "night"]
-        - If three times daily (TID) â†’ ["morning", "afternoon", "night"]
-        - If four times daily (QID) â†’ ["morning", "afternoon", "evening", "night"]
         - Return ONLY the JSON object. No markdown, no explanation.
         """
 
@@ -57,28 +62,45 @@ class AIService:
 
             response_text = await llm_provider.generate_response(
                 prompt=content,
-                model_name=os.getenv("DEFAULT_LLM_MODEL", "gemini-2.5-flash"),
-                system_prompt="You are a Clinical Pharmacy Specialist. You output precision medical data in JSON format.",
+                model_name=os.getenv("DEFAULT_LLM_MODEL", "gemini-3-flash-preview"),
+                system_prompt="You are a Clinical Pharmacy Specialist. You output precision medical data in JSON format. You NEVER fabricate medicines.",
             )
 
-            data = self._parse_json(response_text)
-            if isinstance(data, dict):
-                phy = data.get('physician')
-                if isinstance(phy, dict):
-                    name = phy.get('name') or ''
-                    extra = ", ".join([str(v) for v in [phy.get('qualification'), phy.get('specialty')] if v])
-                    data['physician'] = f"{name} ({extra})" if name and extra else (name or extra or 'Physician')
+            data = self._clean_and_parse_json(response_text, default=None, start_char="{", end_char="}")
+            if not data or not isinstance(data, dict):
+                logger.warning("Failed to parse structured prescription JSON from AI response")
+                return {"medicines": [], "recommendations": [], "error": "Unable to extract prescription details"}
+
+            phy = data.get('physician')
+            if isinstance(phy, dict):
+                name = phy.get('name') or ''
+                extra = ", ".join([str(v) for v in [phy.get('qualification'), phy.get('specialty')] if v])
+                data['physician'] = f"{name} ({extra})" if name and extra else (name or extra or 'Physician')
+
             return data
+
+        except (AIQuotaExceededError, AIServiceUnavailableError):
+            raise
         except Exception as e:
             logger.error(f"Prescription Analysis failed: {e}")
-            return self._get_fallback_vitals("Prescription analysis unavailable.")
+            raise AIServiceUnavailableError(f"Prescription analysis service error: {e}")
 
     async def analyze_pathology(
         self, biomarkers: List[Dict[str, Any]]
     ) -> Dict[str, Any]:
         """
         Analyze lab results and calculate clinical indices.
+        Never fabricates biomarker interpretations.
         """
+        if not biomarkers:
+            return {
+                "risk_index": 0,
+                "normalcy_index": 100,
+                "normalcy_level": "OPTIMAL",
+                "insights": [],
+                "summary": "No biomarkers provided for analysis."
+            }
+
         prompt = f"""
         Analyze these clinical biomarkers: {json.dumps(biomarkers)}
         
@@ -95,26 +117,43 @@ class AIService:
         try:
             response_text = await llm_provider.generate_response(
                 prompt=prompt,
-                model_name=os.getenv("DEFAULT_LLM_MODEL", "gemini-2.5-flash"),
+                model_name=os.getenv("DEFAULT_LLM_MODEL", "gemini-3-flash-preview"),
                 system_prompt="You are a Metabolic Pathology Expert. You analyze biomarkers for longitudinal health trends.",
             )
-            return self._parse_json(response_text)
+            parsed = self._clean_and_parse_json(response_text, default=None, start_char="{", end_char="}")
+            if parsed and isinstance(parsed, dict):
+                return parsed
+            return {
+                "risk_index": None,
+                "normalcy_index": None,
+                "normalcy_level": "OBSERVATION",
+                "insights": ["Automated biomarker evaluation completed with manual review advised."],
+                "summary": "Biomarkers parsed and recorded."
+            }
+        except (AIQuotaExceededError, AIServiceUnavailableError):
+            raise
         except Exception as e:
             logger.error(f"Pathology Analysis failed: {e}")
-            return self._get_fallback_vitals("Biomarker analysis node offline.")
+            raise AIServiceUnavailableError(f"Pathology analysis service error: {e}")
 
     async def extract_biomarkers_from_image(
         self, image_data: bytes, mime_type: str = "image/jpeg"
     ) -> List[Dict[str, Any]]:
         """
         Extract structured biomarker data from a lab/pathology report image.
+        Never fabricates biomarker names or numeric values.
         """
         prompt = """
-        Analyze this laboratory pathology report image. Extract all the clinical biomarkers/vitals listed.
+        Analyze this laboratory pathology report image. Extract all clinical biomarkers/vitals listed.
         For each biomarker, extract:
         - name: string (e.g. Glucose, Cholesterol, Hemoglobin, WBC Count, etc.)
         - value: float or integer
         - unit: string (e.g. mg/dL, g/dL, cells/mcL, etc.)
+        
+        Rules:
+        - Extract ONLY values explicitly legible in the report.
+        - NEVER invent or estimate missing values.
+        - If no biomarkers are found, return an empty JSON list [].
         
         Return ONLY a JSON list of objects, each containing 'name', 'value', and 'unit'.
         Example format:
@@ -131,18 +170,22 @@ class AIService:
 
             response_text = await llm_provider.generate_response(
                 prompt=content,
-                model_name=os.getenv("DEFAULT_LLM_MODEL", "gemini-2.5-flash"),
-                system_prompt="You are a Laboratory Information System Specialist. You extract precision biometric data from report scans in JSON list format.",
+                model_name=os.getenv("DEFAULT_LLM_MODEL", "gemini-3-flash-preview"),
+                system_prompt="You are a Laboratory Information System Specialist. You extract precision biometric data from report scans in JSON list format. You NEVER invent lab values.",
             )
 
             # Parse JSON list
             return self._clean_and_parse_json(response_text, default=[], start_char="[", end_char="]")
+        except (AIQuotaExceededError, AIServiceUnavailableError):
+            raise
         except Exception as e:
             logger.error(f"Pathology biomarker extraction failed: {e}")
-            return []
+            raise AIServiceUnavailableError(f"Biomarker extraction service error: {e}")
 
     def _clean_and_parse_json(self, text: str, default: Any, start_char: str = "{", end_char: str = "}") -> Any:
         try:
+            if not text:
+                return default
             if "AI system failure" in text or "All fallbacks exhausted" in text:
                 return default
             

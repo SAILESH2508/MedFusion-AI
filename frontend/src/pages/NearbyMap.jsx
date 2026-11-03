@@ -606,9 +606,9 @@ export default function NearbyMap({
     });
   };
 
-  // On startup: acquire live location if not already persisted
+  // On startup: acquire live GPS if location is still the default fallback (no real fix yet)
   useEffect(() => {
-    if (!location) {
+    if (!location || location.source === 'default') {
       getLocation();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -741,12 +741,15 @@ export default function NearbyMap({
                     </div>
                     <div className="d-flex align-items-center gap-2">
                       <span
-                        className="facility-count-badge fw-bold font-monospace px-1.5 py-0.5 rounded"
+                        className="facility-count-badge fw-bold font-monospace rounded-circle d-flex align-items-center justify-content-center"
                         style={{
-                          fontSize: '0.74rem',
-                          background: isFilterActive ? 'rgba(15, 23, 42, 0.7)' : 'rgba(15, 23, 42, 0.4)',
+                          fontSize: '0.82rem',
+                          width: '32px',
+                          height: '32px',
+                          flexShrink: 0,
+                          background: isFilterActive ? 'rgba(15, 23, 42, 0.75)' : 'rgba(15, 23, 42, 0.4)',
                           color: isFilterActive ? (cfg.brightColor || cfg.color) : '#64748B',
-                          border: `1px solid ${isFilterActive ? cfg.brightColor : 'rgba(148, 163, 184, 0.15)'}`,
+                          border: `1.5px solid ${isFilterActive ? cfg.brightColor : 'rgba(148, 163, 184, 0.15)'}`,
                           transition: 'all 0.18s ease',
                         }}
                       >
@@ -847,7 +850,7 @@ export default function NearbyMap({
               <MapPin size={14} style={{ color: isDark ? '#F87171' : '#DC2626' }} />
             </div>
             <span className="font-monospace text-uppercase" style={{ fontSize: '0.68rem', letterSpacing: '0.14em', color: isDark ? '#F87171' : '#DC2626', fontWeight: 700 }}>
-              {isDoctor ? 'Clinical Facility Radar' : 'Medical Facility Radar'} &nbsp;·&nbsp; {location ? `${filtered.length} Results` : 'Offline Mode'}
+              {isDoctor ? 'Clinical Facility Radar' : 'Medical Facility Radar'} — {location ? `${filtered.length} Results` : 'Offline Mode'}
             </span>
           </div>
           <h1 className="fw-bolder m-0 mb-2" style={{ fontSize: '2rem', letterSpacing: '-0.03em', color: isDark ? '#FFFFFF' : '#0F172A', lineHeight: 1.1 }}>

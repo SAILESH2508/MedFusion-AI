@@ -1,26 +1,19 @@
-import React, { useState, useEffect, useContext, useMemo } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { 
   Upload as UploadIcon, 
   CheckCircle, 
   Cpu, 
   FileText, 
-  ArrowRight,
   Database,
   RotateCcw,
   Sparkles,
   AlertTriangle,
   Download,
-  Eye,
   FileCheck,
   X,
-  Stethoscope,
   Pill,
   Activity,
-  Layers,
   ShieldCheck,
-  Check,
-  Zap,
-  Lightbulb
 } from 'lucide-react';
 import { api } from '../services/api';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -28,15 +21,32 @@ import { SidebarContext } from '../context/SidebarContext';
 import { useTheme } from '../context/useTheme';
 import MedicalReadingBar from '../components/MedicalReadingBar';
 
-const getAge = (dobString) => {
-  try {
-    const birth = new Date(dobString);
-    const diff = Date.now() - birth.getTime();
-    return Math.abs(new Date(diff).getUTCFullYear() - 1970);
-  } catch (e) {
-    return 30;
-  }
-};
+// 2 scan type tiles — the AI scanner internally classifies all sub-categories
+const SUPPORTED_CATEGORIES = [
+  { 
+    id: 'prescription', 
+    label: 'Prescription (Rx)', 
+    icon: <Pill size={16} />, 
+    theme: 'prescription', 
+    endpoint: '/prescriptions/upload/',
+    // document_type sent to backend
+    backendType: 'prescription',
+    description: 'Upload a prescription photo to extract drug names, dosages and schedules instantly.'
+  },
+  { 
+    id: 'lab_report', 
+    label: 'Lab Report (Pathology)', 
+    icon: <Database size={16} />, 
+    theme: 'lab', 
+    endpoint: '/pathology/analyze/',
+    // Covers lab reports, pathology, scans, discharge summaries — AI classifies sub-type
+    backendType: 'laboratory_report',
+    description: 'Upload a lab report, pathology result, or scan to extract biomarkers and get a clinical interpretation.'
+  },
+];
+
+const ALLOWED_MIME_TYPES = ['image/jpeg', 'image/png', 'image/jpg', 'image/webp', 'application/pdf'];
+const ALLOWED_EXTS = ['.jpg', '.jpeg', '.png', '.webp', '.pdf'];
 
 function Upload({ user }) {
   const { theme } = useTheme();
@@ -44,12 +54,12 @@ function Upload({ user }) {
   const { setSidebarContent } = useContext(SidebarContext);
   const [file, setFile] = useState(null);
   const [previewUrl, setPreviewUrl] = useState(null);
-  const [docType, setDocType] = useState('Prescription (Rx)');
+  const [selectedCategory, setSelectedCategory] = useState(SUPPORTED_CATEGORIES[0]);
   const [loading, setLoading] = useState(false);
   const [scanProgress, setScanProgress] = useState(0);
   const [scanLog, setScanLog] = useState('');
   const [result, setResult] = useState(null);
-  const [error, setError] = useState('');
+  const [errorState, setErrorState] = useState(null); // { title, message, errorCode, issues, documentType }
   const [isDragging, setIsDragging] = useState(false);
 
   // Generate and cleanup object URLs for image previews
@@ -67,33 +77,54 @@ function Upload({ user }) {
     }
   }, [file]);
 
+  const validateClientFile = (candidateFile) => {
+    if (!candidateFile) return "No file provided";
+    if (candidateFile.size === 0) {
+      return "The uploaded file is empty.";
+    }
+    if (candidateFile.size > 16 * 1024 * 1024) {
+      return "File too large. Maximum size is 16MB.";
+    }
+    const nameLower = candidateFile.name.toLowerCase();
+    const hasAllowedExt = ALLOWED_EXTS.some(ext => nameLower.endsWith(ext));
+    const hasAllowedMime = ALLOWED_MIME_TYPES.includes(candidateFile.type);
+    if (!hasAllowedExt && !hasAllowedMime) {
+      return "Unsupported file format. Please upload a JPG, PNG, WEBP, or PDF.";
+    }
+    return null;
+  };
+
   const handleDragOver = (e) => { e.preventDefault(); e.stopPropagation(); setIsDragging(true); };
   const handleDragLeave = (e) => { e.preventDefault(); e.stopPropagation(); setIsDragging(false); };
+  
   const handleDrop = (e) => {
-    e.preventDefault(); e.stopPropagation(); setIsDragging(false);
+    e.preventDefault(); 
+    e.stopPropagation(); 
+    setIsDragging(false);
     const dropped = e.dataTransfer?.files?.[0];
     if (!dropped) return;
-    const allowed = ['image/jpeg', 'image/png', 'image/jpg', 'application/pdf'];
-    if (!allowed.includes(dropped.type)) { setError('Unsupported file type. Please upload a JPG, PNG, or PDF.'); return; }
-    if (dropped.size > 16 * 1024 * 1024) { setError('File too large. Maximum size is 16MB.'); return; }
-    setError(''); setFile(dropped); setResult(null);
+
+    const validationError = validateClientFile(dropped);
+    if (validationError) {
+      setErrorState({
+        title: validationError.includes('empty') ? 'Empty File' : validationError.includes('large') ? 'File Too Large' : 'Unsupported Format',
+        message: validationError,
+        errorCode: validationError.includes('empty') ? 'EMPTY_FILE' : validationError.includes('large') ? 'FILE_TOO_LARGE' : 'UNSUPPORTED_FORMAT',
+        issues: [validationError]
+      });
+      return;
+    }
+
+    setErrorState(null);
+    setFile(dropped);
+    setResult(null);
   };
 
-  const getInitials = (name) => {
-    if (!name) return 'US';
-    const parts = name.trim().split(/\s+/);
-    return parts.length >= 2 
-      ? (parts[0][0] + parts[parts.length - 1][0]).toUpperCase() 
-      : name.substring(0, 2).toUpperCase();
-  };
-
-  // Patient Selection States
+  // Patient Selection States for Doctors
   const [patients, setPatients] = useState([]);
   const [selectedPatientId, setSelectedPatientId] = useState(() => {
     return (user && user.role === 'Patient') ? (user.patient_id || '') : '';
   });
-
-  const activePatient = patients.find(p => String(p.id) === String(selectedPatientId));
 
   useEffect(() => {
     if (user && user.role === 'Doctor') {
@@ -114,139 +145,150 @@ function Upload({ user }) {
     const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(result.data, null, 2));
     const downloadAnchor = document.createElement('a');
     downloadAnchor.setAttribute("href", dataStr);
-    downloadAnchor.setAttribute("download", `medfusion_ocr_${Date.now()}.json`);
+    downloadAnchor.setAttribute("download", `medfusion_${selectedCategory.id}_${Date.now()}.json`);
     document.body.appendChild(downloadAnchor);
     downloadAnchor.click();
     downloadAnchor.remove();
   };
 
-  // Scanning progress log messages
-  const rxLogs = [
-    "Preparing optical character recognition...",
-    "Scanning document layout & handwriting...",
-    "Isolating pharmaceutical compounds...",
-    "Normalizing dosages and intake frequencies...",
-    "Cross-referencing contraindications & safety rules...",
-    "Structuring electronic prescription data...",
-    "Finalizing clinical Rx ingestion..."
-  ];
-
-  const labLogs = [
-    "Preparing pathology analysis engine...",
-    "Detecting clinical biomarker tables...",
-    "Extracting quantitative biomarker numbers...",
-    "Normalizing units against standard EHR reference ranges...",
-    "Evaluating metabolic & organ panels...",
-    "Generating clinical interpretation summary...",
-    "Finalizing pathology ingestion..."
+  const validationProgressStages = [
+    "Checking image file integrity, format, and resolution...",
+    "Evaluating image contrast, readability, and blur threshold...",
+    "AI classifying document content & verifying category...",
+    selectedCategory.id === 'prescription' 
+      ? "Extracting pharmaceuticals, dosages & schedule..." 
+      : "Extracting clinical biomarkers & reference ranges...",
+    "Finalizing medical record ingestion..."
   ];
 
   const handleUpload = async () => {
-    if (!file) return;
+    if (!file || loading) return;
     
+    // Client-side precheck
+    const preCheck = validateClientFile(file);
+    if (preCheck) {
+      setErrorState({
+        title: "Validation Error",
+        message: preCheck,
+        errorCode: "PRE_VALIDATION_FAILED",
+        issues: [preCheck]
+      });
+      return;
+    }
+
     setLoading(true);
     setResult(null);
-    setError('');
-    setScanProgress(8);
+    setErrorState(null);
+    setScanProgress(15);
+    setScanLog(validationProgressStages[0]);
     
-    const selectedLogs = docType.includes('Rx') ? rxLogs : labLogs;
-    let currentStep = 0;
+    let currentStep = 1;
     const interval = setInterval(() => {
-      if (currentStep < selectedLogs.length) {
-        setScanLog(selectedLogs[currentStep]);
-        setScanProgress((prev) => Math.min(prev + 14, 92));
+      if (currentStep < validationProgressStages.length) {
+        setScanLog(validationProgressStages[currentStep]);
+        setScanProgress(prev => Math.min(prev + 18, 90));
         currentStep++;
       }
-    }, 420);
+    }, 450);
 
     try {
       const formData = new FormData();
       formData.append('file', file);
+      formData.append('document_type', selectedCategory.backendType);
+      formData.append('category', selectedCategory.backendType);
+
       if (user && user.role === 'Doctor' && !selectedPatientId) {
         clearInterval(interval);
         setLoading(false);
-        setError("Please select a registered patient to assign this medical record to.");
+        setErrorState({
+          title: "Missing Patient",
+          message: "Please select a registered patient to assign this medical record to.",
+          errorCode: "PATIENT_REQUIRED"
+        });
         return;
       }
       if (selectedPatientId) {
         formData.append('patient_id', selectedPatientId);
       }
       
-      const endpoint = docType.includes('Rx') ? '/prescriptions/upload/' : '/pathology/analyze/';
-      const res = await api.post(endpoint, formData, {
+      const res = await api.post(selectedCategory.endpoint, formData, {
         headers: { 'Content-Type': 'multipart/form-data' }
       });
       
       clearInterval(interval);
       setScanProgress(100);
-      setScanLog("Medical record ingested and parsed successfully!");
+      setScanLog("Document validated and medical data extracted successfully!");
       
       let normalizedData = res.data;
-      if (docType.includes('Rx')) {
+      if (selectedCategory.id === 'prescription') {
         const ext = res.data.extracted_data || {};
         normalizedData = {
           ...res.data,
           medicines: ext.medicines || [],
           recommendations: ext.recommendations || [],
-          next_steps: ext.next_steps || []
+          next_steps: ext.next_steps || [],
+          physician: ext.physician || null,
+          clinical_intent: ext.clinical_intent || ""
         };
       } else {
         const rawBiomarkersList = res.data.report_data || [];
         const biomarkersObj = {};
-        rawBiomarkersList.forEach(bio => {
-          let refRange = "Normal Range";
-          let status = "NORMAL";
-          const nameLower = bio.name.toLowerCase();
-          const val = Number(bio.value);
-          
-          if (nameLower.includes('glucose') || nameLower.includes('fbs')) {
-            refRange = "70 - 100 mg/dL";
-            if (val > 100) status = "HIGH";
-            else if (val < 70) status = "LOW";
-          } else if (nameLower.includes('hba1c')) {
-            refRange = "< 5.7 %";
-            if (val >= 6.5) status = "HIGH";
-            else if (val >= 5.7) status = "HIGH";
-            else if (val < 4.0) status = "LOW";
-          } else if (nameLower.includes('cholesterol')) {
-            refRange = "< 200 mg/dL";
-            if (val >= 200) status = "HIGH";
-          } else if (nameLower.includes('hemoglobin') || nameLower.includes('hb')) {
-            refRange = "12.0 - 16.0 g/dL";
-            if (val > 16.0) status = "HIGH";
-            else if (val < 12.0) status = "LOW";
-          } else if (nameLower.includes('wbc') || nameLower.includes('white blood cell')) {
-            refRange = "4,500 - 11,000 cells/mcL";
-            if (val > 11000) status = "HIGH";
-            else if (val < 4500) status = "LOW";
-          } else if (nameLower.includes('rbc') || nameLower.includes('red blood cell')) {
-            refRange = "4.2 - 5.9 million/mcL";
-            if (val > 5.9) status = "HIGH";
-            else if (val < 4.2) status = "LOW";
-          } else if (nameLower.includes('platelet')) {
-            refRange = "150,000 - 450,000 cells/mcL";
-            if (val > 450000) status = "HIGH";
-            else if (val < 150000) status = "LOW";
-          }
-          
-          biomarkersObj[bio.name] = {
-            value: bio.value,
-            unit: bio.unit || '',
-            status: status,
-            reference_range: refRange
-          };
-        });
+        if (Array.isArray(rawBiomarkersList)) {
+          rawBiomarkersList.forEach(bio => {
+            let refRange = "Normal Range";
+            let status = "NORMAL";
+            const nameLower = (bio.name || '').toLowerCase();
+            const val = Number(bio.value);
+            
+            if (nameLower.includes('glucose') || nameLower.includes('fbs')) {
+              refRange = "70 - 100 mg/dL";
+              if (val > 100) status = "HIGH";
+              else if (val < 70) status = "LOW";
+            } else if (nameLower.includes('hba1c')) {
+              refRange = "< 5.7 %";
+              if (val >= 6.5) status = "HIGH";
+              else if (val >= 5.7) status = "HIGH";
+              else if (val < 4.0) status = "LOW";
+            } else if (nameLower.includes('cholesterol')) {
+              refRange = "< 200 mg/dL";
+              if (val >= 200) status = "HIGH";
+            } else if (nameLower.includes('hemoglobin') || nameLower.includes('hb')) {
+              refRange = "12.0 - 16.0 g/dL";
+              if (val > 16.0) status = "HIGH";
+              else if (val < 12.0) status = "LOW";
+            } else if (nameLower.includes('wbc') || nameLower.includes('white blood cell')) {
+              refRange = "4,500 - 11,000 cells/mcL";
+              if (val > 11000) status = "HIGH";
+              else if (val < 4500) status = "LOW";
+            } else if (nameLower.includes('rbc') || nameLower.includes('red blood cell')) {
+              refRange = "4.2 - 5.9 million/mcL";
+              if (val > 5.9) status = "HIGH";
+              else if (val < 4.2) status = "LOW";
+            } else if (nameLower.includes('platelet')) {
+              refRange = "150,000 - 450,000 cells/mcL";
+              if (val > 450000) status = "HIGH";
+              else if (val < 150000) status = "LOW";
+            }
+            
+            biomarkersObj[bio.name || 'Biomarker'] = {
+              value: bio.value,
+              unit: bio.unit || '',
+              status: status,
+              reference_range: refRange
+            };
+          });
+        }
 
         normalizedData = {
           ...res.data,
           biomarkers: biomarkersObj,
-          clinical_interpretation: res.data.analysis?.summary || res.data.analysis?.error || "Biomarkers parsed and evaluated against standard clinical ranges."
+          clinical_interpretation: res.data.clinical_insight?.summary || res.data.analysis?.summary || "Biomarkers parsed and evaluated against standard clinical ranges."
         };
       }
       
       setTimeout(() => {
         setResult({
-          type: docType,
+          type: selectedCategory.label,
           timestamp: new Date().toLocaleString([], { hour12: false }),
           data: normalizedData
         });
@@ -255,9 +297,42 @@ function Upload({ user }) {
       
     } catch (err) {
       clearInterval(interval);
-      const msg = err.response?.data?.error || err.response?.data?.detail || err.message || "Clinical OCR ingestion failed. Please try a cleaner PNG, JPG, or PDF file.";
-      setError(msg);
       setLoading(false);
+      setScanProgress(0);
+      
+      const errData = err.response?.data || {};
+      const status = err.response?.status;
+      const errorCode = errData.error_code || (status === 415 ? 'UNSUPPORTED_FORMAT' : status === 503 ? 'AI_VALIDATION_FAILED' : status === 422 ? 'MISSING_MEDICAL_INFO' : 'VALIDATION_ERROR');
+      const errorMsg = errData.message || errData.error || errData.detail || err.message || "Document validation failed.";
+      const issues = Array.isArray(errData.issues) ? errData.issues : (errData.issues ? [String(errData.issues)] : []);
+      const docTypeDetected = errData.document_type || errData.detected_category;
+
+      let title = "Invalid Document";
+      if (errorCode === "DOCUMENT_TYPE_MISMATCH") {
+        title = "Document Type Mismatch";
+      } else if (errorCode === "IMAGE_TOO_BLURRY") {
+        title = "Image Too Blurry";
+      } else if (errorCode === "IMAGE_CORRUPTED") {
+        title = "Corrupted Image";
+      } else if (errorCode === "UNSUPPORTED_FORMAT") {
+        title = "Unsupported Format";
+      } else if (errorCode === "EMPTY_FILE") {
+        title = "Empty File";
+      } else if (errorCode === "AI_VALIDATION_FAILED" || errorCode === "SERVICE_UNAVAILABLE" || status === 503) {
+        title = "AI Validation Unavailable";
+      } else if (errorCode === "LOW_CONFIDENCE") {
+        title = "Low Confidence";
+      } else if (errorCode === "MISSING_MEDICAL_INFO" || errorCode === "EXTRACTION_FAILED" || status === 422) {
+        title = "Missing Medical Information";
+      }
+
+      setErrorState({
+        title,
+        message: errorMsg,
+        errorCode,
+        issues,
+        documentType: docTypeDetected
+      });
     }
   };
 
@@ -265,7 +340,7 @@ function Upload({ user }) {
     setFile(null);
     setPreviewUrl(null);
     setResult(null);
-    setError('');
+    setErrorState(null);
     setScanProgress(0);
     setScanLog('');
     const fileInput = document.getElementById('scannerFileInput');
@@ -275,16 +350,17 @@ function Upload({ user }) {
   const handleFileChange = (e) => {
     const selected = e.target.files[0];
     if (!selected) return;
-    const allowed = ['image/jpeg', 'image/png', 'image/jpg', 'application/pdf'];
-    if (!allowed.includes(selected.type)) {
-      setError('Unsupported file type. Please upload a JPG, PNG, or PDF.');
+    const validationError = validateClientFile(selected);
+    if (validationError) {
+      setErrorState({
+        title: validationError.includes('empty') ? 'Empty File' : validationError.includes('large') ? 'File Too Large' : 'Unsupported Format',
+        message: validationError,
+        errorCode: validationError.includes('empty') ? 'EMPTY_FILE' : validationError.includes('large') ? 'FILE_TOO_LARGE' : 'UNSUPPORTED_FORMAT',
+        issues: [validationError]
+      });
       return;
     }
-    if (selected.size > 16 * 1024 * 1024) {
-      setError('File too large. Maximum size is 16MB.');
-      return;
-    }
-    setError('');
+    setErrorState(null);
     setFile(selected);
     setResult(null);
   };
@@ -293,8 +369,7 @@ function Upload({ user }) {
   useEffect(() => {
     setSidebarContent(
       <div className="d-flex flex-column gap-4 pt-2">
-
-        {/* Header console — same as Health Check */}
+        {/* Header console */}
         <div className="glass-card p-3.5 mb-1 reveal" style={{ borderRadius: '12px', border: '1px solid rgba(244, 149, 74, 0.4)', background: 'rgba(244, 149, 74, 0.08)' }}>
           <div className="d-flex align-items-center gap-2 mb-2">
             <div style={{ width: '26px', height: '26px', borderRadius: '7px', background: 'rgba(244, 149, 74, 0.22)', border: '1px solid #F97316', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
@@ -308,35 +383,36 @@ function Upload({ user }) {
             AI Medical <span style={{ color: 'var(--brand-orange)' }}>Scanner</span>
           </h2>
           <p className="m-0 mt-2" style={{ fontSize: '0.84rem', lineHeight: '1.4', color: 'rgba(255, 255, 255, 0.72)' }}>
-            {docType.includes('Rx')
-              ? 'Upload a prescription photo to extract drug names, dosages and schedules instantly.'
-              : 'Upload a lab report to extract biomarker values and get a clinical interpretation.'}
+            {selectedCategory.description}
           </p>
         </div>
 
-        {/* Scan type selector — disease-select-tile style */}
+        {/* Scan type selector */}
         <div className="mt-1">
           <h4 className="fw-bold mb-3" style={{ fontSize: '0.92rem', color: 'var(--text-on-dark, #E2E8F0)' }}>
-            <span className="font-monospace text-uppercase" style={{ letterSpacing: '0.06em', color: 'var(--text-on-dark, #E2E8F0)' }}>Scan Type</span>
+            <span className="font-monospace text-uppercase" style={{ letterSpacing: '0.06em', color: 'var(--text-on-dark, #E2E8F0)' }}>Document Category</span>
           </h4>
           <div className="d-flex flex-column gap-2 mt-2">
-            {[
-              { id: 'Rx',        label: 'Prescription (Rx)',      icon: <Pill size={16} />,     theme: 'prescription' },
-              { id: 'Pathology', label: 'Lab Report (Pathology)', icon: <Database size={16} />, theme: 'lab' },
-            ].map(({ id, label, icon, theme }) => {
-              const isSelected = docType.includes(id);
+            {SUPPORTED_CATEGORIES.map((cat) => {
+              const isSelected = selectedCategory.id === cat.id;
               return (
                 <div
-                  key={id}
-                  onClick={() => { if (!loading) { setDocType(id === 'Rx' ? 'Prescription (Rx)' : 'Lab Report (Pathology)'); setResult(null); } }}
-                  className={`disease-select-tile cursor-pointer ${theme} ${isSelected ? 'active' : 'inactive'} ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
+                  key={cat.id}
+                  onClick={() => { 
+                    if (!loading) { 
+                      setSelectedCategory(cat); 
+                      setResult(null); 
+                      setErrorState(null);
+                    } 
+                  }}
+                  className={`disease-select-tile cursor-pointer ${cat.theme} ${isSelected ? 'active' : 'inactive'} ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
                   style={{ padding: '10px 14px' }}
                 >
                   <div className="d-flex align-items-center justify-content-start gap-2.5 font-monospace fw-bold text-uppercase" style={{ fontSize: '0.80rem' }}>
                     <div className="disease-icon-box">
-                      {icon}
+                      {cat.icon}
                     </div>
-                    <span>{label}</span>
+                    <span>{cat.label}</span>
                   </div>
                 </div>
               );
@@ -359,12 +435,17 @@ function Upload({ user }) {
           </div>
         )}
 
-        {/* Document preview — shown once file is queued */}
+        {/* Document preview */}
         {file && (
-          <div style={{ borderRadius: '12px', overflow: 'hidden', border: '1px solid rgba(255,255,255,0.18)', background: 'rgba(255,255,255,0.06)' }}>
+          <div style={{ 
+            borderRadius: '12px', 
+            overflow: 'hidden', 
+            border: errorState ? '1px solid rgba(239, 68, 68, 0.6)' : '1px solid rgba(255,255,255,0.18)', 
+            background: 'rgba(255,255,255,0.06)' 
+          }}>
             <div className="d-flex align-items-center justify-content-between px-3 py-2" style={{ borderBottom: '1px solid rgba(255,255,255,0.10)' }}>
               <div className="d-flex align-items-center gap-2 overflow-hidden">
-                <FileCheck size={13} style={{ color: 'var(--brand-orange)', flexShrink: 0 }} />
+                <FileCheck size={13} style={{ color: errorState ? '#EF4444' : 'var(--brand-orange)', flexShrink: 0 }} />
                 <span className="fw-bold font-monospace text-truncate" style={{ fontSize: '0.7rem', color: 'rgba(255,255,255,0.95)' }}>{file.name}</span>
               </div>
               <span className="font-monospace flex-shrink-0" style={{ fontSize: '0.62rem', color: 'rgba(255,255,255,0.55)', marginLeft: '6px' }}>{(file.size / 1024).toFixed(0)} KB</span>
@@ -378,37 +459,21 @@ function Upload({ user }) {
               ) : (
                 <div className="text-center py-4">
                   <FileText size={38} style={{ color: 'var(--brand-blue)', opacity: 0.7, display: 'block', margin: '0 auto 8px' }} />
-                  <span className="d-block font-monospace fw-bold" style={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.88)' }}>PDF Queued</span>
-                  <span className="font-monospace" style={{ fontSize: '0.66rem', color: 'rgba(255,255,255,0.5)' }}>Ready for extraction</span>
+                  <span className="font-monospace" style={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.6)' }}>Document Ready</span>
                 </div>
-              )}
-            </div>
-            <div className="d-flex align-items-center gap-2 px-3 py-2" style={{ borderTop: '1px solid rgba(255,255,255,0.08)' }}>
-              {loading ? (
-                <>
-                  <Cpu size={11} style={{ color: 'var(--brand-orange)', flexShrink: 0 }} className="spin" />
-                  <span className="font-monospace text-truncate" style={{ fontSize: '0.66rem', color: 'var(--brand-orange)' }}>{scanLog || 'Processing…'}</span>
-                </>
-              ) : (
-                <>
-                  <CheckCircle size={11} style={{ color: '#34D399', flexShrink: 0 }} />
-                  <span className="font-monospace" style={{ fontSize: '0.66rem', color: 'rgba(255,255,255,0.7)' }}>Ready to ingest &amp; scan</span>
-                </>
               )}
             </div>
           </div>
         )}
-
       </div>
     );
     return () => setSidebarContent(null);
-  }, [file, previewUrl, loading, scanLog, docType, user, patients, selectedPatientId, setSidebarContent]);
+  }, [file, previewUrl, loading, scanLog, selectedCategory, user, patients, selectedPatientId, errorState, setSidebarContent]);
 
   return (
     <div className={`reveal px-1 w-100 ${user && user.role === 'Doctor' ? 'theme-cancer' : 'theme-general'}`}>
       
-
-      {/* ── Top Header Banner (Theme-Adaptive) ────────────────────── */}
+      {/* ── Top Header Banner ────────────────────────────────────────── */}
       <div
         className="mb-4 position-relative overflow-hidden"
         style={{
@@ -426,7 +491,6 @@ function Upload({ user }) {
           transition: 'all 0.3s ease',
         }}
       >
-        {/* Glow blobs */}
         <div style={{ position: 'absolute', top: '-20px', right: '60px', width: '180px', height: '180px', borderRadius: '50%', background: `radial-gradient(circle, rgba(244,149,74,${isDark ? '0.15' : '0.1'}) 0%, transparent 70%)`, pointerEvents: 'none' }} />
         <div style={{ position: 'absolute', bottom: '-30px', left: '160px', width: '140px', height: '140px', borderRadius: '50%', background: `radial-gradient(circle, rgba(56,189,248,${isDark ? '0.12' : '0.1'}) 0%, transparent 70%)`, pointerEvents: 'none' }} />
 
@@ -436,23 +500,22 @@ function Upload({ user }) {
               <Cpu size={14} style={{ color: '#E07B39' }} />
             </div>
             <span className="font-monospace text-uppercase" style={{ fontSize: '0.68rem', letterSpacing: '0.14em', color: isDark ? 'var(--brand-orange)' : '#D9681E', fontWeight: 700 }}>
-              Optical Clinical OCR &nbsp;·&nbsp; {user?.role === 'Doctor' ? 'Doctor Upload Console' : 'Patient AI Scanner'}
+              Strict Medical Document Validation Engine
             </span>
           </div>
           <h1 className="fw-bolder m-0 mb-2" style={{ fontSize: '2rem', letterSpacing: '-0.03em', color: isDark ? '#FFFFFF' : '#0F172A', lineHeight: 1.1, fontFamily: 'var(--font-main)' }}>
-            AI Medical <span className="text-gradient-heart">Report & Scanner</span>
+            AI Medical <span className="text-gradient-heart">Scanner & Validator</span>
           </h1>
-          <p className="m-0" style={{ fontSize: '0.9rem', color: isDark ? 'rgba(255,255,255,0.65)' : '#475569', maxWidth: '560px', lineHeight: 1.5, fontWeight: isDark ? 400 : 500 }}>
-            Upload a photo or scanned PDF of any prescription or lab report. The neural OCR engine extracts drug names, dosages, biomarkers and safety flags in under 10 seconds.
+          <p className="m-0" style={{ fontSize: '0.9rem', color: isDark ? 'rgba(255,255,255,0.65)' : '#475569', maxWidth: '620px', lineHeight: 1.5, fontWeight: isDark ? 400 : 500 }}>
+            Upload genuine medical prescriptions, lab reports, and diagnostic scans. The strict AI validation pipeline verifies document authenticity and rejects non-medical uploads, identity cards, resumes, and blurry files before clinical ingestion.
           </p>
         </div>
       </div>
 
-
       {/* ── Main Expanded Workspace ──────────────────────────────────── */}
       <div className="row g-4 align-items-stretch">
         
-        {/* Workspace: Full Width when Empty, or Side-by-Side when Result/Preview active */}
+        {/* Workspace: Full Width when Empty, or Side-by-Side when Result active */}
         <div className={result ? "col-lg-5" : "col-12"}>
           <div className="glass-card p-4 h-100 d-flex flex-column justify-content-between" style={{ borderRadius: '16px' }}>
             
@@ -461,7 +524,7 @@ function Upload({ user }) {
               <div className="d-flex align-items-center justify-content-between mb-3 pb-2 border-bottom border-white-10">
                 <h4 className="fw-bold m-0 d-flex align-items-center gap-2" style={{ fontSize: '1.05rem', color: 'var(--text-primary)' }}>
                   <UploadIcon size={18} className="text-theme-accent" />
-                  <span>Document Workspace</span>
+                  <span>Document Workspace — {selectedCategory.label}</span>
                 </h4>
                 {file && (
                   <button 
@@ -479,7 +542,7 @@ function Upload({ user }) {
               {!file ? (
                 <>
                   <div
-                    className={`border border-2 border-dashed rounded-4 p-5 text-center transition-all cursor-pointer position-relative ${docType.includes('Rx') ? 'panel-upload-rx' : 'panel-upload-lab'}`}
+                    className={`border border-2 border-dashed rounded-4 p-5 text-center transition-all cursor-pointer position-relative ${selectedCategory.id === 'prescription' ? 'panel-upload-rx' : 'panel-upload-lab'}`}
                     onClick={() => document.getElementById('scannerFileInput').click()}
                     onDragOver={handleDragOver}
                     onDragLeave={handleDragLeave}
@@ -490,7 +553,7 @@ function Upload({ user }) {
                     style={{
                       minHeight: '280px',
                       display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
-                      borderColor: isDragging ? 'var(--brand-orange)' : 'var(--border)',
+                      borderColor: isDragging ? 'var(--brand-orange)' : errorState ? '#EF4444' : 'var(--border)',
                       background: isDragging ? 'var(--bg-card-tinted)' : 'var(--bg-surface)',
                       transition: 'all 0.2s ease',
                     }}
@@ -499,30 +562,27 @@ function Upload({ user }) {
                       <UploadIcon size={30} style={{ color: 'var(--brand-orange)' }} />
                     </div>
                     <h3 className="fw-bold mb-2" style={{ fontSize: '1.25rem', color: 'var(--text-primary)', letterSpacing: '-0.015em' }}>
-                      Drop {docType.includes('Rx') ? 'Prescription Sheet' : 'Lab Test Report'} Here
+                      Drop {selectedCategory.label} Here
                     </h3>
-                    <p className="mb-4" style={{ fontSize: '0.9rem', maxWidth: '420px', lineHeight: '1.5', color: 'var(--text-secondary)' }}>
-                      Drag &amp; drop a high-resolution photo or scanned document, or click to browse.
+                    <p className="mb-4" style={{ fontSize: '0.9rem', maxWidth: '440px', lineHeight: '1.5', color: 'var(--text-secondary)' }}>
+                      Drag &amp; drop a clear photo or scanned document, or click to browse.
                     </p>
                     <div className="d-flex align-items-center gap-2 flex-wrap justify-content-center">
-                      {['PNG / JPG', 'PDF up to 16MB', 'OCR Extraction'].map((label, i) => (
+                      {['JPG / PNG / WEBP', 'PDF up to 16MB', 'AI Validation & OCR'].map((label, i) => (
                         <span key={label} className="badge rounded-pill px-3 py-1" style={{ background: 'var(--bg-card-tinted)', border: '1px solid var(--border)', fontSize: '0.72rem', color: i === 2 ? 'var(--brand-orange)' : 'var(--text-primary)', fontWeight: i === 2 ? 700 : 600 }}>{label}</span>
                       ))}
                     </div>
-                    <input id="scannerFileInput" type="file" className="d-none" accept="image/jpeg,image/png,image/jpg,application/pdf" onChange={handleFileChange} />
+                    <input id="scannerFileInput" type="file" className="d-none" accept="image/jpeg,image/png,image/jpg,image/webp,application/pdf" onChange={handleFileChange} />
                   </div>
 
-                  {/* Capabilities grid — useful context when empty */}
+                  {/* Capabilities grid */}
                   <div className="row g-3 mt-2">
                     {[
-                      { icon: <Pill size={18} />, color: 'var(--brand-orange)', title: 'Rx Parsing', desc: 'Drug names, dosages, frequency and timing extracted from any handwritten prescription.' },
-                      { icon: <Activity size={18} />, color: 'var(--brand-blue)', title: 'Biomarker Extraction', desc: 'Quantitative lab values (HbA1c, CBC, lipid panel) normalised against clinical reference ranges.' },
-                      { icon: <ShieldCheck size={18} />, color: '#34D399', title: 'Safety Checks', desc: 'Auto-flags abnormal values and contraindications using your stored allergy & medication profile.' },
-                      { icon: <Layers size={18} />, color: 'var(--accent-violet)', title: 'EHR Sync', desc: 'All extracted data is stored directly in your MedFusion health vault for future AI analysis.' },
-                      { icon: <Zap size={18} />, color: '#FBBF24', title: 'Instant Results', desc: 'Neural extraction completes in under 10 seconds — even for multi-page handwritten documents.' },
-                      { icon: <Eye size={18} />, color: 'var(--accent-cyan)', title: 'Visual Preview', desc: 'Your uploaded document previews live in the sidebar while the AI engine processes it.' },
+                      { icon: <ShieldCheck size={18} />, color: '#34D399', title: 'Authenticity Validation', desc: 'Verifies uploaded documents match selected category and rejects identity cards, invoices, or resumes.' },
+                      { icon: <Pill size={18} />, color: 'var(--brand-orange)', title: 'Rx Extraction', desc: 'Accurately extracts pharmaceutical compound names, dosages, and dosing intervals without fabrication.' },
+                      { icon: <Activity size={18} />, color: 'var(--brand-blue)', title: 'Biomarker Extraction', desc: 'Normalizes quantitative lab values against standard clinical EHR reference intervals.' },
                     ].map(({ icon, color, title, desc }) => (
-                      <div key={title} className="col-md-6 col-lg-4">
+                      <div key={title} className="col-md-4">
                         <div className="h-100 p-3 rounded-3" style={{ background: 'var(--bg-card-tinted)', border: '1px solid var(--border)' }}>
                           <div className="d-flex align-items-center gap-2 mb-2">
                             <span style={{ color }}>{icon}</span>
@@ -535,46 +595,73 @@ function Upload({ user }) {
                   </div>
                 </>
               ) : (
-                /* File is queued — clean action card (preview is in sidebar) */
-                <div className="rounded-4 border p-4" style={{ background: 'var(--bg-surface)', borderColor: 'var(--border)' }}>
+                /* File is queued */
+                <div 
+                  className="rounded-4 border p-4" 
+                  style={{ 
+                    background: 'var(--bg-surface)', 
+                    borderColor: errorState ? '#EF4444' : 'var(--border)',
+                    boxShadow: errorState ? '0 0 15px rgba(239, 68, 68, 0.15)' : 'none'
+                  }}
+                >
                   <div className="d-flex align-items-center gap-3 mb-4">
-                    <div className="rounded-circle d-flex align-items-center justify-content-center flex-shrink-0" style={{ width: '52px', height: '52px', background: docType.includes('Rx') ? 'rgba(244,149,74,0.15)' : 'rgba(91,159,224,0.15)', border: `1px solid ${docType.includes('Rx') ? 'var(--brand-orange)' : 'var(--brand-blue)'}` }}>
-                      {docType.includes('Rx') ? <Pill size={22} style={{ color: 'var(--brand-orange)' }} /> : <Activity size={22} style={{ color: 'var(--brand-blue)' }} />}
+                    <div className="rounded-circle d-flex align-items-center justify-content-center flex-shrink-0" style={{ width: '52px', height: '52px', background: selectedCategory.id === 'prescription' ? 'rgba(244,149,74,0.15)' : 'rgba(91,159,224,0.15)', border: `1px solid ${selectedCategory.id === 'prescription' ? 'var(--brand-orange)' : 'var(--brand-blue)'}` }}>
+                      {selectedCategory.id === 'prescription' ? <Pill size={22} style={{ color: 'var(--brand-orange)' }} /> : <Activity size={22} style={{ color: 'var(--brand-blue)' }} />}
                     </div>
                     <div className="overflow-hidden">
                       <p className="fw-bold m-0 text-truncate" style={{ fontSize: '1rem', color: 'var(--text-primary)' }}>{file.name}</p>
                       <span className="font-monospace" style={{ fontSize: '0.74rem', color: 'var(--text-secondary)' }}>
-                        {(file.size / 1024).toFixed(1)} KB &nbsp;·&nbsp; {docType} &nbsp;·&nbsp; Preview in sidebar →
+                        {(file.size / 1024).toFixed(1)} KB &nbsp;·&nbsp; Target: {selectedCategory.label} &nbsp;·&nbsp; Preview in sidebar →
                       </span>
                     </div>
                   </div>
 
-                  {/* What the AI will extract */}
+                  {/* Extracted metadata preview expectations */}
                   <div className="mb-4 p-3 rounded-3" style={{ background: 'var(--bg-card-tinted)', border: '1px solid var(--border)' }}>
-                    <p className="fw-bold font-monospace text-uppercase m-0 mb-2" style={{ fontSize: '0.66rem', letterSpacing: '0.08em', color: 'var(--text-muted)' }}>AI will extract</p>
+                    <p className="fw-bold font-monospace text-uppercase m-0 mb-2" style={{ fontSize: '0.66rem', letterSpacing: '0.08em', color: 'var(--text-muted)' }}>Validation &amp; Extraction Stages</p>
                     <div className="d-flex flex-wrap gap-2">
-                      {(docType.includes('Rx')
-                        ? ['Drug Names', 'Dosage & Units', 'Frequency', 'Meal Timing', 'Duration', 'Doctor Notes', 'Next Steps']
-                        : ['Biomarker Values', 'Units & Range', 'Status (High/Low)', 'Organ Panel', 'Clinical Summary', 'Lab Date', 'Doctor Remarks']
-                      ).map(tag => (
-                        <span key={tag} className="badge rounded-pill px-2 py-1" style={{ background: 'var(--bg-card)', border: '1px solid var(--border)', fontSize: '0.7rem', color: 'var(--text-primary)', fontWeight: 500 }}>{tag}</span>
+                      {[
+                        '1. Integrity & Blur Check',
+                        '2. AI Category Validation',
+                        selectedCategory.id === 'prescription' ? '3. Medication Schedule' : '3. Biomarker Range Normalization',
+                        '4. Longitudinal Record Ingestion'
+                      ].map(tag => (
+                        <span key={tag} className="badge rounded-pill px-2.5 py-1" style={{ background: 'var(--bg-card)', border: '1px solid var(--border)', fontSize: '0.7rem', color: 'var(--text-primary)', fontWeight: 500 }}>{tag}</span>
                       ))}
                     </div>
                   </div>
 
                   {/* Action row */}
                   <div className="d-flex align-items-center gap-3 flex-wrap">
-                    <button type="button" onClick={() => document.getElementById('scannerFileInput').click()} disabled={loading}
-                      className="btn-clinical secondary py-2 px-3" style={{ fontSize: '0.78rem', width: 'auto' }}>
+                    <button 
+                      type="button" 
+                      onClick={() => document.getElementById('scannerFileInput').click()} 
+                      disabled={loading}
+                      className="btn-clinical secondary py-2 px-3" 
+                      style={{ fontSize: '0.78rem', width: 'auto' }}
+                    >
                       Change File
                     </button>
-                    <input id="scannerFileInput" type="file" className="d-none" accept="image/jpeg,image/png,image/jpg,application/pdf" onChange={handleFileChange} />
+                    <button 
+                      type="button" 
+                      onClick={resetScanner} 
+                      disabled={loading}
+                      className="btn-clinical secondary py-2 px-3" 
+                      style={{ fontSize: '0.78rem', width: 'auto' }}
+                    >
+                      Remove File
+                    </button>
+                    <input id="scannerFileInput" type="file" className="d-none" accept="image/jpeg,image/png,image/jpg,image/webp,application/pdf" onChange={handleFileChange} />
                     {!result && (
-                      <button type="button" onClick={handleUpload} disabled={loading}
+                      <button 
+                        type="button" 
+                        onClick={handleUpload} 
+                        disabled={loading}
                         className="btn-clinical primary py-2 px-4 d-inline-flex align-items-center gap-2"
-                        style={{ fontSize: '0.88rem', width: 'auto', flexGrow: 1 }}>
+                        style={{ fontSize: '0.88rem', width: 'auto', flexGrow: 1 }}
+                      >
                         {loading ? <Cpu size={16} className="spin" /> : <Sparkles size={16} />}
-                        <span>{loading ? 'PROCESSING...' : `INGEST & SCAN ${docType.includes('Rx') ? 'PRESCRIPTION' : 'LAB REPORT'}`}</span>
+                        <span>{loading ? 'VALIDATING & PROCESSING...' : `VALIDATE & INGEST ${selectedCategory.label.toUpperCase()}`}</span>
                       </button>
                     )}
                   </div>
@@ -587,7 +674,7 @@ function Upload({ user }) {
               <div className="mt-4 p-3.5 rounded-3 border" style={{ background: 'var(--bg-card-tinted)', borderColor: 'var(--border)' }}>
                 <div className="d-flex align-items-center justify-content-between mb-2 font-monospace">
                   <span className="d-flex align-items-center gap-2 small fw-bold" style={{ color: 'var(--brand-blue)' }}>
-                    <Cpu size={14} />
+                    <Cpu size={14} className="spin" />
                     <span>{scanLog}</span>
                   </span>
                   <span className="small fw-bold" style={{ color: 'var(--text-primary)' }}>{scanProgress}%</span>
@@ -598,27 +685,84 @@ function Upload({ user }) {
               </div>
             )}
 
-            {/* Error Message */}
-            {error && (
-              <div className="mt-4 p-3.5 rounded-3 border border-danger d-flex align-items-center justify-content-between gap-3" style={{ background: 'var(--status-danger-bg)' }}>
-                <div className="d-flex align-items-center gap-2 text-danger font-monospace small">
-                  <AlertTriangle size={18} className="flex-shrink-0" />
-                  <span>{error}</span>
+            {/* Comprehensive Validation Error Alert Banner */}
+            {errorState && (
+              <div 
+                className="mt-4 p-4 rounded-3 border border-danger" 
+                style={{ 
+                  background: 'rgba(239, 68, 68, 0.08)',
+                  boxShadow: '0 4px 12px rgba(239, 68, 68, 0.1)'
+                }}
+              >
+                <div className="d-flex align-items-start justify-content-between gap-3">
+                  <div className="d-flex align-items-start gap-3">
+                    <div style={{
+                      width: '32px',
+                      height: '32px',
+                      borderRadius: '8px',
+                      background: 'rgba(239, 68, 68, 0.2)',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      flexShrink: 0
+                    }}>
+                      <AlertTriangle size={20} className="text-danger" />
+                    </div>
+                    <div>
+                      <div className="d-flex align-items-center gap-2 mb-1">
+                        <h5 className="fw-bolder m-0 text-danger" style={{ fontSize: '1rem', letterSpacing: '-0.01em' }}>
+                          {errorState.title}
+                        </h5>
+                        {errorState.errorCode && (
+                          <span className="badge font-monospace text-uppercase" style={{ background: 'rgba(239, 68, 68, 0.2)', color: '#EF4444', fontSize: '0.66rem' }}>
+                            {errorState.errorCode}
+                          </span>
+                        )}
+                      </div>
+                      <p className="m-0 mb-2 fw-medium" style={{ fontSize: '0.88rem', color: isDark ? '#FCA5A5' : '#B91C1C', lineHeight: 1.45 }}>
+                        {errorState.message}
+                      </p>
+                      {errorState.documentType && (
+                        <div className="mb-2 font-monospace" style={{ fontSize: '0.75rem', color: isDark ? 'rgba(255,255,255,0.7)' : '#4B5563' }}>
+                          Detected document type: <strong className="text-capitalize">{errorState.documentType.replace(/_/g, ' ')}</strong>
+                        </div>
+                      )}
+                      {errorState.issues && errorState.issues.length > 0 && (
+                        <div className="d-flex flex-wrap gap-1.5 mt-2">
+                          {errorState.issues.map((issue, idx) => (
+                            <span key={idx} className="badge rounded-pill px-2.5 py-1 font-monospace" style={{ background: 'rgba(239, 68, 68, 0.15)', border: '1px solid rgba(239, 68, 68, 0.3)', color: '#EF4444', fontSize: '0.7rem' }}>
+                              {issue}
+                            </span>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  <div className="d-flex flex-column gap-2 flex-shrink-0">
+                    <button 
+                      onClick={resetScanner} 
+                      className="btn-clinical secondary py-1.5 px-3"
+                      style={{ fontSize: '0.76rem', width: 'auto', background: 'rgba(239, 68, 68, 0.15)', borderColor: '#EF4444', color: '#EF4444' }}
+                    >
+                      Remove &amp; Re-upload
+                    </button>
+                    <button 
+                      onClick={() => setErrorState(null)} 
+                      className="btn-clinical secondary py-1.5 px-3"
+                      style={{ fontSize: '0.72rem', width: 'auto' }}
+                    >
+                      Dismiss
+                    </button>
+                  </div>
                 </div>
-                <button 
-                  onClick={resetScanner} 
-                  className="btn-clinical secondary py-1.5 px-3"
-                  style={{ fontSize: '0.72rem', width: 'auto' }}
-                >
-                  Dismiss
-                </button>
               </div>
             )}
 
           </div>
         </div>
 
-        {/* Structured Results Stage — When scanned, shows detailed clinical telemetry */}
+        {/* Structured Results Stage */}
         {result && (
           <div className="col-lg-7">
             <div className="glass-card p-4 h-100 d-flex flex-column" style={{ borderRadius: '16px' }}>
@@ -631,7 +775,7 @@ function Upload({ user }) {
                     <span>Clinical Ingestion Complete</span>
                   </h3>
                   <span className="text-secondary small font-monospace">
-                    Processed: {result.timestamp} · {result.type}
+                    Validated: {result.timestamp} · {result.type}
                   </span>
                 </div>
 
@@ -655,7 +799,7 @@ function Upload({ user }) {
 
               {/* Result Content */}
               <div className="flex-grow-1 overflow-auto" style={{ maxHeight: '700px' }}>
-                {result.type.includes('Rx') ? (
+                {selectedCategory.id === 'prescription' ? (
                   /* Prescription Extracted Medicines */
                   <div className="d-flex flex-column gap-3">
                     <h5 className="fw-bold font-monospace d-flex align-items-center gap-2 m-0" style={{ fontSize: '0.98rem', color: 'var(--text-primary)' }}>
@@ -725,7 +869,7 @@ function Upload({ user }) {
                     {result.data.recommendations?.length > 0 && (
                       <div className="p-3.5 rounded-3 border mt-3" style={{ background: 'var(--bg-card)', borderColor: 'var(--border)' }}>
                         <h6 className="fw-bold font-monospace mb-2" style={{ fontSize: '0.85rem', color: 'var(--brand-orange)' }}>
-                          CLINICAL RECOMMENDATIONS & INSTRUCTIONS
+                          CLINICAL RECOMMENDATIONS &amp; INSTRUCTIONS
                         </h6>
                         <ul className="text-secondary small ps-3 mb-0" style={{ lineHeight: '1.6' }}>
                           {result.data.recommendations.map((r, i) => <li key={i}>{r}</li>)}
@@ -734,7 +878,7 @@ function Upload({ user }) {
                     )}
                   </div>
                 ) : (
-                  /* Pathology Biomarkers Panel with Advanced Medical Reading Bars */
+                  /* Lab / Pathology Biomarkers Panel with Advanced Medical Reading Bars */
                   <div className="d-flex flex-column gap-3">
                     <h5 className="fw-bold font-monospace d-flex align-items-center gap-2 m-0" style={{ fontSize: '0.98rem', color: 'var(--text-primary)' }}>
                       <Activity size={16} style={{ color: 'var(--brand-blue)' }} />
@@ -760,25 +904,26 @@ function Upload({ user }) {
                                     {k.replace(/_/g, ' ')}
                                   </span>
                                   <span 
-                                    className="badge rounded-pill px-2 py-0.5 font-monospace"
-                                    style={{
-                                      fontSize: '0.65rem',
-                                      background: isAbnormal ? 'var(--status-danger-bg)' : 'var(--status-normal-bg)',
-                                      color: isAbnormal ? 'var(--status-danger)' : 'var(--status-normal)',
-                                      border: `1px solid ${isAbnormal ? 'var(--status-danger-border)' : 'var(--status-normal-border)'}`,
-                                    }}
+                                    className={`badge font-monospace ${isAbnormal ? 'bg-danger text-white' : 'bg-success text-white'}`}
+                                    style={{ fontSize: '0.65rem' }}
                                   >
                                     {bio.status || 'NORMAL'}
                                   </span>
                                 </div>
+                                
+                                <div className="d-flex align-items-baseline gap-1 my-2">
+                                  <span className="font-monospace fs-4 fw-bold" style={{ color: 'var(--text-primary)' }}>
+                                    {bio.value}
+                                  </span>
+                                  <span className="text-secondary small font-monospace">{bio.unit}</span>
+                                </div>
                               </div>
 
-                              <MedicalReadingBar
-                                name={k}
+                              <MedicalReadingBar 
+                                label={k}
                                 value={bio.value}
                                 unit={bio.unit}
                                 referenceRange={bio.reference_range}
-                                status={bio.status}
                               />
                             </div>
                           </div>
@@ -789,9 +934,9 @@ function Upload({ user }) {
                     {result.data.clinical_interpretation && (
                       <div className="p-3.5 rounded-3 border mt-3" style={{ background: 'var(--bg-card)', borderColor: 'var(--border)' }}>
                         <h6 className="fw-bold font-monospace mb-2" style={{ fontSize: '0.85rem', color: 'var(--brand-blue)' }}>
-                          PATHOLOGICAL INTERPRETATION DIGEST
+                          CLINICAL INTERPRETATION SUMMARY
                         </h6>
-                        <p className="text-secondary small m-0" style={{ lineHeight: '1.65' }}>
+                        <p className="text-secondary small mb-0" style={{ lineHeight: '1.6' }}>
                           {result.data.clinical_interpretation}
                         </p>
                       </div>
@@ -799,11 +944,13 @@ function Upload({ user }) {
                   </div>
                 )}
               </div>
+
             </div>
           </div>
         )}
 
       </div>
+
     </div>
   );
 }

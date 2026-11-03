@@ -1526,7 +1526,7 @@ function PatientDashboard({ user }) {
               <Heart size={14} style={{ color: selectedDisease === 'heart_attack' ? '#DC2626' : selectedDisease === 'diabetes' ? '#059669' : '#9333EA' }} />
             </div>
             <span className="font-monospace text-uppercase" style={{ fontSize: '0.68rem', letterSpacing: '0.14em', color: selectedDisease === 'heart_attack' ? (isDark ? '#F87171' : '#DC2626') : selectedDisease === 'diabetes' ? (isDark ? '#34D399' : '#059669') : (isDark ? '#C084FC' : '#9333EA'), fontWeight: 700 }}>
-              AI Risk Predictor &nbsp;·&nbsp; {selectedDisease === 'heart_attack' ? 'Cardiac Module' : selectedDisease === 'diabetes' ? 'Metabolic Module' : 'Oncology Module'}
+              AI Risk Predictor — {selectedDisease === 'heart_attack' ? 'Cardiac Module' : selectedDisease === 'diabetes' ? 'Metabolic Module' : 'Oncology Module'}
             </span>
           </div>
           <h1 className="fw-bolder m-0 mb-2" style={{ fontSize: '2rem', letterSpacing: '-0.03em', color: isDark ? '#FFFFFF' : '#0F172A', lineHeight: 1.1, fontFamily: 'var(--font-main)' }}>

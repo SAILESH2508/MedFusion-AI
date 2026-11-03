@@ -72,14 +72,26 @@ function AppContent({ user, login, logout }) {
   const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
 
   // ── Persistent map state — lifted here so navigating away doesn't reset it ──
-  // Default to Coimbatore city center — updated when user searches or uses GPS
-  const [mapLocation, setMapLocation] = useState({
-    lat: 11.0018,
-    lon: 76.9628,
-    city: 'Coimbatore',
-    displayName: 'Coimbatore, Tamil Nadu',
-    source: 'default',
+  // Location persisted in sessionStorage — survives page navigation, cleared on browser close/refresh
+  const [mapLocation, setMapLocationRaw] = useState(() => {
+    try {
+      const cached = sessionStorage.getItem('medfusion_map_location');
+      if (cached) return JSON.parse(cached);
+    } catch (_e) { /* ignore */ }
+    return {
+      lat: 11.0018,
+      lon: 76.9628,
+      city: 'Coimbatore',
+      displayName: 'Coimbatore, Tamil Nadu',
+      source: 'default',
+    };
   });
+
+  // Wrap setter so every location update is persisted to sessionStorage
+  const setMapLocation = useCallback((val) => {
+    setMapLocationRaw(val);
+    try { sessionStorage.setItem('medfusion_map_location', JSON.stringify(val)); } catch (_e) { /* ignore */ }
+  }, []);
   const [mapPlaces, setMapPlaces]     = useState([]);
   const [mapActiveTypes, setMapActiveTypes] = useState(['hospital', 'clinic', 'pharmacy']);
   const [mapRadius, setMapRadius]     = useState(null); // null = will default inside NearbyMap based on user role

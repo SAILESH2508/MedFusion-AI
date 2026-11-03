@@ -257,6 +257,16 @@ nav.bg-glass a {
   color: rgba(255, 255, 255, 0.8) !important;
 }
 
+/* Active nav tab — must override the generic `a` rule above */
+nav.bg-glass a.nav-link-active,
+nav.bg-glass a.nav-link-active:hover {
+  color: #FFFFFF !important;
+  background: rgba(255, 255, 255, 0.16) !important;
+  border: 1px solid rgba(255, 255, 255, 0.22) !important;
+  font-weight: 700 !important;
+  border-radius: 8px !important;
+}
+
 nav.bg-glass .text-secondary {
   color: rgba(255, 255, 255, 0.8) !important;
   padding: 6px 12px;
@@ -793,12 +803,18 @@ input.auth-input-field.auth-input-password {
 }
 
 /* Search compound inputs: icon + input inside a flex row wrapper */
-.search-input-wrapper input {
+.search-input-wrapper > input {
   padding: 0 !important;
   margin-bottom: 0 !important;
   background: transparent !important;
   border: none !important;
   box-shadow: none !important;
+}
+
+/* Patient directory search — icon overlaid inside input, needs left padding to clear it */
+.patient-search-wrapper > input {
+  padding: 10px 14px 10px 40px !important;
+  margin-bottom: 0 !important;
 }
 
 option {
@@ -1238,6 +1254,30 @@ button.btn-icon:hover {
 .app-sidebar .facility-select-tile *:not(.facility-count-badge):not(.facility-status-dot) {
   color: var(--text-on-dark, #E2E8F0) !important;
 }
+
+/* ── Facility count badge: always show its own accent color, never inherit tile overrides ── */
+.app-sidebar .facility-count-badge {
+  color: inherit !important;
+}
+.app-sidebar .disease-select-tile.facility-hospital .facility-count-badge,
+.app-sidebar .disease-select-tile.facility-hospital.active .facility-count-badge  { color: #F87171 !important; }
+.app-sidebar .disease-select-tile.facility-hospital.inactive .facility-count-badge { color: #94A3B8 !important; }
+
+.app-sidebar .disease-select-tile.facility-clinic .facility-count-badge,
+.app-sidebar .disease-select-tile.facility-clinic.active .facility-count-badge   { color: #38BDF8 !important; }
+.app-sidebar .disease-select-tile.facility-clinic.inactive .facility-count-badge  { color: #94A3B8 !important; }
+
+.app-sidebar .disease-select-tile.facility-pharmacy .facility-count-badge,
+.app-sidebar .disease-select-tile.facility-pharmacy.active .facility-count-badge  { color: #34D399 !important; }
+.app-sidebar .disease-select-tile.facility-pharmacy.inactive .facility-count-badge { color: #94A3B8 !important; }
+
+.app-sidebar .disease-select-tile.facility-dentist .facility-count-badge,
+.app-sidebar .disease-select-tile.facility-dentist.active .facility-count-badge   { color: #C084FC !important; }
+.app-sidebar .disease-select-tile.facility-dentist.inactive .facility-count-badge { color: #94A3B8 !important; }
+
+.app-sidebar .disease-select-tile.facility-lab .facility-count-badge,
+.app-sidebar .disease-select-tile.facility-lab.active .facility-count-badge       { color: #FBBF24 !important; }
+.app-sidebar .disease-select-tile.facility-lab.inactive .facility-count-badge     { color: #94A3B8 !important; }
 
 .app-sidebar .disease-select-tile.inactive,
 .app-sidebar .facility-select-tile.inactive {

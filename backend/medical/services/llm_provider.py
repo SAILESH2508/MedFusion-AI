@@ -8,12 +8,38 @@ from dataclasses import dataclass
 from dotenv import load_dotenv
 from google import genai
 from google.genai import types
-from openai import AsyncOpenAI
+from openai import OpenAI
 
-# Load environment variables
-load_dotenv()
+# Ensure environment variables are loaded from backend/.env regardless of CWD
+_current_dir = os.path.dirname(os.path.abspath(__file__))
+_backend_dir = os.path.dirname(os.path.dirname(_current_dir))
+_env_path = os.path.join(_backend_dir, ".env")
+if os.path.exists(_env_path):
+    load_dotenv(_env_path)
+else:
+    load_dotenv()
 
 logger = logging.getLogger(__name__)
+
+
+class AIProviderError(Exception):
+    """Base exception for AI provider errors."""
+    pass
+
+
+class AIQuotaExceededError(AIProviderError):
+    """Raised when AI API quota or rate limits are exhausted."""
+    pass
+
+
+class AIServiceUnavailableError(AIProviderError):
+    """Raised when all configured AI providers fail or are unreachable."""
+    pass
+
+
+class AIInvalidInputError(AIProviderError):
+    """Raised when an AI provider rejects input parameters (e.g. invalid image format)."""
+    pass
 
 
 class ModelProvider(Enum):
@@ -34,6 +60,8 @@ class LLMProvider:
         self.clients = {}
         self.current_google_key_idx = 0
         self.current_openai_key_idx = 0
+        self.openai_quota_exhausted = False
+        self.google_quota_exhausted = False
         self.model_aliases = {
             "gemini-2.5-flash": "gemini-3-flash-preview",
             "gemini-2.5-flash-lite": "gemini-3-flash-preview",
@@ -83,21 +111,33 @@ class LLMProvider:
                 if k.strip()
             ]
 
-    def _get_client(self, provider: ModelProvider, key_idx: int = 0) -> Any:
-        client_key = f"{provider.value}_{key_idx}"
+    def _get_google_client(self, key_idx: int = 0) -> Optional[genai.Client]:
+        if not self.google_keys:
+            return None
+        client_key = f"google_{key_idx}"
         try:
             if client_key not in self.clients:
-                if provider == ModelProvider.OPENAI and self.openai_keys:
-                    self.clients[client_key] = AsyncOpenAI(
-                        api_key=self.openai_keys[key_idx % len(self.openai_keys)]
-                    )
-                elif provider == ModelProvider.GOOGLE and self.google_keys:
-                    self.clients[client_key] = genai.Client(
-                        api_key=self.google_keys[key_idx % len(self.google_keys)]
-                    )
+                self.clients[client_key] = genai.Client(
+                    api_key=self.google_keys[key_idx % len(self.google_keys)]
+                )
             return self.clients.get(client_key)
         except Exception as e:
-            logger.error(f"Failed to initialize {provider} client (key index {key_idx}): {e}")
+            logger.error(f"Failed to initialize Google client (key index {key_idx}): {e}")
+            return None
+
+    def _get_openai_client(self, key_idx: int = 0) -> Optional[OpenAI]:
+        """
+        Uses synchronous OpenAI client inside a thread pool (asyncio.to_thread).
+        This completely eliminates the Windows asyncio 'Event loop is closed' bug
+        because no httpx async client is attached to a closed event loop!
+        """
+        if not self.openai_keys:
+            return None
+        key = self.openai_keys[key_idx % len(self.openai_keys)]
+        try:
+            return OpenAI(api_key=key, timeout=30.0)
+        except Exception as e:
+            logger.error(f"Failed to initialize OpenAI client (key index {key_idx}): {e}")
             return None
 
     async def generate_response(
@@ -123,7 +163,7 @@ class LLMProvider:
             model_name = "gemini-3-flash-preview"
             config = self.models.get(model_name)
             if not config:
-                return "AI system failure. No valid model configuration found."
+                raise AIServiceUnavailableError("No valid model configuration found.")
 
         tried_models.append(model_name)
         provider = config.provider
@@ -132,16 +172,19 @@ class LLMProvider:
         current_key_idx = google_key_idx if google_key_idx is not None else self.current_google_key_idx
 
         try:
-            client = self._get_client(provider, current_key_idx if provider == ModelProvider.GOOGLE else self.current_openai_key_idx)
-            if not client:
-                raise Exception(f"Provider {provider} not configured with valid API keys")
-
             if provider == ModelProvider.OPENAI:
+                if self.openai_quota_exhausted:
+                    raise AIQuotaExceededError("OpenAI quota previously exhausted. Skipping.")
+
+                client = self._get_openai_client(self.current_openai_key_idx)
+                if not client:
+                    raise AIServiceUnavailableError("OpenAI client not configured with valid API keys.")
+
                 messages = []
                 if system_prompt:
                     messages.append({"role": "system", "content": system_prompt})
 
-                # Handle multimodal (vision) input if prompt contains images/types.Part
+                # Handle multimodal (vision) input
                 if isinstance(prompt, list):
                     content_parts = []
                     for item in prompt:
@@ -154,35 +197,50 @@ class LLMProvider:
                                 "type": "image_url",
                                 "image_url": {"url": f"data:{mime};base64,{b64}"}
                             })
+                        elif isinstance(item, dict) and "data" in item:
+                            b64 = base64.b64encode(item["data"]).decode("utf-8")
+                            mime = item.get("mime_type", "image/jpeg")
+                            content_parts.append({
+                                "type": "image_url",
+                                "image_url": {"url": f"data:{mime};base64,{b64}"}
+                            })
                         else:
                             content_parts.append({"type": "text", "text": str(item)})
                     messages.append({"role": "user", "content": content_parts})
                 else:
                     messages.append({"role": "user", "content": str(prompt)})
 
+                # Execute synchronously in a worker thread to prevent event loop closure issues
+                def sync_openai_completion():
+                    return client.chat.completions.create(
+                        model=target_model,
+                        messages=messages,
+                        temperature=kwargs.get("temperature", 0.3)
+                    )
+
                 res = await asyncio.wait_for(
-                    client.chat.completions.create(
-                        model=target_model, messages=messages
-                    ),
-                    timeout=timeout,
+                    asyncio.to_thread(sync_openai_completion),
+                    timeout=timeout
                 )
                 return res.choices[0].message.content or ""
 
             elif provider == ModelProvider.GOOGLE:
-                contents = (
-                    prompt
-                    if isinstance(prompt, list)
-                    else str(prompt)
-                )
+                client = self._get_google_client(current_key_idx)
+                if not client:
+                    raise AIServiceUnavailableError("Google client not configured with valid API keys.")
+
+                contents = prompt if isinstance(prompt, list) else str(prompt)
+
                 def sync_generate():
                     return client.models.generate_content(
                         model=target_model,
                         contents=contents,
                         config=types.GenerateContentConfig(
-                            temperature=kwargs.get("temperature", 0.7),
+                            temperature=kwargs.get("temperature", 0.3),
                             system_instruction=system_prompt,
                         ),
                     )
+
                 res = await asyncio.wait_for(
                     asyncio.to_thread(sync_generate),
                     timeout=timeout,
@@ -198,7 +256,7 @@ class LLMProvider:
                 return text
 
             else:
-                raise Exception(f"Unhandled provider: {provider}")
+                raise AIServiceUnavailableError(f"Unhandled provider: {provider}")
 
         except Exception as e:
             err_name = type(e).__name__
@@ -206,34 +264,48 @@ class LLMProvider:
             error_str = err_msg.lower()
             logger.warning(f"Model {model_name} failed: {err_msg}. Attempting fallback...")
 
-            is_quota_error = any(w in error_str for w in ["quota", "exceeded", "resource_exhausted", "429"])
-            
-            # If Google key quota is exhausted, try rotating to the next Google API key first
+            # Check if this is an invalid argument error (e.g. Gemini 400 INVALID_ARGUMENT)
+            if "invalid_argument" in error_str or "400" in error_str:
+                logger.error(f"Provider rejected input format (400 INVALID_ARGUMENT): {err_msg}")
+                raise AIInvalidInputError(f"Input rejected by AI provider: {err_msg}")
+
+            # Check for quota exhaustion
+            is_quota_error = any(w in error_str for w in ["quota", "insufficient_quota", "resource_exhausted", "429"])
+
+            if provider == ModelProvider.OPENAI and is_quota_error:
+                self.openai_quota_exhausted = True
+                logger.warning("Marked OpenAI quota as exhausted.")
+
+            # If Google key quota is exhausted, try rotating to next Google key first
             if provider == ModelProvider.GOOGLE and is_quota_error and len(self.google_keys) > 1:
                 next_key_idx = (current_key_idx + 1) % len(self.google_keys)
                 if next_key_idx != self.current_google_key_idx:
                     logger.info(f"Rotating Google API key from index {current_key_idx} to {next_key_idx}")
                     self.current_google_key_idx = next_key_idx
-                    # Retry with the same or primary model using the new key
                     return await self.generate_response(
                         prompt, model_name, system_prompt, tried_models, timeout, google_key_idx=next_key_idx, **kwargs
                     )
 
-            # If quota is exhausted on all Google keys or if model unavailable, immediately route to OpenAI if available
+            # If quota is exhausted on Google and OpenAI is available and has not exhausted quota
             if provider == ModelProvider.GOOGLE and is_quota_error:
-                logger.error(f"Google API quota exhausted. Bypassing remaining Google models to OpenAI fallback.")
-                if self.openai_keys and "gpt-4o-mini" not in tried_models:
+                if self.openai_keys and not self.openai_quota_exhausted and "gpt-4o-mini" not in tried_models:
+                    logger.info("Google quota exhausted. Attempting fallback to OpenAI gpt-4o-mini.")
                     return await self.generate_response(
                         prompt, "gpt-4o-mini", system_prompt, tried_models, timeout, **kwargs
                     )
-                return f"AI system failure. API quota exceeded for {model_name}"
+                raise AIQuotaExceededError(f"AI API quota exhausted across available providers.")
 
+            # Try other models in chain
             next_model = self._select_best_fallback(tried_models)
             if next_model:
                 return await self.generate_response(
                     prompt, next_model, system_prompt, tried_models, timeout, google_key_idx=current_key_idx, **kwargs
                 )
-            return f"AI system failure. All fallbacks exhausted. Final error: {err_msg}"
+
+            # All options exhausted
+            if is_quota_error:
+                raise AIQuotaExceededError(f"All AI model fallbacks exhausted due to quota limits: {err_msg}")
+            raise AIServiceUnavailableError(f"All AI model fallbacks exhausted. Final error: {err_msg}")
 
     def _select_best_fallback(self, tried_models: List[str]) -> Optional[str]:
         chain = [
@@ -243,6 +315,9 @@ class LLMProvider:
         ]
         for model in chain:
             if model not in tried_models:
+                # Skip OpenAI if quota is known to be exhausted
+                if model == "gpt-4o-mini" and self.openai_quota_exhausted:
+                    continue
                 return model
         return None
 

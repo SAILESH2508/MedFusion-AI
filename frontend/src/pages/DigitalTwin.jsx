@@ -15,7 +15,7 @@ import React, { useState, useEffect, useContext, useCallback } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import {
   Heart, Wind, FlaskConical, Droplet, Brain as BrainIcon, Activity,
-  LayoutGrid, UserCheck, Salad, Sprout, BarChart3, RefreshCw,
+  UserCheck, Salad, Sprout, BarChart3, RefreshCw,
   HeartPulse, ShieldCheck, Flame, Trophy
 } from 'lucide-react';
 import { api } from '../services/api';
@@ -24,7 +24,6 @@ import { useTheme } from '../context/useTheme';
 
 // Subcomponents
 import OrganInfoPanel from './digital-twin/OrganInfoPanel';
-import TwinModulesDrawer from './digital-twin/TwinModulesDrawer';
 import IntegratedGardenSection from './digital-twin/IntegratedGardenSection';
 import { GARDEN_STAGES, GARDEN_ACTIONS } from './digital-twin/gardenConstants';
 import IntegratedDietSection from './digital-twin/IntegratedDietSection';
@@ -62,7 +61,6 @@ export default function DigitalTwin({ user, openAuth }) {
 
   // Organ selection state
   const [selectedOrgan, setSelectedOrgan] = useState('brain');
-  const [drawerOpen, setDrawerOpen] = useState(false);
 
   // Clinical twin data state
   const [patientData, setPatientData] = useState({
@@ -269,14 +267,6 @@ export default function DigitalTwin({ user, openAuth }) {
                 <strong style={{ color: '#34D399' }}>{patientData.system_metrics?.optimal_count ?? 8}/8</strong>
               </div>
             </div>
-            <button
-              onClick={() => setDrawerOpen(true)}
-              className="btn-clinical w-100 py-2.5 d-flex align-items-center justify-content-center gap-2 font-monospace text-uppercase cursor-pointer"
-              style={{ fontSize: '0.74rem', borderRadius: '9px', background: 'rgba(14, 165, 233, 0.16)', border: '1px solid #0EA5E9', color: '#38BDF8', boxShadow: 'none' }}
-            >
-              <LayoutGrid size={14} />
-              <span>Diagnostic Modules</span>
-            </button>
           </div>
         )}
 
@@ -374,7 +364,7 @@ export default function DigitalTwin({ user, openAuth }) {
                 <HeartPulse size={14} style={{ color: '#E07B39' }} />
               </div>
               <span className="font-monospace text-uppercase" style={{ fontSize: '0.68rem', letterSpacing: '0.14em', color: isDark ? 'var(--brand-orange)' : '#D9681E', fontWeight: 700 }}>
-                Clinical Informatics Console &nbsp;·&nbsp; Patient Twin #{user?.id || 'GUEST'}
+                Clinical Informatics Console — Patient Twin #{user?.id || 'GUEST'}
               </span>
             </div>
             <h1
@@ -575,16 +565,7 @@ export default function DigitalTwin({ user, openAuth }) {
         />
       )}
 
-      {/* ══ 3. SECONDARY CLINICAL MODULES DRAWER ═══════════════════════ */}
-      <TwinModulesDrawer
-        open={drawerOpen}
-        onClose={() => setDrawerOpen(false)}
-        selectedOrgan={selectedOrgan}
-        onOrganSelect={setSelectedOrgan}
-        patientData={patientData}
-        organData={organData}
-        loadingOrgan={loadingOrgan}
-      />
+      {/* ══ 3. END OF MAIN CONTENT ═══════════════════════════════════ */}
     </div>
   );
 }

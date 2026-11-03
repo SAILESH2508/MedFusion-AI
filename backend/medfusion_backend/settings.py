@@ -15,6 +15,7 @@ import os
 from dotenv import load_dotenv
 
 # Load environment variables from .env file
+load_dotenv(Path(__file__).resolve().parent.parent / '.env')
 load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -30,7 +31,7 @@ SECRET_KEY = os.getenv('SECRET_KEY', 'J2PYrmxABZmSB77Ub0idGHhvyiKEscJGrJ3d0sziYX
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv('DEBUG', 'True') == 'True'
 
-ALLOWED_HOSTS = ['localhost', '127.0.0.1', '0.0.0.0']
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', '0.0.0.0', 'testserver', '*']
 
 
 # Application definition

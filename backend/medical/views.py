@@ -28,6 +28,8 @@ from .models import (
 from .services.ai_service import ai_service, llm_chat
 from .services.organ_mapping_service import organ_mapping_service, ORGAN_CONFIG
 from .services.medical_datasets import get_dataset_metadata, DATASET_REGISTRY
+from .services.document_validator import document_validator
+from .services.llm_provider import AIQuotaExceededError, AIServiceUnavailableError
 
 User = get_user_model()
 logger = logging.getLogger(__name__)
@@ -188,22 +190,74 @@ def login_view(request):
 def upload_prescription(request):
     user = request.user
     if 'file' not in request.FILES:
-        return JsonResponse({"error": "No file uploaded"}, status=400)
+        return JsonResponse({
+            "success": False,
+            "is_valid": False,
+            "error_code": "EMPTY_FILE",
+            "message": "The uploaded file is empty.",
+            "error": "The uploaded file is empty."
+        }, status=400)
 
     file = request.FILES['file']
+    file_bytes = file.read()
+    expected_category = request.POST.get('document_type') or request.POST.get('category') or 'prescription'
 
-    # Validate file size (16MB max)
-    if file.size > 16 * 1024 * 1024:
-        return JsonResponse({"error": "File too large. Maximum size is 16MB."}, status=400)
+    # Run strict document and image validation
+    validation_res = run_async(
+        document_validator.validate_document(
+            file_bytes=file_bytes,
+            filename=file.name,
+            content_type=file.content_type,
+            expected_category=expected_category
+        )
+    )
 
+    if not validation_res.is_valid:
+        logger.warning(
+            f"Prescription rejected: code={validation_res.error_code}, type={validation_res.document_type}, "
+            f"issues={validation_res.issues}"
+        )
+        return JsonResponse(validation_res.to_dict(), status=validation_res.http_status)
+
+    # Document is valid! Extract clinical prescription data
+    image_bytes = validation_res.normalized_image_bytes or file_bytes
+    mime_type = validation_res.normalized_mime_type or file.content_type or "image/jpeg"
+
+    try:
+        analysis = run_async(ai_service.analyze_prescription(image_bytes, mime_type=mime_type))
+    except (AIQuotaExceededError, AIServiceUnavailableError) as e:
+        logger.error(f"Prescription extraction failed due to AI provider outage: {e}")
+        return JsonResponse({
+            "success": False,
+            "error_code": "AI_VALIDATION_FAILED",
+            "message": "Unable to validate the document. Please retry.",
+            "error": "Unable to validate the document. Please retry.",
+            "issues": ["AI service temporarily unavailable"]
+        }, status=503)
+    except Exception as e:
+        logger.error(f"Prescription extraction encountered unexpected error: {e}")
+        return JsonResponse({
+            "success": False,
+            "error_code": "AI_VALIDATION_FAILED",
+            "message": "Unable to validate the document. Please retry.",
+            "error": "Unable to validate the document. Please retry.",
+            "issues": [str(e)]
+        }, status=503)
+
+    # Validate that medical information was actually extracted
+    medicines = analysis.get('medicines') if isinstance(analysis, dict) else None
+    if not medicines and not (isinstance(analysis, dict) and analysis.get('recommendations')):
+        return JsonResponse({
+            "success": False,
+            "error_code": "MISSING_MEDICAL_INFO",
+            "message": "Required information could not be extracted.",
+            "error": "Required information could not be extracted.",
+            "issues": ["No medications or clinical instructions detected"]
+        }, status=422)
+
+    # Save to storage and persist to database ONLY upon successful validation and extraction
     filename = f"rx_{user.id if user and user.is_authenticated else 'guest'}_{datetime.now().timestamp()}_{file.name}"
-    filepath = default_storage.save(f'uploads/{filename}', ContentFile(file.read()))
-
-    # AI Analysis
-    with default_storage.open(filepath, 'rb') as f:
-        image_bytes = f.read()
-
-    analysis = run_async(ai_service.analyze_prescription(image_bytes))
+    filepath = default_storage.save(f'uploads/{filename}', ContentFile(image_bytes))
 
     patient_id = request.POST.get('patient_id') or request.GET.get('patient_id')
     guest_email = request.POST.get('guest_email') or request.GET.get('guest_email')
@@ -394,24 +448,62 @@ def analyze_pathology(request):
         biomarkers = data.get('biomarkers', [])
     elif 'file' in request.FILES:
         file = request.FILES['file']
-        if file.size > 16 * 1024 * 1024:
-            return JsonResponse({"error": "File too large. Maximum size is 16MB."}, status=400)
-        filename = f"path_{user.id if user and user.is_authenticated else 'guest'}_{datetime.now().timestamp()}_{file.name}"
-        filepath = default_storage.save(f'uploads/{filename}', ContentFile(file.read()))
-        
-        # Read the file bytes to pass to the AI model
-        with default_storage.open(filepath, 'rb') as f:
-            image_bytes = f.read()
-            
-        biomarkers = run_async(ai_service.extract_biomarkers_from_image(image_bytes))
+        file_bytes = file.read()
+        expected_category = request.POST.get('document_type') or request.POST.get('category') or 'laboratory_report'
 
-        # P1-03: Return a clear error when AI extraction fails — never fabricate biomarker values.
-        # Only applies to image uploads (manual JSON input is validated separately below).
+        # Run strict document and image validation
+        validation_res = run_async(
+            document_validator.validate_document(
+                file_bytes=file_bytes,
+                filename=file.name,
+                content_type=file.content_type,
+                expected_category=expected_category
+            )
+        )
+
+        if not validation_res.is_valid:
+            logger.warning(
+                f"Pathology rejected: code={validation_res.error_code}, type={validation_res.document_type}, "
+                f"issues={validation_res.issues}"
+            )
+            return JsonResponse(validation_res.to_dict(), status=validation_res.http_status)
+
+        image_bytes = validation_res.normalized_image_bytes or file_bytes
+        mime_type = validation_res.normalized_mime_type or file.content_type or "image/jpeg"
+
+        try:
+            biomarkers = run_async(ai_service.extract_biomarkers_from_image(image_bytes, mime_type=mime_type))
+        except (AIQuotaExceededError, AIServiceUnavailableError) as e:
+            logger.error(f"Biomarker extraction failed due to AI provider outage: {e}")
+            return JsonResponse({
+                "success": False,
+                "error_code": "AI_VALIDATION_FAILED",
+                "message": "Unable to validate the document. Please retry.",
+                "error": "Unable to validate the document. Please retry.",
+                "issues": ["AI service temporarily unavailable"]
+            }, status=503)
+        except Exception as e:
+            logger.error(f"Biomarker extraction encountered unexpected error: {e}")
+            return JsonResponse({
+                "success": False,
+                "error_code": "AI_VALIDATION_FAILED",
+                "message": "Unable to validate the document. Please retry.",
+                "error": "Unable to validate the document. Please retry.",
+                "issues": [str(e)]
+            }, status=503)
+
         if not biomarkers:
             return JsonResponse({
+                "success": False,
+                "error_code": "MISSING_MEDICAL_INFO",
+                "message": "Required information could not be extracted.",
                 "error": "Biomarker extraction failed. Please upload a clearer lab report image.",
                 "code": "EXTRACTION_FAILED",
+                "issues": ["No clinical biomarkers detected in document image"]
             }, status=422)
+
+        filename = f"path_{user.id if user and user.is_authenticated else 'guest'}_{datetime.now().timestamp()}_{file.name}"
+        filepath = default_storage.save(f'uploads/{filename}', ContentFile(image_bytes))
     else:
         return JsonResponse({"error": "No valid data or file provided"}, status=400)
 

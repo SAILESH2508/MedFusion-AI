@@ -351,30 +351,40 @@ function DoctorDashboard({ user }) {
               ) : (
                 <div className="d-flex flex-column gap-3 overflow-auto flex-grow-1 pe-2" style={{ minHeight: 0 }}>
                   {/* Search bar */}
-                  <div
-                    className="d-flex align-items-center gap-2"
-                    style={{
-                      flexShrink: 0,
-                      background: 'var(--bg-surface)',
-                      border: '1px solid var(--border)',
-                      borderRadius: '8px',
-                      padding: '8px 12px',
-                    }}
-                  >
-                    <Search size={14} style={{ color: 'var(--text-muted)', flexShrink: 0 }} />
+                  <div className="patient-search-wrapper" style={{ flexShrink: 0, position: 'relative', width: '100%' }}>
+                    <Search
+                      size={15}
+                      style={{
+                        position: 'absolute',
+                        left: '13px',
+                        top: 0,
+                        bottom: 0,
+                        margin: 'auto',
+                        height: '15px',
+                        color: 'var(--text-muted)',
+                        pointerEvents: 'none',
+                        zIndex: 2,
+                      }}
+                    />
                     <input
                       type="text"
                       value={patientSearch}
                       onChange={e => setPatientSearch(e.target.value)}
                       placeholder="Search by name, email or ID..."
                       aria-label="Search patients by name, email or ID"
-                      className="font-monospace bg-transparent border-0"
                       style={{
-                        flex: 1,
+                        display: 'block',
+                        width: '100%',
+                        padding: '10px 14px 10px 40px',
                         fontSize: '0.82rem',
+                        fontFamily: 'var(--font-mono)',
+                        background: 'var(--bg-surface)',
+                        border: '1px solid var(--border)',
+                        borderRadius: '8px',
                         outline: 'none',
                         color: 'var(--text-primary)',
-                        minWidth: 0,
+                        boxSizing: 'border-box',
+                        lineHeight: '1.4',
                       }}
                     />
                   </div>
