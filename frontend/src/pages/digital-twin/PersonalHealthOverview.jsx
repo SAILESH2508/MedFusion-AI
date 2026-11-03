@@ -204,23 +204,34 @@ export default function PersonalHealthOverview({
           >
             <div>
               <div className="d-flex align-items-center justify-content-between mb-2">
-                <span className="badge font-monospace text-uppercase" style={{ background: 'rgba(56, 189, 248, 0.12)', color: '#38bdf8', border: '1px solid rgba(56, 189, 248, 0.3)', fontSize: '0.68rem' }}>
+                <span className="badge text-uppercase" style={{ background: 'rgba(56, 189, 248, 0.12)', color: '#38bdf8', border: '1px solid rgba(56, 189, 248, 0.3)', fontSize: '0.68rem', fontWeight: 700 }}>
                   Anatomical Systems
                 </span>
                 <ChevronRight size={14} className="text-secondary" />
               </div>
 
-              <div className="fw-bold mb-1" style={{ fontSize: '0.98rem', color: 'var(--text-primary)' }}>
+              <div className="fw-bold mb-1" style={{ fontSize: '1rem', color: 'var(--text-primary)' }}>
                 Clinical Organ Telemetry
               </div>
-              <p className="text-secondary font-monospace" style={{ fontSize: '0.74rem', minHeight: '34px' }}>
-                {metrics.optimal_count ?? 8} optimal systems, {metrics.attention_count ?? 0} attention flagged, {metrics.alert_count ?? 0} critical alerts.
+              <p className="text-secondary mb-3" style={{ fontSize: '0.78rem', lineHeight: 1.45 }}>
+                <strong style={{ color: 'var(--text-primary)' }}>{metrics.optimal_count ?? 8}</strong> optimal systems, <strong style={{ color: '#f59e0b' }}>{metrics.attention_count ?? 0}</strong> attention, <strong style={{ color: '#ef4444' }}>{metrics.alert_count ?? 0}</strong> alerts.
               </p>
             </div>
 
-            <div className="pt-2 border-top border-white-5 d-flex align-items-center justify-content-between font-monospace" style={{ fontSize: '0.72rem' }}>
-              <span style={{ color: 'var(--brand-orange)' }}>Inspect 8 Organs →</span>
-              <span className="text-secondary">{metrics.total_systems || 8} Active Units</span>
+            <div
+              className="pt-2.5 mt-auto d-flex align-items-center justify-content-between"
+              style={{
+                borderTop: '1px solid var(--border)',
+                fontSize: '0.74rem',
+              }}
+            >
+              <span className="d-inline-flex align-items-center gap-1" style={{ color: 'var(--brand-orange)', fontWeight: 600, whiteSpace: 'nowrap' }}>
+                <span>Inspect Organs</span>
+                <ChevronRight size={13} />
+              </span>
+              <span className="text-secondary text-truncate ms-2" style={{ whiteSpace: 'nowrap' }}>
+                {metrics.total_systems || 8} Active Units
+              </span>
             </div>
           </div>
         </div>
@@ -234,23 +245,34 @@ export default function PersonalHealthOverview({
           >
             <div>
               <div className="d-flex align-items-center justify-content-between mb-2">
-                <span className="badge font-monospace text-uppercase" style={{ background: 'rgba(16, 185, 129, 0.12)', color: '#10b981', border: '1px solid rgba(16, 185, 129, 0.3)', fontSize: '0.68rem' }}>
+                <span className="badge text-uppercase" style={{ background: 'rgba(16, 185, 129, 0.12)', color: '#10b981', border: '1px solid rgba(16, 185, 129, 0.3)', fontSize: '0.68rem', fontWeight: 700 }}>
                   Metabolic Nutrition
                 </span>
                 <ChevronRight size={14} className="text-secondary" />
               </div>
 
-              <div className="fw-bold mb-1" style={{ fontSize: '0.98rem', color: 'var(--text-primary)' }}>
+              <div className="fw-bold mb-1" style={{ fontSize: '1rem', color: 'var(--text-primary)' }}>
                 Personalized Diet Regimen
               </div>
-              <p className="text-secondary font-monospace" style={{ fontSize: '0.74rem', minHeight: '34px' }}>
+              <p className="text-secondary mb-3" style={{ fontSize: '0.78rem', lineHeight: 1.45 }}>
                 Cultural regional meal planning tailored to clinical diagnoses, allergens, and caloric thresholds.
               </p>
             </div>
 
-            <div className="pt-2 border-top border-white-5 d-flex align-items-center justify-content-between font-monospace" style={{ fontSize: '0.72rem' }}>
-              <span style={{ color: '#10b981' }}>View Meal Plan →</span>
-              <span className="text-secondary">7-Day Schedule</span>
+            <div
+              className="pt-2.5 mt-auto d-flex align-items-center justify-content-between"
+              style={{
+                borderTop: '1px solid var(--border)',
+                fontSize: '0.74rem',
+              }}
+            >
+              <span className="d-inline-flex align-items-center gap-1" style={{ color: '#10b981', fontWeight: 600, whiteSpace: 'nowrap' }}>
+                <span>View Meal Plan</span>
+                <ChevronRight size={13} />
+              </span>
+              <span className="text-secondary text-truncate ms-2" style={{ whiteSpace: 'nowrap' }}>
+                7-Day Regimen
+              </span>
             </div>
           </div>
         </div>
@@ -264,23 +286,38 @@ export default function PersonalHealthOverview({
           >
             <div>
               <div className="d-flex align-items-center justify-content-between mb-2">
-                <span className="badge font-monospace text-uppercase" style={{ background: 'rgba(245, 158, 11, 0.12)', color: '#f59e0b', border: '1px solid rgba(245, 158, 11, 0.3)', fontSize: '0.68rem' }}>
+                <span className="badge text-uppercase" style={{ background: 'rgba(245, 158, 11, 0.12)', color: '#f59e0b', border: '1px solid rgba(245, 158, 11, 0.3)', fontSize: '0.68rem', fontWeight: 700 }}>
                   Habits & Streaks
                 </span>
                 <ChevronRight size={14} className="text-secondary" />
               </div>
 
-              <div className="fw-bold mb-1" style={{ fontSize: '0.98rem', color: 'var(--text-primary)' }}>
+              <div className="fw-bold mb-1" style={{ fontSize: '1rem', color: 'var(--text-primary)' }}>
                 Wellness Garden Ecosystem
               </div>
-              <p className="text-secondary font-monospace" style={{ fontSize: '0.74rem', minHeight: '34px' }}>
-                {gardenData?.current_streak || 0}-day active streak · {gardenData?.total_points || 0} cumulative habit points logged.
+              <p className="text-secondary mb-3" style={{ fontSize: '0.78rem', lineHeight: 1.45 }}>
+                <strong style={{ color: 'var(--text-primary)' }}>{gardenData?.current_streak || 0}-day</strong> active streak · <strong style={{ color: 'var(--text-primary)' }}>{gardenData?.total_points || 0}</strong> points logged.
               </p>
             </div>
 
-            <div className="pt-2 border-top border-white-5 d-flex align-items-center justify-content-between font-monospace" style={{ fontSize: '0.72rem' }}>
-              <span style={{ color: '#f59e0b' }}>Log Health Action →</span>
-              <span className="text-secondary">Stage: {gardenData?.stage?.name || 'Seed'}</span>
+            <div
+              className="pt-2.5 mt-auto d-flex align-items-center justify-content-between"
+              style={{
+                borderTop: '1px solid var(--border)',
+                fontSize: '0.74rem',
+              }}
+            >
+              <span className="d-inline-flex align-items-center gap-1" style={{ color: '#f59e0b', fontWeight: 600, whiteSpace: 'nowrap' }}>
+                <span>Log Action</span>
+                <ChevronRight size={13} />
+              </span>
+              <span
+                className="text-secondary text-truncate ms-2"
+                style={{ whiteSpace: 'nowrap', maxWidth: '140px' }}
+                title={gardenData?.stage?.name || 'Seed'}
+              >
+                {gardenData?.stage?.name === 'Personal Health Garden' ? 'Stage 7/7 · Garden' : `Stage: ${gardenData?.stage?.name || 'Seed'}`}
+              </span>
             </div>
           </div>
         </div>
