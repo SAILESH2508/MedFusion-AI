@@ -90,7 +90,7 @@ function StatusBadge({ status, description }) {
         <span>{cfg.label}</span>
       </div>
       {description && (
-        <p style={{ margin: '4px 0 0', fontSize: '0.73rem', color: 'var(--text-secondary)', lineHeight: '1.4' }}>
+        <p style={{ margin: '6px 0 0', fontSize: '0.74rem', color: 'var(--text-secondary)', lineHeight: '1.5', maxWidth: '320px' }}>
           {description}
         </p>
       )}
@@ -225,12 +225,12 @@ export default function OrganInfoPanel({ selectedOrgan, organData, loading }) {
         background: 'linear-gradient(180deg, var(--bg-card-tinted, rgba(4,13,26,0.92)) 0%, var(--bg-card) 100%)',
         border: '1px solid var(--border-color, rgba(255,255,255,0.1))',
         borderRadius: '16px',
-        padding: '18px',
+        padding: '22px',
         boxShadow: '0 4px 20px rgba(0,0,0,0.25)',
       }}
     >
       {/* ── Top Header: Organ Title & Status Badge ── */}
-      <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '12px', flexWrap: 'wrap', marginBottom: '14px' }}>
+      <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '12px', flexWrap: 'wrap', marginBottom: '20px' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
           <div
             style={{
@@ -264,16 +264,16 @@ export default function OrganInfoPanel({ selectedOrgan, organData, loading }) {
 
       {/* ── 1. Active Diagnoses & Medical Conditions ── */}
       {activeConditions.length > 0 && (
-        <div style={{ marginBottom: '14px' }}>
-          <span style={{ fontSize: '0.64rem', fontFamily: 'var(--font-mono)', color: 'var(--brand-orange)', letterSpacing: '0.06em', textTransform: 'uppercase', display: 'block', marginBottom: '6px' }}>
+        <div style={{ marginBottom: '20px' }}>
+          <span style={{ fontSize: '0.64rem', fontFamily: 'var(--font-mono)', color: 'var(--brand-orange)', letterSpacing: '0.06em', textTransform: 'uppercase', display: 'block', marginBottom: '9px' }}>
             Active Diagnoses ({activeConditions.length})
           </span>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
             {activeConditions.map((cond, i) => (
               <div
                 key={`act-${i}`}
                 style={{
-                  padding: '8px 12px',
+                  padding: '10px 14px',
                   borderRadius: '8px',
                   background: 'rgba(239, 68, 68, 0.06)',
                   border: '1px solid rgba(239, 68, 68, 0.25)',
@@ -299,7 +299,7 @@ export default function OrganInfoPanel({ selectedOrgan, organData, loading }) {
       )}
 
       {/* ── 2. Discrete Biomarkers & Laboratory Observations ── */}
-      <div style={{ marginBottom: '14px' }}>
+      <div style={{ marginBottom: '20px' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
           <span style={{ fontSize: '0.64rem', fontFamily: 'var(--font-mono)', color: 'var(--brand-orange)', letterSpacing: '0.06em', textTransform: 'uppercase' }}>
             Discrete Biomarkers ({observations.length})
@@ -316,7 +316,7 @@ export default function OrganInfoPanel({ selectedOrgan, organData, loading }) {
             </p>
           </div>
         ) : (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '5px' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
             {observations.map((obs, i) => {
               const isAbn = obs.is_abnormal;
               const flag = obs.abnormality_flag || 'NORMAL';
@@ -329,7 +329,7 @@ export default function OrganInfoPanel({ selectedOrgan, organData, loading }) {
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'space-between',
-                    padding: '7px 11px',
+                    padding: '11px 14px',
                     background: isAbn ? 'rgba(239, 68, 68, 0.05)' : 'var(--bg-card-tinted)',
                     border: isAbn ? '1px solid rgba(239, 68, 68, 0.3)' : '1px solid var(--border-card, rgba(255,255,255,0.06))',
                     borderRadius: '7px',
@@ -377,17 +377,17 @@ export default function OrganInfoPanel({ selectedOrgan, organData, loading }) {
 
       {/* ── 3. Relevant Prescribed Medications ── */}
       {medications.length > 0 && (
-        <div style={{ marginBottom: '14px' }}>
-          <span style={{ fontSize: '0.64rem', fontFamily: 'var(--font-mono)', color: 'var(--brand-orange)', letterSpacing: '0.06em', textTransform: 'uppercase', display: 'block', marginBottom: '6px' }}>
+        <div style={{ marginBottom: '20px' }}>
+          <span style={{ fontSize: '0.64rem', fontFamily: 'var(--font-mono)', color: 'var(--brand-orange)', letterSpacing: '0.06em', textTransform: 'uppercase', display: 'block', marginBottom: '9px' }}>
             Correlated Medications ({medications.length})
           </span>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '5px' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
             {medications.map((med, i) => (
               <div
                 key={i}
                 style={{
-                  padding: '7px 11px',
-                  borderRadius: '7px',
+                  padding: '10px 14px',
+                  borderRadius: '8px',
                   background: 'rgba(16, 185, 129, 0.05)',
                   border: '1px solid rgba(16, 185, 129, 0.22)',
                 }}
@@ -413,8 +413,8 @@ export default function OrganInfoPanel({ selectedOrgan, organData, loading }) {
 
       {/* ── 4. Holdout Validated Risk Assessment ── */}
       {predictions.length > 0 && (
-        <div style={{ marginBottom: '14px' }}>
-          <span style={{ fontSize: '0.64rem', fontFamily: 'var(--font-mono)', color: 'var(--brand-orange)', letterSpacing: '0.06em', textTransform: 'uppercase', display: 'block', marginBottom: '6px' }}>
+        <div style={{ marginBottom: '20px' }}>
+          <span style={{ fontSize: '0.64rem', fontFamily: 'var(--font-mono)', color: 'var(--brand-orange)', letterSpacing: '0.06em', textTransform: 'uppercase', display: 'block', marginBottom: '9px' }}>
             Validated ML Risk Stratification
           </span>
           {predictions.map((p, i) => (
@@ -425,28 +425,28 @@ export default function OrganInfoPanel({ selectedOrgan, organData, loading }) {
 
       {/* ── 5. Missing Data Clinical Checklist ── */}
       {missingData.length > 0 && (
-        <div style={{ marginBottom: '10px' }}>
-          <span style={{ fontSize: '0.64rem', fontFamily: 'var(--font-mono)', color: 'var(--text-muted)', letterSpacing: '0.06em', textTransform: 'uppercase', display: 'block', marginBottom: '6px' }}>
+        <div style={{ marginBottom: '20px' }}>
+          <span style={{ fontSize: '0.64rem', fontFamily: 'var(--font-mono)', color: 'var(--text-muted)', letterSpacing: '0.06em', textTransform: 'uppercase', display: 'block', marginBottom: '9px' }}>
             Missing Clinical Data ({missingData.length})
           </span>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '5px' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
             {missingData.map((item, i) => (
               <div
                 key={i}
                 style={{
-                  padding: '6px 10px',
-                  borderRadius: '6px',
+                  padding: '10px 14px',
+                  borderRadius: '8px',
                   background: 'rgba(249, 115, 22, 0.05)',
                   border: '1px solid rgba(249, 115, 22, 0.2)',
                   display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
+                  flexDirection: 'column',
+                  gap: '4px',
                 }}
               >
-                <span style={{ fontSize: '0.74rem', fontWeight: 600, color: 'var(--text-primary)' }}>
+                <span style={{ fontSize: '0.76rem', fontWeight: 600, color: 'var(--text-primary)' }}>
                   {item.name}
                 </span>
-                <span style={{ fontSize: '0.62rem', color: 'var(--brand-orange)', fontFamily: 'var(--font-mono)' }}>
+                <span style={{ fontSize: '0.65rem', color: 'var(--brand-orange)', fontFamily: 'var(--font-mono)', lineHeight: '1.4' }}>
                   {item.recommended_action}
                 </span>
               </div>
@@ -459,8 +459,8 @@ export default function OrganInfoPanel({ selectedOrgan, organData, loading }) {
       {guidance && (
         <div
           style={{
-            marginTop: '16px',
-            padding: '12px 14px',
+            marginTop: '4px',
+            padding: '14px 16px',
             borderRadius: '10px',
             background: 'var(--bg-card-tinted)',
             border: '1px solid rgba(56, 189, 248, 0.3)',
@@ -470,20 +470,20 @@ export default function OrganInfoPanel({ selectedOrgan, organData, loading }) {
           }}
         >
           <Info size={16} style={{ color: 'var(--brand-blue, #38bdf8)', flexShrink: 0, marginTop: '2px' }} />
-          <p style={{ margin: 0, fontSize: '0.78rem', color: 'var(--text-primary)', lineHeight: '1.5', fontWeight: 500 }}>
+          <p style={{ margin: 0, fontSize: '0.8rem', color: 'var(--text-primary)', lineHeight: '1.6', fontWeight: 400 }}>
             {guidance}
           </p>
         </div>
       )}
 
       {/* ── Footer Link ── */}
-      <div style={{ marginTop: '14px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+      <div style={{ marginTop: '18px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <Link
           to="/profile?tab=vault"
           style={{
             display: 'inline-flex',
             alignItems: 'center',
-            gap: '5px',
+            gap: '8px',
             fontSize: '0.72rem',
             color: 'var(--brand-orange)',
             textDecoration: 'none',
