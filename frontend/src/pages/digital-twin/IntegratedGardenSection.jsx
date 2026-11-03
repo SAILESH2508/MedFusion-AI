@@ -312,56 +312,66 @@ export default function IntegratedGardenSection({
       </div>
 
       {/* ─── 5 Activity Action Buttons ─── */}
-      <div className="glass-card p-3" style={{ borderRadius: '14px', border: '1px solid var(--border)' }}>
-        <div className="d-flex align-items-center justify-content-between mb-2">
-          <h3 className="fw-bold m-0 d-flex align-items-center gap-2" style={{ fontSize: '0.95rem', color: 'var(--text-primary)' }}>
-            <Activity size={15} style={{ color: 'var(--brand-orange)' }} />
+      <div
+        className="glass-card"
+        style={{ borderRadius: '14px', border: '1px solid var(--border)', overflow: 'hidden' }}
+      >
+        {/* Header */}
+        <div
+          className="d-flex align-items-center justify-content-between px-3 py-2"
+          style={{ borderBottom: '1px solid var(--border)', background: 'var(--bg-card)' }}
+        >
+          <h3 className="fw-bold m-0 d-flex align-items-center gap-2" style={{ fontSize: '0.92rem', color: 'var(--text-primary)' }}>
+            <Activity size={14} style={{ color: 'var(--brand-orange)' }} />
             Daily Health Actions
           </h3>
-          <span className="text-secondary font-monospace" style={{ fontSize: '0.68rem' }}>
+          <span className="text-secondary font-monospace" style={{ fontSize: '0.66rem' }}>
             Earn wellness points for clinical self-care
           </span>
         </div>
 
-        <div className="d-flex flex-column gap-1">
-          {GARDEN_ACTIONS.map(action => {
+        {/* Action rows */}
+        <div className="d-flex flex-column" style={{ background: 'var(--bg-card)' }}>
+          {GARDEN_ACTIONS.map((action, idx) => {
             const isLoading = loggingActivity === action.type;
             const isNoteActive = selectedActivityForNote === action.type;
             const ActionIcon = action.icon;
+            const isLast = idx === GARDEN_ACTIONS.length - 1;
 
             return (
               <div
                 key={action.type}
-                className="d-flex align-items-center gap-2 px-2 py-1 rounded-2"
+                className="d-flex align-items-center gap-3 px-3"
                 style={{
-                  border: `1px solid ${action.border}`,
-                  background: action.bg + '22',
-                  minHeight: '44px',
+                  minHeight: '48px',
+                  borderBottom: isLast ? 'none' : '1px solid var(--border)',
+                  borderLeft: `3px solid ${action.color}`,
+                  background: 'var(--bg-card)',
                 }}
               >
-                {/* Icon */}
+                {/* Coloured icon */}
                 <div
                   className="flex-shrink-0 d-flex align-items-center justify-content-center rounded-2"
-                  style={{ width: '28px', height: '28px', background: action.bg, color: action.color, flexShrink: 0 }}
+                  style={{ width: '28px', height: '28px', background: action.bg, color: action.color }}
                 >
                   <ActionIcon size={13} />
                 </div>
 
                 {/* Label + description OR note input */}
-                <div className="flex-grow-1 overflow-hidden" style={{ minWidth: 0 }}>
+                <div className="flex-grow-1 overflow-hidden py-1" style={{ minWidth: 0 }}>
                   {isNoteActive ? (
                     <input
                       type="text"
-                      placeholder="Add clinical note..."
+                      placeholder="Add clinical note and press Enter..."
                       value={activeNote}
                       onChange={e => setActiveNote(e.target.value)}
                       onKeyDown={e => e.key === 'Enter' && handleLogActivity(action.type, action.points, activeNote)}
-                      className="w-100 bg-transparent border rounded-2 px-2 font-monospace"
+                      className="w-100 border rounded-2 px-2 font-monospace"
                       style={{
-                        fontSize: '0.7rem',
+                        fontSize: '0.72rem',
                         color: 'var(--text-primary)',
                         borderColor: action.border,
-                        background: 'rgba(255,255,255,0.6)',
+                        background: 'transparent',
                         outline: 'none',
                         height: '28px',
                       }}
@@ -369,7 +379,7 @@ export default function IntegratedGardenSection({
                     />
                   ) : (
                     <>
-                      <div className="fw-semibold text-truncate" style={{ fontSize: '0.8rem', color: 'var(--text-primary)', lineHeight: '1.25' }}>
+                      <div className="fw-semibold text-truncate" style={{ fontSize: '0.8rem', color: 'var(--text-primary)', lineHeight: '1.3' }}>
                         {action.label}
                       </div>
                       <div className="text-truncate" style={{ fontSize: '0.67rem', color: 'var(--text-muted)', lineHeight: '1.2' }}>
@@ -379,90 +389,99 @@ export default function IntegratedGardenSection({
                   )}
                 </div>
 
-                {/* Points badge */}
-                <span
-                  className="badge font-monospace flex-shrink-0"
-                  style={{ background: action.bg, color: action.color, border: `1px solid ${action.border}`, fontSize: '0.58rem', whiteSpace: 'nowrap' }}
-                >
-                  +{action.points} pts
-                </span>
+                {/* Right cluster: pts + buttons */}
+                <div className="d-flex align-items-center gap-2 flex-shrink-0">
+                  <span
+                    className="badge font-monospace"
+                    style={{
+                      background: action.bg,
+                      color: action.color,
+                      border: `1px solid ${action.border}`,
+                      fontSize: '0.58rem',
+                      padding: '2px 6px',
+                      whiteSpace: 'nowrap',
+                    }}
+                  >
+                    +{action.points} pts
+                  </span>
 
-                {/* Buttons */}
-                {isNoteActive ? (
-                  <>
-                    <button
-                      onClick={() => handleLogActivity(action.type, action.points, activeNote)}
-                      disabled={isLoading}
-                      className="d-flex align-items-center gap-1 font-monospace text-uppercase fw-bold flex-shrink-0"
-                      style={{
-                        fontSize: '0.6rem',
-                        borderRadius: '5px',
-                        padding: '3px 9px',
-                        border: 'none',
-                        background: action.color,
-                        color: '#fff',
-                        cursor: 'pointer',
-                        letterSpacing: '0.04em',
-                      }}
-                    >
-                      {isLoading ? <RefreshCw size={10} className="animate-spin" /> : <Check size={10} />}
-                      <span>{isLoading ? 'Saving...' : 'Save'}</span>
-                    </button>
-                    <button
-                      onClick={() => { setSelectedActivityForNote(null); setActiveNote(''); }}
-                      className="d-flex align-items-center justify-content-center flex-shrink-0"
-                      style={{
-                        fontSize: '0.6rem',
-                        borderRadius: '5px',
-                        padding: '3px 7px',
-                        border: `1px solid var(--border)`,
-                        background: 'transparent',
-                        color: 'var(--text-muted)',
-                        cursor: 'pointer',
-                      }}
-                      title="Cancel"
-                    >
-                      <X size={11} />
-                    </button>
-                  </>
-                ) : (
-                  <>
-                    <button
-                      onClick={() => handleLogActivity(action.type, action.points)}
-                      disabled={isLoading}
-                      className="d-flex align-items-center gap-1 font-monospace text-uppercase fw-bold flex-shrink-0"
-                      style={{
-                        fontSize: '0.6rem',
-                        borderRadius: '5px',
-                        padding: '3px 9px',
-                        border: 'none',
-                        background: action.color,
-                        color: '#fff',
-                        cursor: 'pointer',
-                        letterSpacing: '0.04em',
-                        opacity: isLoading ? 0.7 : 1,
-                      }}
-                    >
-                      {isLoading ? <RefreshCw size={10} className="animate-spin" /> : <Plus size={10} />}
-                      <span>{isLoading ? '...' : 'Log'}</span>
-                    </button>
-                    <button
-                      onClick={() => { setSelectedActivityForNote(action.type); setActiveNote(''); }}
-                      title="Log with note"
-                      className="d-flex align-items-center justify-content-center flex-shrink-0"
-                      style={{
-                        borderRadius: '5px',
-                        padding: '3px 7px',
-                        border: `1px solid ${action.border}`,
-                        background: action.bg,
-                        color: action.color,
-                        cursor: 'pointer',
-                      }}
-                    >
-                      <Clock size={11} />
-                    </button>
-                  </>
-                )}
+                  {isNoteActive ? (
+                    <>
+                      <button
+                        onClick={() => handleLogActivity(action.type, action.points, activeNote)}
+                        disabled={isLoading}
+                        className="d-flex align-items-center gap-1 font-monospace text-uppercase fw-semibold"
+                        style={{
+                          fontSize: '0.62rem',
+                          borderRadius: '6px',
+                          padding: '4px 10px',
+                          border: 'none',
+                          background: 'var(--brand-orange)',
+                          color: '#fff',
+                          cursor: 'pointer',
+                          letterSpacing: '0.03em',
+                          whiteSpace: 'nowrap',
+                        }}
+                      >
+                        {isLoading ? <RefreshCw size={10} className="animate-spin" /> : <Check size={10} />}
+                        <span>{isLoading ? 'Saving' : 'Save'}</span>
+                      </button>
+                      <button
+                        onClick={() => { setSelectedActivityForNote(null); setActiveNote(''); }}
+                        className="d-flex align-items-center justify-content-center"
+                        style={{
+                          borderRadius: '6px',
+                          padding: '4px 7px',
+                          border: '1px solid var(--border)',
+                          background: 'transparent',
+                          color: 'var(--text-muted)',
+                          cursor: 'pointer',
+                        }}
+                        title="Cancel"
+                      >
+                        <X size={11} />
+                      </button>
+                    </>
+                  ) : (
+                    <>
+                      <button
+                        onClick={() => handleLogActivity(action.type, action.points)}
+                        disabled={isLoading}
+                        className="d-flex align-items-center gap-1 font-monospace text-uppercase fw-semibold"
+                        style={{
+                          fontSize: '0.62rem',
+                          borderRadius: '6px',
+                          padding: '4px 10px',
+                          border: 'none',
+                          background: 'var(--brand-orange)',
+                          color: '#fff',
+                          cursor: 'pointer',
+                          letterSpacing: '0.03em',
+                          whiteSpace: 'nowrap',
+                          opacity: isLoading ? 0.6 : 1,
+                        }}
+                      >
+                        {isLoading ? <RefreshCw size={10} className="animate-spin" /> : <Plus size={10} />}
+                        <span>{isLoading ? '...' : 'Log'}</span>
+                      </button>
+                      <button
+                        onClick={() => { setSelectedActivityForNote(action.type); setActiveNote(''); }}
+                        title="Log with note"
+                        className="d-flex align-items-center justify-content-center"
+                        style={{
+                          borderRadius: '6px',
+                          padding: '4px 7px',
+                          border: `1px solid ${action.border}`,
+                          background: action.bg,
+                          color: action.color,
+                          cursor: 'pointer',
+                        }}
+                      >
+                        <Clock size={11} />
+                      </button>
+                    </>
+                  )}
+                </div>
               </div>
             );
           })}
