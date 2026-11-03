@@ -378,6 +378,10 @@ export default function DigitalTwin({ user, openAuth }) {
     return () => setSidebarContent(null);
   }, [activeTab, selectedOrgan, patientData, gardenData, handleTabChange, setSidebarContent]);
 
+  /* ─── Dynamic Header Configuration for Active Section ─── */
+  const currentTabConfig = TAB_HEADER_CONFIG[activeTab] || TAB_HEADER_CONFIG.garden;
+  const TabHeaderIcon = currentTabConfig.icon;
+
   /* ─── Loading State ─── */
   if (loading && !patientData.profile) {
     return (
