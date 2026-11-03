@@ -259,7 +259,6 @@ export default function OrganInfoPanel({ selectedOrgan, organData, loading }) {
           </div>
         </div>
 
-        <StatusBadge status={organ.clinical_status} description={organ.status_description} />
       </div>
 
       {/* ── 1. Active Diagnoses & Medical Conditions ── */}
