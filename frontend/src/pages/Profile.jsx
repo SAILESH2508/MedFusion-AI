@@ -366,7 +366,7 @@ function Profile({ user, onUserUpdate }) {
               {[
                 { id: 'identity', label: 'Profile & Vitals', icon: <User size={16} />, theme: 'identity' },
                 { id: 'overview', label: 'Health Overview', icon: <BarChart3 size={16} />, theme: 'twin-tab-overview' },
-                { id: 'vault', label: 'Medical Vault & History', icon: <FileUp size={16} />, theme: 'cancer' },
+                { id: 'vault', label: 'Medical Vault & History', icon: <FileUp size={16} />, theme: 'heart' },
               ].map((tab) => {
                 const isSelected = activeTab === tab.id;
                 return (
@@ -642,7 +642,7 @@ function Profile({ user, onUserUpdate }) {
   const tabThemes = {
     identity: 'theme-general',
     overview: 'theme-cancer',
-    vault: 'theme-cancer',
+    vault: 'theme-heart',
   };
   const activeTheme = tabThemes[activeTab] || 'theme-general';
 
@@ -660,14 +660,14 @@ function Profile({ user, onUserUpdate }) {
                 ? 'linear-gradient(135deg, #080808 0%, #15081f 35%, #080c18 65%, #080808 100%)'
                 : activeTab === 'vault'
                   ? 'linear-gradient(135deg, #080808 0%, #170808 35%, #130a16 65%, #080808 100%)'
-                  : 'linear-gradient(135deg, #080808 0%, #081008 35%, #0a1508 65%, #080808 100%)')
+                  : 'linear-gradient(135deg, #080808 0%, #080c1e 35%, #080a18 65%, #080808 100%)')
             : '#FFFFFF',
           border: isDark
-            ? `1px solid ${activeTab === 'overview' ? 'rgba(168, 85, 247, 0.35)' : activeTab === 'vault' ? 'rgba(239, 68, 68, 0.32)' : 'rgba(52, 211, 153, 0.28)'}`
-            : `1px solid ${activeTab === 'overview' ? 'rgba(168, 85, 247, 0.25)' : activeTab === 'vault' ? 'rgba(239, 68, 68, 0.22)' : 'rgba(16, 185, 129, 0.25)'}`,
+            ? `1px solid ${activeTab === 'overview' ? 'rgba(168, 85, 247, 0.35)' : activeTab === 'vault' ? 'rgba(239, 68, 68, 0.32)' : 'rgba(99, 102, 241, 0.32)'}`
+            : `1px solid ${activeTab === 'overview' ? 'rgba(168, 85, 247, 0.25)' : activeTab === 'vault' ? 'rgba(239, 68, 68, 0.22)' : 'rgba(99, 102, 241, 0.22)'}`,
           boxShadow: isDark
-            ? `0 0 40px ${activeTab === 'overview' ? 'rgba(168, 85, 247, 0.10)' : activeTab === 'vault' ? 'rgba(239, 68, 68, 0.09)' : 'rgba(52, 211, 153, 0.08)'}, inset 0 1px 0 rgba(255,255,255,0.06)`
-            : `0 4px 20px ${activeTab === 'overview' ? 'rgba(168, 85, 247, 0.08)' : activeTab === 'vault' ? 'rgba(239, 68, 68, 0.08)' : 'rgba(16, 185, 129, 0.08)'}, 0 1px 4px rgba(0, 0, 0, 0.04)`,
+            ? `0 0 40px ${activeTab === 'overview' ? 'rgba(168, 85, 247, 0.10)' : activeTab === 'vault' ? 'rgba(239, 68, 68, 0.09)' : 'rgba(99, 102, 241, 0.09)'}, inset 0 1px 0 rgba(255,255,255,0.06)`
+            : `0 4px 20px ${activeTab === 'overview' ? 'rgba(168, 85, 247, 0.08)' : activeTab === 'vault' ? 'rgba(239, 68, 68, 0.08)' : 'rgba(99, 102, 241, 0.08)'}, 0 1px 4px rgba(0, 0, 0, 0.04)`,
           transition: 'all 0.35s ease',
         }}
       >
@@ -678,7 +678,7 @@ function Profile({ user, onUserUpdate }) {
           width: '180px',
           height: '180px',
           borderRadius: '50%',
-          background: `radial-gradient(circle, ${activeTab === 'overview' ? 'rgba(168, 85, 247, 0.16)' : activeTab === 'vault' ? 'rgba(239, 68, 68, 0.14)' : 'rgba(52, 211, 153, 0.12)'} 0%, transparent 70%)`,
+          background: `radial-gradient(circle, ${activeTab === 'overview' ? 'rgba(168, 85, 247, 0.16)' : activeTab === 'vault' ? 'rgba(239, 68, 68, 0.14)' : 'rgba(99, 102, 241, 0.14)'} 0%, transparent 70%)`,
           pointerEvents: 'none',
           transition: 'all 0.35s ease'
         }} />
@@ -689,7 +689,7 @@ function Profile({ user, onUserUpdate }) {
           width: '130px',
           height: '130px',
           borderRadius: '50%',
-          background: `radial-gradient(circle, ${activeTab === 'overview' ? 'rgba(56, 189, 248, 0.14)' : activeTab === 'vault' ? 'rgba(245, 158, 11, 0.12)' : 'rgba(45, 212, 191, 0.10)'} 0%, transparent 70%)`,
+          background: `radial-gradient(circle, ${activeTab === 'overview' ? 'rgba(56, 189, 248, 0.14)' : activeTab === 'vault' ? 'rgba(245, 158, 11, 0.12)' : 'rgba(129, 140, 248, 0.12)'} 0%, transparent 70%)`,
           pointerEvents: 'none',
           transition: 'all 0.35s ease'
         }} />
@@ -707,8 +707,8 @@ function Profile({ user, onUserUpdate }) {
                 ? (isDark ? 'rgba(168, 85, 247, 0.22)' : 'rgba(168, 85, 247, 0.12)')
                 : activeTab === 'vault'
                   ? (isDark ? 'rgba(239, 68, 68, 0.22)' : 'rgba(239, 68, 68, 0.12)')
-                  : (isDark ? 'rgba(52, 211, 153, 0.18)' : 'rgba(16, 185, 129, 0.12)'),
-              border: `1px solid ${activeTab === 'overview' ? 'rgba(168, 85, 247, 0.45)' : activeTab === 'vault' ? 'rgba(239, 68, 68, 0.35)' : 'rgba(16, 185, 129, 0.35)'}`,
+                  : (isDark ? 'rgba(99, 102, 241, 0.22)' : 'rgba(99, 102, 241, 0.12)'),
+              border: `1px solid ${activeTab === 'overview' ? 'rgba(168, 85, 247, 0.45)' : activeTab === 'vault' ? 'rgba(239, 68, 68, 0.35)' : 'rgba(99, 102, 241, 0.35)'}`,
               transition: 'all 0.3s ease'
             }}>
               {activeTab === 'overview' ? (
@@ -716,7 +716,7 @@ function Profile({ user, onUserUpdate }) {
               ) : activeTab === 'vault' ? (
                 <FileText size={14} style={{ color: isDark ? '#F87171' : '#DC2626' }} />
               ) : (
-                <User size={14} style={{ color: isDark ? '#34D399' : '#059669' }} />
+                <User size={14} style={{ color: isDark ? '#818CF8' : '#6366F1' }} />
               )}
             </div>
             <span
@@ -728,7 +728,7 @@ function Profile({ user, onUserUpdate }) {
                   ? (isDark ? '#C084FC' : '#9333EA')
                   : activeTab === 'vault'
                     ? (isDark ? '#F87171' : '#DC2626')
-                    : (isDark ? '#34D399' : '#059669'),
+                    : (isDark ? '#818CF8' : '#6366F1'),
                 fontWeight: 700,
                 transition: 'color 0.3s ease'
               }}
