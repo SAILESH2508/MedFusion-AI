@@ -472,7 +472,7 @@ export default function IntegratedGardenSection({
                         }}
                       >
                         {isLoading ? <RefreshCw size={13} className="animate-spin" /> : <Plus size={13} strokeWidth={2.5} />}
-                        <span>{isLoading ? '...' : '+ LOG'}</span>
+                        <span>{isLoading ? '...' : 'LOG'}</span>
                       </button>
                       <button
                         onClick={() => { setSelectedActivityForNote(action.type); setActiveNote(''); }}
