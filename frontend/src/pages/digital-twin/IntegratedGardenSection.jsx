@@ -312,7 +312,7 @@ export default function IntegratedGardenSection({
       </div>
 
       {/* ─── 5 Activity Action Buttons ─── */}
-      <div>
+      <div className="glass-card p-3" style={{ borderRadius: '14px', border: '1px solid var(--border)' }}>
         <div className="d-flex align-items-center justify-content-between mb-2">
           <h3 className="fw-bold m-0 d-flex align-items-center gap-2" style={{ fontSize: '0.95rem', color: 'var(--text-primary)' }}>
             <Activity size={15} style={{ color: 'var(--brand-orange)' }} />
@@ -332,23 +332,22 @@ export default function IntegratedGardenSection({
             return (
               <div
                 key={action.type}
-                className="glass-card d-flex align-items-center gap-3 px-3 py-2"
+                className="d-flex align-items-center gap-2 px-2 py-1 rounded-2"
                 style={{
-                  borderRadius: '8px',
                   border: `1px solid ${action.border}`,
-                  background: 'var(--bg-card)',
-                  minHeight: '52px',
+                  background: action.bg + '22',
+                  minHeight: '44px',
                 }}
               >
                 {/* Icon */}
                 <div
                   className="flex-shrink-0 d-flex align-items-center justify-content-center rounded-2"
-                  style={{ width: '32px', height: '32px', background: action.bg, color: action.color }}
+                  style={{ width: '28px', height: '28px', background: action.bg, color: action.color, flexShrink: 0 }}
                 >
-                  <ActionIcon size={15} />
+                  <ActionIcon size={13} />
                 </div>
 
-                {/* Label + description */}
+                {/* Label + description OR note input */}
                 <div className="flex-grow-1 overflow-hidden" style={{ minWidth: 0 }}>
                   {isNoteActive ? (
                     <input
@@ -362,18 +361,18 @@ export default function IntegratedGardenSection({
                         fontSize: '0.7rem',
                         color: 'var(--text-primary)',
                         borderColor: action.border,
-                        background: 'rgba(15, 23, 42, 0.04)',
+                        background: 'rgba(255,255,255,0.6)',
                         outline: 'none',
-                        height: '30px',
+                        height: '28px',
                       }}
                       autoFocus
                     />
                   ) : (
                     <>
-                      <div className="fw-bold text-truncate" style={{ fontSize: '0.82rem', color: 'var(--text-primary)', lineHeight: '1.25' }}>
+                      <div className="fw-semibold text-truncate" style={{ fontSize: '0.8rem', color: 'var(--text-primary)', lineHeight: '1.25' }}>
                         {action.label}
                       </div>
-                      <div className="text-secondary text-truncate" style={{ fontSize: '0.7rem', lineHeight: '1.25' }}>
+                      <div className="text-truncate" style={{ fontSize: '0.67rem', color: 'var(--text-muted)', lineHeight: '1.2' }}>
                         {action.description}
                       </div>
                     </>
@@ -383,30 +382,47 @@ export default function IntegratedGardenSection({
                 {/* Points badge */}
                 <span
                   className="badge font-monospace flex-shrink-0"
-                  style={{ background: action.bg, color: action.color, border: `1px solid ${action.border}`, fontSize: '0.6rem' }}
+                  style={{ background: action.bg, color: action.color, border: `1px solid ${action.border}`, fontSize: '0.58rem', whiteSpace: 'nowrap' }}
                 >
                   +{action.points} pts
                 </span>
 
-                {/* Action buttons */}
+                {/* Buttons */}
                 {isNoteActive ? (
                   <>
                     <button
                       onClick={() => handleLogActivity(action.type, action.points, activeNote)}
                       disabled={isLoading}
-                      className="btn-clinical primary d-flex align-items-center gap-1 font-monospace text-uppercase flex-shrink-0"
-                      style={{ fontSize: '0.58rem', borderRadius: '4px', padding: '1px 6px' }}
+                      className="d-flex align-items-center gap-1 font-monospace text-uppercase fw-bold flex-shrink-0"
+                      style={{
+                        fontSize: '0.6rem',
+                        borderRadius: '5px',
+                        padding: '3px 9px',
+                        border: 'none',
+                        background: action.color,
+                        color: '#fff',
+                        cursor: 'pointer',
+                        letterSpacing: '0.04em',
+                      }}
                     >
                       {isLoading ? <RefreshCw size={10} className="animate-spin" /> : <Check size={10} />}
-                      <span>{isLoading ? 'Saving...' : 'OK'}</span>
+                      <span>{isLoading ? 'Saving...' : 'Save'}</span>
                     </button>
                     <button
                       onClick={() => { setSelectedActivityForNote(null); setActiveNote(''); }}
-                      className="btn-clinical secondary d-flex align-items-center font-monospace flex-shrink-0"
-                      style={{ fontSize: '0.58rem', borderRadius: '4px', padding: '1px 5px' }}
+                      className="d-flex align-items-center justify-content-center flex-shrink-0"
+                      style={{
+                        fontSize: '0.6rem',
+                        borderRadius: '5px',
+                        padding: '3px 7px',
+                        border: `1px solid var(--border)`,
+                        background: 'transparent',
+                        color: 'var(--text-muted)',
+                        cursor: 'pointer',
+                      }}
                       title="Cancel"
                     >
-                      <X size={10} />
+                      <X size={11} />
                     </button>
                   </>
                 ) : (
@@ -414,8 +430,18 @@ export default function IntegratedGardenSection({
                     <button
                       onClick={() => handleLogActivity(action.type, action.points)}
                       disabled={isLoading}
-                      className="btn-clinical primary d-flex align-items-center gap-1 font-monospace text-uppercase flex-shrink-0"
-                      style={{ fontSize: '0.58rem', borderRadius: '4px', padding: '1px 6px' }}
+                      className="d-flex align-items-center gap-1 font-monospace text-uppercase fw-bold flex-shrink-0"
+                      style={{
+                        fontSize: '0.6rem',
+                        borderRadius: '5px',
+                        padding: '3px 9px',
+                        border: 'none',
+                        background: action.color,
+                        color: '#fff',
+                        cursor: 'pointer',
+                        letterSpacing: '0.04em',
+                        opacity: isLoading ? 0.7 : 1,
+                      }}
                     >
                       {isLoading ? <RefreshCw size={10} className="animate-spin" /> : <Plus size={10} />}
                       <span>{isLoading ? '...' : 'Log'}</span>
@@ -423,10 +449,17 @@ export default function IntegratedGardenSection({
                     <button
                       onClick={() => { setSelectedActivityForNote(action.type); setActiveNote(''); }}
                       title="Log with note"
-                      className="btn-clinical secondary d-flex align-items-center justify-content-center flex-shrink-0"
-                      style={{ borderRadius: '4px', padding: '1px 5px' }}
+                      className="d-flex align-items-center justify-content-center flex-shrink-0"
+                      style={{
+                        borderRadius: '5px',
+                        padding: '3px 7px',
+                        border: `1px solid ${action.border}`,
+                        background: action.bg,
+                        color: action.color,
+                        cursor: 'pointer',
+                      }}
                     >
-                      <Clock size={10} />
+                      <Clock size={11} />
                     </button>
                   </>
                 )}
