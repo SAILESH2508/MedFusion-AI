@@ -23,6 +23,8 @@ import { useTheme } from '../context/useTheme';
 import ProfileIdentity from './profile/ProfileIdentity';
 import MedicalVault from './profile/MedicalVault';
 import RiskAssessments from './profile/RiskAssessments';
+import PersonalHealthOverview from './digital-twin/PersonalHealthOverview';
+import { BarChart3 } from 'lucide-react';
 
 
 function Profile({ user, onUserUpdate }) {
@@ -92,7 +94,7 @@ function Profile({ user, onUserUpdate }) {
   const tabParam = searchParams.get('tab');
   const [activeTabState, setActiveTabState] = useState('identity');
 
-  const activeTab = (tabParam && ['identity', 'vault'].includes(tabParam))
+  const activeTab = (tabParam && ['identity', 'overview', 'vault'].includes(tabParam))
     ? tabParam
     : activeTabState;
 
@@ -114,6 +116,22 @@ function Profile({ user, onUserUpdate }) {
   const [safetyLoading, setSafetyLoading] = useState(false);
   const [safetyError, setSafetyError] = useState('');
   const [safetyReport, setSafetyReport] = useState(null);
+
+  // Digital Twin synthesized telemetry state for PersonalHealthOverview tab
+  const [twinData, setTwinData] = useState({
+    profile: null,
+    organs: {},
+    system_metrics: null,
+    predictions: [],
+    pathology: [],
+    prescriptions: []
+  });
+  const [gardenData, setGardenData] = useState({
+    total_points: 0,
+    current_streak: 0,
+    best_streak: 0,
+    stage: { name: 'Seed', description: 'Begin your journey' }
+  });
 
   // -------------------------------------------------------------
   // DATA SYNC AND LOADING LOGIC
@@ -173,6 +191,52 @@ function Profile({ user, onUserUpdate }) {
     }
   }, [user]);
 
+  const fetchTwinSummary = useCallback(async () => {
+    if (user && user.role === 'Doctor') return;
+    try {
+      const response = await api.get('/health-twin/');
+      const d = response.data;
+      setTwinData({
+        profile: d.profile || null,
+        organs: d.organs || {},
+        system_metrics: d.system_metrics || null,
+        predictions: d.predictions || [],
+        pathology: d.pathology_reports || [],
+        prescriptions: d.prescriptions || [],
+      });
+    } catch {
+      try {
+        const [emR, prR, paR, rxR] = await Promise.all([
+          api.get('/telemetry/emergency/').catch(() => ({ data: {} })),
+          api.get('/predictions/').catch(() => ({ data: [] })),
+          api.get('/pathology/').catch(() => ({ data: [] })),
+          api.get('/prescriptions/').catch(() => ({ data: [] })),
+        ]);
+        setTwinData({
+          profile: emR.data || null,
+          organs: {},
+          system_metrics: {
+            total_systems: 8,
+            optimal_count: 8,
+            attention_count: 0,
+            alert_count: 0,
+          },
+          predictions: prR.data || [],
+          pathology: paR.data || [],
+          prescriptions: rxR.data || [],
+        });
+      } catch { /* silent fallback */ }
+    }
+  }, [user]);
+
+  const fetchGardenData = useCallback(async () => {
+    if (user && user.role === 'Doctor') return;
+    try {
+      const res = await api.get('/garden/status/');
+      if (res.data) setGardenData(res.data);
+    } catch { /* silent */ }
+  }, [user]);
+
   const fetchArchive = useCallback(async () => {
     if (user && user.role === 'Doctor') return;
     try {
@@ -197,7 +261,7 @@ function Profile({ user, onUserUpdate }) {
   useEffect(() => {
     const loadAll = async () => {
       setLoading(true);
-      await Promise.all([fetchProfile(), fetchHistory(), fetchArchive()]);
+      await Promise.all([fetchProfile(), fetchHistory(), fetchArchive(), fetchTwinSummary(), fetchGardenData()]);
       if (user && user.role === 'Doctor') {
         try {
           const res = await api.get('/patients');
@@ -220,7 +284,7 @@ function Profile({ user, onUserUpdate }) {
       setLoading(false);
     };
     loadAll();
-  }, [user, fetchProfile, fetchHistory, fetchArchive]);
+  }, [user, fetchProfile, fetchHistory, fetchArchive, fetchTwinSummary, fetchGardenData]);
 
   // Sidebar controls
   useEffect(() => {
@@ -291,6 +355,7 @@ function Profile({ user, onUserUpdate }) {
             <div className="d-flex flex-column gap-2 mt-2">
               {[
                 { id: 'identity', label: 'Profile & Vitals', icon: <User size={16} />, theme: 'identity' },
+                { id: 'overview', label: 'Health Overview', icon: <BarChart3 size={16} />, theme: 'twin-tab-overview' },
                 { id: 'vault', label: 'Medical Vault & History', icon: <FileUp size={16} />, theme: 'cancer' },
               ].map((tab) => {
                 const isSelected = activeTab === tab.id;
@@ -566,6 +631,7 @@ function Profile({ user, onUserUpdate }) {
 
   const tabThemes = {
     identity: 'theme-general',
+    overview: 'theme-cancer',
     vault: 'theme-cancer',
   };
   const activeTheme = tabThemes[activeTab] || 'theme-general';
@@ -573,41 +639,138 @@ function Profile({ user, onUserUpdate }) {
   return (
     <div className={`reveal px-1 ${activeTheme} transition-all duration-300 ${activeTab === 'vault' ? 'vault-tab-active-layout' : ''}`}>
 
-      {/* ── Profile Header Banner (Theme-Adaptive) ──────────────────── */}
+      {/* ── Profile Header Banner (Theme-Adaptive & Category Dynamic) ── */}
       <div
         className="mb-4 position-relative overflow-hidden"
         style={{
           borderRadius: '20px',
           padding: '28px 32px',
           background: isDark
-            ? 'linear-gradient(135deg, #080808 0%, #081008 35%, #0a1508 65%, #080808 100%)'
+            ? (activeTab === 'overview'
+                ? 'linear-gradient(135deg, #080808 0%, #15081f 35%, #080c18 65%, #080808 100%)'
+                : activeTab === 'vault'
+                  ? 'linear-gradient(135deg, #080808 0%, #170808 35%, #130a16 65%, #080808 100%)'
+                  : 'linear-gradient(135deg, #080808 0%, #081008 35%, #0a1508 65%, #080808 100%)')
             : '#FFFFFF',
           border: isDark
-            ? '1px solid rgba(52, 211, 153, 0.28)'
-            : '1px solid rgba(16, 185, 129, 0.25)',
+            ? `1px solid ${activeTab === 'overview' ? 'rgba(168, 85, 247, 0.35)' : activeTab === 'vault' ? 'rgba(239, 68, 68, 0.32)' : 'rgba(52, 211, 153, 0.28)'}`
+            : `1px solid ${activeTab === 'overview' ? 'rgba(168, 85, 247, 0.25)' : activeTab === 'vault' ? 'rgba(239, 68, 68, 0.22)' : 'rgba(16, 185, 129, 0.25)'}`,
           boxShadow: isDark
-            ? '0 0 40px rgba(52,211,153,0.08), inset 0 1px 0 rgba(255,255,255,0.06)'
-            : '0 4px 20px rgba(16, 185, 129, 0.08), 0 1px 4px rgba(0, 0, 0, 0.04)',
-          transition: 'all 0.3s ease',
+            ? `0 0 40px ${activeTab === 'overview' ? 'rgba(168, 85, 247, 0.10)' : activeTab === 'vault' ? 'rgba(239, 68, 68, 0.09)' : 'rgba(52, 211, 153, 0.08)'}, inset 0 1px 0 rgba(255,255,255,0.06)`
+            : `0 4px 20px ${activeTab === 'overview' ? 'rgba(168, 85, 247, 0.08)' : activeTab === 'vault' ? 'rgba(239, 68, 68, 0.08)' : 'rgba(16, 185, 129, 0.08)'}, 0 1px 4px rgba(0, 0, 0, 0.04)`,
+          transition: 'all 0.35s ease',
         }}
       >
-        <div style={{ position: 'absolute', top: '-25px', right: '80px', width: '180px', height: '180px', borderRadius: '50%', background: `radial-gradient(circle, rgba(52,211,153,${isDark ? '0.12' : '0.08'}) 0%, transparent 70%)`, pointerEvents: 'none' }} />
-        <div style={{ position: 'absolute', bottom: '-20px', left: '100px', width: '130px', height: '130px', borderRadius: '50%', background: `radial-gradient(circle, rgba(45,212,191,${isDark ? '0.1' : '0.08'}) 0%, transparent 70%)`, pointerEvents: 'none' }} />
+        <div style={{
+          position: 'absolute',
+          top: '-25px',
+          right: '80px',
+          width: '180px',
+          height: '180px',
+          borderRadius: '50%',
+          background: `radial-gradient(circle, ${activeTab === 'overview' ? 'rgba(168, 85, 247, 0.16)' : activeTab === 'vault' ? 'rgba(239, 68, 68, 0.14)' : 'rgba(52, 211, 153, 0.12)'} 0%, transparent 70%)`,
+          pointerEvents: 'none',
+          transition: 'all 0.35s ease'
+        }} />
+        <div style={{
+          position: 'absolute',
+          bottom: '-20px',
+          left: '100px',
+          width: '130px',
+          height: '130px',
+          borderRadius: '50%',
+          background: `radial-gradient(circle, ${activeTab === 'overview' ? 'rgba(56, 189, 248, 0.14)' : activeTab === 'vault' ? 'rgba(245, 158, 11, 0.12)' : 'rgba(45, 212, 191, 0.10)'} 0%, transparent 70%)`,
+          pointerEvents: 'none',
+          transition: 'all 0.35s ease'
+        }} />
 
         <div style={{ position: 'relative', zIndex: 1 }}>
           <div className="d-flex align-items-center gap-2 mb-2">
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '28px', height: '28px', borderRadius: '8px', background: isDark ? 'rgba(52,211,153,0.18)' : 'rgba(16,185,129,0.12)', border: '1px solid rgba(16,185,129,0.35)' }}>
-              <User size={14} style={{ color: isDark ? '#34d399' : '#059669' }} />
+            <div style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              width: '28px',
+              height: '28px',
+              borderRadius: '8px',
+              background: activeTab === 'overview'
+                ? (isDark ? 'rgba(168, 85, 247, 0.22)' : 'rgba(168, 85, 247, 0.12)')
+                : activeTab === 'vault'
+                  ? (isDark ? 'rgba(239, 68, 68, 0.22)' : 'rgba(239, 68, 68, 0.12)')
+                  : (isDark ? 'rgba(52, 211, 153, 0.18)' : 'rgba(16, 185, 129, 0.12)'),
+              border: `1px solid ${activeTab === 'overview' ? 'rgba(168, 85, 247, 0.45)' : activeTab === 'vault' ? 'rgba(239, 68, 68, 0.35)' : 'rgba(16, 185, 129, 0.35)'}`,
+              transition: 'all 0.3s ease'
+            }}>
+              {activeTab === 'overview' ? (
+                <BarChart3 size={14} style={{ color: isDark ? '#C084FC' : '#9333EA' }} />
+              ) : activeTab === 'vault' ? (
+                <FileText size={14} style={{ color: isDark ? '#F87171' : '#DC2626' }} />
+              ) : (
+                <User size={14} style={{ color: isDark ? '#34D399' : '#059669' }} />
+              )}
             </div>
-            <span className="font-monospace text-uppercase" style={{ fontSize: '0.68rem', letterSpacing: '0.14em', color: isDark ? '#34d399' : '#059669', fontWeight: 700 }}>
-              Patient Identity Vault — {profile?.vault_id || `MF-P-${user?.id || '—'}`}
+            <span
+              className="font-monospace text-uppercase"
+              style={{
+                fontSize: '0.68rem',
+                letterSpacing: '0.14em',
+                color: activeTab === 'overview'
+                  ? (isDark ? '#C084FC' : '#9333EA')
+                  : activeTab === 'vault'
+                    ? (isDark ? '#F87171' : '#DC2626')
+                    : (isDark ? '#34D399' : '#059669'),
+                fontWeight: 700,
+                transition: 'color 0.3s ease'
+              }}
+            >
+              {activeTab === 'overview'
+                ? 'Synthesized Clinical Biomarkers & Digital Twin Summary'
+                : activeTab === 'vault'
+                  ? 'Longitudinal Medical Vault & Diagnostic Archive'
+                  : `Patient Identity Vault — ${profile?.vault_id || `MF-P-${user?.id || '—'}`}`}
             </span>
           </div>
-          <h1 className="fw-bolder m-0 mb-2" style={{ fontSize: '2rem', letterSpacing: '-0.03em', color: isDark ? '#FFFFFF' : '#0F172A', lineHeight: 1.1, fontFamily: 'var(--font-main)' }}>
-            Health <span className="text-gradient-heart">Profile</span>
+
+          <h1
+            className="fw-bolder m-0 mb-2"
+            style={{
+              fontSize: '2rem',
+              letterSpacing: '-0.03em',
+              color: isDark ? '#FFFFFF' : '#0F172A',
+              lineHeight: 1.1,
+              fontFamily: 'var(--font-main)'
+            }}
+          >
+            {activeTab === 'overview' ? (
+              <>
+                Personal Health <span className="text-gradient-cancer">Overview</span>
+              </>
+            ) : activeTab === 'vault' ? (
+              <>
+                Medical <span className="text-gradient-heart">Vault &amp; History</span>
+              </>
+            ) : (
+              <>
+                Health <span className="text-gradient-diabetes">Profile</span>
+              </>
+            )}
           </h1>
-          <p className="m-0" style={{ fontSize: '0.9rem', color: isDark ? 'rgba(255,255,255,0.65)' : '#475569', maxWidth: '520px', lineHeight: 1.5, fontWeight: isDark ? 400 : 500 }}>
-            Manage your clinical identity, medical history vault, risk assessments, and emergency QR card — all secured in one place.
+
+          <p
+            className="m-0"
+            style={{
+              fontSize: '0.9rem',
+              color: isDark ? 'rgba(255,255,255,0.65)' : '#475569',
+              maxWidth: '560px',
+              lineHeight: 1.5,
+              fontWeight: isDark ? 400 : 500
+            }}
+          >
+            {activeTab === 'overview'
+              ? 'Comprehensive synthesis of vital metrics, continuous EHR observations, habit adherence, and tri-pillar health telemetry.'
+              : activeTab === 'vault'
+                ? 'Review verified medical documents, uploaded prescriptions, lab reports, and AI risk prediction assessments in one unified registry.'
+                : 'Manage your clinical identity, emergency contact QR card, biometric metrics, and daily lifestyle targets.'}
           </p>
         </div>
       </div>
@@ -629,6 +792,7 @@ function Profile({ user, onUserUpdate }) {
         <div className="row g-1 w-100 m-0">
           {[
             { id: 'identity', label: 'Identity', icon: <User size={16} /> },
+            { id: 'overview', label: 'Overview', icon: <BarChart3 size={16} /> },
             { id: 'vault', label: 'Vault', icon: <FileText size={16} /> },
           ].map((tab) => (
             <div className="col p-0" key={tab.id}>
@@ -671,6 +835,20 @@ function Profile({ user, onUserUpdate }) {
               emergencyToken={emergencyToken}
               onGenerateToken={handleGenerateToken}
               onRevokeToken={handleRevokeToken}
+            />
+          </motion.div>
+        )}
+
+        {activeTab === 'overview' && (
+          <motion.div
+            key="overview"
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -15 }}
+          >
+            <PersonalHealthOverview
+              patientData={twinData}
+              gardenData={gardenData}
             />
           </motion.div>
         )}

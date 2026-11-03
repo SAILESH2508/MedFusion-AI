@@ -1,4 +1,5 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   HeartPulse, Activity, Salad, Sprout, ShieldAlert, CheckCircle2,
   AlertCircle, AlertTriangle, Clock, ArrowRight, UserCheck, Droplet,
@@ -6,11 +7,23 @@ import {
 } from 'lucide-react';
 
 export default function PersonalHealthOverview({
-  patientData,
-  gardenData,
+  patientData = {},
+  gardenData = {},
   onSwitchTab,
   onSelectOrgan,
 }) {
+  const navigate = useNavigate();
+
+  const handleNavigateSection = (targetTab, targetOrgan) => {
+    if (onSwitchTab) {
+      if (targetOrgan && onSelectOrgan) onSelectOrgan(targetOrgan);
+      onSwitchTab(targetTab);
+    } else {
+      // Default navigation when hosted on Profile page
+      navigate(`/digital-twin?tab=${targetTab}${targetOrgan ? `&organ=${targetOrgan}` : ''}`);
+    }
+  };
+
   const profile = patientData?.profile || {};
   const metrics = patientData?.system_metrics || {};
   const organs = patientData?.organs || {};
@@ -43,7 +56,7 @@ export default function PersonalHealthOverview({
           <div>
             <div className="d-flex align-items-center gap-2 mb-1">
               <h2 className="fw-bold m-0" style={{ fontSize: '1.25rem', color: 'var(--text-primary)' }}>
-                {profile.full_name || 'Patient Digital Twin'}
+                {profile.full_name || profile.name || 'Patient Digital Twin'}
               </h2>
               {profile.blood_group && (
                 <span
@@ -80,7 +93,7 @@ export default function PersonalHealthOverview({
           <div
             className="glass-card p-3.5 d-flex flex-column justify-content-between h-100 cursor-pointer transition-all"
             style={{ borderRadius: '14px', border: '1px solid var(--border)', background: 'var(--bg-card)' }}
-            onClick={() => onSwitchTab('organs')}
+            onClick={() => handleNavigateSection('organs')}
           >
             <div>
               <div className="d-flex align-items-center justify-content-between mb-2">
@@ -110,7 +123,7 @@ export default function PersonalHealthOverview({
           <div
             className="glass-card p-3.5 d-flex flex-column justify-content-between h-100 cursor-pointer transition-all"
             style={{ borderRadius: '14px', border: '1px solid var(--border)', background: 'var(--bg-card)' }}
-            onClick={() => onSwitchTab('diet')}
+            onClick={() => handleNavigateSection('diet')}
           >
             <div>
               <div className="d-flex align-items-center justify-content-between mb-2">
@@ -140,7 +153,7 @@ export default function PersonalHealthOverview({
           <div
             className="glass-card p-3.5 d-flex flex-column justify-content-between h-100 cursor-pointer transition-all"
             style={{ borderRadius: '14px', border: '1px solid var(--border)', background: 'var(--bg-card)' }}
-            onClick={() => onSwitchTab('garden')}
+            onClick={() => handleNavigateSection('garden')}
           >
             <div>
               <div className="d-flex align-items-center justify-content-between mb-2">
@@ -178,7 +191,7 @@ export default function PersonalHealthOverview({
             </span>
           </div>
           <button
-            onClick={() => onSwitchTab('organs')}
+            onClick={() => handleNavigateSection('organs')}
             className="btn-clinical secondary py-1.5 px-3 font-monospace text-uppercase"
             style={{ fontSize: '0.72rem', borderRadius: '6px' }}
           >
@@ -202,10 +215,7 @@ export default function PersonalHealthOverview({
                   background: 'var(--bg-surface)',
                   border: '1px solid var(--border)',
                 }}
-                onClick={() => {
-                  onSelectOrgan(item.organ);
-                  onSwitchTab('organs');
-                }}
+                onClick={() => handleNavigateSection('organs', item.organ)}
               >
                 <div className="d-flex align-items-center justify-content-between mb-1">
                   <span className="text-secondary text-truncate" style={{ fontSize: '0.74rem', maxWidth: '180px' }}>

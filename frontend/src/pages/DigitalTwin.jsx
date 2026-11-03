@@ -15,7 +15,7 @@ import React, { useState, useEffect, useContext, useCallback } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import {
   Heart, Wind, FlaskConical, Droplet, Brain as BrainIcon, Activity,
-  UserCheck, Salad, Sprout, BarChart3, RefreshCw,
+  UserCheck, Salad, Sprout, RefreshCw,
   HeartPulse, ShieldCheck, Flame, Trophy
 } from 'lucide-react';
 import { api } from '../services/api';
@@ -27,7 +27,6 @@ import OrganInfoPanel from './digital-twin/OrganInfoPanel';
 import IntegratedGardenSection from './digital-twin/IntegratedGardenSection';
 import { GARDEN_STAGES, GARDEN_ACTIONS } from './digital-twin/gardenConstants';
 import IntegratedDietSection from './digital-twin/IntegratedDietSection';
-import PersonalHealthOverview from './digital-twin/PersonalHealthOverview';
 
 /* ─── 8 Functional Anatomical Systems (Cephalocaudal & Vital Priority) ─── */
 const ORGANS = [
@@ -44,7 +43,6 @@ const ORGANS = [
 /* ─── Twin Primary Sections (Habits & Garden First, Clinical-to-Lifestyle Progression) ─── */
 const TWIN_TABS = [
   { id: 'garden',   label: 'Wellness Habits & Garden',   shortLabel: 'Habits & Garden',  icon: <Sprout size={17} />,    theme: 'twin-tab-garden' },
-  { id: 'overview', label: 'Health Overview',            shortLabel: 'Overview',         icon: <BarChart3 size={17} />, theme: 'twin-tab-overview' },
   { id: 'organs',   label: 'Clinical Anatomy & Organs',  shortLabel: 'Organs & Systems', icon: <HeartPulse size={17} />, theme: 'twin-tab-organs' },
   { id: 'diet',     label: 'Metabolic Nutrition & Diet', shortLabel: 'Nutrition & Diet', icon: <Salad size={17} />,     theme: 'twin-tab-diet' },
 ];
@@ -87,7 +85,7 @@ export default function DigitalTwin({ user, openAuth }) {
   // Sync tab with URL search parameter
   useEffect(() => {
     const tabParam = searchParams.get('tab');
-    if (tabParam && ['overview', 'organs', 'diet', 'garden'].includes(tabParam)) {
+    if (tabParam && ['organs', 'diet', 'garden'].includes(tabParam)) {
       setActiveTab(tabParam);
     }
   }, [searchParams]);
@@ -303,17 +301,7 @@ export default function DigitalTwin({ user, openAuth }) {
           );
         })()}
 
-        {activeTab === 'overview' && (
-          <div className="p-3 rounded font-monospace" style={{ border: '1px solid rgba(168, 85, 247, 0.28)', borderLeft: '4px solid #A855F7', background: 'rgba(15, 23, 42, 0.55)' }}>
-            <span className="d-block fw-bold text-uppercase mb-2" style={{ fontSize: '0.66rem', color: '#C084FC', letterSpacing: '0.07em' }}>
-              System Synthesis
-            </span>
-            <div className="d-flex justify-content-between" style={{ fontSize: '0.74rem', color: '#94A3B8' }}>
-              <span>Verified EHR Telemetry:</span>
-              <strong style={{ color: '#38BDF8' }}>Active</strong>
-            </div>
-          </div>
-        )}
+
       </div>
     );
 
@@ -374,7 +362,7 @@ export default function DigitalTwin({ user, openAuth }) {
               Digital <span className="text-gradient-heart">Twin</span>
             </h1>
             <p className="m-0" style={{ fontSize: '0.9rem', color: isDark ? 'rgba(255,255,255,0.65)' : '#475569', maxWidth: '520px', lineHeight: 1.5, fontWeight: isDark ? 400 : 500 }}>
-              Unified clinical simulation — organ anatomy, metabolic nutrition, wellness habits & personalized health overview all in one engine.
+              Unified clinical simulation — organ anatomy, metabolic nutrition, and wellness habits all in one engine.
             </p>
           </div>
 
@@ -555,15 +543,7 @@ export default function DigitalTwin({ user, openAuth }) {
         />
       )}
 
-      {/* ── SECTION 4: PERSONAL HEALTH OVERVIEW ── */}
-      {activeTab === 'overview' && (
-        <PersonalHealthOverview
-          patientData={patientData}
-          gardenData={gardenData}
-          onSwitchTab={handleTabChange}
-          onSelectOrgan={setSelectedOrgan}
-        />
-      )}
+
 
       {/* ══ 3. END OF MAIN CONTENT ═══════════════════════════════════ */}
     </div>
