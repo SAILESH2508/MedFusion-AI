@@ -93,7 +93,7 @@ def seed_patient_clinical_data(patient: Patient):
                 reference_range_min=o["ref_min"],
                 reference_range_max=o["ref_max"],
                 reference_range_text=o["ref_text"],
-                provenance="clinical_lab_ebr",
+                provenance="clinical_lab_ehr",
                 observation_timestamp=now - timedelta(days=o["days_ago"]),
             )
 

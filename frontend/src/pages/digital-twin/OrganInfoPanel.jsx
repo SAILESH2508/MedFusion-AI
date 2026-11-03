@@ -8,6 +8,7 @@
 
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { formatProvenance } from '../../services/utils';
 import {
   ExternalLink,
   Heart,
@@ -100,7 +101,7 @@ function RiskMeter({ prediction }) {
 
       {prediction.dataset_provenance && (
         <p style={{ margin: '6px 0 0', fontSize: '0.68rem', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)' }}>
-          Provenance: {prediction.dataset_provenance}
+          Provenance: {formatProvenance(prediction.dataset_provenance)}
         </p>
       )}
     </div>
@@ -293,7 +294,7 @@ export default function OrganInfoPanel({ selectedOrgan, organData, loading }) {
                       )}
                     </div>
                     <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)', display: 'block', marginTop: '2px' }}>
-                      Ref: {obs.reference_range?.display || 'Standard'} · {obs.provenance || 'EHR'}
+                      Ref: {obs.reference_range?.display || 'Standard'} · {formatProvenance(obs.provenance)}
                     </span>
                   </div>
 

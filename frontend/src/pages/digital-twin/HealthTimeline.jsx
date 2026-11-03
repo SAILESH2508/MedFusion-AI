@@ -1,3 +1,4 @@
+import { formatProvenance } from '../../services/utils';
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import {
@@ -258,7 +259,7 @@ export default function HealthTimeline({ patientData, selectedOrgan, loading }) 
                       )}
                       {item.model_version && (
                         <span style={{ display: 'block', fontSize: '0.62rem', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)' }}>
-                          Model: {item.model_version} · Provenance: {item.dataset_provenance || 'Benchmark'}
+                          Model: {item.model_version} · Provenance: {formatProvenance(item.dataset_provenance || 'Benchmark')}
                         </span>
                       )}
                     </div>

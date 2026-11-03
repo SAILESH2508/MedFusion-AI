@@ -52,3 +52,35 @@ export const getHasShownGuestPopup = () => hasShownGuestPopup;
 export const setHasShownGuestPopup = (val) => {
   hasShownGuestPopup = val;
 };
+export const formatProvenance = (provenance) => {
+  if (!provenance) return 'EHR Synced';
+
+  const known = {
+    clinical_lab_ehr: 'Clinical Lab EHR',
+    clinical_lab_ebr: 'Clinical Lab EHR',
+    clinical_lab_portal: 'Clinical Lab Portal',
+    pathology_report_extraction: 'Pathology Lab Report',
+    pathology_report: 'Pathology Report',
+    clinical_triage: 'Clinical Triage',
+    patient_entered: 'Patient Reported',
+    ehr: 'Verified EHR',
+    lab_validated: 'Lab Validated',
+    vital_signs_stream: 'Vital Signs Monitor',
+    uci_machine_learning_repository: 'UCI Machine Learning Repository',
+  };
+
+  const key = String(provenance).toLowerCase().trim();
+  if (known[key]) return known[key];
+
+  // Convert snake_case or raw identifier to clean Title Case
+  return String(provenance)
+    .replace(/[_-]+/g, ' ')
+    .replace(/\bebr\b/gi, 'EHR')
+    .replace(/\behr\b/gi, 'EHR')
+    .replace(/\buci\b/gi, 'UCI')
+    .replace(/\bml\b/gi, 'ML')
+    .replace(/\bai\b/gi, 'AI')
+    .replace(/\b([a-z])/g, (m) => m.toUpperCase())
+    .trim();
+};
+
