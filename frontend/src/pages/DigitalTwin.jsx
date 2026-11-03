@@ -47,6 +47,76 @@ const TWIN_TABS = [
   { id: 'diet',     label: 'Metabolic Nutrition & Diet', shortLabel: 'Nutrition & Diet', icon: <Salad size={17} />,     theme: 'twin-tab-diet' },
 ];
 
+/* ─── Dynamic Header Banner Configurations per Section Tab ─── */
+const TAB_HEADER_CONFIG = {
+  garden: {
+    icon: Sprout,
+    iconColorLight: '#D97706',
+    iconColorDark: '#FBBF24',
+    iconBgLight: 'rgba(245, 158, 11, 0.12)',
+    iconBgDark: 'rgba(245, 158, 11, 0.22)',
+    iconBorderLight: 'rgba(245, 158, 11, 0.35)',
+    iconBorderDark: 'rgba(245, 158, 11, 0.45)',
+    subColorLight: '#D97706',
+    subColorDark: '#FBBF24',
+    subTitle: (stageIndex) => `Preventative Lifestyle & Adherence Telemetry — Stage ${stageIndex + 1} of 7`,
+    titlePrefix: 'Wellness ',
+    titleGradientClass: 'text-gradient-diabetes',
+    titleGradientText: 'Habits & Garden',
+    description: 'Daily clinical habit adherence, wellness milestones, habit streaks, and restorative health garden progression.',
+    bgDark: 'linear-gradient(135deg, #080808 0%, #170d05 35%, #130a05 65%, #080808 100%)',
+    borderLight: 'rgba(245, 158, 11, 0.25)',
+    borderDark: 'rgba(245, 158, 11, 0.35)',
+    shadowColor: 'rgba(245, 158, 11, 0.12)',
+    ambientBlob1: 'rgba(245, 158, 11, 0.16)',
+    ambientBlob2: 'rgba(16, 185, 129, 0.12)',
+  },
+  organs: {
+    icon: HeartPulse,
+    iconColorLight: '#0284C7',
+    iconColorDark: '#38BDF8',
+    iconBgLight: 'rgba(56, 189, 248, 0.12)',
+    iconBgDark: 'rgba(56, 189, 248, 0.22)',
+    iconBorderLight: 'rgba(56, 189, 248, 0.35)',
+    iconBorderDark: 'rgba(56, 189, 248, 0.45)',
+    subColorLight: '#0284C7',
+    subColorDark: '#38BDF8',
+    subTitle: () => 'Multi-Organ Physiological Engine — 8 Synchronized Systems',
+    titlePrefix: 'Clinical ',
+    titleGradientClass: 'text-gradient-heart',
+    titleGradientText: 'Anatomy & Organs',
+    description: 'Deep EHR-synchronized organ metrics, discrete laboratory observations, holdout-validated AI risk models, and clinical checklists.',
+    bgDark: 'linear-gradient(135deg, #080808 0%, #061524 35%, #081a2e 65%, #080808 100%)',
+    borderLight: 'rgba(56, 189, 248, 0.25)',
+    borderDark: 'rgba(56, 189, 248, 0.35)',
+    shadowColor: 'rgba(56, 189, 248, 0.12)',
+    ambientBlob1: 'rgba(56, 189, 248, 0.16)',
+    ambientBlob2: 'rgba(168, 85, 247, 0.12)',
+  },
+  diet: {
+    icon: Salad,
+    iconColorLight: '#059669',
+    iconColorDark: '#34D399',
+    iconBgLight: 'rgba(16, 185, 129, 0.12)',
+    iconBgDark: 'rgba(16, 185, 129, 0.22)',
+    iconBorderLight: 'rgba(16, 185, 129, 0.35)',
+    iconBorderDark: 'rgba(16, 185, 129, 0.45)',
+    subColorLight: '#059669',
+    subColorDark: '#34D399',
+    subTitle: () => 'Metabolic Nutrition & Precision Clinical Meal Planner',
+    titlePrefix: 'Metabolic ',
+    titleGradientClass: 'text-gradient-lab',
+    titleGradientText: 'Nutrition & Diet',
+    description: 'Personalized clinical nutrition engine, glycemic index optimization, dietary restrictions, and regional macro balance.',
+    bgDark: 'linear-gradient(135deg, #080808 0%, #061a12 35%, #071f16 65%, #080808 100%)',
+    borderLight: 'rgba(16, 185, 129, 0.25)',
+    borderDark: 'rgba(16, 185, 129, 0.35)',
+    shadowColor: 'rgba(16, 185, 129, 0.12)',
+    ambientBlob1: 'rgba(16, 185, 129, 0.16)',
+    ambientBlob2: 'rgba(56, 189, 248, 0.12)',
+  },
+};
+
 export default function DigitalTwin({ user, openAuth }) {
   const { theme } = useTheme();
   const isDark = theme === 'dark';
@@ -322,47 +392,67 @@ export default function DigitalTwin({ user, openAuth }) {
 
   return (
     <div className="d-flex flex-column gap-4 font-monospace">
-      {/* ══ 1. UNIFIED PATIENT & DIGITAL TWIN HEADER BANNER (Theme-Adaptive) ════════════════ */}
+      {/* ── 1. DYNAMIC CATEGORY-THEMED DIGITAL TWIN HEADER BANNER ════════════════ */}
       <div
         className="position-relative overflow-hidden"
         style={{
           borderRadius: '20px',
           padding: '28px 32px',
           background: isDark
-            ? 'linear-gradient(135deg, #080808 0%, #0e0814 40%, #140a08 70%, #080808 100%)'
+            ? currentTabConfig.bgDark
             : '#FFFFFF',
-          border: isDark
-            ? '1px solid rgba(224, 123, 57, 0.3)'
-            : '1px solid rgba(224, 123, 57, 0.25)',
+          border: `1px solid ${isDark ? currentTabConfig.borderDark : currentTabConfig.borderLight}`,
           boxShadow: isDark
-            ? '0 0 48px rgba(224,123,57,0.1), inset 0 1px 0 rgba(255,255,255,0.06)'
-            : '0 4px 20px rgba(224, 123, 57, 0.08), 0 1px 4px rgba(0, 0, 0, 0.04)',
+            ? `0 0 48px ${currentTabConfig.shadowColor}, inset 0 1px 0 rgba(255,255,255,0.06)`
+            : `0 4px 20px ${currentTabConfig.shadowColor}, 0 1px 4px rgba(0, 0, 0, 0.04)`,
           marginBottom: '0',
-          transition: 'all 0.3s ease',
+          transition: 'all 0.35s ease',
         }}
       >
         {/* Ambient glow blobs */}
-        <div style={{ position: 'absolute', top: '-30px', right: '100px', width: '200px', height: '200px', borderRadius: '50%', background: `radial-gradient(circle, rgba(167,139,250,${isDark ? '0.12' : '0.08'}) 0%, transparent 70%)`, pointerEvents: 'none' }} />
-        <div style={{ position: 'absolute', bottom: '-20px', left: '80px', width: '150px', height: '150px', borderRadius: '50%', background: `radial-gradient(circle, rgba(224,123,57,${isDark ? '0.14' : '0.08'}) 0%, transparent 70%)`, pointerEvents: 'none' }} />
+        <div style={{ position: 'absolute', top: '-30px', right: '100px', width: '200px', height: '200px', borderRadius: '50%', background: `radial-gradient(circle, ${currentTabConfig.ambientBlob1} 0%, transparent 70%)`, pointerEvents: 'none', transition: 'all 0.35s ease' }} />
+        <div style={{ position: 'absolute', bottom: '-20px', left: '80px', width: '150px', height: '150px', borderRadius: '50%', background: `radial-gradient(circle, ${currentTabConfig.ambientBlob2} 0%, transparent 70%)`, pointerEvents: 'none', transition: 'all 0.35s ease' }} />
 
         <div className="d-flex align-items-center justify-content-between flex-wrap gap-3" style={{ position: 'relative', zIndex: 1 }}>
           <div>
             <div className="d-flex align-items-center gap-2 mb-2">
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '28px', height: '28px', borderRadius: '8px', background: isDark ? 'rgba(224,123,57,0.2)' : 'rgba(224,123,57,0.12)', border: '1px solid rgba(224,123,57,0.35)' }}>
-                <HeartPulse size={14} style={{ color: '#E07B39' }} />
+              <div style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: '28px',
+                height: '28px',
+                borderRadius: '8px',
+                background: isDark ? currentTabConfig.iconBgDark : currentTabConfig.iconBgLight,
+                border: `1px solid ${isDark ? currentTabConfig.iconBorderDark : currentTabConfig.iconBorderLight}`,
+                transition: 'all 0.3s ease',
+              }}>
+                <TabHeaderIcon size={15} style={{ color: isDark ? currentTabConfig.iconColorDark : currentTabConfig.iconColorLight, transition: 'color 0.3s ease' }} />
               </div>
-              <span className="font-monospace text-uppercase" style={{ fontSize: '0.68rem', letterSpacing: '0.14em', color: isDark ? 'var(--brand-orange)' : '#D9681E', fontWeight: 700 }}>
-                Clinical Informatics Console — Patient Twin #{user?.id || 'GUEST'}
+              <span
+                className="font-monospace text-uppercase"
+                style={{
+                  fontSize: '0.68rem',
+                  letterSpacing: '0.14em',
+                  color: isDark ? currentTabConfig.subColorDark : currentTabConfig.subColorLight,
+                  fontWeight: 700,
+                  transition: 'color 0.3s ease',
+                }}
+              >
+                {currentTabConfig.subTitle(gardenData.stage?.stage ?? 0)}
               </span>
             </div>
             <h1
               className="fw-bolder m-0 mb-2"
-              style={{ fontSize: '2rem', letterSpacing: '-0.03em', color: isDark ? '#FFFFFF' : '#0F172A', lineHeight: 1.1, fontFamily: 'var(--font-main)' }}
+              style={{ fontSize: '2rem', letterSpacing: '-0.03em', color: isDark ? '#FFFFFF' : '#0F172A', lineHeight: 1.1, fontFamily: 'var(--font-main)', transition: 'color 0.3s ease' }}
             >
-              Digital <span className="text-gradient-heart">Twin</span>
+              {currentTabConfig.titlePrefix}
+              <span className={currentTabConfig.titleGradientClass}>
+                {currentTabConfig.titleGradientText}
+              </span>
             </h1>
-            <p className="m-0" style={{ fontSize: '0.9rem', color: isDark ? 'rgba(255,255,255,0.65)' : '#475569', maxWidth: '520px', lineHeight: 1.5, fontWeight: isDark ? 400 : 500 }}>
-              Unified clinical simulation — organ anatomy, metabolic nutrition, and wellness habits all in one engine.
+            <p className="m-0" style={{ fontSize: '0.9rem', color: isDark ? 'rgba(255,255,255,0.65)' : '#475569', maxWidth: '540px', lineHeight: 1.5, fontWeight: isDark ? 400 : 500, transition: 'color 0.3s ease' }}>
+              {currentTabConfig.description}
             </p>
           </div>
 
