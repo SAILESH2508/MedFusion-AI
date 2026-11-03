@@ -314,18 +314,18 @@ export default function IntegratedGardenSection({
       {/* ─── 5 Activity Action Buttons ─── */}
       <div
         className="glass-card"
-        style={{ borderRadius: '14px', border: '1px solid var(--border)', overflow: 'hidden' }}
+        style={{ borderRadius: '16px', border: '1px solid var(--border)', overflow: 'hidden' }}
       >
-        {/* Header */}
+        {/* Header with clear hierarchy */}
         <div
-          className="d-flex align-items-center justify-content-between px-3 py-2"
+          className="d-flex align-items-center justify-content-between px-4 py-3"
           style={{ borderBottom: '1px solid var(--border)', background: 'var(--bg-card)' }}
         >
-          <h3 className="fw-bold m-0 d-flex align-items-center gap-2" style={{ fontSize: '0.92rem', color: 'var(--text-primary)' }}>
-            <Activity size={14} style={{ color: 'var(--brand-orange)' }} />
-            Daily Health Actions
+          <h3 className="fw-bold m-0 d-flex align-items-center gap-2.5" style={{ fontSize: '1.25rem', color: 'var(--text-primary)' }}>
+            <Activity size={20} style={{ color: 'var(--brand-orange)' }} />
+            <span>Daily Health Actions</span>
           </h3>
-          <span className="text-secondary font-monospace" style={{ fontSize: '0.75rem' }}>
+          <span className="text-secondary font-monospace" style={{ fontSize: '0.82rem' }}>
             Earn wellness points for clinical self-care
           </span>
         </div>
@@ -341,24 +341,30 @@ export default function IntegratedGardenSection({
             return (
               <div
                 key={action.type}
-                className="d-flex align-items-center gap-3 px-3"
+                className="d-flex align-items-center gap-3 px-3.5 py-2"
                 style={{
-                  minHeight: '56px',
+                  minHeight: '60px',
                   borderBottom: isLast ? 'none' : '1px solid var(--border)',
-                  borderLeft: `3px solid ${action.color}`,
+                  borderLeft: `4px solid ${action.color}`,
                   background: 'var(--bg-card)',
                 }}
               >
-                {/* Coloured icon */}
+                {/* Coloured icon badge */}
                 <div
-                  className="flex-shrink-0 d-flex align-items-center justify-content-center rounded-2"
-                  style={{ width: '34px', height: '34px', background: action.bg, color: action.color }}
+                  className="flex-shrink-0 d-flex align-items-center justify-content-center rounded-3"
+                  style={{
+                    width: '36px',
+                    height: '36px',
+                    background: action.bg,
+                    color: action.color,
+                    border: `1px solid ${action.border}`,
+                  }}
                 >
-                  <ActionIcon size={17} />
+                  <ActionIcon size={18} />
                 </div>
 
                 {/* Label + description OR note input */}
-                <div className="flex-grow-1 overflow-hidden py-1" style={{ minWidth: 0 }}>
+                <div className="flex-grow-1 overflow-hidden" style={{ minWidth: 0 }}>
                   {isNoteActive ? (
                     <input
                       type="text"
@@ -366,39 +372,41 @@ export default function IntegratedGardenSection({
                       value={activeNote}
                       onChange={e => setActiveNote(e.target.value)}
                       onKeyDown={e => e.key === 'Enter' && handleLogActivity(action.type, action.points, activeNote)}
-                      className="w-100 border rounded-2 px-2 font-monospace"
+                      className="w-100 border rounded-2 px-3 font-monospace"
                       style={{
                         fontSize: '0.82rem',
                         color: 'var(--text-primary)',
-                        borderColor: action.border,
+                        borderColor: action.color,
                         background: 'transparent',
                         outline: 'none',
-                        height: '28px',
+                        height: '32px',
                       }}
                       autoFocus
                     />
                   ) : (
                     <>
-                      <div className="fw-semibold text-truncate" style={{ fontSize: '0.94rem', color: 'var(--text-primary)', lineHeight: '1.3' }}>
+                      <div className="fw-bold text-truncate" style={{ fontSize: '0.96rem', color: 'var(--text-primary)', lineHeight: '1.3' }}>
                         {action.label}
                       </div>
-                      <div className="text-truncate" style={{ fontSize: '0.88rem', color: 'var(--text-muted)', lineHeight: '1.3' }}>
+                      <div className="text-secondary text-truncate" style={{ fontSize: '0.82rem', lineHeight: '1.3', marginTop: '2px' }}>
                         {action.description}
                       </div>
                     </>
                   )}
                 </div>
 
-                {/* Right cluster: pts + buttons */}
-                <div className="d-flex align-items-center gap-2 flex-shrink-0">
+                {/* Right cluster: points + action buttons (colored per action) */}
+                <div className="d-flex align-items-center gap-2.5 flex-shrink-0">
                   <span
                     className="badge font-monospace"
                     style={{
                       background: action.bg,
                       color: action.color,
                       border: `1px solid ${action.border}`,
-                      fontSize: '0.58rem',
-                      padding: '2px 6px',
+                      fontSize: '0.74rem',
+                      fontWeight: 700,
+                      padding: '4px 9px',
+                      borderRadius: '6px',
                       whiteSpace: 'nowrap',
                     }}
                   >
@@ -410,20 +418,21 @@ export default function IntegratedGardenSection({
                       <button
                         onClick={() => handleLogActivity(action.type, action.points, activeNote)}
                         disabled={isLoading}
-                        className="d-flex align-items-center gap-1 font-monospace text-uppercase fw-semibold"
+                        className="d-flex align-items-center gap-1.5 font-monospace text-uppercase fw-bold"
                         style={{
-                          fontSize: '0.62rem',
+                          fontSize: '0.78rem',
                           borderRadius: '6px',
-                          padding: '4px 10px',
+                          padding: '6px 14px',
                           border: 'none',
-                          background: 'var(--brand-orange)',
-                          color: '#fff',
+                          background: action.color,
+                          color: '#FFFFFF',
                           cursor: 'pointer',
-                          letterSpacing: '0.03em',
+                          letterSpacing: '0.04em',
                           whiteSpace: 'nowrap',
+                          boxShadow: `0 2px 8px ${action.color}40`,
                         }}
                       >
-                        {isLoading ? <RefreshCw size={13} className="animate-spin" /> : <Check size={13} />}
+                        {isLoading ? <RefreshCw size={13} className="animate-spin" /> : <Check size={13} strokeWidth={2.5} />}
                         <span>{isLoading ? 'Saving' : 'Save'}</span>
                       </button>
                       <button
@@ -431,7 +440,7 @@ export default function IntegratedGardenSection({
                         className="d-flex align-items-center justify-content-center"
                         style={{
                           borderRadius: '6px',
-                          padding: '4px 7px',
+                          padding: '6px 10px',
                           border: '1px solid var(--border)',
                           background: 'transparent',
                           color: 'var(--text-muted)',
@@ -447,30 +456,31 @@ export default function IntegratedGardenSection({
                       <button
                         onClick={() => handleLogActivity(action.type, action.points)}
                         disabled={isLoading}
-                        className="d-flex align-items-center gap-1 font-monospace text-uppercase fw-semibold"
+                        className="d-flex align-items-center gap-1.5 font-monospace text-uppercase fw-bold"
                         style={{
-                          fontSize: '0.62rem',
+                          fontSize: '0.78rem',
                           borderRadius: '6px',
-                          padding: '4px 10px',
+                          padding: '6px 14px',
                           border: 'none',
-                          background: 'var(--brand-orange)',
-                          color: '#fff',
+                          background: action.color,
+                          color: '#FFFFFF',
                           cursor: 'pointer',
-                          letterSpacing: '0.03em',
+                          letterSpacing: '0.04em',
                           whiteSpace: 'nowrap',
-                          opacity: isLoading ? 0.6 : 1,
+                          boxShadow: `0 2px 8px ${action.color}40`,
+                          opacity: isLoading ? 0.65 : 1,
                         }}
                       >
-                        {isLoading ? <RefreshCw size={13} className="animate-spin" /> : <Plus size={13} />}
-                        <span>{isLoading ? '...' : 'Log'}</span>
+                        {isLoading ? <RefreshCw size={13} className="animate-spin" /> : <Plus size={13} strokeWidth={2.5} />}
+                        <span>{isLoading ? '...' : '+ LOG'}</span>
                       </button>
                       <button
                         onClick={() => { setSelectedActivityForNote(action.type); setActiveNote(''); }}
-                        title="Log with note"
+                        title="Log with custom clinical note"
                         className="d-flex align-items-center justify-content-center"
                         style={{
                           borderRadius: '6px',
-                          padding: '4px 7px',
+                          padding: '6px 10px',
                           border: `1px solid ${action.border}`,
                           background: action.bg,
                           color: action.color,
