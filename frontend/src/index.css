@@ -2332,6 +2332,24 @@ button.btn-icon:hover {
   display: inline-block;
 }
 
+.text-gradient-prescription {
+  color: #F97316;
+  background: linear-gradient(90deg, #F97316 0%, #F59E0B 100%);
+  -webkit-background-clip: text !important;
+  background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  display: inline-block;
+}
+
+.text-gradient-lab {
+  color: #10B981;
+  background: linear-gradient(90deg, #10B981 0%, #06B6D4 100%);
+  -webkit-background-clip: text !important;
+  background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  display: inline-block;
+}
+
 .text-gradient-diabetes,
 .text-gradient-green-blue {
   color: #059669;

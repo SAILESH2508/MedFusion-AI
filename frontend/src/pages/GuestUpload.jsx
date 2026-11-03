@@ -477,44 +477,125 @@ function GuestUpload({ openAuth }) {
     return () => setSidebarContent(null);
   }, [file, previewUrl, loading, scanLog, selectedCategory, guestName, guestEmail, errorState, setSidebarContent]);
 
+  const isPrescription = selectedCategory.id === 'prescription';
+
   return (
-    <div className="reveal px-1 w-100 theme-general">
+    <div className={`reveal px-1 w-100 ${isPrescription ? 'theme-prescription-active' : 'theme-lab-active'}`}>
       
-      {/* ── Top Header Banner ────────────────────────────────────────── */}
+      {/* ── Top Header Banner (Dynamic Category Themed) ───────────────── */}
       <div
         className="mb-4 position-relative overflow-hidden"
         style={{
           borderRadius: '20px',
           padding: '28px 32px',
           background: isDark
-            ? 'linear-gradient(135deg, #0a0a0a 0%, #0f1a0f 35%, #1a1200 65%, #0a0a0a 100%)'
+            ? (isPrescription
+                ? 'linear-gradient(135deg, #090909 0%, #170d06 40%, #0d120a 75%, #090909 100%)'
+                : 'linear-gradient(135deg, #090909 0%, #061510 40%, #071216 75%, #090909 100%)')
             : '#FFFFFF',
           border: isDark
-            ? '1px solid rgba(244, 149, 74, 0.3)'
-            : '1px solid rgba(244, 149, 74, 0.25)',
+            ? `1px solid ${isPrescription ? 'rgba(249, 115, 22, 0.35)' : 'rgba(16, 185, 129, 0.35)'}`
+            : `1px solid ${isPrescription ? 'rgba(249, 115, 22, 0.25)' : 'rgba(16, 185, 129, 0.25)'}`,
           boxShadow: isDark
-            ? '0 0 40px rgba(244, 149, 74, 0.1), inset 0 1px 0 rgba(255,255,255,0.06)'
-            : '0 4px 20px rgba(244, 149, 74, 0.08), 0 1px 4px rgba(0, 0, 0, 0.04)',
-          transition: 'all 0.3s ease',
+            ? `0 0 40px ${isPrescription ? 'rgba(249, 115, 22, 0.10)' : 'rgba(16, 185, 129, 0.10)'}, inset 0 1px 0 rgba(255,255,255,0.06)`
+            : `0 4px 20px ${isPrescription ? 'rgba(249, 115, 22, 0.08)' : 'rgba(16, 185, 129, 0.08)'}, 0 1px 4px rgba(0, 0, 0, 0.04)`,
+          transition: 'all 0.35s ease',
         }}
       >
-        <div style={{ position: 'absolute', top: '-20px', right: '60px', width: '180px', height: '180px', borderRadius: '50%', background: `radial-gradient(circle, rgba(244,149,74,${isDark ? '0.15' : '0.1'}) 0%, transparent 70%)`, pointerEvents: 'none' }} />
-        <div style={{ position: 'absolute', bottom: '-30px', left: '160px', width: '140px', height: '140px', borderRadius: '50%', background: `radial-gradient(circle, rgba(56,189,248,${isDark ? '0.12' : '0.1'}) 0%, transparent 70%)`, pointerEvents: 'none' }} />
+        <div style={{
+          position: 'absolute',
+          top: '-20px',
+          right: '60px',
+          width: '180px',
+          height: '180px',
+          borderRadius: '50%',
+          background: `radial-gradient(circle, ${isPrescription ? 'rgba(249, 115, 22, 0.18)' : 'rgba(16, 185, 129, 0.18)'} 0%, transparent 70%)`,
+          pointerEvents: 'none',
+          transition: 'all 0.35s ease'
+        }} />
+        <div style={{
+          position: 'absolute',
+          bottom: '-30px',
+          left: '160px',
+          width: '140px',
+          height: '140px',
+          borderRadius: '50%',
+          background: `radial-gradient(circle, ${isPrescription ? 'rgba(245, 158, 11, 0.14)' : 'rgba(6, 182, 212, 0.14)'} 0%, transparent 70%)`,
+          pointerEvents: 'none',
+          transition: 'all 0.35s ease'
+        }} />
 
         <div style={{ position: 'relative', zIndex: 1 }}>
           <div className="d-flex align-items-center gap-2 mb-2">
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '28px', height: '28px', borderRadius: '8px', background: isDark ? 'rgba(244,149,74,0.2)' : 'rgba(244,149,74,0.12)', border: '1px solid rgba(244,149,74,0.4)' }}>
-              <Cpu size={14} style={{ color: '#E07B39' }} />
+            <div style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              width: '28px',
+              height: '28px',
+              borderRadius: '8px',
+              background: isPrescription
+                ? (isDark ? 'rgba(249, 115, 22, 0.22)' : 'rgba(249, 115, 22, 0.12)')
+                : (isDark ? 'rgba(16, 185, 129, 0.22)' : 'rgba(16, 185, 129, 0.12)'),
+              border: `1px solid ${isPrescription ? 'rgba(249, 115, 22, 0.45)' : 'rgba(16, 185, 129, 0.45)'}`,
+              transition: 'all 0.3s ease'
+            }}>
+              {isPrescription ? (
+                <Pill size={14} style={{ color: '#F97316' }} />
+              ) : (
+                <Database size={14} style={{ color: '#10B981' }} />
+              )}
             </div>
-            <span className="font-monospace text-uppercase" style={{ fontSize: '0.68rem', letterSpacing: '0.14em', color: isDark ? 'var(--brand-orange)' : '#D9681E', fontWeight: 700 }}>
-              Guest Medical Document Scanner &amp; Authenticator
+            <span
+              className="font-monospace text-uppercase"
+              style={{
+                fontSize: '0.68rem',
+                letterSpacing: '0.14em',
+                color: isPrescription ? (isDark ? '#FB923C' : '#EA580C') : (isDark ? '#34D399' : '#059669'),
+                fontWeight: 700,
+                transition: 'color 0.3s ease'
+              }}
+            >
+              {isPrescription
+                ? 'Guest Prescription Scanner & Authenticator — Rx Module'
+                : 'Guest Laboratory Scanner & Authenticator — Lab & Scans Module'}
             </span>
           </div>
-          <h1 className="fw-bolder m-0 mb-2" style={{ fontSize: '2rem', letterSpacing: '-0.03em', color: isDark ? '#FFFFFF' : '#0F172A', lineHeight: 1.1, fontFamily: 'var(--font-main)' }}>
-            AI Medical <span className="text-gradient-heart">Document Scanner</span>
+
+          <h1
+            className="fw-bolder m-0 mb-2"
+            style={{
+              fontSize: '2rem',
+              letterSpacing: '-0.03em',
+              color: isDark ? '#FFFFFF' : '#0F172A',
+              lineHeight: 1.1,
+              fontFamily: 'var(--font-main)'
+            }}
+          >
+            {isPrescription ? (
+              <>
+                Prescription <span className="text-gradient-prescription">Scanner &amp; Authenticator</span>
+              </>
+            ) : (
+              <>
+                Laboratory <span className="text-gradient-lab">Reports &amp; Scans</span>
+              </>
+            )}
           </h1>
-          <p className="m-0" style={{ fontSize: '0.9rem', color: isDark ? 'rgba(255,255,255,0.65)' : '#475569', maxWidth: '620px', lineHeight: 1.5, fontWeight: isDark ? 400 : 500 }}>
-            Upload genuine medical prescriptions, lab reports, or scans for instant clinical OCR parsing. Non-medical uploads, identity documents, and unreadable files are rejected automatically.
+
+          <p
+            className="m-0"
+            style={{
+              fontSize: '0.9rem',
+              color: isDark ? 'rgba(255,255,255,0.65)' : '#475569',
+              maxWidth: '640px',
+              lineHeight: 1.5,
+              fontWeight: isDark ? 400 : 500
+            }}
+          >
+            {isPrescription
+              ? 'Upload handwritten or printed medical prescriptions. Non-medical uploads and identity cards are automatically rejected.'
+              : 'Upload blood tests, pathology workups, ECGs, or imaging scans for rapid clinical biomarker extraction and status normalization.'}
           </p>
         </div>
       </div>
