@@ -45,12 +45,72 @@ const ORGAN_META = {
 };
 
 const BIOMARKER_INDICATORS = [
-  { name: 'Systolic Blood Pressure', value: '118', unit: 'mmHg', target: '90 - 120 mmHg', status: 'OPTIMAL', organ: 'heart', date: 'Latest Vitals' },
-  { name: 'Fasting Blood Glucose', value: '92', unit: 'mg/dL', target: '70 - 99 mg/dL', status: 'OPTIMAL', organ: 'pancreas', date: 'EHR Lab Panel' },
-  { name: 'Serum Creatinine', value: '0.9', unit: 'mg/dL', target: '0.6 - 1.2 mg/dL', status: 'OPTIMAL', organ: 'kidneys', date: 'EHR Lab Panel' },
-  { name: 'Total Cholesterol', value: '185', unit: 'mg/dL', target: '120 - 200 mg/dL', status: 'OPTIMAL', organ: 'heart', date: 'Lipid Profile' },
-  { name: 'Alanine Aminotransferase (ALT)', value: '28', unit: 'U/L', target: '7 - 56 U/L', status: 'OPTIMAL', organ: 'liver', date: 'Hepatic Function' },
-  { name: 'Blood Oxygen (SpO2)', value: '98', unit: '%', target: '95 - 100 %', status: 'OPTIMAL', organ: 'lungs', date: 'Pulse Oximetry' },
+  {
+    name: 'Systolic Blood Pressure',
+    value: '118',
+    unit: 'mmHg',
+    target: '90 - 120 mmHg',
+    status: 'OPTIMAL',
+    organ: 'heart',
+    date: 'Latest Vitals',
+    percent: 60,
+    normalZone: [25, 65],
+  },
+  {
+    name: 'Fasting Blood Glucose',
+    value: '92',
+    unit: 'mg/dL',
+    target: '70 - 99 mg/dL',
+    status: 'OPTIMAL',
+    organ: 'pancreas',
+    date: 'EHR Lab Panel',
+    percent: 45,
+    normalZone: [20, 60],
+  },
+  {
+    name: 'Serum Creatinine',
+    value: '0.9',
+    unit: 'mg/dL',
+    target: '0.6 - 1.2 mg/dL',
+    status: 'OPTIMAL',
+    organ: 'kidneys',
+    date: 'EHR Lab Panel',
+    percent: 50,
+    normalZone: [25, 75],
+  },
+  {
+    name: 'Total Cholesterol',
+    value: '185',
+    unit: 'mg/dL',
+    target: '120 - 200 mg/dL',
+    status: 'OPTIMAL',
+    organ: 'heart',
+    date: 'Lipid Profile',
+    percent: 55,
+    normalZone: [20, 65],
+  },
+  {
+    name: 'Alanine Aminotransferase (ALT)',
+    value: '28',
+    unit: 'U/L',
+    target: '7 - 56 U/L',
+    status: 'OPTIMAL',
+    organ: 'liver',
+    date: 'Hepatic Function',
+    percent: 40,
+    normalZone: [15, 70],
+  },
+  {
+    name: 'Blood Oxygen (SpO2)',
+    value: '98',
+    unit: '%',
+    target: '95 - 100 %',
+    status: 'OPTIMAL',
+    organ: 'lungs',
+    date: 'Pulse Oximetry',
+    percent: 85,
+    normalZone: [65, 100],
+  },
 ];
 
 export default function PersonalHealthOverview({
@@ -228,29 +288,48 @@ export default function PersonalHealthOverview({
 
       {/* ─── Key Health Indicators Matrix ─── */}
       <div className="glass-card p-4 rounded-3" style={{ border: '1px solid var(--border)', background: 'var(--bg-card)' }}>
-        <div className="d-flex align-items-center justify-content-between mb-3.5 flex-wrap gap-2">
+        <div className="d-flex align-items-center justify-content-between mb-4 flex-wrap gap-3">
           <div>
-            <h3 className="fw-bold m-0" style={{ fontSize: '1.05rem', color: 'var(--text-primary)' }}>
-              Discrete Health Indicators & Biomarkers
-            </h3>
-            <span className="text-secondary font-monospace" style={{ fontSize: '0.74rem' }}>
+            <div className="d-flex align-items-center gap-2 mb-1">
+              <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: 'var(--brand-orange)' }} />
+              <h3 className="fw-bolder m-0" style={{ fontSize: '1.18rem', color: 'var(--text-primary)', letterSpacing: '-0.02em' }}>
+                Discrete Health Indicators & Biomarkers
+              </h3>
+            </div>
+            <p className="text-secondary m-0" style={{ fontSize: '0.82rem' }}>
               Continuous clinical monitoring across laboratory values and resting vitals
-            </span>
+            </p>
           </div>
           <button
             onClick={() => handleNavigateSection('organs')}
-            className="btn-clinical secondary py-1.5 px-3 font-monospace text-uppercase"
-            style={{ fontSize: '0.72rem', borderRadius: '6px' }}
+            className="d-inline-flex align-items-center gap-2 px-3 py-2 rounded-3 border-0 transition-all cursor-pointer"
+            style={{
+              background: 'rgba(44, 111, 181, 0.1)',
+              color: 'var(--brand-blue)',
+              border: '1px solid rgba(44, 111, 181, 0.25)',
+              fontSize: '0.78rem',
+              fontWeight: 700,
+              letterSpacing: '0.02em',
+            }}
+            onMouseEnter={e => {
+              e.currentTarget.style.background = 'var(--brand-blue)';
+              e.currentTarget.style.color = '#FFFFFF';
+            }}
+            onMouseLeave={e => {
+              e.currentTarget.style.background = 'rgba(44, 111, 181, 0.1)';
+              e.currentTarget.style.color = 'var(--brand-blue)';
+            }}
           >
-            View All Organ Observations
+            <span>View All Organ Observations</span>
+            <ChevronRight size={14} />
           </button>
         </div>
 
         <div
           style={{
             display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fill, minmax(290px, 1fr))',
-            gap: '14px',
+            gridTemplateColumns: 'repeat(auto-fill, minmax(310px, 1fr))',
+            gap: '16px',
           }}
         >
           {BIOMARKER_INDICATORS.map((item, idx) => {
@@ -260,108 +339,173 @@ export default function PersonalHealthOverview({
             return (
               <div
                 key={idx}
-                className="p-3.5 rounded-3 font-monospace cursor-pointer position-relative d-flex flex-column justify-content-between"
+                className="p-3.5 rounded-3 cursor-pointer position-relative d-flex flex-column justify-content-between transition-all"
                 style={{
-                  background: `linear-gradient(135deg, ${meta.color}0D 0%, var(--bg-card) 60%)`,
+                  background: 'var(--bg-card)',
                   border: '1px solid var(--border)',
-                  borderLeft: `4px solid ${meta.color}`,
-                  borderRadius: '12px',
-                  boxShadow: 'var(--shadow-sm)',
-                  transition: 'all 0.2s ease',
+                  borderRadius: '14px',
+                  boxShadow: '0 2px 8px rgba(0,0,0,0.03)',
+                  overflow: 'hidden',
+                  transition: 'transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease',
                 }}
                 onClick={() => handleNavigateSection('organs', item.organ)}
                 onMouseEnter={e => {
-                  e.currentTarget.style.transform = 'translateY(-2px)';
-                  e.currentTarget.style.boxShadow = '0 6px 16px rgba(0,0,0,0.08)';
-                  e.currentTarget.style.borderColor = meta.color;
+                  e.currentTarget.style.transform = 'translateY(-3px)';
+                  e.currentTarget.style.boxShadow = '0 10px 24px rgba(0,0,0,0.08)';
+                  e.currentTarget.style.borderColor = `${meta.color}60`;
                 }}
                 onMouseLeave={e => {
                   e.currentTarget.style.transform = 'none';
-                  e.currentTarget.style.boxShadow = 'var(--shadow-sm)';
+                  e.currentTarget.style.boxShadow = '0 2px 8px rgba(0,0,0,0.03)';
                   e.currentTarget.style.borderColor = 'var(--border)';
                 }}
               >
+                {/* Sleek top accent line matching organ identity */}
+                <div
+                  style={{
+                    position: 'absolute',
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    height: '3.5px',
+                    background: meta.color,
+                  }}
+                />
+
                 <div>
-                  {/* Top row: Organ badge + Full Name (No truncation), and Status chip */}
-                  <div className="d-flex align-items-start justify-content-between gap-2 mb-2">
-                    <div className="d-flex align-items-center gap-2" style={{ minWidth: 0, flex: 1 }}>
+                  {/* Row 1: Organ badge + System Tag on left, Status chip on right */}
+                  <div className="d-flex align-items-center justify-content-between gap-2 mb-2.5 pt-1">
+                    <div className="d-flex align-items-center gap-2">
                       <div
-                        className="p-1 rounded-2 d-flex align-items-center justify-content-center flex-shrink-0"
+                        className="d-flex align-items-center justify-content-center rounded-2"
                         style={{
-                          width: '28px',
-                          height: '28px',
+                          width: '30px',
+                          height: '30px',
                           background: meta.bg,
                           color: meta.color,
                           border: `1px solid ${meta.border}`,
                         }}
                       >
-                        <OrganIcon size={15} />
+                        <OrganIcon size={16} />
                       </div>
-                      <div style={{ minWidth: 0 }}>
-                        <span
-                          className="d-block fw-semibold text-break"
-                          style={{
-                            fontSize: '0.84rem',
-                            color: 'var(--text-primary)',
-                            lineHeight: 1.25,
-                          }}
-                        >
-                          {item.name}
-                        </span>
-                        <span
-                          className="text-secondary text-uppercase"
-                          style={{ fontSize: '0.66rem', letterSpacing: '0.04em' }}
-                        >
-                          {meta.label} System
-                        </span>
-                      </div>
+                      <span
+                        className="text-uppercase fw-bold"
+                        style={{
+                          fontSize: '0.68rem',
+                          letterSpacing: '0.06em',
+                          color: meta.color,
+                        }}
+                      >
+                        {meta.label} System
+                      </span>
                     </div>
 
-                    <span
-                      className="badge flex-shrink-0"
+                    <div
+                      className="d-flex align-items-center gap-1.5 px-2 py-0.5 rounded-pill"
                       style={{
                         background: 'rgba(16, 185, 129, 0.12)',
-                        color: 'var(--status-success)',
-                        border: '1px solid rgba(16, 185, 129, 0.3)',
-                        fontSize: '0.64rem',
+                        border: '1px solid rgba(16, 185, 129, 0.25)',
+                        color: '#059669',
+                        fontSize: '0.66rem',
                         fontWeight: 700,
-                        padding: '4px 7px',
-                        borderRadius: '6px',
                       }}
                     >
-                      NORMAL
-                    </span>
+                      <span style={{ width: '5px', height: '5px', borderRadius: '50%', background: '#10B981' }} />
+                      <span>NORMAL</span>
+                    </div>
                   </div>
 
-                  {/* Middle row: Large Value & Unit */}
-                  <div className="d-flex align-items-baseline gap-1 my-2">
-                    <span className="fw-bold" style={{ fontSize: '1.45rem', color: 'var(--text-primary)', letterSpacing: '-0.02em' }}>
+                  {/* Row 2: Biomarker Title (Clean sans-serif typography, no awkward wrapping) */}
+                  <h4
+                    className="m-0 mb-2 fw-bold"
+                    style={{
+                      fontSize: '0.96rem',
+                      color: 'var(--text-primary)',
+                      letterSpacing: '-0.01em',
+                      lineHeight: 1.3,
+                    }}
+                  >
+                    {item.name}
+                  </h4>
+
+                  {/* Row 3: Big Value & Unit + Visual Range Meter */}
+                  <div className="d-flex align-items-baseline gap-1.5 mt-1">
+                    <span
+                      className="fw-bold font-monospace"
+                      style={{
+                        fontSize: '1.75rem',
+                        color: 'var(--text-primary)',
+                        letterSpacing: '-0.03em',
+                        lineHeight: 1,
+                      }}
+                    >
                       {item.value}
                     </span>
-                    <span className="text-secondary fw-semibold" style={{ fontSize: '0.8rem' }}>
+                    <span
+                      className="text-secondary fw-semibold"
+                      style={{ fontSize: '0.82rem' }}
+                    >
                       {item.unit}
                     </span>
                   </div>
+
+                  {/* Range Visualizer Track */}
+                  <div
+                    className="position-relative mt-2.5 mb-2"
+                    style={{
+                      height: '6px',
+                      background: 'var(--border)',
+                      borderRadius: '4px',
+                      overflow: 'hidden',
+                    }}
+                    title={`Clinical Range: ${item.target}`}
+                  >
+                    {/* Optimal target zone */}
+                    <div
+                      style={{
+                        position: 'absolute',
+                        left: `${item.normalZone[0]}%`,
+                        width: `${item.normalZone[1] - item.normalZone[0]}%`,
+                        height: '100%',
+                        background: 'rgba(16, 185, 129, 0.4)',
+                        borderRadius: '2px',
+                      }}
+                    />
+                    {/* Patient reading indicator pin */}
+                    <div
+                      style={{
+                        position: 'absolute',
+                        left: `calc(${item.percent}% - 3px)`,
+                        top: 0,
+                        width: '6px',
+                        height: '100%',
+                        background: meta.color,
+                        borderRadius: '2px',
+                        boxShadow: `0 0 6px ${meta.color}`,
+                      }}
+                    />
+                  </div>
                 </div>
 
-                {/* Bottom row: Reference range & Provenance date */}
+                {/* Row 4: Reference Range & Source Tag */}
                 <div
-                  className="d-flex align-items-center justify-content-between pt-2 mt-2 text-secondary"
+                  className="d-flex align-items-center justify-content-between pt-2.5 mt-1"
                   style={{
                     borderTop: '1px solid var(--border)',
-                    fontSize: '0.72rem',
+                    fontSize: '0.74rem',
                   }}
                 >
                   <span style={{ color: 'var(--text-secondary)' }}>
-                    Ref: <strong style={{ color: 'var(--text-primary)', fontWeight: 600 }}>{item.target}</strong>
+                    Target: <strong style={{ color: 'var(--text-primary)', fontWeight: 600 }}>{item.target}</strong>
                   </span>
                   <span
-                    className="px-2 py-0.5 rounded-1"
+                    className="px-2.5 py-0.5 rounded-pill"
                     style={{
-                      background: 'var(--bg-surface)',
+                      background: 'rgba(0, 0, 0, 0.04)',
                       border: '1px solid var(--border)',
-                      fontSize: '0.66rem',
-                      letterSpacing: '0.02em',
+                      color: 'var(--text-secondary)',
+                      fontSize: '0.68rem',
+                      fontWeight: 600,
                     }}
                   >
                     {item.date}
