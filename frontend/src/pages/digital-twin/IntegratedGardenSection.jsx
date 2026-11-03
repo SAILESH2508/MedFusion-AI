@@ -330,37 +330,39 @@ export default function IntegratedGardenSection({
           </span>
         </div>
 
-        {/* Action rows */}
-        <div className="d-flex flex-column" style={{ background: 'var(--bg-card)' }}>
-          {GARDEN_ACTIONS.map((action, idx) => {
+        {/* Separated Action Cards with Breathing Room */}
+        <div className="p-3.5 d-flex flex-column gap-2.5" style={{ background: 'var(--bg-surface)' }}>
+          {GARDEN_ACTIONS.map((action) => {
             const isLoading = loggingActivity === action.type;
             const isNoteActive = selectedActivityForNote === action.type;
             const ActionIcon = action.icon;
-            const isLast = idx === GARDEN_ACTIONS.length - 1;
 
             return (
               <div
                 key={action.type}
-                className="d-flex align-items-center gap-3 px-3.5 py-2"
+                className="d-flex align-items-center gap-3.5"
                 style={{
-                  minHeight: '60px',
-                  borderBottom: isLast ? 'none' : '1px solid var(--border)',
-                  borderLeft: `4px solid ${action.color}`,
+                  minHeight: '62px',
+                  borderRadius: '12px',
+                  border: '1px solid var(--border)',
+                  borderLeft: `5px solid ${action.color}`,
                   background: 'var(--bg-card)',
+                  padding: '12px 20px',
+                  boxShadow: '0 1px 3px rgba(0,0,0,0.03)',
                 }}
               >
-                {/* Coloured icon badge */}
+                {/* Coloured icon badge — with comfortable breathing room from left line */}
                 <div
                   className="flex-shrink-0 d-flex align-items-center justify-content-center rounded-3"
                   style={{
-                    width: '36px',
-                    height: '36px',
+                    width: '38px',
+                    height: '38px',
                     background: action.bg,
                     color: action.color,
                     border: `1px solid ${action.border}`,
                   }}
                 >
-                  <ActionIcon size={18} />
+                  <ActionIcon size={19} />
                 </div>
 
                 {/* Label + description OR note input */}
@@ -405,7 +407,7 @@ export default function IntegratedGardenSection({
                       border: `1px solid ${action.border}`,
                       fontSize: '0.74rem',
                       fontWeight: 700,
-                      padding: '4px 9px',
+                      padding: '4px 10px',
                       borderRadius: '6px',
                       whiteSpace: 'nowrap',
                     }}
