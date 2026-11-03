@@ -90,15 +90,25 @@ function Profile({ user, onUserUpdate }) {
 
   // ------------------------------------------------------------------
 
-  const [searchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
   const tabParam = searchParams.get('tab');
-  const [activeTabState, setActiveTabState] = useState('identity');
+  const [activeTabState, setActiveTabState] = useState(
+    (tabParam && ['identity', 'overview', 'vault'].includes(tabParam)) ? tabParam : 'identity'
+  );
 
-  const activeTab = (tabParam && ['identity', 'overview', 'vault'].includes(tabParam))
-    ? tabParam
-    : activeTabState;
+  useEffect(() => {
+    const currentTab = searchParams.get('tab');
+    if (currentTab && ['identity', 'overview', 'vault'].includes(currentTab)) {
+      setActiveTabState(currentTab);
+    }
+  }, [searchParams]);
 
-  const setActiveTab = (tabId) => setActiveTabState(tabId);
+  const activeTab = activeTabState;
+
+  const setActiveTab = (tabId) => {
+    setActiveTabState(tabId);
+    setSearchParams({ tab: tabId });
+  };
 
   // Archives states
   const [history, setHistory] = useState([]);
