@@ -139,7 +139,7 @@ export default function IntegratedGardenSection({
       {/* ─── Stats Strip ─── */}
       <div className="row g-3">
         <div className="col-6 col-lg-3">
-          <div className="glass-card p-3 d-flex align-items-center gap-3" style={{ borderRadius: '12px', border: '1px solid var(--border)' }}>
+          <div className="glass-card p-3 d-flex align-items-center gap-3" style={{ borderRadius: '10px', border: '1px solid var(--border)' }}>
             <div className="p-2 rounded-3" style={{ background: 'rgba(56, 189, 248, 0.1)', color: '#38bdf8' }}>
               <Award size={20} />
             </div>
@@ -149,14 +149,14 @@ export default function IntegratedGardenSection({
               </span>
               <span className="fw-bold font-monospace" style={{ fontSize: '1.25rem', color: 'var(--text-primary)' }}>
                 {gardenData.total_points}
-                <span className="text-secondary fw-normal ms-1" style={{ fontSize: '0.7rem' }}>pts</span>
+                <span className="text-secondary fw-normal ms-1" style={{ fontSize: '0.65rem' }}>pts</span>
               </span>
             </div>
           </div>
         </div>
 
         <div className="col-6 col-lg-3">
-          <div className="glass-card p-3 d-flex align-items-center gap-3" style={{ borderRadius: '12px', border: '1px solid var(--border)' }}>
+          <div className="glass-card p-3 d-flex align-items-center gap-3" style={{ borderRadius: '10px', border: '1px solid var(--border)' }}>
             <div className="p-2 rounded-3" style={{ background: 'rgba(245, 158, 11, 0.12)', color: '#f59e0b' }}>
               <Flame size={20} />
             </div>
@@ -166,14 +166,14 @@ export default function IntegratedGardenSection({
               </span>
               <span className="fw-bold font-monospace" style={{ fontSize: '1.25rem', color: '#f59e0b' }}>
                 {gardenData.current_streak}
-                <span className="text-secondary fw-normal ms-1" style={{ fontSize: '0.7rem' }}>days</span>
+                <span className="text-secondary fw-normal ms-1" style={{ fontSize: '0.65rem' }}>days</span>
               </span>
             </div>
           </div>
         </div>
 
         <div className="col-6 col-lg-3">
-          <div className="glass-card p-3 d-flex align-items-center gap-3" style={{ borderRadius: '12px', border: '1px solid var(--border)' }}>
+          <div className="glass-card p-3 d-flex align-items-center gap-3" style={{ borderRadius: '10px', border: '1px solid var(--border)' }}>
             <div className="p-2 rounded-3" style={{ background: 'rgba(167, 139, 250, 0.1)', color: '#a78bfa' }}>
               <Trophy size={20} />
             </div>
@@ -183,14 +183,14 @@ export default function IntegratedGardenSection({
               </span>
               <span className="fw-bold font-monospace" style={{ fontSize: '1.25rem', color: 'var(--text-primary)' }}>
                 {gardenData.best_streak}
-                <span className="text-secondary fw-normal ms-1" style={{ fontSize: '0.7rem' }}>days</span>
+                <span className="text-secondary fw-normal ms-1" style={{ fontSize: '0.65rem' }}>days</span>
               </span>
             </div>
           </div>
         </div>
 
         <div className="col-6 col-lg-3">
-          <div className="glass-card p-3 d-flex align-items-center gap-3" style={{ borderRadius: '12px', border: '1px solid var(--border)' }}>
+          <div className="glass-card p-3 d-flex align-items-center gap-3" style={{ borderRadius: '10px', border: '1px solid var(--border)' }}>
             <div className="p-2 rounded-3" style={{ background: 'rgba(16, 185, 129, 0.1)', color: '#10b981' }}>
               <CheckCircle2 size={20} />
             </div>
@@ -200,7 +200,7 @@ export default function IntegratedGardenSection({
               </span>
               <span className="fw-bold font-monospace" style={{ fontSize: '1.25rem', color: '#10b981' }}>
                 {gardenData.today_activity_count ?? (gardenData.today_activities || []).length}
-                <span className="text-secondary fw-normal ms-1" style={{ fontSize: '0.7rem' }}>logged</span>
+                <span className="text-secondary fw-normal ms-1" style={{ fontSize: '0.65rem' }}>logged</span>
               </span>
             </div>
           </div>
@@ -330,34 +330,34 @@ export default function IntegratedGardenSection({
             const ActionIcon = action.icon;
 
             return (
-              <div key={action.type} className="col-12 col-sm-6 col-lg-4 col-xl" style={{ minWidth: '180px' }}>
+              <div key={action.type} className="col-12 col-sm-6 col-lg-4" style={{ minWidth: '150px' }}>
                 <div
-                  className="glass-card p-3 d-flex flex-column justify-content-between h-100"
+                  className="glass-card p-2 d-flex flex-column justify-content-between h-100"
                   style={{
-                    borderRadius: '12px',
+                    borderRadius: '10px',
                     border: `1px solid ${action.border}`,
                     background: 'var(--bg-card)',
                   }}
                 >
                   <div>
-                    <div className="d-flex align-items-center justify-content-between mb-2">
-                      <div className="p-1.5 rounded-2" style={{ background: action.bg, color: action.color }}>
-                        <ActionIcon size={16} />
+                    <div className="d-flex align-items-center justify-content-between mb-1">
+                      <div className="p-1 rounded-2" style={{ background: action.bg, color: action.color }}>
+                        <ActionIcon size={14} />
                       </div>
-                      <span className="badge font-monospace" style={{ background: action.bg, color: action.color, border: `1px solid ${action.border}`, fontSize: '0.7rem' }}>
+                      <span className="badge font-monospace" style={{ background: action.bg, color: action.color, border: `1px solid ${action.border}`, fontSize: '0.65rem' }}>
                         +{action.points} pts
                       </span>
                     </div>
 
-                    <div className="fw-bold mb-1" style={{ fontSize: '0.88rem', color: 'var(--text-primary)' }}>
+                    <div className="fw-bold mb-1" style={{ fontSize: '0.8rem', color: 'var(--text-primary)' }}>
                       {action.label}
                     </div>
-                    <p className="text-secondary" style={{ fontSize: '0.72rem', lineHeight: '1.4', minHeight: '30px' }}>
+                    <p className="text-secondary" style={{ fontSize: '0.7rem', lineHeight: '1.3', minHeight: '22px' }}>
                       {action.description}
                     </p>
                   </div>
 
-                  <div className="mt-2">
+                  <div className="mt-1">
                     {isNoteActive ? (
                       <div className="d-flex flex-column gap-2">
                         <input
@@ -381,7 +381,7 @@ export default function IntegratedGardenSection({
                             onClick={() => handleLogActivity(action.type, action.points, activeNote)}
                             disabled={isLoading}
                             className="btn-clinical primary d-flex align-items-center gap-1.5 font-monospace text-uppercase"
-                            style={{ fontSize: '0.7rem', borderRadius: '6px', padding: '6px 14px', width: 'auto' }}
+                            style={{ fontSize: '0.68rem', borderRadius: '6px', padding: '3px 10px', width: 'auto' }}
                           >
                             {isLoading ? <RefreshCw size={12} className="animate-spin" /> : <Check size={12} />}
                             <span>{isLoading ? 'Saving...' : 'Confirm'}</span>
@@ -389,7 +389,7 @@ export default function IntegratedGardenSection({
                           <button
                             onClick={() => { setSelectedActivityForNote(null); setActiveNote(''); }}
                             className="btn-clinical secondary d-flex align-items-center gap-1 font-monospace text-uppercase"
-                            style={{ fontSize: '0.7rem', borderRadius: '6px', padding: '6px 10px', width: 'auto' }}
+                            style={{ fontSize: '0.68rem', borderRadius: '6px', padding: '3px 8px', width: 'auto' }}
                             title="Cancel"
                           >
                             <X size={12} />
@@ -403,7 +403,7 @@ export default function IntegratedGardenSection({
                           onClick={() => handleLogActivity(action.type, action.points)}
                           disabled={isLoading}
                           className="btn-clinical primary d-flex align-items-center gap-1.5 font-monospace text-uppercase"
-                          style={{ fontSize: '0.7rem', borderRadius: '6px', padding: '6px 14px', width: 'auto' }}
+                          style={{ fontSize: '0.68rem', borderRadius: '6px', padding: '3px 10px', width: 'auto' }}
                         >
                           {isLoading ? <RefreshCw size={12} className="animate-spin" /> : <Plus size={12} />}
                           <span>{isLoading ? 'Logging...' : 'Log'}</span>
@@ -412,9 +412,9 @@ export default function IntegratedGardenSection({
                           onClick={() => { setSelectedActivityForNote(action.type); setActiveNote(''); }}
                           title="Add note with activity"
                           className="btn-clinical secondary d-flex align-items-center justify-content-center"
-                          style={{ borderRadius: '6px', padding: '6px 10px', flexShrink: 0 }}
+                          style={{ borderRadius: '6px', padding: '3px 8px', flexShrink: 0 }}
                         >
-                          <Clock size={13} />
+                          <Clock size={12} />
                         </button>
                       </div>
                     )}
@@ -477,7 +477,7 @@ export default function IntegratedGardenSection({
                       style={{ background: 'var(--bg-surface)', border: '1px solid var(--border)' }}
                     >
                       <div className="d-flex align-items-center gap-2.5">
-                        <div className="p-1.5 rounded-2" style={{ background: cfg.bg, color: cfg.color }}>
+                        <div className="p-1 rounded-2" style={{ background: cfg.bg, color: cfg.color }}>
                           <Icon size={14} />
                         </div>
                         <div>
@@ -485,7 +485,7 @@ export default function IntegratedGardenSection({
                             {cfg.label}
                           </div>
                           {item.note && (
-                            <div className="text-secondary" style={{ fontSize: '0.7rem' }}>
+                            <div className="text-secondary" style={{ fontSize: '0.65rem' }}>
                               {item.note}
                             </div>
                           )}
@@ -516,7 +516,7 @@ export default function IntegratedGardenSection({
                   Milestone Badges
                 </h4>
               </div>
-              <span className="font-monospace text-secondary" style={{ fontSize: '0.7rem' }}>
+              <span className="font-monospace text-secondary" style={{ fontSize: '0.65rem' }}>
                 {(gardenData.achievements_earned || []).length}/{GARDEN_ACHIEVEMENTS.length}
               </span>
             </div>
