@@ -332,20 +332,20 @@ export default function IntegratedGardenSection({
             return (
               <div
                 key={action.type}
-                className="glass-card d-flex align-items-center gap-2 px-2 py-1"
+                className="glass-card d-flex align-items-center gap-3 px-3 py-2"
                 style={{
                   borderRadius: '8px',
                   border: `1px solid ${action.border}`,
                   background: 'var(--bg-card)',
-                  minHeight: '40px',
+                  minHeight: '52px',
                 }}
               >
                 {/* Icon */}
                 <div
                   className="flex-shrink-0 d-flex align-items-center justify-content-center rounded-2"
-                  style={{ width: '26px', height: '26px', background: action.bg, color: action.color }}
+                  style={{ width: '32px', height: '32px', background: action.bg, color: action.color }}
                 >
-                  <ActionIcon size={13} />
+                  <ActionIcon size={15} />
                 </div>
 
                 {/* Label + description */}
@@ -364,16 +364,16 @@ export default function IntegratedGardenSection({
                         borderColor: action.border,
                         background: 'rgba(15, 23, 42, 0.04)',
                         outline: 'none',
-                        height: '26px',
+                        height: '30px',
                       }}
                       autoFocus
                     />
                   ) : (
                     <>
-                      <div className="fw-bold text-truncate" style={{ fontSize: '0.78rem', color: 'var(--text-primary)', lineHeight: '1.2' }}>
+                      <div className="fw-bold text-truncate" style={{ fontSize: '0.82rem', color: 'var(--text-primary)', lineHeight: '1.25' }}>
                         {action.label}
                       </div>
-                      <div className="text-secondary text-truncate" style={{ fontSize: '0.66rem', lineHeight: '1.2' }}>
+                      <div className="text-secondary text-truncate" style={{ fontSize: '0.7rem', lineHeight: '1.25' }}>
                         {action.description}
                       </div>
                     </>
@@ -395,18 +395,18 @@ export default function IntegratedGardenSection({
                       onClick={() => handleLogActivity(action.type, action.points, activeNote)}
                       disabled={isLoading}
                       className="btn-clinical primary d-flex align-items-center gap-1 font-monospace text-uppercase flex-shrink-0"
-                      style={{ fontSize: '0.62rem', borderRadius: '5px', padding: '2px 8px' }}
+                      style={{ fontSize: '0.58rem', borderRadius: '4px', padding: '1px 6px' }}
                     >
-                      {isLoading ? <RefreshCw size={11} className="animate-spin" /> : <Check size={11} />}
+                      {isLoading ? <RefreshCw size={10} className="animate-spin" /> : <Check size={10} />}
                       <span>{isLoading ? 'Saving...' : 'OK'}</span>
                     </button>
                     <button
                       onClick={() => { setSelectedActivityForNote(null); setActiveNote(''); }}
                       className="btn-clinical secondary d-flex align-items-center font-monospace flex-shrink-0"
-                      style={{ fontSize: '0.62rem', borderRadius: '5px', padding: '2px 6px' }}
+                      style={{ fontSize: '0.58rem', borderRadius: '4px', padding: '1px 5px' }}
                       title="Cancel"
                     >
-                      <X size={11} />
+                      <X size={10} />
                     </button>
                   </>
                 ) : (
@@ -415,18 +415,18 @@ export default function IntegratedGardenSection({
                       onClick={() => handleLogActivity(action.type, action.points)}
                       disabled={isLoading}
                       className="btn-clinical primary d-flex align-items-center gap-1 font-monospace text-uppercase flex-shrink-0"
-                      style={{ fontSize: '0.62rem', borderRadius: '5px', padding: '2px 8px' }}
+                      style={{ fontSize: '0.58rem', borderRadius: '4px', padding: '1px 6px' }}
                     >
-                      {isLoading ? <RefreshCw size={11} className="animate-spin" /> : <Plus size={11} />}
+                      {isLoading ? <RefreshCw size={10} className="animate-spin" /> : <Plus size={10} />}
                       <span>{isLoading ? '...' : 'Log'}</span>
                     </button>
                     <button
                       onClick={() => { setSelectedActivityForNote(action.type); setActiveNote(''); }}
                       title="Log with note"
                       className="btn-clinical secondary d-flex align-items-center justify-content-center flex-shrink-0"
-                      style={{ borderRadius: '5px', padding: '2px 6px' }}
+                      style={{ borderRadius: '4px', padding: '1px 5px' }}
                     >
-                      <Clock size={11} />
+                      <Clock size={10} />
                     </button>
                   </>
                 )}
