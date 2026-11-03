@@ -480,19 +480,19 @@ export default function DigitalTwin({ user, openAuth }) {
                 <button
                   key={organ.id}
                   onClick={() => setSelectedOrgan(organ.id)}
-                  className="d-flex align-items-center gap-2 px-3 py-2 rounded-2 font-monospace transition-all position-relative"
+                  className="d-flex align-items-center gap-2 px-3.5 py-2 rounded-2 font-monospace transition-all position-relative"
                   style={{
                     background: isActive ? `${organ.color}15` : 'var(--bg-surface)',
-                    border: `1px solid ${isActive ? organ.color : 'var(--border)'}`,
+                    border: `1.5px solid ${isActive ? organ.color : 'var(--border)'}`,
                     color: isActive ? organ.color : 'var(--text-secondary)',
-                    fontSize: '0.74rem',
+                    fontSize: '0.82rem',
                     fontWeight: isActive ? 700 : 500,
                     cursor: 'pointer',
                     whiteSpace: 'nowrap',
                     flexShrink: 0,
                   }}
                 >
-                  <OrganIcon size={14} style={{ color: organ.color }} />
+                  <OrganIcon size={16} style={{ color: organ.color }} />
                   <span>{organ.label}</span>
                   {status === 'ALERT' && (
                     <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#ef4444' }} />
