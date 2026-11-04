@@ -473,7 +473,7 @@ function Upload({ user }) {
   const isPrescription = selectedCategory.id === 'prescription';
 
   return (
-    <div className={`reveal px-1 w-100 ${isPrescription ? 'theme-prescription-active' : 'theme-lab-active'}`}>
+    <div className={`reveal w-100 ${isPrescription ? 'theme-prescription-active' : 'theme-lab-active'}`}>
       
       {/* ── Top Header Banner (Dynamic Category Themed) ───────────────── */}
       <div

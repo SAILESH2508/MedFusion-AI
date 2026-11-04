@@ -165,9 +165,7 @@ function AppContent({ user, login, logout }) {
                 back to its built-in guest mode silently (P6-05 — documented, not a bug). */}
             <main
               className={`container-fluid ${
-                location.pathname === '/upload'
-                  ? 'p-2 p-md-3'
-                  : 'py-4 px-md-5'
+                'py-4 px-md-5'
               } flex-grow-1 d-flex flex-column`}
               style={{ minHeight: 0 }}
             >
