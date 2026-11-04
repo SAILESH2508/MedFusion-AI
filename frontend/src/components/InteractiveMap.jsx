@@ -342,14 +342,14 @@ export default function InteractiveMap({ location, places, isPatient }) {
   };
 
   return (
-    <div className="glass-card glass-card--map p-3 mb-4" style={{ borderRadius: '12px' }}>
+    <div className="glass-card glass-card--map p-3 mb-4" style={{ borderRadius: '12px', background: '#1C2333', border: '1px solid rgba(255, 255, 255, 0.14)', color: '#FFFFFF' }}>
       {/* Top bar controls */}
       <div className="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-2">
         <div className="d-flex align-items-center gap-2">
-          <span className="font-monospace fw-bold text-uppercase" style={{ fontSize: '0.8rem', color: 'var(--text-primary)', letterSpacing: '0.06em' }}>
+          <span className="font-monospace fw-bold text-uppercase" style={{ fontSize: '0.8rem', color: '#FFFFFF', letterSpacing: '0.06em' }}>
             Interactive Map
           </span>
-          <span style={{ fontSize: '0.68rem', color: 'var(--text-secondary)' }}>
+          <span style={{ fontSize: '0.68rem', color: 'rgba(255, 255, 255, 0.72)' }}>
             • {places.length} facilities
           </span>
         </div>
@@ -360,10 +360,10 @@ export default function InteractiveMap({ location, places, isPatient }) {
             onClick={() => setTileLayer((prev) => (prev === 'street' ? 'satellite' : 'street'))}
             className="d-flex align-items-center gap-1.5"
             style={{
-              background: 'var(--bg-surface)',
-              border: '1px solid var(--border)',
+              background: 'rgba(255, 255, 255, 0.12)',
+              border: '1px solid rgba(255, 255, 255, 0.22)',
               borderRadius: '6px',
-              color: 'var(--text-primary)',
+              color: '#FFFFFF',
               cursor: 'pointer',
               fontSize: '0.72rem',
               fontFamily: 'var(--font-mono)',
@@ -382,10 +382,10 @@ export default function InteractiveMap({ location, places, isPatient }) {
             aria-label="Re-center map"
             title="Re-center on your location"
             style={{
-              background: 'var(--bg-surface)',
-              border: '1px solid var(--border)',
+              background: 'rgba(255, 255, 255, 0.12)',
+              border: '1px solid rgba(255, 255, 255, 0.22)',
               borderRadius: '6px',
-              color: 'var(--text-primary)',
+              color: '#FFFFFF',
               cursor: 'pointer',
               padding: '6px 10px',
               display: 'flex',
@@ -411,11 +411,11 @@ export default function InteractiveMap({ location, places, isPatient }) {
 
       {/* Location indicator bar */}
       <div className="d-flex align-items-center justify-content-between px-3 py-1.5 rounded mb-2.5" style={{ background: 'rgba(56, 189, 248, 0.08)', border: '1px solid rgba(56, 189, 248, 0.2)', fontSize: '0.74rem' }}>
-        <span style={{ color: 'var(--text-primary)' }}>
+        <span style={{ color: 'rgba(255, 255, 255, 0.95)' }}>
           <strong style={{ color: '#38BDF8' }}>📍 Active Zone: </strong>
           {location?.displayName || location?.city || `${location?.lat?.toFixed(4)}°N, ${location?.lon?.toFixed(4)}°E`}
         </span>
-        <span className="font-monospace text-secondary" style={{ fontSize: '0.68rem' }}>
+        <span className="font-monospace" style={{ fontSize: '0.68rem', color: 'rgba(255, 255, 255, 0.72)' }}>
           {places?.length || 0} facilities found
         </span>
       </div>
@@ -455,7 +455,7 @@ export default function InteractiveMap({ location, places, isPatient }) {
         <div className="mt-3 p-3 rounded d-flex align-items-center justify-content-between flex-wrap gap-2"
           style={{ background: 'rgba(255, 255, 255, 0.08)', border: `1px solid ${TYPE_COLORS[selectedPlace.type] || 'rgba(255,255,255,0.22)'}` }}>
           <div>
-            <p className="fw-bold m-0" style={{ fontSize: '0.88rem', color: 'var(--text-primary)' }}>
+            <p className="fw-bold m-0" style={{ fontSize: '0.88rem', color: '#FFFFFF' }}>
               {selectedPlace.name}
             </p>
             <p className="text-secondary m-0 mt-1" style={{ fontSize: '0.72rem' }}>
@@ -482,7 +482,7 @@ export default function InteractiveMap({ location, places, isPatient }) {
               href={`https://www.google.com/maps/dir/?api=1&destination=${selectedPlace.lat},${selectedPlace.lon}&travelmode=driving`}
               target="_blank" rel="noopener noreferrer"
               className="d-flex align-items-center gap-2 px-3 py-2 rounded font-monospace text-uppercase fw-bold text-decoration-none"
-              style={{ fontSize: '0.68rem', background: 'var(--bg-surface)', border: '1px solid var(--border)', color: 'var(--text-primary)' }}
+              style={{ fontSize: '0.68rem', background: 'rgba(255, 255, 255, 0.12)', border: '1px solid rgba(255, 255, 255, 0.25)', color: '#FFFFFF' }}
             >
               Google Maps
             </a>
@@ -491,17 +491,17 @@ export default function InteractiveMap({ location, places, isPatient }) {
       )}
 
       {/* Legend */}
-      <div className="d-flex flex-wrap align-items-center gap-3 mt-3 pt-2" style={{ borderTop: '1px solid var(--border)' }}>
+      <div className="d-flex flex-wrap align-items-center gap-3 mt-3 pt-2" style={{ borderTop: '1px solid rgba(255, 255, 255, 0.12)' }}>
         {Object.entries(TYPE_COLORS).map(([type, color]) => {
           const label = type === 'pharmacy' ? 'Pharmacy' : type.charAt(0).toUpperCase() + type.slice(1);
           return (
-            <div key={type} className="d-flex align-items-center gap-1.5" style={{ fontSize: '0.74rem', color: 'var(--text-primary)', fontWeight: 600 }}>
+            <div key={type} className="d-flex align-items-center gap-1.5" style={{ fontSize: '0.74rem', color: '#FFFFFF', fontWeight: 600 }}>
               <span style={{ width: '9px', height: '9px', borderRadius: '50%', background: color, display: 'inline-block', boxShadow: `0 0 6px ${color}88` }} />
               <span>{label}</span>
             </div>
           );
         })}
-        <div className="d-flex align-items-center gap-1.5" style={{ fontSize: '0.74rem', color: 'var(--text-primary)', fontWeight: 600 }}>
+        <div className="d-flex align-items-center gap-1.5" style={{ fontSize: '0.74rem', color: '#FFFFFF', fontWeight: 600 }}>
           <span style={{ width: '9px', height: '9px', borderRadius: '50%', background: '#38BDF8', border: '2px solid #FFFFFF', display: 'inline-block', boxShadow: '0 0 6px rgba(56, 189, 248, 0.8)' }} />
           <span>You</span>
         </div>
@@ -519,7 +519,7 @@ export default function InteractiveMap({ location, places, isPatient }) {
           -webkit-backdrop-filter: none !important;
           background: #1C2333 !important;
           border: 1px solid rgba(255, 255, 255, 0.14) !important;
-          color: var(--text-primary) !important;
+          color: #FFFFFF !important;
         }
 
         .leaflet-container {

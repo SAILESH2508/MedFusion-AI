@@ -2812,3 +2812,19 @@ code, kbd, samp, pre {
   background-color: #EF4444 !important;
   color: #FFFFFF !important;
 }
+
+/* ── Always-Dark Map Card Override: Keep .glass-card--map dark in light mode ── */
+.glass-card--map,
+[data-theme='light'] .glass-card--map,
+[data-theme='light'] .glass-card.glass-card--map,
+[data-theme='light'] .theme-general .glass-card.glass-card--map,
+[data-theme='light'] .theme-general .glass-card--map {
+  background: #1C2333 !important;
+  border: 1px solid rgba(255, 255, 255, 0.14) !important;
+  color: #FFFFFF !important;
+}
+
+[data-theme='light'] .glass-card--map *,
+[data-theme='light'] .glass-card.glass-card--map * {
+  color: #FFFFFF;
+}
