@@ -832,7 +832,7 @@ function PatientDashboard({ user }) {
                   type="button" 
                   onClick={() => applyHeartPreset('healthy')}
                   className="btn border rounded font-monospace hover-white px-3 py-1.5"
-                  style={{ fontSize: '0.78rem', width: 'auto', backgroundColor: 'rgba(30,122,74,0.15)', color: 'var(--status-success)', borderColor: 'var(--status-success)' }}
+                  style={{ fontSize: '0.78rem', width: 'auto', backgroundColor: 'rgba(16, 185, 129, 0.16)', color: '#059669', border: '1.5px solid #10B981', fontWeight: 700, boxShadow: '0 2px 8px rgba(16, 185, 129, 0.2)' }}
                 >
                   Healthy Preset
                 </button>
@@ -840,7 +840,7 @@ function PatientDashboard({ user }) {
                   type="button" 
                   onClick={() => applyHeartPreset('risk')}
                   className="btn border rounded font-monospace hover-white px-3 py-1.5"
-                  style={{ fontSize: '0.78rem', width: 'auto', backgroundColor: 'rgba(192,57,43,0.15)', color: 'var(--accent-red)', borderColor: 'var(--accent-red)' }}
+                  style={{ fontSize: '0.78rem', width: 'auto', backgroundColor: 'rgba(239, 68, 68, 0.16)', color: '#DC2626', border: '1.5px solid #EF4444', fontWeight: 700, boxShadow: '0 2px 8px rgba(239, 68, 68, 0.2)' }}
                 >
                   High Risk Preset
                 </button>
@@ -1093,7 +1093,7 @@ function PatientDashboard({ user }) {
                   type="button" 
                   onClick={() => applyDiabetesPreset('healthy')}
                   className="btn border rounded font-monospace hover-white px-3 py-1.5"
-                  style={{ fontSize: '0.78rem', width: 'auto', backgroundColor: 'rgba(30,122,74,0.15)', color: 'var(--status-success)', borderColor: 'var(--status-success)' }}
+                  style={{ fontSize: '0.78rem', width: 'auto', backgroundColor: 'rgba(16, 185, 129, 0.16)', color: '#059669', border: '1.5px solid #10B981', fontWeight: 700, boxShadow: '0 2px 8px rgba(16, 185, 129, 0.2)' }}
                 >
                   Healthy Preset
                 </button>
@@ -1101,7 +1101,7 @@ function PatientDashboard({ user }) {
                   type="button" 
                   onClick={() => applyDiabetesPreset('risk')}
                   className="btn border rounded font-monospace hover-white px-3 py-1.5"
-                  style={{ fontSize: '0.78rem', width: 'auto', backgroundColor: 'rgba(192,57,43,0.15)', color: 'var(--accent-red)', borderColor: 'var(--accent-red)' }}
+                  style={{ fontSize: '0.78rem', width: 'auto', backgroundColor: 'rgba(239, 68, 68, 0.16)', color: '#DC2626', border: '1.5px solid #EF4444', fontWeight: 700, boxShadow: '0 2px 8px rgba(239, 68, 68, 0.2)' }}
                 >
                   High Risk Preset
                 </button>
@@ -1340,7 +1340,7 @@ function PatientDashboard({ user }) {
                   type="button" 
                   onClick={() => applyCancerPreset('healthy')}
                   className="btn border rounded font-monospace hover-white px-3 py-1.5"
-                  style={{ fontSize: '0.78rem', width: 'auto', backgroundColor: 'rgba(30,122,74,0.15)', color: 'var(--status-success)', borderColor: 'var(--status-success)' }}
+                  style={{ fontSize: '0.78rem', width: 'auto', backgroundColor: 'rgba(16, 185, 129, 0.16)', color: '#059669', border: '1.5px solid #10B981', fontWeight: 700, boxShadow: '0 2px 8px rgba(16, 185, 129, 0.2)' }}
                 >
                   Healthy Preset
                 </button>
@@ -1348,7 +1348,7 @@ function PatientDashboard({ user }) {
                   type="button" 
                   onClick={() => applyCancerPreset('risk')}
                   className="btn border rounded font-monospace hover-white px-3 py-1.5"
-                  style={{ fontSize: '0.78rem', width: 'auto', backgroundColor: 'rgba(192,57,43,0.15)', color: 'var(--accent-red)', borderColor: 'var(--accent-red)' }}
+                  style={{ fontSize: '0.78rem', width: 'auto', backgroundColor: 'rgba(239, 68, 68, 0.16)', color: '#DC2626', border: '1.5px solid #EF4444', fontWeight: 700, boxShadow: '0 2px 8px rgba(239, 68, 68, 0.2)' }}
                 >
                   High Risk Preset
                 </button>
@@ -1861,8 +1861,15 @@ function PatientDashboard({ user }) {
                 <div className="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
                   <button 
                     onClick={resetPredictor}
-                    className="btn-icon p-2 px-3 border border-white-10 bg-transparent text-secondary rounded d-flex align-items-center gap-2 hover-white font-monospace text-uppercase"
-                    style={{ width: 'auto', fontSize: '0.9rem' }}
+                    className="btn-icon p-2 px-3 rounded d-flex align-items-center gap-2 font-monospace text-uppercase fw-bold"
+                    style={{ 
+                      width: 'auto', 
+                      fontSize: '0.9rem',
+                      background: 'rgba(14, 165, 233, 0.14)',
+                      border: '1.5px solid #0EA5E9',
+                      color: '#0284C7',
+                      boxShadow: '0 2px 8px rgba(14, 165, 233, 0.2)'
+                    }}
                   >
                     <RotateCcw size={14} />
                     Recalibrate Cockpit
@@ -1870,8 +1877,15 @@ function PatientDashboard({ user }) {
 
                   <button 
                     onClick={handleExportReport}
-                    className="btn-icon p-2 px-3 border border-white-10 bg-transparent text-secondary rounded d-flex align-items-center gap-2 hover-white font-monospace text-uppercase"
-                    style={{ width: 'auto', fontSize: '0.9rem' }}
+                    className="btn-icon p-2 px-3 rounded d-flex align-items-center gap-2 font-monospace text-uppercase fw-bold"
+                    style={{ 
+                      width: 'auto', 
+                      fontSize: '0.9rem',
+                      background: 'rgba(16, 185, 129, 0.14)',
+                      border: '1.5px solid #10B981',
+                      color: '#059669',
+                      boxShadow: '0 2px 8px rgba(16, 185, 129, 0.2)'
+                    }}
                   >
                     <Download size={14} />
                     Export Report

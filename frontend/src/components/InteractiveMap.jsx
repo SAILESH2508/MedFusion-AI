@@ -358,24 +358,24 @@ export default function InteractiveMap({ location, places, isPatient }) {
           {/* Tile layer toggle */}
           <button
             onClick={() => setTileLayer((prev) => (prev === 'street' ? 'satellite' : 'street'))}
-            className="d-flex align-items-center gap-1.5"
+            className="d-flex align-items-center gap-1.5 fw-bold"
             style={{
-              background: 'rgba(255, 255, 255, 0.12)',
-              border: '1px solid rgba(255, 255, 255, 0.22)',
+              background: tileLayer === 'satellite' ? 'linear-gradient(135deg, #0284C7 0%, #2563EB 100%)' : 'rgba(14, 165, 233, 0.18)',
+              border: '1.5px solid #0EA5E9',
               borderRadius: '6px',
               color: '#FFFFFF',
               cursor: 'pointer',
               fontSize: '0.72rem',
               fontFamily: 'var(--font-mono)',
-              fontWeight: 600,
-              padding: '6px 10px',
+              padding: '6px 12px',
+              boxShadow: '0 2px 8px rgba(14, 165, 233, 0.3)',
               transition: 'all 0.2s ease',
               WebkitFontSmoothing: 'antialiased',
               MozOsxFontSmoothing: 'grayscale',
               textShadow: 'none',
             }}
           >
-            <Layers size={13} />
+            <Layers size={13} style={{ color: tileLayer === 'satellite' ? '#FFFFFF' : '#38BDF8' }} />
             <span>{tileLayer === 'street' ? 'Satellite View' : 'Street View'}</span>
           </button>
 
@@ -385,18 +385,19 @@ export default function InteractiveMap({ location, places, isPatient }) {
             aria-label="Re-center map"
             title="Re-center on your location"
             style={{
-              background: 'rgba(255, 255, 255, 0.12)',
-              border: '1px solid rgba(255, 255, 255, 0.22)',
+              background: 'rgba(14, 165, 233, 0.18)',
+              border: '1.5px solid #0EA5E9',
               borderRadius: '6px',
-              color: '#FFFFFF',
+              color: '#38BDF8',
               cursor: 'pointer',
               padding: '6px 10px',
               display: 'flex',
               alignItems: 'center',
+              boxShadow: '0 2px 8px rgba(14, 165, 233, 0.25)',
               transition: 'all 0.2s ease',
             }}
           >
-            <Crosshair size={14} />
+            <Crosshair size={14} style={{ color: '#38BDF8' }} />
           </button>
 
           {/* Clear route */}

@@ -555,7 +555,7 @@ function Profile({ user, onUserUpdate }) {
               <div className="position-absolute top-0 end-0 p-3">
                 {!isEditing ? (
                   <button
-                    className="px-3 py-1.5 border border-white-10 bg-transparent text-theme-accent rounded d-flex align-items-center gap-2 hover-white font-monospace text-uppercase"
+                    className="px-3 py-1.5 rounded d-flex align-items-center gap-2 font-monospace text-uppercase fw-bold cursor-pointer transition-all"
                     onClick={() => {
                       setEditData({
                         full_name: user.full_name || '',
@@ -563,24 +563,43 @@ function Profile({ user, onUserUpdate }) {
                       });
                       setIsEditing(true);
                     }}
-                    style={{ width: 'auto', fontSize: '0.8rem' }}
+                    style={{ 
+                      width: 'auto', 
+                      fontSize: '0.8rem',
+                      background: 'rgba(14, 165, 233, 0.14)',
+                      border: '1.5px solid #0EA5E9',
+                      color: '#0284C7',
+                      boxShadow: '0 2px 8px rgba(14, 165, 233, 0.2)'
+                    }}
                   >
                     Edit
                   </button>
                 ) : (
                   <div className="d-flex gap-2">
                     <button
-                      className="px-2.5 py-1.5 border border-white-10 bg-transparent text-secondary rounded font-monospace text-uppercase"
+                      className="px-2.5 py-1.5 rounded font-monospace text-uppercase fw-bold cursor-pointer transition-all"
                       onClick={() => setIsEditing(false)}
-                      style={{ width: 'auto', fontSize: '0.8rem' }}
+                      style={{ 
+                        width: 'auto', 
+                        fontSize: '0.8rem',
+                        background: 'rgba(239, 68, 68, 0.12)',
+                        border: '1.5px solid rgba(239, 68, 68, 0.45)',
+                        color: '#EF4444'
+                      }}
                     >
                       Cancel
                     </button>
                     <button
-                      className="px-3 py-1.5 bg-theme-accent border-0 text-white rounded d-flex align-items-center gap-2 hover-white font-monospace text-uppercase"
+                      className="px-3 py-1.5 text-white rounded d-flex align-items-center gap-2 font-monospace text-uppercase fw-bold cursor-pointer transition-all"
                       onClick={handleSave}
                       disabled={saveLoading}
-                      style={{ width: 'auto', fontSize: '0.8rem' }}
+                      style={{ 
+                        width: 'auto', 
+                        fontSize: '0.8rem',
+                        background: 'linear-gradient(135deg, #10B981 0%, #059669 100%)',
+                        border: '1px solid #059669',
+                        boxShadow: '0 2px 10px rgba(16, 185, 129, 0.35)'
+                      }}
                     >
                       {saveLoading ? 'Saving...' : 'Save'}
                     </button>

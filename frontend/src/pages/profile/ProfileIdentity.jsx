@@ -53,7 +53,7 @@ function ProfileIdentity({
                 <div>
                   {!isEditing ? (
                     <button
-                      className="px-3 py-1.5 border bg-transparent text-theme-accent rounded-3 d-flex align-items-center gap-2 font-monospace text-uppercase cursor-pointer"
+                      className="px-3 py-1.5 rounded-3 d-flex align-items-center gap-2 font-monospace text-uppercase fw-bold cursor-pointer transition-all"
                       onClick={() => {
                         setEditData({
                           first_name: p.first_name || '',
@@ -68,24 +68,43 @@ function ProfileIdentity({
                         });
                         setIsEditing(true);
                       }}
-                      style={{ width: 'auto', fontSize: '0.78rem', borderColor: 'var(--border)' }}
+                      style={{ 
+                        width: 'auto', 
+                        fontSize: '0.78rem', 
+                        background: 'rgba(14, 165, 233, 0.14)',
+                        border: '1.5px solid #0EA5E9',
+                        color: '#0284C7',
+                        boxShadow: '0 2px 8px rgba(14, 165, 233, 0.2)'
+                      }}
                     >
                       <Edit3 size={13} /> Edit details
                     </button>
                   ) : (
                     <div className="d-flex gap-2">
                       <button
-                        className="px-2.5 py-1.5 border bg-transparent text-secondary rounded-3 font-monospace text-uppercase cursor-pointer"
+                        className="px-2.5 py-1.5 rounded-3 font-monospace text-uppercase fw-bold cursor-pointer transition-all"
                         onClick={() => setIsEditing(false)}
-                        style={{ width: 'auto', fontSize: '0.78rem', borderColor: 'var(--border)' }}
+                        style={{ 
+                          width: 'auto', 
+                          fontSize: '0.78rem', 
+                          background: 'rgba(239, 68, 68, 0.12)',
+                          border: '1.5px solid rgba(239, 68, 68, 0.45)',
+                          color: '#EF4444'
+                        }}
                       >
                         Cancel
                       </button>
                       <button
-                        className="px-3 py-1.5 bg-theme-accent border-0 text-white rounded-3 d-flex align-items-center gap-2 font-monospace text-uppercase cursor-pointer"
+                        className="px-3 py-1.5 text-white rounded-3 d-flex align-items-center gap-2 font-monospace text-uppercase fw-bold cursor-pointer transition-all"
                         onClick={handleSave}
                         disabled={saveLoading}
-                        style={{ width: 'auto', fontSize: '0.78rem' }}
+                        style={{ 
+                          width: 'auto', 
+                          fontSize: '0.78rem',
+                          background: 'linear-gradient(135deg, #10B981 0%, #059669 100%)',
+                          border: '1px solid #059669',
+                          boxShadow: '0 2px 10px rgba(16, 185, 129, 0.35)'
+                        }}
                       >
                         {saveLoading ? 'Saving...' : 'Save'}
                       </button>
@@ -175,8 +194,13 @@ function ProfileIdentity({
                         {onRevokeToken && (
                           <button
                             onClick={onRevokeToken}
-                            className="btn-clinical secondary px-2.5 py-1 font-monospace text-uppercase"
-                            style={{ fontSize: '0.66rem' }}
+                            className="px-2.5 py-1 font-monospace text-uppercase fw-bold rounded cursor-pointer"
+                            style={{ 
+                              fontSize: '0.66rem',
+                              background: 'rgba(239, 68, 68, 0.12)',
+                              border: '1px solid rgba(239, 68, 68, 0.45)',
+                              color: '#EF4444'
+                            }}
                             title="Revoke active token"
                           >
                             Revoke
@@ -198,7 +222,13 @@ function ProfileIdentity({
                             setTimeout(() => setCopiedToken(false), 2000);
                           }}
                           className="btn-clinical primary px-3 py-1 font-monospace text-uppercase flex-shrink-0"
-                          style={{ fontSize: '0.72rem' }}
+                          style={{ 
+                            fontSize: '0.72rem',
+                            background: 'linear-gradient(135deg, #0EA5E9 0%, #2563EB 100%)',
+                            border: '1px solid #0284C7',
+                            color: '#FFFFFF',
+                            boxShadow: '0 2px 8px rgba(14, 165, 233, 0.35)'
+                          }}
                         >
                           <Copy size={12} className="me-1" />
                           {copiedToken ? 'Copied' : 'Copy'}
@@ -209,8 +239,15 @@ function ProfileIdentity({
                     <div className="mt-1">
                       <button
                         onClick={onGenerateToken}
-                        className="btn-clinical secondary px-3 py-2 w-100 font-monospace text-uppercase d-flex align-items-center justify-content-center gap-2"
-                        style={{ fontSize: '0.74rem', border: '1px dashed var(--border)', borderRadius: '8px' }}
+                        className="px-3 py-2 w-100 font-monospace text-uppercase fw-bold d-flex align-items-center justify-content-center gap-2 transition-all cursor-pointer"
+                        style={{ 
+                          fontSize: '0.74rem', 
+                          background: 'linear-gradient(135deg, rgba(14, 165, 233, 0.14) 0%, rgba(37, 99, 235, 0.14) 100%)',
+                          border: '1.5px solid #0EA5E9',
+                          color: '#0284C7',
+                          borderRadius: '8px',
+                          boxShadow: '0 2px 8px rgba(14, 165, 233, 0.15)'
+                        }}
                       >
                         <QrCode size={14} />
                         <span>Generate Emergency Responder Link</span>

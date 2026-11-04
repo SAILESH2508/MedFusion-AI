@@ -650,8 +650,24 @@ function Upload({ user }) {
                       Drag &amp; drop a clear photo or scanned document, or click to browse.
                     </p>
                     <div className="d-flex align-items-center gap-2 flex-wrap justify-content-center">
-                      {['JPG / PNG / WEBP', 'PDF up to 16MB', 'AI Validation & OCR'].map((label, i) => (
-                        <span key={label} className="badge rounded-pill px-3 py-1" style={{ background: 'var(--bg-card-tinted)', border: '1px solid var(--border)', fontSize: '0.72rem', color: i === 2 ? (isPrescription ? '#F97316' : '#10B981') : 'var(--text-primary)', fontWeight: i === 2 ? 700 : 600 }}>{label}</span>
+                      {[
+                        { label: 'JPG / PNG / WEBP', bg: 'rgba(14, 165, 233, 0.12)', border: 'rgba(14, 165, 233, 0.35)', color: '#0284C7' },
+                        { label: 'PDF up to 16MB', bg: 'rgba(168, 85, 247, 0.12)', border: 'rgba(168, 85, 247, 0.35)', color: '#7C3AED' },
+                        { label: 'AI Validation & OCR', bg: isPrescription ? 'rgba(249, 115, 22, 0.14)' : 'rgba(16, 185, 129, 0.14)', border: isPrescription ? '#F97316' : '#10B981', color: isPrescription ? '#EA580C' : '#059669' }
+                      ].map((item, i) => (
+                        <span 
+                          key={item.label} 
+                          className="badge rounded-pill px-3 py-1 fw-bold" 
+                          style={{ 
+                            background: item.bg, 
+                            border: `1px solid ${item.border}`, 
+                            fontSize: '0.74rem', 
+                            color: item.color,
+                            boxShadow: '0 1px 4px rgba(0,0,0,0.06)'
+                          }}
+                        >
+                          {item.label}
+                        </span>
                       ))}
                     </div>
                     <input id="scannerFileInput" type="file" className="d-none" accept="image/jpeg,image/png,image/jpg,image/webp,application/pdf" onChange={handleFileChange} />
@@ -719,8 +735,15 @@ function Upload({ user }) {
                       type="button" 
                       onClick={() => document.getElementById('scannerFileInput').click()} 
                       disabled={loading}
-                      className="btn-clinical secondary py-2 px-3" 
-                      style={{ fontSize: '0.78rem', width: 'auto' }}
+                      className="btn-clinical secondary py-2 px-3 fw-bold" 
+                      style={{ 
+                        fontSize: '0.78rem', 
+                        width: 'auto',
+                        background: 'rgba(14, 165, 233, 0.14)',
+                        border: '1.5px solid #0EA5E9',
+                        color: '#0284C7',
+                        boxShadow: '0 2px 8px rgba(14, 165, 233, 0.2)'
+                      }}
                     >
                       Change File
                     </button>
@@ -728,8 +751,15 @@ function Upload({ user }) {
                       type="button" 
                       onClick={resetScanner} 
                       disabled={loading}
-                      className="btn-clinical secondary py-2 px-3" 
-                      style={{ fontSize: '0.78rem', width: 'auto' }}
+                      className="btn-clinical secondary py-2 px-3 fw-bold" 
+                      style={{ 
+                        fontSize: '0.78rem', 
+                        width: 'auto',
+                        background: 'rgba(239, 68, 68, 0.12)',
+                        border: '1.5px solid rgba(239, 68, 68, 0.45)',
+                        color: '#EF4444',
+                        boxShadow: '0 2px 8px rgba(239, 68, 68, 0.15)'
+                      }}
                     >
                       Remove File
                     </button>
@@ -864,15 +894,33 @@ function Upload({ user }) {
                 <div className="d-flex gap-2">
                   <button 
                     onClick={downloadJsonExport}
-                    className="btn-clinical secondary py-1.5 px-3 d-inline-flex align-items-center gap-1.5"
-                    style={{ fontSize: '0.78rem', width: 'auto' }}
+                    className="btn-clinical secondary py-1.5 px-3 d-inline-flex align-items-center gap-1.5 fw-bold"
+                    style={{ 
+                      fontSize: '0.78rem', 
+                      width: 'auto',
+                      background: 'rgba(14, 165, 233, 0.14)',
+                      border: '1.5px solid #0EA5E9',
+                      color: '#0284C7',
+                      boxShadow: '0 2px 8px rgba(14, 165, 233, 0.2)'
+                    }}
                   >
                     <Download size={14} /> Export JSON
                   </button>
                   <button 
                     onClick={resetScanner}
-                    className="btn-clinical primary py-1.5 px-3 d-inline-flex align-items-center gap-1.5"
-                    style={{ fontSize: '0.78rem', width: 'auto' }}
+                    className="btn-clinical primary py-1.5 px-3 d-inline-flex align-items-center gap-1.5 fw-bold"
+                    style={{ 
+                      fontSize: '0.78rem', 
+                      width: 'auto',
+                      background: isPrescription 
+                        ? 'linear-gradient(135deg, #F97316 0%, #EA580C 100%)' 
+                        : 'linear-gradient(135deg, #10B981 0%, #0D9488 100%)',
+                      border: `1px solid ${isPrescription ? '#EA580C' : '#0D9488'}`,
+                      color: '#FFFFFF',
+                      boxShadow: isPrescription 
+                        ? '0 3px 12px rgba(249, 115, 22, 0.35)' 
+                        : '0 3px 12px rgba(16, 185, 129, 0.35)'
+                    }}
                   >
                     <RotateCcw size={14} /> Scan Another
                   </button>

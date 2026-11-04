@@ -2838,3 +2838,290 @@ code, kbd, samp, pre {
 [data-theme='light'] .glass-card.glass-card--map * {
   color: #FFFFFF;
 }
+
+
+/* ══════════════════════════════════════════════════════════════════════════
+   VIBRANT COLORFUL BUTTONS ACROSS ALL CONTENT PAGES
+   (Strictly excludes top navbar `nav.bg-glass` and left sidebar `.app-sidebar`)
+   ══════════════════════════════════════════════════════════════════════════ */
+
+/* ── Primary Action Buttons (Global Fallback) ────────────────────────────── */
+:not(.app-sidebar):not(nav.bg-glass) .btn-clinical.primary,
+:not(.app-sidebar):not(nav.bg-glass) button.primary,
+:not(.app-sidebar):not(nav.bg-glass) .btn-primary {
+  background: linear-gradient(135deg, #F97316 0%, #EA580C 100%) !important;
+  border: 1px solid #EA580C !important;
+  color: #FFFFFF !important;
+  font-weight: 700 !important;
+  box-shadow: 0 4px 14px rgba(249, 115, 22, 0.35) !important;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.25) !important;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+:not(.app-sidebar):not(nav.bg-glass) .btn-clinical.primary:hover:not(:disabled),
+:not(.app-sidebar):not(nav.bg-glass) button.primary:hover:not(:disabled),
+:not(.app-sidebar):not(nav.bg-glass) .btn-primary:hover:not(:disabled) {
+  filter: brightness(1.08) saturate(1.15) !important;
+  transform: translateY(-1.5px) !important;
+  box-shadow: 0 6px 20px rgba(249, 115, 22, 0.5) !important;
+  color: #FFFFFF !important;
+}
+
+/* ── Secondary Action Buttons (Global Fallback) ──────────────────────────── */
+:not(.app-sidebar):not(nav.bg-glass) .btn-clinical.secondary,
+:not(.app-sidebar):not(nav.bg-glass) button.secondary,
+:not(.app-sidebar):not(nav.bg-glass) .btn-secondary {
+  background: rgba(14, 165, 233, 0.14) !important;
+  border: 1.5px solid #0EA5E9 !important;
+  color: #0284C7 !important;
+  font-weight: 700 !important;
+  box-shadow: 0 2px 8px rgba(14, 165, 233, 0.15) !important;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+[data-theme='dark'] :not(.app-sidebar):not(nav.bg-glass) .btn-clinical.secondary,
+[data-theme='dark'] :not(.app-sidebar):not(nav.bg-glass) button.secondary,
+[data-theme='dark'] :not(.app-sidebar):not(nav.bg-glass) .btn-secondary {
+  background: rgba(56, 189, 248, 0.14) !important;
+  border-color: rgba(56, 189, 248, 0.5) !important;
+  color: #38BDF8 !important;
+  box-shadow: 0 2px 8px rgba(56, 189, 248, 0.2) !important;
+}
+
+:not(.app-sidebar):not(nav.bg-glass) .btn-clinical.secondary:hover:not(:disabled),
+:not(.app-sidebar):not(nav.bg-glass) button.secondary:hover:not(:disabled),
+:not(.app-sidebar):not(nav.bg-glass) .btn-secondary:hover:not(:disabled) {
+  background: #0284C7 !important;
+  border-color: #0284C7 !important;
+  color: #FFFFFF !important;
+  transform: translateY(-1.5px) !important;
+  box-shadow: 0 4px 16px rgba(14, 165, 233, 0.4) !important;
+}
+
+/* ── Heart Disease (Cardiovascular) - Vibrant Crimson ────────────────────── */
+.theme-heart:not(.app-sidebar *) .btn-clinical.primary,
+.theme-heart:not(.app-sidebar *) button.primary,
+.theme-heart:not(.app-sidebar *) .btn-primary {
+  background: linear-gradient(135deg, #EF4444 0%, #DC2626 100%) !important;
+  border: 1px solid #DC2626 !important;
+  box-shadow: 0 4px 16px rgba(239, 68, 68, 0.4) !important;
+  color: #FFFFFF !important;
+}
+.theme-heart:not(.app-sidebar *) .btn-clinical.primary:hover:not(:disabled),
+.theme-heart:not(.app-sidebar *) button.primary:hover:not(:disabled),
+.theme-heart:not(.app-sidebar *) .btn-primary:hover:not(:disabled) {
+  box-shadow: 0 6px 22px rgba(239, 68, 68, 0.55) !important;
+}
+.theme-heart:not(.app-sidebar *) .btn-clinical.secondary,
+.theme-heart:not(.app-sidebar *) button.secondary,
+.theme-heart:not(.app-sidebar *) .btn-secondary {
+  background: rgba(239, 68, 68, 0.14) !important;
+  border: 1.5px solid rgba(239, 68, 68, 0.55) !important;
+  color: #EF4444 !important;
+  box-shadow: 0 2px 8px rgba(239, 68, 68, 0.2) !important;
+}
+.theme-heart:not(.app-sidebar *) .btn-clinical.secondary:hover:not(:disabled),
+.theme-heart:not(.app-sidebar *) button.secondary:hover:not(:disabled),
+.theme-heart:not(.app-sidebar *) .btn-secondary:hover:not(:disabled) {
+  background: #EF4444 !important;
+  border-color: #EF4444 !important;
+  color: #FFFFFF !important;
+  box-shadow: 0 4px 16px rgba(239, 68, 68, 0.45) !important;
+}
+
+/* ── Diabetes (Glycemic) - Vibrant Emerald ───────────────────────────────── */
+.theme-diabetes:not(.app-sidebar *) .btn-clinical.primary,
+.theme-diabetes:not(.app-sidebar *) button.primary,
+.theme-diabetes:not(.app-sidebar *) .btn-primary {
+  background: linear-gradient(135deg, #10B981 0%, #059669 100%) !important;
+  border: 1px solid #059669 !important;
+  box-shadow: 0 4px 16px rgba(16, 185, 129, 0.4) !important;
+  color: #FFFFFF !important;
+}
+.theme-diabetes:not(.app-sidebar *) .btn-clinical.primary:hover:not(:disabled),
+.theme-diabetes:not(.app-sidebar *) button.primary:hover:not(:disabled),
+.theme-diabetes:not(.app-sidebar *) .btn-primary:hover:not(:disabled) {
+  box-shadow: 0 6px 22px rgba(16, 185, 129, 0.55) !important;
+}
+.theme-diabetes:not(.app-sidebar *) .btn-clinical.secondary,
+.theme-diabetes:not(.app-sidebar *) button.secondary,
+.theme-diabetes:not(.app-sidebar *) .btn-secondary {
+  background: rgba(16, 185, 129, 0.14) !important;
+  border: 1.5px solid rgba(16, 185, 129, 0.55) !important;
+  color: #059669 !important;
+  box-shadow: 0 2px 8px rgba(16, 185, 129, 0.2) !important;
+}
+[data-theme='dark'] .theme-diabetes:not(.app-sidebar *) .btn-clinical.secondary,
+[data-theme='dark'] .theme-diabetes:not(.app-sidebar *) button.secondary,
+[data-theme='dark'] .theme-diabetes:not(.app-sidebar *) .btn-secondary {
+  color: #10B981 !important;
+}
+.theme-diabetes:not(.app-sidebar *) .btn-clinical.secondary:hover:not(:disabled),
+.theme-diabetes:not(.app-sidebar *) button.secondary:hover:not(:disabled),
+.theme-diabetes:not(.app-sidebar *) .btn-secondary:hover:not(:disabled) {
+  background: #10B981 !important;
+  border-color: #10B981 !important;
+  color: #FFFFFF !important;
+  box-shadow: 0 4px 16px rgba(16, 185, 129, 0.45) !important;
+}
+
+/* ── Breast Cancer (Oncology) - Vibrant Royal Purple ─────────────────────── */
+.theme-cancer:not(.app-sidebar *) .btn-clinical.primary,
+.theme-cancer:not(.app-sidebar *) button.primary,
+.theme-cancer:not(.app-sidebar *) .btn-primary {
+  background: linear-gradient(135deg, #A855F7 0%, #7C3AED 100%) !important;
+  border: 1px solid #7C3AED !important;
+  box-shadow: 0 4px 16px rgba(168, 85, 247, 0.4) !important;
+  color: #FFFFFF !important;
+}
+.theme-cancer:not(.app-sidebar *) .btn-clinical.primary:hover:not(:disabled),
+.theme-cancer:not(.app-sidebar *) button.primary:hover:not(:disabled),
+.theme-cancer:not(.app-sidebar *) .btn-primary:hover:not(:disabled) {
+  box-shadow: 0 6px 22px rgba(168, 85, 247, 0.55) !important;
+}
+.theme-cancer:not(.app-sidebar *) .btn-clinical.secondary,
+.theme-cancer:not(.app-sidebar *) button.secondary,
+.theme-cancer:not(.app-sidebar *) .btn-secondary {
+  background: rgba(168, 85, 247, 0.14) !important;
+  border: 1.5px solid rgba(168, 85, 247, 0.55) !important;
+  color: #7C3AED !important;
+  box-shadow: 0 2px 8px rgba(168, 85, 247, 0.2) !important;
+}
+[data-theme='dark'] .theme-cancer:not(.app-sidebar *) .btn-clinical.secondary,
+[data-theme='dark'] .theme-cancer:not(.app-sidebar *) button.secondary,
+[data-theme='dark'] .theme-cancer:not(.app-sidebar *) .btn-secondary {
+  color: #C084FC !important;
+}
+.theme-cancer:not(.app-sidebar *) .btn-clinical.secondary:hover:not(:disabled),
+.theme-cancer:not(.app-sidebar *) button.secondary:hover:not(:disabled),
+.theme-cancer:not(.app-sidebar *) .btn-secondary:hover:not(:disabled) {
+  background: #7C3AED !important;
+  border-color: #7C3AED !important;
+  color: #FFFFFF !important;
+  box-shadow: 0 4px 16px rgba(168, 85, 247, 0.45) !important;
+}
+
+/* ── General Profile / Identity - Vibrant Sky & Indigo ──────────────────── */
+.theme-general:not(.app-sidebar *) .btn-clinical.primary,
+.theme-general:not(.app-sidebar *) button.primary,
+.theme-general:not(.app-sidebar *) .btn-primary {
+  background: linear-gradient(135deg, #0EA5E9 0%, #2563EB 100%) !important;
+  border: 1px solid #2563EB !important;
+  box-shadow: 0 4px 16px rgba(14, 165, 233, 0.4) !important;
+  color: #FFFFFF !important;
+}
+.theme-general:not(.app-sidebar *) .btn-clinical.secondary,
+.theme-general:not(.app-sidebar *) button.secondary,
+.theme-general:not(.app-sidebar *) .btn-secondary {
+  background: rgba(14, 165, 233, 0.14) !important;
+  border: 1.5px solid #0EA5E9 !important;
+  color: #0284C7 !important;
+  box-shadow: 0 2px 8px rgba(14, 165, 233, 0.2) !important;
+}
+.theme-general:not(.app-sidebar *) .btn-clinical.secondary:hover:not(:disabled),
+.theme-general:not(.app-sidebar *) button.secondary:hover:not(:disabled),
+.theme-general:not(.app-sidebar *) .btn-secondary:hover:not(:disabled) {
+  background: #0284C7 !important;
+  border-color: #0284C7 !important;
+  color: #FFFFFF !important;
+  box-shadow: 0 4px 16px rgba(14, 165, 233, 0.45) !important;
+}
+
+/* ── Medical Vault - Vibrant Rose / Ruby ────────────────────────────────── */
+.theme-vault:not(.app-sidebar *) .btn-clinical.primary,
+.theme-vault:not(.app-sidebar *) button.primary,
+.theme-vault:not(.app-sidebar *) .btn-primary {
+  background: linear-gradient(135deg, #F43F5E 0%, #E11D48 100%) !important;
+  border: 1px solid #E11D48 !important;
+  box-shadow: 0 4px 16px rgba(244, 63, 94, 0.4) !important;
+  color: #FFFFFF !important;
+}
+.theme-vault:not(.app-sidebar *) .btn-clinical.secondary,
+.theme-vault:not(.app-sidebar *) button.secondary,
+.theme-vault:not(.app-sidebar *) .btn-secondary {
+  background: rgba(225, 29, 72, 0.14) !important;
+  border: 1.5px solid rgba(225, 29, 72, 0.55) !important;
+  color: #E11D48 !important;
+  box-shadow: 0 2px 8px rgba(225, 29, 72, 0.2) !important;
+}
+.theme-vault:not(.app-sidebar *) .btn-clinical.secondary:hover:not(:disabled),
+.theme-vault:not(.app-sidebar *) button.secondary:hover:not(:disabled),
+.theme-vault:not(.app-sidebar *) .btn-secondary:hover:not(:disabled) {
+  background: #E11D48 !important;
+  border-color: #E11D48 !important;
+  color: #FFFFFF !important;
+  box-shadow: 0 4px 16px rgba(225, 29, 72, 0.45) !important;
+}
+
+/* ── Prescription (Rx) Upload Active - Saturated Warm Amber ─────────────── */
+.theme-prescription-active:not(.app-sidebar *) .btn-clinical.primary,
+.theme-prescription:not(.app-sidebar *) .btn-clinical.primary {
+  background: linear-gradient(135deg, #F97316 0%, #EA580C 100%) !important;
+  border: 1px solid #EA580C !important;
+  box-shadow: 0 4px 16px rgba(249, 115, 22, 0.4) !important;
+  color: #FFFFFF !important;
+}
+.theme-prescription-active:not(.app-sidebar *) .btn-clinical.secondary,
+.theme-prescription:not(.app-sidebar *) .btn-clinical.secondary {
+  background: rgba(249, 115, 22, 0.14) !important;
+  border: 1.5px solid #F97316 !important;
+  color: #EA580C !important;
+  box-shadow: 0 2px 8px rgba(249, 115, 22, 0.2) !important;
+}
+.theme-prescription-active:not(.app-sidebar *) .btn-clinical.secondary:hover:not(:disabled),
+.theme-prescription:not(.app-sidebar *) .btn-clinical.secondary:hover:not(:disabled) {
+  background: #EA580C !important;
+  border-color: #EA580C !important;
+  color: #FFFFFF !important;
+}
+
+/* ── Lab Report (Pathology) Upload Active - Vibrant Emerald ─────────────── */
+.theme-lab-active:not(.app-sidebar *) .btn-clinical.primary,
+.theme-lab:not(.app-sidebar *) .btn-clinical.primary {
+  background: linear-gradient(135deg, #10B981 0%, #0D9488 100%) !important;
+  border: 1px solid #0D9488 !important;
+  box-shadow: 0 4px 16px rgba(16, 185, 129, 0.4) !important;
+  color: #FFFFFF !important;
+}
+.theme-lab-active:not(.app-sidebar *) .btn-clinical.secondary,
+.theme-lab:not(.app-sidebar *) .btn-clinical.secondary {
+  background: rgba(16, 185, 129, 0.14) !important;
+  border: 1.5px solid #10B981 !important;
+  color: #059669 !important;
+  box-shadow: 0 2px 8px rgba(16, 185, 129, 0.2) !important;
+}
+.theme-lab-active:not(.app-sidebar *) .btn-clinical.secondary:hover:not(:disabled),
+.theme-lab:not(.app-sidebar *) .btn-clinical.secondary:hover:not(:disabled) {
+  background: #0D9488 !important;
+  border-color: #0D9488 !important;
+  color: #FFFFFF !important;
+}
+
+/* ── Form Option Buttons (Gender, History, Smoking, etc.) ─────────────────── */
+[data-theme='light'] :not(.app-sidebar):not(nav.bg-glass) button.bg-white-5,
+[data-theme='light'] :not(.app-sidebar):not(nav.bg-glass) button.border-white-10 {
+  background: #FFFFFF !important;
+  border: 1.5px solid rgba(0, 0, 0, 0.14) !important;
+  color: #1E293B !important;
+  font-weight: 600 !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06) !important;
+  transition: all 0.2s ease !important;
+}
+[data-theme='light'] :not(.app-sidebar):not(nav.bg-glass) button.bg-white-5:hover,
+[data-theme='light'] :not(.app-sidebar):not(nav.bg-glass) button.border-white-10:hover {
+  background: rgba(14, 165, 233, 0.08) !important;
+  border-color: #0EA5E9 !important;
+  color: #0284C7 !important;
+  transform: translateY(-1px) !important;
+}
+
+/* Active Form Option Buttons */
+:not(.app-sidebar):not(nav.bg-glass) button.border-theme-accent.bg-theme-accent,
+:not(.app-sidebar):not(nav.bg-glass) button.bg-theme-accent {
+  background: linear-gradient(135deg, var(--theme-accent) 0%, var(--primary-accent) 100%) !important;
+  border: 1.5px solid var(--theme-accent) !important;
+  color: #FFFFFF !important;
+  font-weight: 700 !important;
+  box-shadow: 0 4px 14px var(--theme-accent-glow, rgba(0, 0, 0, 0.25)) !important;
+  transform: translateY(-1px) !important;
+}
