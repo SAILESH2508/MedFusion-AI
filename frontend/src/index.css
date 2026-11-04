@@ -67,15 +67,15 @@
 }
 
 [data-theme='light'] {
-  /* Light Mode — Warm Orange-Infused Palette (Containers with soft warm orange/cream mix, no pure white) */
-  --bg-page: #F7EFE9;
-  --bg-surface: #F5E6D8;
-  --bg-card: #FFF8F2;
-  --bg-card-tinted: #FFF1E4;
+  /* Light Mode — Distinct Warm Orange-Cream Mix Palette (Clearly orange-tinted containers, zero pure white) */
+  --bg-page: #F6EDE4;
+  --bg-surface: #F0DFC8;
+  --bg-card: #FCEDE0;
+  --bg-card-tinted: #F9E2CD;
   --bg-sidebar: #1E3A5F;
   --bg-nav: #1E3A5F;
-  --bg-input: #FFFAF5;
-  --bg-modal: #FBF0E6;
+  --bg-input: #FFF2E6;
+  --bg-modal: #FDE8D4;
   --text-primary: #0F172A;
   --text-secondary: #27364B;
   --text-muted: #475569;
@@ -83,9 +83,9 @@
   --text-on-dark: #F8FAFC;
   --text-on-brand: #FFFFFF;
   --accent-green: #1E7A4A;
-  --border: #E2D4C6;
+  --border: #DFCCA8;
   --border-focus: #E07B39;
-  --border-card: #EADCD0;
+  --border-card: #E8D3B8;
   --brand-orange: #E07B39;
   --brand-blue: #2C6FB5;
   --accent-cyan: #0E8FAA;

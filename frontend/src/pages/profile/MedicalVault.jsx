@@ -341,9 +341,9 @@ function MedicalVault({
                   fontSize: '0.88rem',
                   borderLeft: `4px solid ${docColor}`,
                   borderRadius: '12px',
-                  background: isExpanded ? 'rgba(15, 23, 42, 0.65)' : 'var(--bg-card)',
+                  background: isExpanded ? 'rgba(15, 23, 42, 0.65)' : (isRx ? 'rgba(249, 115, 22, 0.09)' : 'rgba(16, 185, 129, 0.09)'),
                   transition: 'all 0.2s ease',
-                  border: isExpanded ? `1px solid ${docColor}60` : '1px solid var(--border-color)',
+                  border: isExpanded ? `1.5px solid ${docColor}` : `1px solid ${docColor}50`,
                   borderLeftWidth: '4px',
                   borderLeftColor: docColor
                 }}
