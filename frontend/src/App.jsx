@@ -431,14 +431,24 @@ function EmergencyQRDropdown({ user }) {
         aria-label="Emergency QR"
         aria-expanded={isOpen}
         className="btn-icon p-2"
-        style={{ color: isOpen ? 'var(--brand-orange)' : 'var(--text-secondary)', position: 'relative' }}
+        style={{
+          color: isOpen ? '#F97316' : 'rgba(255, 255, 255, 0.9)',
+          background: isOpen ? 'rgba(255, 255, 255, 0.16)' : 'transparent',
+          borderRadius: '6px',
+          border: isOpen ? '1px solid rgba(255, 255, 255, 0.22)' : '1px solid transparent',
+          position: 'relative',
+          display: 'inline-flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          transition: 'all 0.15s ease',
+        }}
       >
         <QrCode size={18} />
         {token && (
           <span style={{
-            position: 'absolute', top: 0, right: 0,
+            position: 'absolute', top: '2px', right: '2px',
             width: '8px', height: '8px', borderRadius: '50%',
-            background: 'var(--status-success)', border: '1.5px solid var(--bg-nav)'
+            background: '#10B981', border: '1.5px solid var(--bg-nav)'
           }} />
         )}
       </button>

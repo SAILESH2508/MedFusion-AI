@@ -370,6 +370,9 @@ export default function InteractiveMap({ location, places, isPatient }) {
               fontWeight: 600,
               padding: '6px 10px',
               transition: 'all 0.2s ease',
+              WebkitFontSmoothing: 'antialiased',
+              MozOsxFontSmoothing: 'grayscale',
+              textShadow: 'none',
             }}
           >
             <Layers size={13} />
@@ -520,6 +523,9 @@ export default function InteractiveMap({ location, places, isPatient }) {
           background: #1C2333 !important;
           border: 1px solid rgba(255, 255, 255, 0.14) !important;
           color: #FFFFFF !important;
+          -webkit-font-smoothing: antialiased !important;
+          -moz-osx-font-smoothing: grayscale !important;
+          text-shadow: none !important;
         }
 
         .leaflet-container {
@@ -527,7 +533,8 @@ export default function InteractiveMap({ location, places, isPatient }) {
           -webkit-transform: translateZ(0) !important;
           backface-visibility: hidden !important;
           -webkit-backface-visibility: hidden !important;
-          -webkit-font-smoothing: subpixel-antialiased !important;
+          -webkit-font-smoothing: antialiased !important;
+          -moz-osx-font-smoothing: grayscale !important;
           text-rendering: optimizeLegibility !important;
         }
 
@@ -571,7 +578,8 @@ export default function InteractiveMap({ location, places, isPatient }) {
           -webkit-transform: translateZ(0);
           backface-visibility: hidden;
           -webkit-backface-visibility: hidden;
-          -webkit-font-smoothing: subpixel-antialiased;
+          -webkit-font-smoothing: antialiased;
+          -moz-osx-font-smoothing: grayscale;
         }
 
         .medfusion-popup .leaflet-popup-content-wrapper {

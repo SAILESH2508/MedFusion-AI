@@ -281,7 +281,14 @@ nav.bg-glass a:hover {
 }
 
 nav.bg-glass .btn-icon {
-  color: rgba(255, 255, 255, 0.85) !important;
+  color: rgba(255, 255, 255, 0.9) !important;
+  background: transparent !important;
+  border-radius: 6px !important;
+}
+
+nav.bg-glass .btn-icon:hover {
+  color: #FFFFFF !important;
+  background: rgba(255, 255, 255, 0.16) !important;
 }
 
 /* Ensure emergency QR dropdown panel inside nav has proper theme contrast */
@@ -2307,6 +2314,9 @@ button.btn-icon:hover {
 
 .glass-card--map {
   color: #FFFFFF !important;
+  -webkit-font-smoothing: antialiased !important;
+  -moz-osx-font-smoothing: grayscale !important;
+  text-shadow: none !important;
 }
 
 .glass-card--map .text-secondary {
