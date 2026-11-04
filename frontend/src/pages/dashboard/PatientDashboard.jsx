@@ -480,23 +480,63 @@ function PatientDashboard({ user }) {
 
     setSidebarContent(
       <div className="d-flex flex-column gap-4 pt-2">
-        {/* Sleek Medical Header Console inside Sidebar */}
-        <div className="glass-card p-3.5 mb-1 reveal" style={{ borderRadius: '12px', border: '1px solid rgba(244, 149, 74, 0.4)', background: 'rgba(244, 149, 74, 0.08)' }}>
-          <div className="d-flex align-items-center gap-2 mb-2">
-            <div style={{ width: '26px', height: '26px', borderRadius: '7px', background: 'rgba(244, 149, 74, 0.22)', border: '1px solid #F97316', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-              <Cpu size={14} style={{ color: '#F97316' }} />
+        {/* Sleek Medical Header Console inside Sidebar (Dynamically themed to selected predictor) */}
+        {(() => {
+          const consoleConfig = {
+            heart_attack: {
+              border: 'rgba(239, 68, 68, 0.4)',
+              bg: 'rgba(239, 68, 68, 0.08)',
+              iconBoxBg: 'rgba(239, 68, 68, 0.22)',
+              iconBoxBorder: '#EF4444',
+              iconColor: '#F87171',
+              subtitleColor: '#F87171',
+              accentColor: '#EF4444',
+              descColor: '#FECDD3',
+              label: 'Cardiac Risk Engine',
+            },
+            diabetes: {
+              border: 'rgba(16, 185, 129, 0.4)',
+              bg: 'rgba(16, 185, 129, 0.08)',
+              iconBoxBg: 'rgba(16, 185, 129, 0.22)',
+              iconBoxBorder: '#10B981',
+              iconColor: '#34D399',
+              subtitleColor: '#34D399',
+              accentColor: '#10B981',
+              descColor: '#A7F3D0',
+              label: 'Metabolic Risk Engine',
+            },
+            cancer: {
+              border: 'rgba(147, 51, 234, 0.4)',
+              bg: 'rgba(147, 51, 234, 0.08)',
+              iconBoxBg: 'rgba(147, 51, 234, 0.22)',
+              iconBoxBorder: '#9333EA',
+              iconColor: '#C084FC',
+              subtitleColor: '#C084FC',
+              accentColor: '#9333EA',
+              descColor: '#E9D5FF',
+              label: 'Oncology Risk Engine',
+            },
+          };
+          const cur = consoleConfig[selectedDisease] || consoleConfig.heart_attack;
+          return (
+            <div className="glass-card p-3.5 mb-1 reveal" style={{ borderRadius: '12px', border: `1px solid ${cur.border}`, background: cur.bg, transition: 'all 0.3s ease' }}>
+              <div className="d-flex align-items-center gap-2 mb-2">
+                <div style={{ width: '26px', height: '26px', borderRadius: '7px', background: cur.iconBoxBg, border: `1px solid ${cur.iconBoxBorder}`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, transition: 'all 0.3s ease' }}>
+                  <Cpu size={14} style={{ color: cur.iconColor }} />
+                </div>
+                <span style={{ fontSize: '0.68rem', fontFamily: 'var(--font-mono)', color: cur.subtitleColor, letterSpacing: '0.06em', textTransform: 'uppercase', fontWeight: 700 }}>
+                  {cur.label}
+                </span>
+              </div>
+              <h2 className="fw-bolder fs-6 m-0" style={{ letterSpacing: '-0.02em', fontSize: '1.2rem', color: 'var(--text-on-dark, #E2E8F0)' }}>
+                AI Health <span style={{ color: cur.accentColor }}>Diagnostics</span>
+              </h2>
+              <p className="m-0 mt-2" style={{ fontSize: '0.84rem', lineHeight: '1.4', color: cur.descColor }}>
+                Enter your medical numbers and symptoms to check your health risks instantly.
+              </p>
             </div>
-            <span style={{ fontSize: '0.68rem', fontFamily: 'var(--font-mono)', color: '#FB923C', letterSpacing: '0.06em', textTransform: 'uppercase', fontWeight: 700 }}>
-              Diagnostic Engine
-            </span>
-          </div>
-          <h2 className="fw-bolder fs-6 m-0" style={{ letterSpacing: '-0.02em', fontSize: '1.2rem', color: 'var(--text-on-dark, #E2E8F0)' }}>
-            AI Health <span style={{ color: 'var(--brand-orange)' }}>Diagnostics</span>
-          </h2>
-          <p className="m-0 mt-2" style={{ fontSize: '0.84rem', lineHeight: '1.4', color: '#CBD5E1' }}>
-            Enter your medical numbers and symptoms to check your health risks instantly.
-          </p>
-        </div>
+          );
+        })()}
 
         {/* Screening Profile selector */}
         <div className="mt-1">

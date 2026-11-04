@@ -1496,41 +1496,41 @@ button.btn-icon:hover {
 }
 
 .app-sidebar .disease-select-tile.lab.active {
-  background: rgba(79, 70, 229, 0.18) !important;
-  border: 1.5px solid #4F46E5 !important;
-  border-left: 4px solid #4F46E5 !important;
+  background: rgba(16, 185, 129, 0.18) !important;
+  border: 1.5px solid #10B981 !important;
+  border-left: 4px solid #10B981 !important;
   color: var(--text-on-dark, #E2E8F0) !important;
 }
 .app-sidebar .disease-select-tile.lab.active * {
   color: var(--text-on-dark, #E2E8F0) !important;
 }
 .app-sidebar .disease-select-tile.lab.active .disease-icon-box {
-  background: #4F46E5 !important;
-  border: 1px solid #818CF8 !important;
+  background: #10B981 !important;
+  border: 1px solid #34D399 !important;
   color: var(--text-on-dark, #E2E8F0) !important;
 }
 
 .app-sidebar .disease-select-tile.lab.inactive {
-  background: rgba(79, 70, 229, 0.07) !important;
-  border: 1px solid rgba(79, 70, 229, 0.32) !important;
-  border-left: 3px solid rgba(79, 70, 229, 0.75) !important;
-  color: #E0E7FF !important;
+  background: rgba(16, 185, 129, 0.07) !important;
+  border: 1px solid rgba(16, 185, 129, 0.32) !important;
+  border-left: 3px solid rgba(16, 185, 129, 0.75) !important;
+  color: #D1FAE5 !important;
   opacity: 1 !important;
 }
 .app-sidebar .disease-select-tile.lab.inactive:hover {
-  background: rgba(79, 70, 229, 0.13) !important;
-  border-color: #4F46E5 !important;
+  background: rgba(16, 185, 129, 0.13) !important;
+  border-color: #10B981 !important;
 }
 .app-sidebar .disease-select-tile.lab.inactive * {
-  color: #E0E7FF !important;
+  color: #D1FAE5 !important;
 }
 .app-sidebar .disease-select-tile.lab.inactive svg {
-  color: #818CF8 !important;
+  color: #34D399 !important;
 }
 .app-sidebar .disease-select-tile.lab.inactive .disease-icon-box {
-  background: rgba(79, 70, 229, 0.18) !important;
-  border: 1px solid rgba(79, 70, 229, 0.45) !important;
-  color: #818CF8 !important;
+  background: rgba(16, 185, 129, 0.18) !important;
+  border: 1px solid rgba(16, 185, 129, 0.45) !important;
+  color: #34D399 !important;
 }
 
 /* 6. General / Identity / Profile (Indigo / Blue) */
@@ -1618,34 +1618,34 @@ button.btn-icon:hover {
 }
 
 .app-sidebar .disease-select-tile.twin-tab-diet.active {
-  background: rgba(8, 145, 178, 0.18) !important;
-  border: 1.5px solid #0891B2 !important;
-  border-left: 4px solid #0891B2 !important;
+  background: rgba(16, 185, 129, 0.18) !important;
+  border: 1.5px solid #10B981 !important;
+  border-left: 4px solid #10B981 !important;
   color: var(--text-on-dark, #E2E8F0) !important;
 }
 .app-sidebar .disease-select-tile.twin-tab-diet.active .disease-icon-box {
-  background: #0891B2 !important;
-  border: 1px solid #22D3EE !important;
+  background: #10B981 !important;
+  border: 1px solid #34D399 !important;
   color: var(--text-on-dark, #E2E8F0) !important;
 }
 .app-sidebar .disease-select-tile.twin-tab-diet.inactive {
-  background: rgba(8, 145, 178, 0.07) !important;
-  border: 1px solid rgba(8, 145, 178, 0.32) !important;
-  border-left: 3px solid rgba(8, 145, 178, 0.75) !important;
-  color: #CFFAFE !important;
+  background: rgba(16, 185, 129, 0.07) !important;
+  border: 1px solid rgba(16, 185, 129, 0.32) !important;
+  border-left: 3px solid rgba(16, 185, 129, 0.75) !important;
+  color: #D1FAE5 !important;
   opacity: 1 !important;
 }
 .app-sidebar .disease-select-tile.twin-tab-diet.inactive:hover {
-  background: rgba(8, 145, 178, 0.13) !important;
-  border-color: #0891B2 !important;
+  background: rgba(16, 185, 129, 0.13) !important;
+  border-color: #10B981 !important;
 }
 .app-sidebar .disease-select-tile.twin-tab-diet.inactive svg {
-  color: #22D3EE !important;
+  color: #34D399 !important;
 }
 .app-sidebar .disease-select-tile.twin-tab-diet.inactive .disease-icon-box {
-  background: rgba(8, 145, 178, 0.18) !important;
-  border: 1px solid rgba(8, 145, 178, 0.45) !important;
-  color: #22D3EE !important;
+  background: rgba(16, 185, 129, 0.18) !important;
+  border: 1px solid rgba(16, 185, 129, 0.45) !important;
+  color: #34D399 !important;
 }
 
 .app-sidebar .disease-select-tile.twin-tab-garden.active {
@@ -2362,6 +2362,16 @@ button.btn-icon:hover {
 .border-brand-blue   { border-color: var(--brand-blue)   !important; }
 
 /* ── Cross-Browser Safe Text Gradients (Prevents Solid Rectangle Box Bug) ── */
+
+.text-gradient-identity {
+  color: #4F46E5;
+  background: linear-gradient(90deg, #4F46E5 0%, #6366F1 50%, #818CF8 100%);
+  -webkit-background-clip: text !important;
+  background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  display: inline-block;
+}
+
 .text-gradient-heart,
 .text-gradient-red-orange {
   color: #DC2626;
@@ -2393,8 +2403,8 @@ button.btn-icon:hover {
 }
 
 .text-gradient-diet {
-  color: #0891B2;
-  background: linear-gradient(90deg, #0891B2 0%, #22D3EE 100%);
+  color: #059669;
+  background: linear-gradient(90deg, #059669 0%, #10B981 50%, #34D399 100%);
   -webkit-background-clip: text !important;
   background-clip: text !important;
   -webkit-text-fill-color: transparent !important;
@@ -2402,8 +2412,8 @@ button.btn-icon:hover {
 }
 
 .text-gradient-lab {
-  color: #4F46E5;
-  background: linear-gradient(90deg, #4F46E5 0%, #818CF8 100%);
+  color: #059669;
+  background: linear-gradient(90deg, #059669 0%, #10B981 50%, #34D399 100%);
   -webkit-background-clip: text !important;
   background-clip: text !important;
   -webkit-text-fill-color: transparent !important;

@@ -761,7 +761,7 @@ function Profile({ user, onUserUpdate }) {
               </>
             ) : (
               <>
-                Health <span className="text-gradient-diabetes">Profile</span>
+                Health <span className="text-gradient-identity">Profile</span>
               </>
             )}
           </h1>
