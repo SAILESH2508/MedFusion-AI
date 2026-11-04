@@ -341,17 +341,17 @@ function Profile({ user, onUserUpdate }) {
     } else {
       setSidebarContent(
         <div className="d-flex flex-column gap-4 pt-2">
-          <div className="glass-card p-3.5 mb-1 reveal" style={{ borderRadius: '12px', border: '1px solid rgba(99, 102, 241, 0.4)', background: 'rgba(99, 102, 241, 0.08)' }}>
+          <div className="glass-card p-3.5 mb-1 reveal" style={{ borderRadius: '12px', border: '1px solid rgba(14, 165, 233, 0.4)', background: 'rgba(14, 165, 233, 0.08)' }}>
             <div className="d-flex align-items-center gap-2 mb-2">
-              <div style={{ width: '26px', height: '26px', borderRadius: '7px', background: 'rgba(99, 102, 241, 0.22)', border: '1px solid #6366F1', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                <Database size={14} style={{ color: '#818CF8' }} />
+              <div style={{ width: '26px', height: '26px', borderRadius: '7px', background: 'rgba(14, 165, 233, 0.22)', border: '1px solid #0EA5E9', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                <Database size={14} style={{ color: '#38BDF8' }} />
               </div>
-              <span style={{ fontSize: '0.68rem', fontFamily: 'var(--font-mono)', color: '#818CF8', letterSpacing: '0.06em', textTransform: 'uppercase', fontWeight: 700 }}>
+              <span style={{ fontSize: '0.68rem', fontFamily: 'var(--font-mono)', color: '#38BDF8', letterSpacing: '0.06em', textTransform: 'uppercase', fontWeight: 700 }}>
                 Patient Vault
               </span>
             </div>
             <h2 className="fw-bolder fs-6 m-0" style={{ letterSpacing: '-0.02em', fontSize: '1.2rem', color: 'var(--text-on-dark, #E2E8F0)' }}>
-              Health <span style={{ color: '#818CF8' }}>Vault Console</span>
+              Health <span style={{ color: '#38BDF8' }}>Vault Console</span>
             </h2>
             <p className="m-0 mt-2" style={{ fontSize: '0.84rem', lineHeight: '1.4', color: '#C7D2FE' }}>
               Manage clinical profiles, review biomarker history, and manage medical records.
@@ -663,11 +663,11 @@ function Profile({ user, onUserUpdate }) {
                   : 'linear-gradient(135deg, #090909 0%, #090c18 35%, #090a14 65%, #090909 100%)')
             : '#FFFFFF',
           border: isDark
-            ? `1px solid ${activeTab === 'overview' ? 'rgba(124, 58, 237, 0.35)' : activeTab === 'vault' ? 'rgba(225, 29, 72, 0.32)' : 'rgba(99, 102, 241, 0.32)'}`
-            : `1px solid ${activeTab === 'overview' ? 'rgba(124, 58, 237, 0.25)' : activeTab === 'vault' ? 'rgba(225, 29, 72, 0.22)' : 'rgba(99, 102, 241, 0.22)'}`,
+            ? `1px solid ${activeTab === 'overview' ? 'rgba(147, 51, 234, 0.35)' : activeTab === 'vault' ? 'rgba(225, 29, 72, 0.32)' : 'rgba(14, 165, 233, 0.32)'}`
+            : `1px solid ${activeTab === 'overview' ? 'rgba(147, 51, 234, 0.25)' : activeTab === 'vault' ? 'rgba(225, 29, 72, 0.22)' : 'rgba(14, 165, 233, 0.22)'}`,
           boxShadow: isDark
-            ? `0 0 40px ${activeTab === 'overview' ? 'rgba(124, 58, 237, 0.10)' : activeTab === 'vault' ? 'rgba(225, 29, 72, 0.09)' : 'rgba(99, 102, 241, 0.09)'}, inset 0 1px 0 rgba(255,255,255,0.06)`
-            : `0 4px 20px ${activeTab === 'overview' ? 'rgba(124, 58, 237, 0.08)' : activeTab === 'vault' ? 'rgba(225, 29, 72, 0.08)' : 'rgba(99, 102, 241, 0.08)'}, 0 1px 4px rgba(0, 0, 0, 0.04)`,
+            ? `0 0 40px ${activeTab === 'overview' ? 'rgba(147, 51, 234, 0.10)' : activeTab === 'vault' ? 'rgba(225, 29, 72, 0.09)' : 'rgba(14, 165, 233, 0.09)'}, inset 0 1px 0 rgba(255,255,255,0.06)`
+            : `0 4px 20px ${activeTab === 'overview' ? 'rgba(147, 51, 234, 0.08)' : activeTab === 'vault' ? 'rgba(225, 29, 72, 0.08)' : 'rgba(14, 165, 233, 0.08)'}, 0 1px 4px rgba(0, 0, 0, 0.04)`,
           transition: 'all 0.35s ease',
         }}
       >
@@ -678,7 +678,7 @@ function Profile({ user, onUserUpdate }) {
           width: '180px',
           height: '180px',
           borderRadius: '50%',
-          background: `radial-gradient(circle, ${activeTab === 'overview' ? 'rgba(124, 58, 237, 0.16)' : activeTab === 'vault' ? 'rgba(225, 29, 72, 0.14)' : 'rgba(99, 102, 241, 0.14)'} 0%, transparent 70%)`,
+          background: `radial-gradient(circle, ${activeTab === 'overview' ? 'rgba(147, 51, 234, 0.16)' : activeTab === 'vault' ? 'rgba(225, 29, 72, 0.14)' : 'rgba(14, 165, 233, 0.14)'} 0%, transparent 70%)`,
           pointerEvents: 'none',
           transition: 'all 0.35s ease'
         }} />
@@ -704,19 +704,19 @@ function Profile({ user, onUserUpdate }) {
               height: '28px',
               borderRadius: '8px',
               background: activeTab === 'overview'
-                ? (isDark ? 'rgba(124, 58, 237, 0.22)' : 'rgba(124, 58, 237, 0.12)')
+                ? (isDark ? 'rgba(147, 51, 234, 0.22)' : 'rgba(147, 51, 234, 0.12)')
                 : activeTab === 'vault'
                   ? (isDark ? 'rgba(225, 29, 72, 0.22)' : 'rgba(225, 29, 72, 0.12)')
-                  : (isDark ? 'rgba(99, 102, 241, 0.22)' : 'rgba(99, 102, 241, 0.12)'),
-              border: `1px solid ${activeTab === 'overview' ? 'rgba(124, 58, 237, 0.45)' : activeTab === 'vault' ? 'rgba(225, 29, 72, 0.35)' : 'rgba(99, 102, 241, 0.35)'}`,
+                  : (isDark ? 'rgba(14, 165, 233, 0.22)' : 'rgba(14, 165, 233, 0.12)'),
+              border: `1px solid ${activeTab === 'overview' ? 'rgba(147, 51, 234, 0.45)' : activeTab === 'vault' ? 'rgba(225, 29, 72, 0.35)' : 'rgba(14, 165, 233, 0.35)'}`,
               transition: 'all 0.3s ease'
             }}>
               {activeTab === 'overview' ? (
-                <BarChart3 size={14} style={{ color: isDark ? '#A78BFA' : '#7C3AED' }} />
+                <BarChart3 size={14} style={{ color: isDark ? '#C084FC' : '#9333EA' }} />
               ) : activeTab === 'vault' ? (
                 <FileText size={14} style={{ color: isDark ? '#FB7185' : '#E11D48' }} />
               ) : (
-                <User size={14} style={{ color: isDark ? '#818CF8' : '#6366F1' }} />
+                <User size={14} style={{ color: isDark ? '#38BDF8' : '#0EA5E9' }} />
               )}
             </div>
             <span
@@ -725,10 +725,10 @@ function Profile({ user, onUserUpdate }) {
                 fontSize: '0.68rem',
                 letterSpacing: '0.14em',
                 color: activeTab === 'overview'
-                  ? (isDark ? '#A78BFA' : '#7C3AED')
+                  ? (isDark ? '#C084FC' : '#9333EA')
                   : activeTab === 'vault'
                     ? (isDark ? '#FB7185' : '#E11D48')
-                    : (isDark ? '#818CF8' : '#6366F1'),
+                    : (isDark ? '#38BDF8' : '#0EA5E9'),
                 fontWeight: 700,
                 transition: 'color 0.3s ease'
               }}

@@ -1541,9 +1541,9 @@ button.btn-icon:hover {
 
 .app-sidebar .disease-select-tile.identity.active,
 .app-sidebar .disease-select-tile.theme-general-active.active {
-  background: rgba(99, 102, 241, 0.18) !important;
-  border: 1.5px solid #6366F1 !important;
-  border-left: 4px solid #6366F1 !important;
+  background: rgba(14, 165, 233, 0.18) !important;
+  border: 1.5px solid #0EA5E9 !important;
+  border-left: 4px solid #0EA5E9 !important;
   color: var(--text-on-dark, #E2E8F0) !important;
 }
 .app-sidebar .disease-select-tile.identity.active *,
@@ -1552,37 +1552,37 @@ button.btn-icon:hover {
 }
 .app-sidebar .disease-select-tile.identity.active .disease-icon-box,
 .app-sidebar .disease-select-tile.theme-general-active.active .disease-icon-box {
-  background: #6366F1 !important;
-  border: 1px solid #818CF8 !important;
+  background: #0EA5E9 !important;
+  border: 1px solid #38BDF8 !important;
   color: var(--text-on-dark, #E2E8F0) !important;
 }
 
 .app-sidebar .disease-select-tile.identity.inactive,
 .app-sidebar .disease-select-tile.theme-general-active.inactive {
-  background: rgba(99, 102, 241, 0.07) !important;
-  border: 1px solid rgba(99, 102, 241, 0.32) !important;
-  border-left: 3px solid rgba(99, 102, 241, 0.75) !important;
-  color: #EEF2FF !important;
+  background: rgba(14, 165, 233, 0.07) !important;
+  border: 1px solid rgba(14, 165, 233, 0.32) !important;
+  border-left: 3px solid rgba(14, 165, 233, 0.75) !important;
+  color: #E0F2FE !important;
   opacity: 1 !important;
 }
 .app-sidebar .disease-select-tile.identity.inactive:hover,
 .app-sidebar .disease-select-tile.theme-general-active.inactive:hover {
-  background: rgba(99, 102, 241, 0.13) !important;
-  border-color: #6366F1 !important;
+  background: rgba(14, 165, 233, 0.13) !important;
+  border-color: #0EA5E9 !important;
 }
 .app-sidebar .disease-select-tile.identity.inactive *,
 .app-sidebar .disease-select-tile.theme-general-active.inactive * {
-  color: #EEF2FF !important;
+  color: #E0F2FE !important;
 }
 .app-sidebar .disease-select-tile.identity.inactive svg,
 .app-sidebar .disease-select-tile.theme-general-active.inactive svg {
-  color: #818CF8 !important;
+  color: #38BDF8 !important;
 }
 .app-sidebar .disease-select-tile.identity.inactive .disease-icon-box,
 .app-sidebar .disease-select-tile.theme-general-active.inactive .disease-icon-box {
-  background: rgba(99, 102, 241, 0.18) !important;
-  border: 1px solid rgba(99, 102, 241, 0.45) !important;
-  color: #818CF8 !important;
+  background: rgba(14, 165, 233, 0.18) !important;
+  border: 1px solid rgba(14, 165, 233, 0.45) !important;
+  color: #38BDF8 !important;
 }
 
 /* 7. Twin Sections Tabs */
@@ -1680,34 +1680,34 @@ button.btn-icon:hover {
 }
 
 .app-sidebar .disease-select-tile.twin-tab-overview.active {
-  background: rgba(124, 58, 237, 0.18) !important;
-  border: 1.5px solid #7C3AED !important;
-  border-left: 4px solid #7C3AED !important;
+  background: rgba(147, 51, 234, 0.18) !important;
+  border: 1.5px solid #9333EA !important;
+  border-left: 4px solid #9333EA !important;
   color: var(--text-on-dark, #E2E8F0) !important;
 }
 .app-sidebar .disease-select-tile.twin-tab-overview.active .disease-icon-box {
-  background: #7C3AED !important;
-  border: 1px solid #A78BFA !important;
+  background: #9333EA !important;
+  border: 1px solid #C084FC !important;
   color: var(--text-on-dark, #E2E8F0) !important;
 }
 .app-sidebar .disease-select-tile.twin-tab-overview.inactive {
-  background: rgba(124, 58, 237, 0.07) !important;
-  border: 1px solid rgba(124, 58, 237, 0.32) !important;
-  border-left: 3px solid rgba(124, 58, 237, 0.75) !important;
-  color: #EDE9FE !important;
+  background: rgba(147, 51, 234, 0.07) !important;
+  border: 1px solid rgba(147, 51, 234, 0.32) !important;
+  border-left: 3px solid rgba(147, 51, 234, 0.75) !important;
+  color: #F3E8FF !important;
   opacity: 1 !important;
 }
 .app-sidebar .disease-select-tile.twin-tab-overview.inactive:hover {
-  background: rgba(124, 58, 237, 0.13) !important;
-  border-color: #7C3AED !important;
+  background: rgba(147, 51, 234, 0.13) !important;
+  border-color: #9333EA !important;
 }
 .app-sidebar .disease-select-tile.twin-tab-overview.inactive svg {
-  color: #A78BFA !important;
+  color: #C084FC !important;
 }
 .app-sidebar .disease-select-tile.twin-tab-overview.inactive .disease-icon-box {
-  background: rgba(124, 58, 237, 0.18) !important;
-  border: 1px solid rgba(124, 58, 237, 0.45) !important;
-  color: #A78BFA !important;
+  background: rgba(147, 51, 234, 0.18) !important;
+  border: 1px solid rgba(147, 51, 234, 0.45) !important;
+  color: #C084FC !important;
 }
 
 /* 7b. Profile Medical Vault & History (Rose) */
@@ -2364,8 +2364,8 @@ button.btn-icon:hover {
 /* ── Cross-Browser Safe Text Gradients (Prevents Solid Rectangle Box Bug) ── */
 
 .text-gradient-identity {
-  color: #4F46E5;
-  background: linear-gradient(90deg, #4F46E5 0%, #6366F1 50%, #818CF8 100%);
+  color: #0284C7;
+  background: linear-gradient(90deg, #0284C7 0%, #0EA5E9 50%, #38BDF8 100%);
   -webkit-background-clip: text !important;
   background-clip: text !important;
   -webkit-text-fill-color: transparent !important;
@@ -2423,7 +2423,7 @@ button.btn-icon:hover {
 .text-gradient-diabetes,
 .text-gradient-green-blue {
   color: #059669;
-  background: linear-gradient(90deg, #059669 0%, #0284C7 100%);
+  background: linear-gradient(90deg, #059669 0%, #10B981 50%, #34D399 100%);
   -webkit-background-clip: text !important;
   background-clip: text !important;
   -webkit-text-fill-color: transparent !important;
@@ -2459,8 +2459,8 @@ button.btn-icon:hover {
 }
 
 .text-gradient-overview {
-  color: #7C3AED;
-  background: linear-gradient(90deg, #7C3AED 0%, #A78BFA 100%);
+  color: #9333EA;
+  background: linear-gradient(90deg, #9333EA 0%, #A855F7 50%, #C084FC 100%);
   -webkit-background-clip: text !important;
   background-clip: text !important;
   -webkit-text-fill-color: transparent !important;
