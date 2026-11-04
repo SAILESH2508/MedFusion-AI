@@ -461,7 +461,7 @@ export default function DigitalTwin({ user, openAuth }) {
           padding: '28px 32px',
           background: isDark
             ? currentTabConfig.bgDark
-            : (currentTabConfig.bgLight || 'linear-gradient(135deg, #F0F9FF 0%, #E0F2FE 100%)'),
+            : '#FFFFFF',
           border: `1px solid ${isDark ? currentTabConfig.borderDark : currentTabConfig.borderLight}`,
           boxShadow: isDark
             ? `0 0 48px ${currentTabConfig.shadowColor}, inset 0 1px 0 rgba(255,255,255,0.06)`

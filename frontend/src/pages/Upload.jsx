@@ -485,11 +485,7 @@ function Upload({ user }) {
             ? (isPrescription
                 ? 'linear-gradient(135deg, #090909 0%, #120d08 40%, #0c0f0a 75%, #090909 100%)'
                 : 'linear-gradient(135deg, #090909 0%, #08120f 40%, #090f12 75%, #090909 100%)')
-            : (
-                isPrescription
-                  ? 'linear-gradient(135deg, #FFF7ED 0%, #FFEDD5 50%, #FED7AA 100%)'
-                  : 'linear-gradient(135deg, #ECFDF5 0%, #D1FAE5 50%, #A7F3D0 100%)'
-              ),
+            : '#FFFFFF',
           border: isDark
             ? `1px solid ${isPrescription ? 'rgba(249, 115, 22, 0.35)' : 'rgba(16, 185, 129, 0.35)'}`
             : `1px solid ${isPrescription ? 'rgba(249, 115, 22, 0.25)' : 'rgba(16, 185, 129, 0.25)'}`,

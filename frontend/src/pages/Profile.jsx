@@ -700,13 +700,7 @@ function Profile({ user, onUserUpdate }) {
                 : activeTab === 'vault'
                   ? 'linear-gradient(135deg, #090909 0%, #140813 35%, #0f090e 65%, #090909 100%)'
                   : 'linear-gradient(135deg, #090909 0%, #090c18 35%, #090a14 65%, #090909 100%)')
-            : (
-                activeTab === 'overview'
-                  ? 'linear-gradient(135deg, #FAF5FF 0%, #F3E8FF 50%, #E9D5FF 100%)'
-                  : activeTab === 'vault'
-                    ? 'linear-gradient(135deg, #FFF1F2 0%, #FFE4E6 50%, #FECDD3 100%)'
-                    : 'linear-gradient(135deg, #F0F9FF 0%, #E0F2FE 50%, #BAE6FD 100%)'
-              ),
+            : '#FFFFFF',
           border: isDark
             ? `1px solid ${activeTab === 'overview' ? 'rgba(147, 51, 234, 0.35)' : activeTab === 'vault' ? 'rgba(225, 29, 72, 0.32)' : 'rgba(14, 165, 233, 0.32)'}`
             : `1px solid ${activeTab === 'overview' ? 'rgba(147, 51, 234, 0.25)' : activeTab === 'vault' ? 'rgba(225, 29, 72, 0.22)' : 'rgba(14, 165, 233, 0.22)'}`,
