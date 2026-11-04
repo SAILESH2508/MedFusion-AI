@@ -2359,10 +2359,18 @@ button.btn-icon:hover {
   display: inline-block;
 }
 
-.text-gradient-diet,
+.text-gradient-diet {
+  color: #0891B2;
+  background: linear-gradient(90deg, #0891B2 0%, #22D3EE 100%);
+  -webkit-background-clip: text !important;
+  background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  display: inline-block;
+}
+
 .text-gradient-lab {
-  color: #10B981;
-  background: linear-gradient(90deg, #10B981 0%, #34D399 100%);
+  color: #4F46E5;
+  background: linear-gradient(90deg, #4F46E5 0%, #818CF8 100%);
   -webkit-background-clip: text !important;
   background-clip: text !important;
   -webkit-text-fill-color: transparent !important;
@@ -2383,6 +2391,33 @@ button.btn-icon:hover {
 .text-gradient-purple-pink {
   color: #9333EA;
   background: linear-gradient(90deg, #9333EA 0%, #DB2777 100%);
+  -webkit-background-clip: text !important;
+  background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  display: inline-block;
+}
+
+.text-gradient-nearby {
+  color: #0D9488;
+  background: linear-gradient(90deg, #0D9488 0%, #2DD4BF 100%);
+  -webkit-background-clip: text !important;
+  background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  display: inline-block;
+}
+
+.text-gradient-vault {
+  color: #E11D48;
+  background: linear-gradient(90deg, #E11D48 0%, #FB7185 100%);
+  -webkit-background-clip: text !important;
+  background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  display: inline-block;
+}
+
+.text-gradient-overview {
+  color: #7C3AED;
+  background: linear-gradient(90deg, #7C3AED 0%, #A78BFA 100%);
   -webkit-background-clip: text !important;
   background-clip: text !important;
   -webkit-text-fill-color: transparent !important;

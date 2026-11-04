@@ -829,32 +829,32 @@ export default function NearbyMap({
           borderRadius: '20px',
           padding: '28px 32px',
           background: isDark
-            ? 'linear-gradient(135deg, #090909 0%, #150808 40%, #0f0a0a 70%, #090909 100%)'
+            ? 'linear-gradient(135deg, #090909 0%, #090f0d 40%, #090d0c 70%, #090909 100%)'
             : '#FFFFFF',
           border: isDark
-            ? '1px solid rgba(239, 68, 68, 0.35)'
-            : '1px solid rgba(239, 68, 68, 0.25)',
+            ? '1px solid rgba(13, 148, 136, 0.35)'
+            : '1px solid rgba(13, 148, 136, 0.25)',
           boxShadow: isDark
-            ? '0 0 40px rgba(239, 68, 68, 0.12), inset 0 1px 0 rgba(255,255,255,0.06)'
-            : '0 4px 20px rgba(239, 68, 68, 0.08), 0 1px 4px rgba(0, 0, 0, 0.04)',
+            ? '0 0 40px rgba(13, 148, 136, 0.12), inset 0 1px 0 rgba(255,255,255,0.06)'
+            : '0 4px 20px rgba(13, 148, 136, 0.08), 0 1px 4px rgba(0, 0, 0, 0.04)',
           transition: 'all 0.3s ease',
         }}
       >
         {/* Decorative glow blobs */}
-        <div style={{ position: 'absolute', top: '-30px', right: '80px', width: '160px', height: '160px', borderRadius: '50%', background: `radial-gradient(circle, rgba(239,68,68,${isDark ? '0.18' : '0.1'}) 0%, transparent 70%)`, pointerEvents: 'none' }} />
-        <div style={{ position: 'absolute', bottom: '-20px', left: '120px', width: '120px', height: '120px', borderRadius: '50%', background: `radial-gradient(circle, rgba(251,113,133,${isDark ? '0.12' : '0.08'}) 0%, transparent 70%)`, pointerEvents: 'none' }} />
+        <div style={{ position: 'absolute', top: '-30px', right: '80px', width: '160px', height: '160px', borderRadius: '50%', background: `radial-gradient(circle, rgba(13,148,136,${isDark ? '0.18' : '0.1'}) 0%, transparent 70%)`, pointerEvents: 'none' }} />
+        <div style={{ position: 'absolute', bottom: '-20px', left: '120px', width: '120px', height: '120px', borderRadius: '50%', background: `radial-gradient(circle, rgba(45,212,191,${isDark ? '0.12' : '0.08'}) 0%, transparent 70%)`, pointerEvents: 'none' }} />
 
         <div style={{ position: 'relative', zIndex: 1 }}>
           <div className="d-flex align-items-center gap-2 mb-2">
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '28px', height: '28px', borderRadius: '8px', background: isDark ? 'rgba(239,68,68,0.2)' : 'rgba(239,68,68,0.12)', border: '1px solid rgba(239,68,68,0.35)' }}>
-              <MapPin size={14} style={{ color: isDark ? '#F87171' : '#DC2626' }} />
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '28px', height: '28px', borderRadius: '8px', background: isDark ? 'rgba(13,148,136,0.2)' : 'rgba(13,148,136,0.12)', border: '1px solid rgba(13,148,136,0.35)' }}>
+              <MapPin size={14} style={{ color: isDark ? '#2DD4BF' : '#0D9488' }} />
             </div>
-            <span className="font-monospace text-uppercase" style={{ fontSize: '0.68rem', letterSpacing: '0.14em', color: isDark ? '#F87171' : '#DC2626', fontWeight: 700 }}>
+            <span className="font-monospace text-uppercase" style={{ fontSize: '0.68rem', letterSpacing: '0.14em', color: isDark ? '#2DD4BF' : '#0D9488', fontWeight: 700 }}>
               {isDoctor ? 'Clinical Facility Radar' : 'Medical Facility Radar'} — {location ? `${filtered.length} Results` : 'Offline Mode'}
             </span>
           </div>
           <h1 className="fw-bolder m-0 mb-2" style={{ fontSize: '2rem', letterSpacing: '-0.03em', color: isDark ? '#FFFFFF' : '#0F172A', lineHeight: 1.1 }}>
-            Nearby <span className="text-gradient-heart">Hospitals & Pharmacies</span>
+            Nearby <span className="text-gradient-nearby">Hospitals & Pharmacies</span>
           </h1>
           <p className="m-0" style={{ fontSize: '0.9rem', color: isDark ? 'rgba(255,255,255,0.65)' : '#475569', maxWidth: '520px', lineHeight: 1.5, fontWeight: isDark ? 400 : 500 }}>
             {isDoctor
@@ -872,9 +872,9 @@ export default function NearbyMap({
             className="d-flex align-items-center gap-2 px-4 py-2 rounded-3 font-monospace text-uppercase fw-bold flex-shrink-0"
             style={{
               fontSize: '0.72rem',
-              background: exportDone ? 'rgba(52,211,153,0.15)' : 'rgba(239,68,68,0.12)',
-              border: exportDone ? '1px solid #34d399' : '1px solid rgba(239,68,68,0.5)',
-              color: exportDone ? '#34d399' : '#F87171',
+              background: exportDone ? 'rgba(52,211,153,0.15)' : 'rgba(13,148,136,0.12)',
+              border: exportDone ? '1px solid #34d399' : '1px solid rgba(13,148,136,0.5)',
+              color: exportDone ? '#34d399' : '#2DD4BF',
               cursor: 'pointer',
               letterSpacing: '0.08em',
               transition: 'all 0.3s',

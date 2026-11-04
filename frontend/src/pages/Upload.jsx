@@ -487,11 +487,11 @@ function Upload({ user }) {
                 : 'linear-gradient(135deg, #090909 0%, #08120f 40%, #090f12 75%, #090909 100%)')
             : '#FFFFFF',
           border: isDark
-            ? `1px solid ${isPrescription ? 'rgba(249, 115, 22, 0.35)' : 'rgba(16, 185, 129, 0.35)'}`
-            : `1px solid ${isPrescription ? 'rgba(249, 115, 22, 0.25)' : 'rgba(16, 185, 129, 0.25)'}`,
+            ? `1px solid ${isPrescription ? 'rgba(249, 115, 22, 0.35)' : 'rgba(79, 70, 229, 0.35)'}`
+            : `1px solid ${isPrescription ? 'rgba(249, 115, 22, 0.25)' : 'rgba(79, 70, 229, 0.25)'}`,
           boxShadow: isDark
-            ? `0 0 40px ${isPrescription ? 'rgba(249, 115, 22, 0.10)' : 'rgba(16, 185, 129, 0.10)'}, inset 0 1px 0 rgba(255,255,255,0.06)`
-            : `0 4px 20px ${isPrescription ? 'rgba(249, 115, 22, 0.08)' : 'rgba(16, 185, 129, 0.08)'}, 0 1px 4px rgba(0, 0, 0, 0.04)`,
+            ? `0 0 40px ${isPrescription ? 'rgba(249, 115, 22, 0.10)' : 'rgba(79, 70, 229, 0.10)'}, inset 0 1px 0 rgba(255,255,255,0.06)`
+            : `0 4px 20px ${isPrescription ? 'rgba(249, 115, 22, 0.08)' : 'rgba(79, 70, 229, 0.08)'}, 0 1px 4px rgba(0, 0, 0, 0.04)`,
           transition: 'all 0.35s ease',
         }}
       >
@@ -502,7 +502,7 @@ function Upload({ user }) {
           width: '180px',
           height: '180px',
           borderRadius: '50%',
-          background: `radial-gradient(circle, ${isPrescription ? 'rgba(249, 115, 22, 0.18)' : 'rgba(16, 185, 129, 0.18)'} 0%, transparent 70%)`,
+          background: `radial-gradient(circle, ${isPrescription ? 'rgba(249, 115, 22, 0.18)' : 'rgba(79, 70, 229, 0.18)'} 0%, transparent 70%)`,
           pointerEvents: 'none',
           transition: 'all 0.35s ease'
         }} />
@@ -513,7 +513,7 @@ function Upload({ user }) {
           width: '140px',
           height: '140px',
           borderRadius: '50%',
-          background: `radial-gradient(circle, ${isPrescription ? 'rgba(245, 158, 11, 0.14)' : 'rgba(6, 182, 212, 0.14)'} 0%, transparent 70%)`,
+          background: `radial-gradient(circle, ${isPrescription ? 'rgba(245, 158, 11, 0.14)' : 'rgba(129, 140, 248, 0.14)'} 0%, transparent 70%)`,
           pointerEvents: 'none',
           transition: 'all 0.35s ease'
         }} />
@@ -529,14 +529,14 @@ function Upload({ user }) {
               borderRadius: '8px',
               background: isPrescription
                 ? (isDark ? 'rgba(249, 115, 22, 0.22)' : 'rgba(249, 115, 22, 0.12)')
-                : (isDark ? 'rgba(16, 185, 129, 0.22)' : 'rgba(16, 185, 129, 0.12)'),
-              border: `1px solid ${isPrescription ? 'rgba(249, 115, 22, 0.45)' : 'rgba(16, 185, 129, 0.45)'}`,
+                : (isDark ? 'rgba(79, 70, 229, 0.22)' : 'rgba(79, 70, 229, 0.12)'),
+              border: `1px solid ${isPrescription ? 'rgba(249, 115, 22, 0.45)' : 'rgba(79, 70, 229, 0.45)'}`,
               transition: 'all 0.3s ease'
             }}>
               {isPrescription ? (
                 <Pill size={14} style={{ color: '#F97316' }} />
               ) : (
-                <Database size={14} style={{ color: '#10B981' }} />
+                <Database size={14} style={{ color: '#818CF8' }} />
               )}
             </div>
             <span
@@ -544,7 +544,7 @@ function Upload({ user }) {
               style={{
                 fontSize: '0.68rem',
                 letterSpacing: '0.14em',
-                color: isPrescription ? (isDark ? '#FB923C' : '#EA580C') : (isDark ? '#34D399' : '#059669'),
+                color: isPrescription ? (isDark ? '#FB923C' : '#EA580C') : (isDark ? '#818CF8' : '#4F46E5'),
                 fontWeight: 700,
                 transition: 'color 0.3s ease'
               }}

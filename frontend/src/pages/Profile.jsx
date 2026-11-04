@@ -659,15 +659,15 @@ function Profile({ user, onUserUpdate }) {
             ? (activeTab === 'overview'
                 ? 'linear-gradient(135deg, #090909 0%, #0f0a18 35%, #0a0b14 65%, #090909 100%)'
                 : activeTab === 'vault'
-                  ? 'linear-gradient(135deg, #090909 0%, #140808 35%, #0f0909 65%, #090909 100%)'
+                  ? 'linear-gradient(135deg, #090909 0%, #140813 35%, #0f090e 65%, #090909 100%)'
                   : 'linear-gradient(135deg, #090909 0%, #090c18 35%, #090a14 65%, #090909 100%)')
             : '#FFFFFF',
           border: isDark
-            ? `1px solid ${activeTab === 'overview' ? 'rgba(168, 85, 247, 0.35)' : activeTab === 'vault' ? 'rgba(239, 68, 68, 0.32)' : 'rgba(99, 102, 241, 0.32)'}`
-            : `1px solid ${activeTab === 'overview' ? 'rgba(168, 85, 247, 0.25)' : activeTab === 'vault' ? 'rgba(239, 68, 68, 0.22)' : 'rgba(99, 102, 241, 0.22)'}`,
+            ? `1px solid ${activeTab === 'overview' ? 'rgba(124, 58, 237, 0.35)' : activeTab === 'vault' ? 'rgba(225, 29, 72, 0.32)' : 'rgba(99, 102, 241, 0.32)'}`
+            : `1px solid ${activeTab === 'overview' ? 'rgba(124, 58, 237, 0.25)' : activeTab === 'vault' ? 'rgba(225, 29, 72, 0.22)' : 'rgba(99, 102, 241, 0.22)'}`,
           boxShadow: isDark
-            ? `0 0 40px ${activeTab === 'overview' ? 'rgba(168, 85, 247, 0.10)' : activeTab === 'vault' ? 'rgba(239, 68, 68, 0.09)' : 'rgba(99, 102, 241, 0.09)'}, inset 0 1px 0 rgba(255,255,255,0.06)`
-            : `0 4px 20px ${activeTab === 'overview' ? 'rgba(168, 85, 247, 0.08)' : activeTab === 'vault' ? 'rgba(239, 68, 68, 0.08)' : 'rgba(99, 102, 241, 0.08)'}, 0 1px 4px rgba(0, 0, 0, 0.04)`,
+            ? `0 0 40px ${activeTab === 'overview' ? 'rgba(124, 58, 237, 0.10)' : activeTab === 'vault' ? 'rgba(225, 29, 72, 0.09)' : 'rgba(99, 102, 241, 0.09)'}, inset 0 1px 0 rgba(255,255,255,0.06)`
+            : `0 4px 20px ${activeTab === 'overview' ? 'rgba(124, 58, 237, 0.08)' : activeTab === 'vault' ? 'rgba(225, 29, 72, 0.08)' : 'rgba(99, 102, 241, 0.08)'}, 0 1px 4px rgba(0, 0, 0, 0.04)`,
           transition: 'all 0.35s ease',
         }}
       >
@@ -678,7 +678,7 @@ function Profile({ user, onUserUpdate }) {
           width: '180px',
           height: '180px',
           borderRadius: '50%',
-          background: `radial-gradient(circle, ${activeTab === 'overview' ? 'rgba(168, 85, 247, 0.16)' : activeTab === 'vault' ? 'rgba(239, 68, 68, 0.14)' : 'rgba(99, 102, 241, 0.14)'} 0%, transparent 70%)`,
+          background: `radial-gradient(circle, ${activeTab === 'overview' ? 'rgba(124, 58, 237, 0.16)' : activeTab === 'vault' ? 'rgba(225, 29, 72, 0.14)' : 'rgba(99, 102, 241, 0.14)'} 0%, transparent 70%)`,
           pointerEvents: 'none',
           transition: 'all 0.35s ease'
         }} />
@@ -689,7 +689,7 @@ function Profile({ user, onUserUpdate }) {
           width: '130px',
           height: '130px',
           borderRadius: '50%',
-          background: `radial-gradient(circle, ${activeTab === 'overview' ? 'rgba(56, 189, 248, 0.14)' : activeTab === 'vault' ? 'rgba(245, 158, 11, 0.12)' : 'rgba(129, 140, 248, 0.12)'} 0%, transparent 70%)`,
+          background: `radial-gradient(circle, ${activeTab === 'overview' ? 'rgba(56, 189, 248, 0.14)' : activeTab === 'vault' ? 'rgba(251, 113, 133, 0.10)' : 'rgba(129, 140, 248, 0.12)'} 0%, transparent 70%)`,
           pointerEvents: 'none',
           transition: 'all 0.35s ease'
         }} />
@@ -704,17 +704,17 @@ function Profile({ user, onUserUpdate }) {
               height: '28px',
               borderRadius: '8px',
               background: activeTab === 'overview'
-                ? (isDark ? 'rgba(168, 85, 247, 0.22)' : 'rgba(168, 85, 247, 0.12)')
+                ? (isDark ? 'rgba(124, 58, 237, 0.22)' : 'rgba(124, 58, 237, 0.12)')
                 : activeTab === 'vault'
-                  ? (isDark ? 'rgba(239, 68, 68, 0.22)' : 'rgba(239, 68, 68, 0.12)')
+                  ? (isDark ? 'rgba(225, 29, 72, 0.22)' : 'rgba(225, 29, 72, 0.12)')
                   : (isDark ? 'rgba(99, 102, 241, 0.22)' : 'rgba(99, 102, 241, 0.12)'),
-              border: `1px solid ${activeTab === 'overview' ? 'rgba(168, 85, 247, 0.45)' : activeTab === 'vault' ? 'rgba(239, 68, 68, 0.35)' : 'rgba(99, 102, 241, 0.35)'}`,
+              border: `1px solid ${activeTab === 'overview' ? 'rgba(124, 58, 237, 0.45)' : activeTab === 'vault' ? 'rgba(225, 29, 72, 0.35)' : 'rgba(99, 102, 241, 0.35)'}`,
               transition: 'all 0.3s ease'
             }}>
               {activeTab === 'overview' ? (
-                <BarChart3 size={14} style={{ color: isDark ? '#C084FC' : '#9333EA' }} />
+                <BarChart3 size={14} style={{ color: isDark ? '#A78BFA' : '#7C3AED' }} />
               ) : activeTab === 'vault' ? (
-                <FileText size={14} style={{ color: isDark ? '#F87171' : '#DC2626' }} />
+                <FileText size={14} style={{ color: isDark ? '#FB7185' : '#E11D48' }} />
               ) : (
                 <User size={14} style={{ color: isDark ? '#818CF8' : '#6366F1' }} />
               )}
@@ -725,9 +725,9 @@ function Profile({ user, onUserUpdate }) {
                 fontSize: '0.68rem',
                 letterSpacing: '0.14em',
                 color: activeTab === 'overview'
-                  ? (isDark ? '#C084FC' : '#9333EA')
+                  ? (isDark ? '#A78BFA' : '#7C3AED')
                   : activeTab === 'vault'
-                    ? (isDark ? '#F87171' : '#DC2626')
+                    ? (isDark ? '#FB7185' : '#E11D48')
                     : (isDark ? '#818CF8' : '#6366F1'),
                 fontWeight: 700,
                 transition: 'color 0.3s ease'
@@ -753,11 +753,11 @@ function Profile({ user, onUserUpdate }) {
           >
             {activeTab === 'overview' ? (
               <>
-                Personal Health <span className="text-gradient-cancer">Overview</span>
+                Personal Health <span className="text-gradient-overview">Overview</span>
               </>
             ) : activeTab === 'vault' ? (
               <>
-                Medical <span className="text-gradient-heart">Vault &amp; History</span>
+                Medical <span className="text-gradient-vault">Vault &amp; History</span>
               </>
             ) : (
               <>

@@ -69,7 +69,7 @@ const TAB_HEADER_CONFIG = {
     borderDark: 'rgba(249, 115, 22, 0.35)',
     shadowColor: 'rgba(249, 115, 22, 0.12)',
     ambientBlob1: 'rgba(249, 115, 22, 0.16)',
-    ambientBlob2: 'rgba(16, 185, 129, 0.12)',
+    ambientBlob2: 'rgba(249, 115, 22, 0.10)',
   },
   organs: {
     icon: HeartPulse,
@@ -95,25 +95,25 @@ const TAB_HEADER_CONFIG = {
   },
   diet: {
     icon: Salad,
-    iconColorLight: '#059669',
-    iconColorDark: '#34D399',
-    iconBgLight: 'rgba(16, 185, 129, 0.12)',
-    iconBgDark: 'rgba(16, 185, 129, 0.22)',
-    iconBorderLight: 'rgba(16, 185, 129, 0.35)',
-    iconBorderDark: 'rgba(16, 185, 129, 0.45)',
-    subColorLight: '#059669',
-    subColorDark: '#34D399',
+    iconColorLight: '#0891B2',
+    iconColorDark: '#22D3EE',
+    iconBgLight: 'rgba(8, 145, 178, 0.12)',
+    iconBgDark: 'rgba(8, 145, 178, 0.22)',
+    iconBorderLight: 'rgba(8, 145, 178, 0.35)',
+    iconBorderDark: 'rgba(8, 145, 178, 0.45)',
+    subColorLight: '#0891B2',
+    subColorDark: '#22D3EE',
     subTitle: () => 'Metabolic Nutrition & Precision Clinical Meal Planner',
     titlePrefix: 'Metabolic ',
     titleGradientClass: 'text-gradient-diet',
     titleGradientText: 'Nutrition & Diet',
     description: 'Personalized clinical nutrition engine, glycemic index optimization, dietary restrictions, and regional macro balance.',
-    bgDark: 'linear-gradient(135deg, #090909 0%, #090f0d 35%, #090d0b 65%, #090909 100%)',
-    borderLight: 'rgba(16, 185, 129, 0.25)',
-    borderDark: 'rgba(16, 185, 129, 0.35)',
-    shadowColor: 'rgba(16, 185, 129, 0.12)',
-    ambientBlob1: 'rgba(16, 185, 129, 0.16)',
-    ambientBlob2: 'rgba(56, 189, 248, 0.12)',
+    bgDark: 'linear-gradient(135deg, #090909 0%, #090c12 35%, #090b10 65%, #090909 100%)',
+    borderLight: 'rgba(8, 145, 178, 0.25)',
+    borderDark: 'rgba(8, 145, 178, 0.35)',
+    shadowColor: 'rgba(8, 145, 178, 0.12)',
+    ambientBlob1: 'rgba(8, 145, 178, 0.16)',
+    ambientBlob2: 'rgba(99, 102, 241, 0.12)',
   },
 };
 
@@ -339,13 +339,13 @@ export default function DigitalTwin({ user, openAuth }) {
         )}
 
         {activeTab === 'diet' && (
-          <div className="p-3 rounded font-monospace" style={{ border: '1px solid rgba(16, 185, 129, 0.28)', borderLeft: '4px solid #10B981', background: 'rgba(15, 23, 42, 0.55)' }}>
-            <span className="d-block fw-bold text-uppercase mb-2" style={{ fontSize: '0.66rem', color: '#34D399', letterSpacing: '0.07em' }}>
+          <div className="p-3 rounded font-monospace" style={{ border: '1px solid rgba(8, 145, 178, 0.28)', borderLeft: '4px solid #0891B2', background: 'rgba(15, 23, 42, 0.55)' }}>
+            <span className="d-block fw-bold text-uppercase mb-2" style={{ fontSize: '0.66rem', color: '#22D3EE', letterSpacing: '0.07em' }}>
               Metabolic Synergy
             </span>
             <div className="d-flex justify-content-between align-items-center" style={{ fontSize: '0.74rem', color: '#94A3B8' }}>
               <span>Growth Bonus:</span>
-              <strong style={{ color: '#34D399' }}>+5 pts / meal</strong>
+              <strong style={{ color: '#22D3EE' }}>+5 pts / meal</strong>
             </div>
           </div>
         )}
