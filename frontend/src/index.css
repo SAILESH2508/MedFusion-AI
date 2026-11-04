@@ -2639,3 +2639,148 @@ code, kbd, samp, pre {
   --primary-accent: #E11D48 !important;
   --btn-primary: #E11D48 !important;
 }
+
+
+/* ══════════════════════════════════════════════════════════════════════════
+   LIGHT MODE — Rich Colorful Card & Panel Surfaces
+   Each module gets a distinct, vibrant non-white gradient background.
+   This eliminates the "all white" look in light theme.
+   ══════════════════════════════════════════════════════════════════════════ */
+
+/* ── Light Mode: Heart/Cardiac module cards ── */
+[data-theme='light'] .theme-heart .glass-card,
+[data-theme='light'] .theme-heart .card-main {
+  background: linear-gradient(180deg, #FFFFFF 0%, #FFF1F2 100%) !important;
+  border-color: rgba(239, 68, 68, 0.28) !important;
+}
+[data-theme='light'] .theme-heart .panel-alt,
+[data-theme='light'] .theme-heart .panel-secondary {
+  background: linear-gradient(135deg, #FFF1F2 0%, #FECDD3 100%) !important;
+  border-color: rgba(239, 68, 68, 0.22) !important;
+}
+[data-theme='light'] .theme-heart .panel-upload-lab {
+  background: linear-gradient(135deg, #FFF1F2 0%, #FFE4E6 100%) !important;
+  border-color: rgba(239, 68, 68, 0.4) !important;
+}
+
+/* ── Light Mode: Diabetes/Metabolic module cards ── */
+[data-theme='light'] .theme-diabetes .glass-card,
+[data-theme='light'] .theme-diabetes .card-main {
+  background: linear-gradient(180deg, #FFFFFF 0%, #ECFDF5 100%) !important;
+  border-color: rgba(16, 185, 129, 0.28) !important;
+}
+[data-theme='light'] .theme-diabetes .panel-alt,
+[data-theme='light'] .theme-diabetes .panel-secondary {
+  background: linear-gradient(135deg, #ECFDF5 0%, #D1FAE5 100%) !important;
+  border-color: rgba(16, 185, 129, 0.22) !important;
+}
+[data-theme='light'] .theme-diabetes .panel-upload-lab {
+  background: linear-gradient(135deg, #ECFDF5 0%, #A7F3D0 100%) !important;
+  border-color: rgba(16, 185, 129, 0.4) !important;
+}
+
+/* ── Light Mode: Cancer/Oncology module cards ── */
+[data-theme='light'] .theme-cancer .glass-card,
+[data-theme='light'] .theme-cancer .card-main {
+  background: linear-gradient(180deg, #FFFFFF 0%, #FAF5FF 100%) !important;
+  border-color: rgba(168, 85, 247, 0.28) !important;
+}
+[data-theme='light'] .theme-cancer .panel-alt,
+[data-theme='light'] .theme-cancer .panel-secondary {
+  background: linear-gradient(135deg, #FAF5FF 0%, #F3E8FF 100%) !important;
+  border-color: rgba(168, 85, 247, 0.22) !important;
+}
+
+/* ── Light Mode: General/Identity/Sky module cards ── */
+[data-theme='light'] .theme-general .glass-card,
+[data-theme='light'] .theme-general .card-main {
+  background: linear-gradient(180deg, #FFFFFF 0%, #F0F9FF 100%) !important;
+  border-color: rgba(14, 165, 233, 0.28) !important;
+}
+[data-theme='light'] .theme-general .panel-alt,
+[data-theme='light'] .theme-general .panel-secondary {
+  background: linear-gradient(135deg, #F0F9FF 0%, #E0F2FE 100%) !important;
+  border-color: rgba(14, 165, 233, 0.22) !important;
+}
+
+/* ── Light Mode: Vault/Rose module cards ── */
+[data-theme='light'] .theme-vault .glass-card,
+[data-theme='light'] .theme-vault .card-main {
+  background: linear-gradient(180deg, #FFFFFF 0%, #FFF1F2 100%) !important;
+  border-color: rgba(225, 29, 72, 0.28) !important;
+}
+[data-theme='light'] .theme-vault .panel-alt,
+[data-theme='light'] .theme-vault .panel-secondary {
+  background: linear-gradient(135deg, #FFF1F2 0%, #FFE4E6 100%) !important;
+  border-color: rgba(225, 29, 72, 0.22) !important;
+}
+
+/* ── Light Mode: Prescription Upload Panel (Warm Amber/Orange) ── */
+[data-theme='light'] .panel-upload-rx,
+[data-theme='light'] .upload-dropzone-rx {
+  background: linear-gradient(135deg, #FFF7ED 0%, #FFEDD5 60%, #FEE0BA 100%) !important;
+  border: 1.5px dashed rgba(249, 115, 22, 0.45) !important;
+}
+[data-theme='light'] .panel-upload-rx:hover,
+[data-theme='light'] .upload-dropzone-rx:hover {
+  border-color: rgba(249, 115, 22, 0.75) !important;
+  background: linear-gradient(135deg, #FFEDD5 0%, #FED7AA 100%) !important;
+}
+
+/* ── Light Mode: Lab Report Upload Panel (Emerald Green) ── */
+[data-theme='light'] .panel-upload-lab,
+[data-theme='light'] .upload-dropzone-lab {
+  background: linear-gradient(135deg, #ECFDF5 0%, #D1FAE5 60%, #A7F3D0 100%) !important;
+  border: 1.5px dashed rgba(16, 185, 129, 0.45) !important;
+}
+[data-theme='light'] .panel-upload-lab:hover,
+[data-theme='light'] .upload-dropzone-lab:hover {
+  border-color: rgba(16, 185, 129, 0.75) !important;
+  background: linear-gradient(135deg, #D1FAE5 0%, #A7F3D0 100%) !important;
+}
+
+/* ── Light Mode: Telemetry & Target Nodes (vibrant, saturated) ── */
+[data-theme='light'] .telemetry-node-age   { background: linear-gradient(135deg, rgba(139,92,246,0.10) 0%, rgba(139,92,246,0.04) 100%) !important; }
+[data-theme='light'] .telemetry-node-sex   { background: linear-gradient(135deg, rgba(240,128,128,0.10) 0%, rgba(240,128,128,0.04) 100%) !important; }
+[data-theme='light'] .telemetry-node-dob   { background: linear-gradient(135deg, rgba(34,197,224,0.10) 0%, rgba(34,197,224,0.04) 100%) !important; }
+[data-theme='light'] .telemetry-node-blood { background: linear-gradient(135deg, rgba(239,68,68,0.10) 0%, rgba(239,68,68,0.04) 100%) !important; }
+[data-theme='light'] .telemetry-node-height{ background: linear-gradient(135deg, rgba(45,184,176,0.10) 0%, rgba(45,184,176,0.04) 100%) !important; }
+[data-theme='light'] .telemetry-node-weight{ background: linear-gradient(135deg, rgba(52,201,122,0.10) 0%, rgba(52,201,122,0.04) 100%) !important; }
+[data-theme='light'] .target-node-hydration { background: linear-gradient(135deg, rgba(59,130,246,0.10) 0%, rgba(59,130,246,0.04) 100%) !important; }
+[data-theme='light'] .target-node-bmr       { background: linear-gradient(135deg, rgba(249,115,22,0.10) 0%, rgba(249,115,22,0.04) 100%) !important; }
+[data-theme='light'] .target-node-sleep     { background: linear-gradient(135deg, rgba(45,184,176,0.10) 0%, rgba(45,184,176,0.04) 100%) !important; }
+[data-theme='light'] .target-node-cardio    { background: linear-gradient(135deg, rgba(239,68,68,0.10) 0%, rgba(239,68,68,0.04) 100%) !important; }
+
+/* ── Light Mode: Clinical Demographics Cards (ProfileIdentity) ── */
+[data-theme='light'] .demo-card-age    { background: linear-gradient(135deg, #FAF5FF 0%, #EDE9FE 100%) !important; border-color: rgba(139,92,246,0.3) !important; }
+[data-theme='light'] .demo-card-sex    { background: linear-gradient(135deg, #FFF1F2 0%, #FFE4E6 100%) !important; border-color: rgba(244,63,94,0.3) !important; }
+[data-theme='light'] .demo-card-dob    { background: linear-gradient(135deg, #ECFEFF 0%, #CFFAFE 100%) !important; border-color: rgba(6,182,212,0.3) !important; }
+[data-theme='light'] .demo-card-blood  { background: linear-gradient(135deg, #FFF7ED 0%, #FFEDD5 100%) !important; border-color: rgba(249,115,22,0.3) !important; }
+[data-theme='light'] .demo-card-height { background: linear-gradient(135deg, #ECFDF5 0%, #D1FAE5 100%) !important; border-color: rgba(16,185,129,0.3) !important; }
+[data-theme='light'] .demo-card-weight { background: linear-gradient(135deg, #ECFDF5 0%, #D1FAE5 100%) !important; border-color: rgba(16,185,129,0.3) !important; }
+
+/* ── Light Mode: AI Scanner dropzone (colorful when active) ── */
+[data-theme='light'] .upload-dropzone.active-drop,
+[data-theme='light'] div[onDrop].active-drop {
+  background: linear-gradient(135deg, #ECFDF5 0%, #D1FAE5 100%) !important;
+  border-color: rgba(16, 185, 129, 0.75) !important;
+}
+
+/* ── Light Mode: Badges — force color (not grey) ── */
+[data-theme='light'] .badge.bg-warning,
+[data-theme='light'] .badge[style*="#F59E0B"],
+[data-theme='light'] .badge[style*="#D97706"] {
+  background-color: #F59E0B !important;
+  color: #FFFFFF !important;
+}
+[data-theme='light'] .badge.bg-success,
+[data-theme='light'] .badge[style*="#10B981"] {
+  background-color: #10B981 !important;
+  color: #FFFFFF !important;
+}
+[data-theme='light'] .badge.bg-danger,
+[data-theme='light'] .badge[style*="#EF4444"],
+[data-theme='light'] .badge[style*="#DC2626"] {
+  background-color: #EF4444 !important;
+  color: #FFFFFF !important;
+}

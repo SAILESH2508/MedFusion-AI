@@ -65,7 +65,8 @@ const TAB_HEADER_CONFIG = {
     titleGradientText: 'Habits & Garden',
     description: 'Daily clinical habit adherence, wellness milestones, habit streaks, and restorative health garden progression.',
     bgDark: 'linear-gradient(135deg, #090909 0%, #120d08 35%, #0e0c08 65%, #090909 100%)',
-    borderLight: 'rgba(249, 115, 22, 0.25)',
+    bgLight: 'linear-gradient(135deg, #FFF7ED 0%, #FFEDD5 50%, #FED7AA 100%)',
+    borderLight: 'rgba(249, 115, 22, 0.35)',
     borderDark: 'rgba(249, 115, 22, 0.35)',
     shadowColor: 'rgba(249, 115, 22, 0.12)',
     ambientBlob1: 'rgba(249, 115, 22, 0.16)',
@@ -87,7 +88,8 @@ const TAB_HEADER_CONFIG = {
     titleGradientText: 'Anatomy & Organs',
     description: 'Deep EHR-synchronized organ metrics, discrete laboratory observations, holdout-validated AI risk models, and clinical checklists.',
     bgDark: 'linear-gradient(135deg, #090909 0%, #090f18 35%, #090d16 65%, #090909 100%)',
-    borderLight: 'rgba(56, 189, 248, 0.25)',
+    bgLight: 'linear-gradient(135deg, #F0F9FF 0%, #E0F2FE 50%, #BAE6FD 100%)',
+    borderLight: 'rgba(56, 189, 248, 0.35)',
     borderDark: 'rgba(56, 189, 248, 0.35)',
     shadowColor: 'rgba(56, 189, 248, 0.12)',
     ambientBlob1: 'rgba(56, 189, 248, 0.16)',
@@ -109,7 +111,8 @@ const TAB_HEADER_CONFIG = {
     titleGradientText: 'Nutrition & Diet',
     description: 'Personalized clinical nutrition engine, glycemic index optimization, dietary restrictions, and regional macro balance.',
     bgDark: 'linear-gradient(135deg, #090909 0%, #061a12 35%, #071f16 65%, #090909 100%)',
-    borderLight: 'rgba(16, 185, 129, 0.25)',
+    bgLight: 'linear-gradient(135deg, #ECFDF5 0%, #D1FAE5 50%, #A7F3D0 100%)',
+    borderLight: 'rgba(16, 185, 129, 0.35)',
     borderDark: 'rgba(16, 185, 129, 0.35)',
     shadowColor: 'rgba(16, 185, 129, 0.12)',
     ambientBlob1: 'rgba(16, 185, 129, 0.16)',
@@ -458,7 +461,7 @@ export default function DigitalTwin({ user, openAuth }) {
           padding: '28px 32px',
           background: isDark
             ? currentTabConfig.bgDark
-            : '#FFFFFF',
+            : (currentTabConfig.bgLight || 'linear-gradient(135deg, #F0F9FF 0%, #E0F2FE 100%)'),
           border: `1px solid ${isDark ? currentTabConfig.borderDark : currentTabConfig.borderLight}`,
           boxShadow: isDark
             ? `0 0 48px ${currentTabConfig.shadowColor}, inset 0 1px 0 rgba(255,255,255,0.06)`

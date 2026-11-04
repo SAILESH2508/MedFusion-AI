@@ -1547,7 +1547,13 @@ function PatientDashboard({ user }) {
           padding: '28px 32px',
           background: isDark
             ? 'linear-gradient(135deg, #090909 0%, #150808 40%, #0f1208 70%, #090909 100%)'
-            : '#FFFFFF',
+            : (
+                selectedDisease === 'heart_attack'
+                  ? 'linear-gradient(135deg, #FFF1F2 0%, #FFE4E6 50%, #FECDD3 100%)'
+                  : selectedDisease === 'diabetes'
+                    ? 'linear-gradient(135deg, #ECFDF5 0%, #D1FAE5 50%, #A7F3D0 100%)'
+                    : 'linear-gradient(135deg, #FAF5FF 0%, #F3E8FF 50%, #E9D5FF 100%)'
+              ),
           border: isDark
             ? `1px solid ${selectedDisease === 'heart_attack' ? 'rgba(239,68,68,0.3)' : selectedDisease === 'diabetes' ? 'rgba(16,185,129,0.3)' : 'rgba(168,85,247,0.3)'}`
             : `1px solid ${selectedDisease === 'heart_attack' ? 'rgba(239,68,68,0.25)' : selectedDisease === 'diabetes' ? 'rgba(16,185,129,0.25)' : 'rgba(168,85,247,0.25)'}`,
