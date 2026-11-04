@@ -339,13 +339,13 @@ function MedicalVault({
                 className="vault-record-card font-monospace hover-border-accent"
                 style={{
                   fontSize: '0.88rem',
-                  borderLeft: `4px solid ${docColor}`,
                   borderRadius: '12px',
                   background: isExpanded ? 'rgba(15, 23, 42, 0.65)' : (isRx ? 'rgba(249, 115, 22, 0.09)' : 'rgba(16, 185, 129, 0.09)'),
                   transition: 'all 0.2s ease',
-                  border: isExpanded ? `1.5px solid ${docColor}` : `1px solid ${docColor}50`,
-                  borderLeftWidth: '4px',
-                  borderLeftColor: docColor
+                  borderTop: isExpanded ? `1.5px solid ${docColor}` : `1px solid ${docColor}50`,
+                  borderRight: isExpanded ? `1.5px solid ${docColor}` : `1px solid ${docColor}50`,
+                  borderBottom: isExpanded ? `1.5px solid ${docColor}` : `1px solid ${docColor}50`,
+                  borderLeft: `4px solid ${docColor}`
                 }}
               >
                 <div className="d-flex justify-content-between align-items-center cursor-pointer" onClick={() => setExpandedId(isExpanded ? null : recKey)}>

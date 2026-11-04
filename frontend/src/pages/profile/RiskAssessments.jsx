@@ -117,13 +117,13 @@ function RiskAssessments({
                 className="vault-record-card font-monospace hover-border-accent"
                 style={{
                   fontSize: '0.88rem',
-                  borderLeft: `4px solid ${diseaseColor}`,
                   borderRadius: '12px',
                   background: isExpanded ? 'rgba(15, 23, 42, 0.65)' : (isDiabetes ? 'rgba(16, 185, 129, 0.09)' : isCancer ? 'rgba(168, 85, 247, 0.09)' : 'rgba(239, 68, 68, 0.08)'),
                   transition: 'all 0.2s ease',
-                  border: isExpanded ? `1.5px solid ${diseaseColor}` : `1px solid ${diseaseColor}50`,
-                  borderLeftWidth: '4px',
-                  borderLeftColor: diseaseColor
+                  borderTop: isExpanded ? `1.5px solid ${diseaseColor}` : `1px solid ${diseaseColor}50`,
+                  borderRight: isExpanded ? `1.5px solid ${diseaseColor}` : `1px solid ${diseaseColor}50`,
+                  borderBottom: isExpanded ? `1.5px solid ${diseaseColor}` : `1px solid ${diseaseColor}50`,
+                  borderLeft: `4px solid ${diseaseColor}`
                 }}
               >
                 <div
