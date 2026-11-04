@@ -755,16 +755,38 @@ div[onDrop] {
   transition: border-color 0.2s ease, background-color 0.2s ease !important;
 }
 
-.border-dashed:hover,
-.upload-dropzone:hover,
+/* Upload dropzones — Basic clean hover without any outer glow rings */
+.panel-upload-rx,
+.upload-dropzone-rx,
+.panel-upload-lab,
+.upload-dropzone-lab,
+.upload-dropzone,
+.dropzone-basic {
+  box-shadow: none !important;
+  transition: border-color 0.2s ease, background-color 0.2s ease, opacity 0.2s ease !important;
+}
+
 .panel-upload-rx:hover,
+.upload-dropzone-rx:hover {
+  border-color: #F97316 !important;
+  background: rgba(249, 115, 22, 0.08) !important;
+  box-shadow: none !important;
+}
+
 .panel-upload-lab:hover,
-div[onDrop]:hover {
-  border-color: var(--primary-accent) !important;
+.upload-dropzone-lab:hover {
+  border-color: #10B981 !important;
+  background: rgba(16, 185, 129, 0.08) !important;
+  box-shadow: none !important;
+}
+
+.dropzone-basic:hover {
+  opacity: 0.9 !important;
+  box-shadow: none !important;
 }
 
 /* Inputs, Selects, and Textareas: Warm pale sand in Light / Deep sage in Dark */
-input, select, textarea, .typeable-number-input {
+input:not([type="range"]), select, textarea, .typeable-number-input {
   background: var(--bg-input) !important;
   border: 1px solid var(--border-color) !important;
   color: var(--text-primary) !important;
@@ -843,74 +865,76 @@ option {
 
 /* Range input — advanced RGB track and accessible clinical thumb */
 input[type="range"] {
-  -webkit-appearance: none;
-  appearance: none;
-  width: 100%;
-  height: 8px;
-  border-radius: 999px;
+  -webkit-appearance: none !important;
+  appearance: none !important;
+  width: 100% !important;
+  height: 6px !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  border-radius: 999px !important;
   background: linear-gradient(90deg, #3B82F6 0%, #10B981 45%, #F59E0B 75%, #EF4444 100%) !important;
-  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.25);
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.25) !important;
   cursor: pointer;
   position: relative;
-  outline: none;
+  outline: none !important;
   border: none !important;
   transition: opacity 0.15s ease;
 }
 
 input[type="range"]:hover {
-  opacity: 0.92;
+  opacity: 0.95;
 }
 
 input[type="range"]::-webkit-slider-runnable-track {
   -webkit-appearance: none;
-  background: transparent;
-  height: 8px;
-  border-radius: 999px;
-  border: none;
+  background: transparent !important;
+  height: 6px !important;
+  border-radius: 999px !important;
+  border: none !important;
 }
 
 input[type="range"]::-moz-range-track {
   background: linear-gradient(90deg, #3B82F6 0%, #10B981 45%, #F59E0B 75%, #EF4444 100%) !important;
-  height: 8px;
-  border-radius: 999px;
+  height: 6px !important;
+  border-radius: 999px !important;
   box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.25);
-  border: none;
+  border: none !important;
 }
 
 input[type="range"]::-webkit-slider-thumb {
   -webkit-appearance: none;
   appearance: none;
-  width: 20px;
-  height: 20px;
-  border-radius: 50%;
-  background: var(--bg-card);
-  border: 2.5px solid var(--brand-blue);
-  box-shadow: 0 1px 5px rgba(0, 0, 0, 0.35);
+  width: 16px !important;
+  height: 16px !important;
+  border-radius: 50% !important;
+  background: #FFFFFF !important;
+  border: 2px solid var(--brand-blue) !important;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3) !important;
   cursor: pointer;
-  margin-top: -6px;
+  margin-top: -5px !important;
   transition: transform 0.12s ease, border-color 0.15s ease;
 }
 
 input[type="range"]::-webkit-slider-thumb:hover {
   transform: scale(1.15);
-  border-color: var(--brand-orange);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.45);
+  border-color: var(--brand-orange) !important;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.35) !important;
 }
 
 input[type="range"]::-moz-range-thumb {
-  width: 20px;
-  height: 20px;
-  border-radius: 50%;
-  background: var(--bg-card);
-  border: 2.5px solid var(--brand-blue);
-  box-shadow: 0 1px 5px rgba(0, 0, 0, 0.35);
+  width: 16px !important;
+  height: 16px !important;
+  border-radius: 50% !important;
+  background: #FFFFFF !important;
+  border: 2px solid var(--brand-blue) !important;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3) !important;
   cursor: pointer;
   transition: transform 0.12s ease, border-color 0.15s ease;
 }
 
 input[type="range"]::-moz-range-thumb:hover {
   transform: scale(1.15);
-  border-color: var(--brand-orange);
+  border-color: var(--brand-orange) !important;
 }
 
 /* ── Progress Bars & Telemetry Indicator Bars ── */
@@ -2720,11 +2744,13 @@ code, kbd, samp, pre {
 [data-theme='light'] .upload-dropzone-rx {
   background: linear-gradient(135deg, #FFF7ED 0%, #FFEDD5 60%, #FEE0BA 100%) !important;
   border: 1.5px dashed rgba(249, 115, 22, 0.45) !important;
+  box-shadow: none !important;
 }
 [data-theme='light'] .panel-upload-rx:hover,
 [data-theme='light'] .upload-dropzone-rx:hover {
-  border-color: rgba(249, 115, 22, 0.75) !important;
+  border-color: #F97316 !important;
   background: linear-gradient(135deg, #FFEDD5 0%, #FED7AA 100%) !important;
+  box-shadow: none !important;
 }
 
 /* ── Light Mode: Lab Report Upload Panel (Emerald Green) ── */
@@ -2732,11 +2758,13 @@ code, kbd, samp, pre {
 [data-theme='light'] .upload-dropzone-lab {
   background: linear-gradient(135deg, #ECFDF5 0%, #D1FAE5 60%, #A7F3D0 100%) !important;
   border: 1.5px dashed rgba(16, 185, 129, 0.45) !important;
+  box-shadow: none !important;
 }
 [data-theme='light'] .panel-upload-lab:hover,
 [data-theme='light'] .upload-dropzone-lab:hover {
-  border-color: rgba(16, 185, 129, 0.75) !important;
+  border-color: #10B981 !important;
   background: linear-gradient(135deg, #D1FAE5 0%, #A7F3D0 100%) !important;
+  box-shadow: none !important;
 }
 
 /* ── Light Mode: Telemetry & Target Nodes (vibrant, saturated) ── */

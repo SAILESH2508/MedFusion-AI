@@ -1593,7 +1593,7 @@ function PatientDashboard({ user }) {
                 className="d-flex flex-column gap-4"
               >
                 {/* AI Lab Report Auto-Fill Scanner Dropzone */}
-                <div className="panel-upload-lab p-4">
+                <div className="glass-card p-4">
                   <h4 className="fw-bold mb-3 d-flex align-items-center gap-2" style={{ fontSize: '1rem' }}>
                     <ScanLine size={18} style={{ color: 'var(--theme-accent)' }} />
                     <span style={{ color: 'var(--theme-accent)' }}>AI Pathology Scanner & Auto-Fill</span>
@@ -1605,11 +1605,12 @@ function PatientDashboard({ user }) {
                   <div className="mt-3">
                     <label 
                       htmlFor="report-upload-input"
-                      className="w-100 d-flex flex-column align-items-center justify-content-center border-dashed rounded-3 p-4 transition-all cursor-pointer hover-bg-white-5"
+                      className="w-100 d-flex flex-column align-items-center justify-content-center border-dashed rounded-3 p-4 cursor-pointer dropzone-basic"
                       style={{ 
                         border: '2px dashed var(--theme-accent)',
-                                                background: 'var(--bg-card-tinted)',
-                        minHeight: '120px'
+                        background: 'var(--bg-card-tinted)',
+                        minHeight: '120px',
+                        boxShadow: 'none'
                       }}
                       onDragOver={(e) => e.preventDefault()}
                       onDrop={handleDrop}

@@ -636,6 +636,7 @@ function Upload({ user }) {
                       display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
                       borderColor: isDragging ? (isPrescription ? '#F97316' : '#10B981') : errorState ? '#EF4444' : 'var(--border)',
                       background: isDragging ? 'var(--bg-card-tinted)' : 'var(--bg-surface)',
+                      boxShadow: 'none',
                       transition: 'all 0.2s ease',
                     }}
                   >
