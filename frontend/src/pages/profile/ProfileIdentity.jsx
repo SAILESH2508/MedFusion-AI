@@ -123,7 +123,7 @@ function ProfileIdentity({
                         style={{
                           width: '46px',
                           height: '46px',
-                          background: 'linear-gradient(135deg, var(--brand-orange) 0%, #d85a12 100%)',
+                          background: 'linear-gradient(135deg, #0EA5E9 0%, #0284C7 100%)',
                           color: '#FFFFFF',
                           border: '1px solid rgba(255, 255, 255, 0.3)',
                           cursor: 'pointer',
@@ -138,13 +138,13 @@ function ProfileIdentity({
                         style={{
                           width: '46px',
                           height: '46px',
-                          background: 'rgba(230, 115, 38, 0.15)',
-                          color: 'var(--brand-orange)',
-                          border: '1px solid rgba(230, 115, 38, 0.35)',
+                          background: 'rgba(14, 165, 233, 0.15)',
+                          color: '#0EA5E9',
+                          border: '1px solid rgba(14, 165, 233, 0.35)',
                           flexShrink: 0
                         }}
                       >
-                        <Phone size={20} color="var(--brand-orange)" strokeWidth={2.4} />
+                        <Phone size={20} color="#0EA5E9" strokeWidth={2.4} />
                       </div>
                     )}
                   </div>
@@ -354,10 +354,10 @@ function ProfileIdentity({
                   <div className="col-sm-4">
                     <div className="telemetry-node telemetry-node-blood h-100">
                       <div className="d-flex align-items-center gap-2 mb-2">
-                        <Droplet size={15} style={{ color: 'var(--brand-orange)' }} />
+                        <Droplet size={15} style={{ color: '#EF4444' }} />
                         <span className="text-secondary fw-semibold" style={{ fontSize: '0.72rem', letterSpacing: '0.05em' }}>BLOOD GROUP</span>
                       </div>
-                      <strong className="fs-5 fw-bold" style={{ color: 'var(--brand-orange)', fontFamily: 'var(--font-mono)' }}>
+                      <strong className="fs-5 fw-bold" style={{ color: '#EF4444', fontFamily: 'var(--font-mono)' }}>
                         {p.blood_group || 'N/A'}
                       </strong>
                     </div>

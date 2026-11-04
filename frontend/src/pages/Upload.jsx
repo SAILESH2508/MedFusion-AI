@@ -370,19 +370,19 @@ function Upload({ user }) {
     setSidebarContent(
       <div className="d-flex flex-column gap-4 pt-2">
         {/* Header console */}
-        <div className="glass-card p-3.5 mb-1 reveal" style={{ borderRadius: '12px', border: '1px solid rgba(244, 149, 74, 0.4)', background: 'rgba(244, 149, 74, 0.08)' }}>
+        <div className="glass-card p-3.5 mb-1 reveal" style={{ borderRadius: '12px', border: `1px solid ${selectedCategory.id === 'prescription' ? 'rgba(244, 149, 74, 0.4)' : 'rgba(16, 185, 129, 0.4)'}`, background: selectedCategory.id === 'prescription' ? 'rgba(244, 149, 74, 0.08)' : 'rgba(16, 185, 129, 0.08)', transition: 'all 0.3s ease' }}>
           <div className="d-flex align-items-center gap-2 mb-2">
-            <div style={{ width: '26px', height: '26px', borderRadius: '7px', background: 'rgba(244, 149, 74, 0.22)', border: '1px solid #F97316', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-              <Sparkles size={14} style={{ color: '#F97316' }} />
+            <div style={{ width: '26px', height: '26px', borderRadius: '7px', background: selectedCategory.id === 'prescription' ? 'rgba(244, 149, 74, 0.22)' : 'rgba(16, 185, 129, 0.22)', border: `1px solid ${selectedCategory.id === 'prescription' ? '#F97316' : '#10B981'}`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, transition: 'all 0.3s ease' }}>
+              <Sparkles size={14} style={{ color: selectedCategory.id === 'prescription' ? '#F97316' : '#10B981' }} />
             </div>
-            <span style={{ fontSize: '0.68rem', fontFamily: 'var(--font-mono)', color: '#FB923C', letterSpacing: '0.06em', textTransform: 'uppercase', fontWeight: 700 }}>
-              AI Ingestion Scanner
+            <span style={{ fontSize: '0.68rem', fontFamily: 'var(--font-mono)', color: selectedCategory.id === 'prescription' ? '#FB923C' : '#34D399', letterSpacing: '0.06em', textTransform: 'uppercase', fontWeight: 700 }}>
+              {selectedCategory.id === 'prescription' ? 'AI Ingestion Scanner' : 'Clinical Lab Scanner'}
             </span>
           </div>
           <h2 className="fw-bolder fs-6 m-0" style={{ letterSpacing: '-0.02em', fontSize: '1.2rem', color: 'var(--text-on-dark, #E2E8F0)' }}>
-            AI Medical <span style={{ color: 'var(--brand-orange)' }}>Scanner</span>
+            AI Medical <span style={{ color: selectedCategory.id === 'prescription' ? '#F97316' : '#10B981' }}>Scanner</span>
           </h2>
-          <p className="m-0 mt-2" style={{ fontSize: '0.84rem', lineHeight: '1.4', color: '#FED7AA' }}>
+          <p className="m-0 mt-2" style={{ fontSize: '0.84rem', lineHeight: '1.4', color: selectedCategory.id === 'prescription' ? '#FED7AA' : '#D1FAE5' }}>
             {selectedCategory.description}
           </p>
         </div>
@@ -604,7 +604,7 @@ function Upload({ user }) {
             <div>
               <div className="d-flex align-items-center justify-content-between mb-3 pb-2 border-bottom border-white-10">
                 <h4 className="fw-bold m-0 d-flex align-items-center gap-2" style={{ fontSize: '1.05rem', color: 'var(--text-primary)' }}>
-                  <UploadIcon size={18} className="text-theme-accent" />
+                  <UploadIcon size={18} style={{ color: isPrescription ? '#F97316' : '#10B981' }} />
                   <span>Document Workspace — {selectedCategory.label}</span>
                 </h4>
                 {file && (
@@ -634,13 +634,13 @@ function Upload({ user }) {
                     style={{
                       minHeight: '280px',
                       display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
-                      borderColor: isDragging ? 'var(--brand-orange)' : errorState ? '#EF4444' : 'var(--border)',
+                      borderColor: isDragging ? (isPrescription ? '#F97316' : '#10B981') : errorState ? '#EF4444' : 'var(--border)',
                       background: isDragging ? 'var(--bg-card-tinted)' : 'var(--bg-surface)',
                       transition: 'all 0.2s ease',
                     }}
                   >
                     <div className="rounded-circle d-flex align-items-center justify-content-center mb-3" style={{ width: '68px', height: '68px', background: 'var(--bg-card-tinted)', border: '1px solid var(--border)' }}>
-                      <UploadIcon size={30} style={{ color: 'var(--brand-orange)' }} />
+                      <UploadIcon size={30} style={{ color: isPrescription ? '#F97316' : '#10B981' }} />
                     </div>
                     <h3 className="fw-bold mb-2" style={{ fontSize: '1.25rem', color: 'var(--text-primary)', letterSpacing: '-0.015em' }}>
                       Drop {selectedCategory.label} Here
@@ -650,7 +650,7 @@ function Upload({ user }) {
                     </p>
                     <div className="d-flex align-items-center gap-2 flex-wrap justify-content-center">
                       {['JPG / PNG / WEBP', 'PDF up to 16MB', 'AI Validation & OCR'].map((label, i) => (
-                        <span key={label} className="badge rounded-pill px-3 py-1" style={{ background: 'var(--bg-card-tinted)', border: '1px solid var(--border)', fontSize: '0.72rem', color: i === 2 ? 'var(--brand-orange)' : 'var(--text-primary)', fontWeight: i === 2 ? 700 : 600 }}>{label}</span>
+                        <span key={label} className="badge rounded-pill px-3 py-1" style={{ background: 'var(--bg-card-tinted)', border: '1px solid var(--border)', fontSize: '0.72rem', color: i === 2 ? (isPrescription ? '#F97316' : '#10B981') : 'var(--text-primary)', fontWeight: i === 2 ? 700 : 600 }}>{label}</span>
                       ))}
                     </div>
                     <input id="scannerFileInput" type="file" className="d-none" accept="image/jpeg,image/png,image/jpg,image/webp,application/pdf" onChange={handleFileChange} />
@@ -962,7 +962,7 @@ function Upload({ user }) {
                   /* Lab / Pathology Biomarkers Panel with Advanced Medical Reading Bars */
                   <div className="d-flex flex-column gap-3">
                     <h5 className="fw-bold font-monospace d-flex align-items-center gap-2 m-0" style={{ fontSize: '0.98rem', color: 'var(--text-primary)' }}>
-                      <Activity size={16} style={{ color: 'var(--brand-blue)' }} />
+                      <Activity size={16} style={{ color: '#10B981' }} />
                       <span>QUANTITATIVE BIOMARKERS</span>
                     </h5>
 

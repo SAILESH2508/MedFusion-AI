@@ -245,43 +245,94 @@ export default function DigitalTwin({ user, openAuth }) {
   useEffect(() => {
     setSidebarContent(
       <div className="d-flex flex-column gap-4 pt-2">
-        {/* Console Header Card */}
-        <div className="glass-card p-3" style={{ borderRadius: '14px', border: '1px solid rgba(14, 165, 233, 0.35)', background: 'rgba(14, 165, 233, 0.08)' }}>
-          <div className="d-flex align-items-center justify-content-between mb-2">
-            <div className="d-flex align-items-center gap-2">
-              <div style={{ width: '24px', height: '24px', borderRadius: '6px', background: 'rgba(14, 165, 233, 0.22)', border: '1px solid #0EA5E9', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                <HeartPulse size={13} style={{ color: '#38BDF8' }} />
+        {/* Console Header Card (Dynamic Color Synced with Active View) */}
+        {(() => {
+          const cfg = activeTab === 'diet' ? {
+            border: 'rgba(16, 185, 129, 0.35)',
+            bg: 'rgba(16, 185, 129, 0.08)',
+            iconBoxBg: 'rgba(16, 185, 129, 0.22)',
+            iconBoxBorder: '#10B981',
+            iconColor: '#34D399',
+            titleColor: '#34D399',
+            badgeBg: 'rgba(15, 23, 42, 0.65)',
+            badgeBorder: 'rgba(16, 185, 129, 0.35)',
+            badgeColor: '#34D399',
+            badgeText: 'METABOLIC',
+            tag: 'Metabolic Synergy Engine',
+            desc: 'Personalized clinical nutrition engine, glycemic index optimization, and dietary restrictions.',
+            descColor: '#D1FAE5',
+            IconComp: Salad
+          } : activeTab === 'organs' ? {
+            border: 'rgba(14, 165, 233, 0.35)',
+            bg: 'rgba(14, 165, 233, 0.08)',
+            iconBoxBg: 'rgba(14, 165, 233, 0.22)',
+            iconBoxBorder: '#0EA5E9',
+            iconColor: '#38BDF8',
+            titleColor: '#38BDF8',
+            badgeBg: 'rgba(15, 23, 42, 0.65)',
+            badgeBorder: 'rgba(14, 165, 233, 0.35)',
+            badgeColor: '#38BDF8',
+            badgeText: '8 SYSTEMS',
+            tag: 'Physiological Engine',
+            desc: 'Multi-organ biometric telemetry, holdout-validated AI risk models, and EHR integration.',
+            descColor: '#BAE6FD',
+            IconComp: HeartPulse
+          } : {
+            border: 'rgba(249, 115, 22, 0.35)',
+            bg: 'rgba(249, 115, 22, 0.08)',
+            iconBoxBg: 'rgba(249, 115, 22, 0.22)',
+            iconBoxBorder: '#EA580C',
+            iconColor: '#F97316',
+            titleColor: '#F97316',
+            badgeBg: 'rgba(15, 23, 42, 0.65)',
+            badgeBorder: 'rgba(249, 115, 22, 0.35)',
+            badgeColor: '#F97316',
+            badgeText: 'LIFESTYLE',
+            tag: 'Preventative Habit Engine',
+            desc: 'Daily habit streaks, clinical milestones, and restorative wellness progression.',
+            descColor: '#FED7AA',
+            IconComp: Sprout
+          };
+
+          return (
+            <div className="glass-card p-3" style={{ borderRadius: '14px', border: `1px solid ${cfg.border}`, background: cfg.bg, transition: 'all 0.3s ease' }}>
+              <div className="d-flex align-items-center justify-content-between mb-2">
+                <div className="d-flex align-items-center gap-2">
+                  <div style={{ width: '24px', height: '24px', borderRadius: '6px', background: cfg.iconBoxBg, border: `1px solid ${cfg.iconBoxBorder}`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, transition: 'all 0.3s ease' }}>
+                    <cfg.IconComp size={13} style={{ color: cfg.iconColor }} />
+                  </div>
+                  <span style={{ fontSize: '0.64rem', fontFamily: 'var(--font-mono)', color: cfg.iconColor, letterSpacing: '0.08em', textTransform: 'uppercase', fontWeight: 700 }}>
+                    {cfg.tag}
+                  </span>
+                </div>
+                <span style={{
+                  background: cfg.badgeBg,
+                  border: `1px solid ${cfg.badgeBorder}`,
+                  color: cfg.badgeColor,
+                  padding: '1px 7px',
+                  borderRadius: '12px',
+                  fontSize: '0.62rem',
+                  fontFamily: 'var(--font-mono)',
+                  fontWeight: 700
+                }}>
+                  {cfg.badgeText}
+                </span>
               </div>
-              <span style={{ fontSize: '0.64rem', fontFamily: 'var(--font-mono)', color: '#38BDF8', letterSpacing: '0.08em', textTransform: 'uppercase', fontWeight: 700 }}>
-                Physiological Engine
-              </span>
+              <h2 className="fw-bolder fs-6 m-0" style={{ letterSpacing: '-0.02em', fontSize: '1.05rem', color: 'var(--text-on-dark, #E2E8F0)' }}>
+                Digital <span style={{ color: cfg.titleColor }}>Twin</span>
+              </h2>
+              <p className="m-0 mt-2" style={{ fontSize: '0.82rem', lineHeight: '1.4', color: cfg.descColor }}>
+                {cfg.desc}
+              </p>
+              <div className="d-flex align-items-center justify-content-between mt-2 pt-2" style={{ borderTop: '1px solid rgba(148, 163, 184, 0.15)', fontSize: '0.72rem', color: '#94A3B8', fontFamily: 'var(--font-mono)' }}>
+                <span>Active View</span>
+                <span style={{ color: cfg.titleColor, fontWeight: 600, textTransform: 'none' }}>
+                  {TWIN_TABS.find(t => t.id === activeTab)?.shortLabel || 'Habits & Garden'}
+                </span>
+              </div>
             </div>
-            <span style={{
-              background: 'rgba(15, 23, 42, 0.65)',
-              border: '1px solid rgba(14, 165, 233, 0.35)',
-              color: '#38BDF8',
-              padding: '1px 7px',
-              borderRadius: '12px',
-              fontSize: '0.62rem',
-              fontFamily: 'var(--font-mono)',
-              fontWeight: 700
-            }}>
-              8 SYSTEMS
-            </span>
-          </div>
-          <h2 className="fw-bolder fs-6 m-0" style={{ letterSpacing: '-0.02em', fontSize: '1.05rem', color: 'var(--text-on-dark, #E2E8F0)' }}>
-            Digital <span style={{ color: '#38BDF8' }}>Twin</span>
-          </h2>
-          <p className="m-0 mt-2" style={{ fontSize: '0.82rem', lineHeight: '1.4', color: '#BAE6FD' }}>
-            Biometric telemetry, organ risk models, and preventative lifestyle tracking.
-          </p>
-          <div className="d-flex align-items-center justify-content-between mt-2 pt-2" style={{ borderTop: '1px solid rgba(148, 163, 184, 0.15)', fontSize: '0.72rem', color: '#94A3B8', fontFamily: 'var(--font-mono)' }}>
-            <span>Active View</span>
-            <span style={{ color: activeTab === 'garden' ? '#F97316' : activeTab === 'organs' ? '#38BDF8' : '#34D399', fontWeight: 600, textTransform: 'none' }}>
-              {TWIN_TABS.find(t => t.id === activeTab)?.shortLabel || 'Habits & Garden'}
-            </span>
-          </div>
-        </div>
+          );
+        })()}
 
         {/* Primary Twin Sections (Clickable Navigation) */}
         <div>

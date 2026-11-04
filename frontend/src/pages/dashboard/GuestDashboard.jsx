@@ -720,8 +720,8 @@ function GuestDashboard({ openAuth }) {
         return (
           <div className="reveal">
             <div className="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
-              <h4 className="fw-bold d-flex align-items-center gap-2 m-0" style={{ fontSize: '1.05rem', letterSpacing: '0.05em', color: 'var(--brand-orange)' }}>
-                <Heart size={18} style={{ color: 'var(--brand-orange)' }} />
+              <h4 className="fw-bold d-flex align-items-center gap-2 m-0" style={{ fontSize: '1.05rem', letterSpacing: '0.05em', color: '#EF4444' }}>
+                <Heart size={18} style={{ color: '#EF4444' }} />
                 <span>Cardiovascular Vitals</span>
               </h4>
               <div className="d-flex gap-2">
@@ -1912,7 +1912,7 @@ function GuestDashboard({ openAuth }) {
                   <button
                     onClick={() => setShowFactors(prev => !prev)}
                     className="btn-icon d-flex align-items-center gap-2 font-monospace text-uppercase w-100 justify-content-between"
-                    style={{ background: 'var(--bg-card-tinted)', border: '1px solid var(--border)', borderRadius: '8px', padding: '12px 16px', color: 'var(--brand-orange)', fontSize: '0.9rem', cursor: 'pointer', width: '100%' }}
+                    style={{ background: 'var(--bg-card-tinted)', border: '1px solid var(--border)', borderRadius: '8px', padding: '12px 16px', color: 'var(--theme-accent)', fontSize: '0.9rem', cursor: 'pointer', width: '100%' }}
                   >
                     <span>Why this score?</span>
                     <span style={{ fontSize: '0.75rem', opacity: 0.7 }}>{showFactors ? 'Hide' : 'Show'} Key Risk Factors</span>

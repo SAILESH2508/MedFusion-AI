@@ -823,8 +823,8 @@ function PatientDashboard({ user }) {
         return (
           <div className="reveal">
             <div className="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
-              <h4 className="fw-bold d-flex align-items-center gap-2 m-0" style={{ fontSize: '1.05rem', letterSpacing: '0.05em', color: 'var(--brand-orange)' }}>
-                <Heart size={18} style={{ color: 'var(--brand-orange)' }} />
+              <h4 className="fw-bold d-flex align-items-center gap-2 m-0" style={{ fontSize: '1.05rem', letterSpacing: '0.05em', color: '#EF4444' }}>
+                <Heart size={18} style={{ color: '#EF4444' }} />
                 <span>Cardiovascular Vitals</span>
               </h4>
               <div className="d-flex gap-2">
@@ -1608,8 +1608,7 @@ function PatientDashboard({ user }) {
                       className="w-100 d-flex flex-column align-items-center justify-content-center border-dashed rounded-3 p-4 transition-all cursor-pointer hover-bg-white-5"
                       style={{ 
                         border: '2px dashed var(--theme-accent)',
-                        borderColor: 'var(--brand-orange)',
-                        background: 'var(--bg-card-tinted)',
+                                                background: 'var(--bg-card-tinted)',
                         minHeight: '120px'
                       }}
                       onDragOver={(e) => e.preventDefault()}
@@ -1957,10 +1956,10 @@ function PatientDashboard({ user }) {
                       {/* Header */}
                       <div className="pb-2" style={{ borderBottom: '1px solid var(--border)' }}>
                         <span className="font-monospace text-uppercase d-block mb-1"
-                          style={{ fontSize: '0.64rem', letterSpacing: '0.12em', color: 'var(--brand-orange)' }}>
+                          style={{ fontSize: '0.64rem', letterSpacing: '0.12em', color: 'var(--theme-accent)' }}>
                           dx � Clinical Reasoning
                         </span>
-                        <h3 className="fw-bolder m-0 text-gradient-heart"
+                        <h3 className={`fw-bolder m-0 ${selectedDisease === 'heart_attack' ? 'text-gradient-heart' : selectedDisease === 'diabetes' ? 'text-gradient-diabetes' : 'text-gradient-cancer'}`}
                           style={{
                             fontSize: '1.25rem',
                             fontFamily: 'var(--font-main)',
@@ -2117,7 +2116,7 @@ function PatientDashboard({ user }) {
                   <button
                     onClick={() => setShowFactors(prev => !prev)}
                     className="btn-icon d-flex align-items-center gap-2 font-monospace text-uppercase w-100 justify-content-between"
-                    style={{ background: 'var(--bg-card-tinted)', border: '1px solid var(--border)', borderRadius: '8px', padding: '12px 16px', color: 'var(--brand-orange)', fontSize: '0.9rem', cursor: 'pointer', width: '100%' }}
+                    style={{ background: 'var(--bg-card-tinted)', border: '1px solid var(--border)', borderRadius: '8px', padding: '12px 16px', color: 'var(--theme-accent)', fontSize: '0.9rem', cursor: 'pointer', width: '100%' }}
                   >
                     <span>Why this score?</span>
                     <span style={{ fontSize: '0.75rem', opacity: 0.7 }}>{showFactors ? 'Hide' : 'Show'} Key Risk Factors</span>

@@ -348,9 +348,9 @@ export default function AIChatbot({ user }) {
         style={{
           position: 'fixed', bottom: fabBottom, right: '28px',
           width: '54px', height: '54px', borderRadius: '50%',
-          background: 'var(--brand-orange)',
-          border: 'none',
-          boxShadow: 'var(--shadow-md)',
+          background: 'linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%)',
+          border: '1px solid rgba(255,255,255,0.2)',
+          boxShadow: '0 4px 16px rgba(37,99,235,0.4)',
           cursor: 'pointer', zIndex: fabZIndex,
         }}
       >
@@ -511,7 +511,7 @@ export default function AIChatbot({ user }) {
                   aria-label="Send message"
                   style={{
                     width: '38px', height: '38px', borderRadius: '8px', flexShrink: 0,
-                    background: input.trim() && !loading ? 'var(--brand-orange)' : 'var(--bg-card-tinted)',
+                    background: input.trim() && !loading ? '#2563EB' : 'var(--bg-card-tinted)',
                     border: `1px solid var(--border)`,
                     cursor: input.trim() && !loading ? 'pointer' : 'not-allowed',
                     display: 'flex', alignItems: 'center', justifyContent: 'center',

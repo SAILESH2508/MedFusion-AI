@@ -341,22 +341,61 @@ function Profile({ user, onUserUpdate }) {
     } else {
       setSidebarContent(
         <div className="d-flex flex-column gap-4 pt-2">
-          <div className="glass-card p-3.5 mb-1 reveal" style={{ borderRadius: '12px', border: '1px solid rgba(14, 165, 233, 0.4)', background: 'rgba(14, 165, 233, 0.08)' }}>
-            <div className="d-flex align-items-center gap-2 mb-2">
-              <div style={{ width: '26px', height: '26px', borderRadius: '7px', background: 'rgba(14, 165, 233, 0.22)', border: '1px solid #0EA5E9', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                <Database size={14} style={{ color: '#38BDF8' }} />
+          {(() => {
+            const pcfg = activeTab === 'overview' ? {
+              border: 'rgba(147, 51, 234, 0.4)',
+              bg: 'rgba(147, 51, 234, 0.08)',
+              iconBoxBg: 'rgba(147, 51, 234, 0.22)',
+              iconBoxBorder: '#9333EA',
+              iconColor: '#C084FC',
+              titleColor: '#C084FC',
+              tag: 'Clinical Analytics',
+              desc: 'Synthesized longitudinal biomarkers, health scores, and predictive wellness radar.',
+              descColor: '#E9D5FF',
+              IconComp: BarChart3
+            } : activeTab === 'vault' ? {
+              border: 'rgba(225, 29, 72, 0.4)',
+              bg: 'rgba(225, 29, 72, 0.08)',
+              iconBoxBg: 'rgba(225, 29, 72, 0.22)',
+              iconBoxBorder: '#E11D48',
+              iconColor: '#FB7185',
+              titleColor: '#FB7185',
+              tag: 'Diagnostic Vault',
+              desc: 'Immutable medical record archive, pathology PDFs, prescriptions, and lab history.',
+              descColor: '#FFE4E6',
+              IconComp: FileUp
+            } : {
+              border: 'rgba(14, 165, 233, 0.4)',
+              bg: 'rgba(14, 165, 233, 0.08)',
+              iconBoxBg: 'rgba(14, 165, 233, 0.22)',
+              iconBoxBorder: '#0EA5E9',
+              iconColor: '#38BDF8',
+              titleColor: '#38BDF8',
+              tag: 'Patient Identity Vault',
+              desc: 'Manage clinical profiles, emergency QR badges, and demographic vitals.',
+              descColor: '#C7D2FE',
+              IconComp: User
+            };
+
+            return (
+              <div className="glass-card p-3.5 mb-1 reveal" style={{ borderRadius: '12px', border: `1px solid ${pcfg.border}`, background: pcfg.bg, transition: 'all 0.3s ease' }}>
+                <div className="d-flex align-items-center gap-2 mb-2">
+                  <div style={{ width: '26px', height: '26px', borderRadius: '7px', background: pcfg.iconBoxBg, border: `1px solid ${pcfg.iconBoxBorder}`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, transition: 'all 0.3s ease' }}>
+                    <pcfg.IconComp size={14} style={{ color: pcfg.iconColor }} />
+                  </div>
+                  <span style={{ fontSize: '0.68rem', fontFamily: 'var(--font-mono)', color: pcfg.iconColor, letterSpacing: '0.06em', textTransform: 'uppercase', fontWeight: 700 }}>
+                    {pcfg.tag}
+                  </span>
+                </div>
+                <h2 className="fw-bolder fs-6 m-0" style={{ letterSpacing: '-0.02em', fontSize: '1.2rem', color: 'var(--text-on-dark, #E2E8F0)' }}>
+                  Health <span style={{ color: pcfg.titleColor }}>Profile Console</span>
+                </h2>
+                <p className="m-0 mt-2" style={{ fontSize: '0.84rem', lineHeight: '1.4', color: pcfg.descColor }}>
+                  {pcfg.desc}
+                </p>
               </div>
-              <span style={{ fontSize: '0.68rem', fontFamily: 'var(--font-mono)', color: '#38BDF8', letterSpacing: '0.06em', textTransform: 'uppercase', fontWeight: 700 }}>
-                Patient Vault
-              </span>
-            </div>
-            <h2 className="fw-bolder fs-6 m-0" style={{ letterSpacing: '-0.02em', fontSize: '1.2rem', color: 'var(--text-on-dark, #E2E8F0)' }}>
-              Health <span style={{ color: '#38BDF8' }}>Vault Console</span>
-            </h2>
-            <p className="m-0 mt-2" style={{ fontSize: '0.84rem', lineHeight: '1.4', color: '#C7D2FE' }}>
-              Manage clinical profiles, review biomarker history, and manage medical records.
-            </p>
-          </div>
+            );
+          })()}
 
           <div className="mt-1">
             <h4 className="fw-bold mb-3" style={{ fontSize: '0.92rem', letterSpacing: '0.05em', color: 'var(--text-on-dark, #E2E8F0)' }}>

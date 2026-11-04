@@ -1196,7 +1196,7 @@ button.btn-icon:hover {
   border-color: var(--brand-orange) !important;
 }
 .disease-select-tile.active.diabetes {
-  border-color: var(--brand-blue) !important;
+  border-color: #10B981 !important;
 }
 .disease-select-tile.active.cancer {
   border-color: var(--accent-violet) !important;
@@ -1353,7 +1353,7 @@ button.btn-icon:hover {
   color: #F87171 !important;
 }
 
-/* 2. Diabetes / Metabolic (Cyan / Sky Blue) */
+/* 2. Diabetes / Metabolic (Emerald Green) */
 .app-sidebar .disease-select-tile.diabetes,
 .app-sidebar .disease-select-tile.theme-diabetes-active {
   border-left-width: 4px !important;
@@ -1361,9 +1361,9 @@ button.btn-icon:hover {
 
 .app-sidebar .disease-select-tile.diabetes.active,
 .app-sidebar .disease-select-tile.theme-diabetes-active.active {
-  background: rgba(14, 165, 233, 0.18) !important;
-  border: 1.5px solid #0EA5E9 !important;
-  border-left: 4px solid #0EA5E9 !important;
+  background: rgba(16, 185, 129, 0.18) !important;
+  border: 1.5px solid #10B981 !important;
+  border-left: 4px solid #10B981 !important;
   color: var(--text-on-dark, #E2E8F0) !important;
 }
 .app-sidebar .disease-select-tile.diabetes.active *,
@@ -1371,33 +1371,33 @@ button.btn-icon:hover {
   color: var(--text-on-dark, #E2E8F0) !important;
 }
 .app-sidebar .disease-select-tile.diabetes.active .disease-icon-box {
-  background: #0EA5E9 !important;
-  border: 1px solid #38BDF8 !important;
+  background: #10B981 !important;
+  border: 1px solid #34D399 !important;
   color: var(--text-on-dark, #E2E8F0) !important;
 }
 
 .app-sidebar .disease-select-tile.diabetes.inactive,
 .app-sidebar .disease-select-tile.theme-diabetes-active.inactive {
-  background: rgba(14, 165, 233, 0.07) !important;
-  border: 1px solid rgba(14, 165, 233, 0.32) !important;
-  border-left: 3px solid rgba(14, 165, 233, 0.75) !important;
-  color: #E0F2FE !important;
+  background: rgba(16, 185, 129, 0.07) !important;
+  border: 1px solid rgba(16, 185, 129, 0.32) !important;
+  border-left: 3px solid rgba(16, 185, 129, 0.75) !important;
+  color: #D1FAE5 !important;
   opacity: 1 !important;
 }
 .app-sidebar .disease-select-tile.diabetes.inactive:hover {
-  background: rgba(14, 165, 233, 0.13) !important;
-  border-color: #0EA5E9 !important;
+  background: rgba(16, 185, 129, 0.13) !important;
+  border-color: #10B981 !important;
 }
 .app-sidebar .disease-select-tile.diabetes.inactive * {
-  color: #E0F2FE !important;
+  color: #D1FAE5 !important;
 }
 .app-sidebar .disease-select-tile.diabetes.inactive svg {
-  color: #38BDF8 !important;
+  color: #34D399 !important;
 }
 .app-sidebar .disease-select-tile.diabetes.inactive .disease-icon-box {
-  background: rgba(14, 165, 233, 0.18) !important;
-  border: 1px solid rgba(14, 165, 233, 0.45) !important;
-  color: #38BDF8 !important;
+  background: rgba(16, 185, 129, 0.18) !important;
+  border: 1px solid rgba(16, 185, 129, 0.45) !important;
+  color: #34D399 !important;
 }
 
 /* 3. Cancer / Oncology (Vibrant Purple / Violet) */
@@ -2603,3 +2603,32 @@ code, kbd, samp, pre {
 .target-node-bmr       { border-left: 3px solid #F4954A !important; background: linear-gradient(135deg, rgba(244,149,74,0.07) 0%, var(--bg-card) 100%) !important; }
 .target-node-sleep     { border-left: 3px solid #2DB8B0 !important; background: linear-gradient(135deg, rgba(45,184,176,0.07) 0%, var(--bg-card) 100%) !important; }
 .target-node-cardio    { border-left: 3px solid #F56565 !important; background: linear-gradient(135deg, rgba(245,101,101,0.07) 0%, var(--bg-card) 100%) !important; }
+
+/* Scoped module theme CSS variables */
+.theme-heart {
+  --theme-accent: #EF4444 !important;
+  --theme-accent-glow: rgba(239, 68, 68, 0.15) !important;
+  --primary-accent: #EF4444 !important;
+  --btn-primary: #EF4444 !important;
+}
+
+.theme-diabetes {
+  --theme-accent: #10B981 !important;
+  --theme-accent-glow: rgba(16, 185, 129, 0.15) !important;
+  --primary-accent: #10B981 !important;
+  --btn-primary: #10B981 !important;
+}
+
+.theme-cancer {
+  --theme-accent: #A855F7 !important;
+  --theme-accent-glow: rgba(168, 85, 247, 0.15) !important;
+  --primary-accent: #A855F7 !important;
+  --btn-primary: #A855F7 !important;
+}
+
+.theme-general {
+  --theme-accent: #0EA5E9 !important;
+  --theme-accent-glow: rgba(14, 165, 233, 0.15) !important;
+  --primary-accent: #0EA5E9 !important;
+  --btn-primary: #0EA5E9 !important;
+}
