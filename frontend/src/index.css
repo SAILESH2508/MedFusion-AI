@@ -2632,3 +2632,10 @@ code, kbd, samp, pre {
   --primary-accent: #0EA5E9 !important;
   --btn-primary: #0EA5E9 !important;
 }
+
+.theme-vault {
+  --theme-accent: #E11D48 !important;
+  --theme-accent-glow: rgba(225, 29, 72, 0.15) !important;
+  --primary-accent: #E11D48 !important;
+  --btn-primary: #E11D48 !important;
+}

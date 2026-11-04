@@ -246,16 +246,42 @@ function MedicalVault({
     : null;
 
   return (
-    <div className="glass-card p-4 text-start vault-glass-card theme-cancer">
+    <div className="glass-card p-4 text-start vault-glass-card" style={{ borderRadius: '16px', border: '1px solid rgba(139, 92, 246, 0.25)' }}>
       <div className="d-flex justify-content-between align-items-center border-bottom border-white-10 pb-3 mb-4 flex-wrap gap-3">
-        <div>
-          <h3 className="fw-bold text-white d-flex align-items-center gap-2 m-0" style={{ fontSize: '1.35rem' }}>
-            <Database className="text-theme-accent" />
-            Patient Medical Vault
-          </h3>
+        <div className="d-flex align-items-center gap-2.5">
+          <div style={{
+            width: '36px',
+            height: '36px',
+            borderRadius: '10px',
+            background: 'linear-gradient(135deg, rgba(139, 92, 246, 0.22) 0%, rgba(168, 85, 247, 0.22) 100%)',
+            border: '1.5px solid rgba(139, 92, 246, 0.5)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            flexShrink: 0
+          }}>
+            <Database size={18} style={{ color: '#A855F7' }} />
+          </div>
+          <div>
+            <h3 className="fw-bold m-0" style={{ fontSize: '1.25rem', letterSpacing: '-0.02em', color: 'var(--text-primary)' }}>
+              Patient Medical <span style={{ color: '#A855F7' }}>Vault</span>
+            </h3>
+            <span className="font-monospace text-secondary" style={{ fontSize: '0.72rem' }}>
+              Immutable longitudinal archive of prescriptions & pathology panels
+            </span>
+          </div>
         </div>
         <div className="d-flex gap-2 align-items-center">
-          <Link to="/upload" className="px-3 py-2 bg-theme-accent text-white border-0 rounded font-monospace text-uppercase text-decoration-none hover-white font-bold d-flex align-items-center gap-2" style={{ fontSize: '0.8rem' }}>
+          <Link
+            to="/upload"
+            className="px-3 py-2 text-white border-0 rounded-3 font-monospace text-uppercase text-decoration-none hover-white font-bold d-flex align-items-center gap-2"
+            style={{
+              fontSize: '0.8rem',
+              background: 'linear-gradient(135deg, #8B5CF6 0%, #7C3AED 100%)',
+              boxShadow: '0 3px 12px rgba(139, 92, 246, 0.35)',
+              transition: 'all 0.2s ease'
+            }}
+          >
             <Upload size={14} /> Scan New Report
           </Link>
         </div>
@@ -303,23 +329,38 @@ function MedicalVault({
                 : (record.analysis || {});
             } catch (e) { parsedAnalysis = {}; }
 
+            const docColor = isRx ? '#F97316' : '#10B981';
+            const docBg = isRx ? 'rgba(249, 115, 22, 0.14)' : 'rgba(16, 185, 129, 0.14)';
+            const docBorder = isRx ? '#F97316' : '#10B981';
+
             return (
-              <div key={recKey} className="vault-record-card font-monospace hover-border-accent" style={{
-                fontSize: '0.88rem',
-                borderLeft: `3px solid ${isRx ? '#5B9FE0' : '#10B981'}`,
-              }}>
+              <div
+                key={recKey}
+                className="vault-record-card font-monospace hover-border-accent"
+                style={{
+                  fontSize: '0.88rem',
+                  borderLeft: `4px solid ${docColor}`,
+                  borderRadius: '12px',
+                  background: isExpanded ? 'rgba(15, 23, 42, 0.65)' : 'var(--bg-card)',
+                  transition: 'all 0.2s ease',
+                  border: isExpanded ? `1px solid ${docColor}60` : '1px solid var(--border-color)',
+                  borderLeftWidth: '4px',
+                  borderLeftColor: docColor
+                }}
+              >
                 <div className="d-flex justify-content-between align-items-center cursor-pointer" onClick={() => setExpandedId(isExpanded ? null : recKey)}>
                   <div className="d-flex align-items-center gap-3">
                     <div className="p-2 rounded-3 d-flex align-items-center justify-content-center flex-shrink-0" style={{
                       width: '38px', height: '38px',
-                      background: isRx ? 'rgba(91,159,224,0.15)' : 'rgba(16,185,129,0.15)',
-                      border: `1px solid ${isRx ? 'rgba(91,159,224,0.4)' : 'rgba(16,185,129,0.4)'}`,
-                      color: isRx ? '#5B9FE0' : '#10B981',
+                      borderRadius: '10px',
+                      background: docBg,
+                      border: `1.5px solid ${docBorder}`,
+                      color: docColor,
                     }}>
-                      {isRx ? <FileText size={16} /> : <Database size={16} />}
+                      {isRx ? <Pill size={18} style={{ color: docColor }} /> : <Database size={18} style={{ color: docColor }} />}
                     </div>
                     <div>
-                      <strong className="text-uppercase" style={{ fontSize: '0.82rem', color: isRx ? '#5B9FE0' : '#10B981' }}>
+                      <strong className="text-uppercase" style={{ fontSize: '0.84rem', color: docColor, letterSpacing: '0.04em' }}>
                         {isRx ? 'Physician Prescription' : 'Lab Pathology Report'}
                       </strong>
                       <span className="text-secondary small d-block font-monospace mt-0.5" style={{ fontSize: '0.72rem' }}>
@@ -328,12 +369,14 @@ function MedicalVault({
                     </div>
                   </div>
                   <div className="d-flex align-items-center gap-2">
-                    <span className={`badge px-2.5 py-1 font-monospace`} style={{
+                    <span className="badge px-2.5 py-1 font-monospace" style={{
                       fontSize: '0.68rem',
-                      background: isRx ? 'rgba(91,159,224,0.15)' : 'rgba(16,185,129,0.15)',
-                      color: isRx ? '#5B9FE0' : '#10B981',
-                      border: `1px solid ${isRx ? 'rgba(91,159,224,0.4)' : 'rgba(16,185,129,0.4)'}`,
-                      letterSpacing: '0.04em',
+                      background: docBg,
+                      color: docColor,
+                      border: `1px solid ${docBorder}`,
+                      fontWeight: 700,
+                      letterSpacing: '0.06em',
+                      borderRadius: '6px'
                     }}>
                       {isRx ? 'PRESCRIPTION' : 'PATHOLOGY'}
                     </span>
@@ -374,9 +417,9 @@ function MedicalVault({
                                 <div className="inner-vault-card d-flex flex-column justify-content-between gap-2 w-100">
                                   <div className="d-flex justify-content-between align-items-start gap-2">
                                     <strong className="text-white small text-wrap">{m.name}</strong>
-                                    <span className="badge bg-white-10 border border-white-10 text-secondary py-1 px-2 font-bold flex-shrink-0" style={{ fontSize: '0.72rem' }}>{m.frequency || 'N/A'}</span>
+                                    <span className="badge font-monospace py-1 px-2.5 font-bold flex-shrink-0" style={{ fontSize: '0.72rem', background: 'rgba(16, 185, 129, 0.16)', border: '1px solid #10B981', color: '#10B981', borderRadius: '6px' }}>{m.frequency || 'N/A'}</span>
                                   </div>
-                                  <span className="text-secondary small mt-auto">Dosage: {m.dosage || 'N/A'}</span>
+                                  <span className="font-monospace small mt-auto" style={{ fontSize: '0.76rem', color: '#38BDF8' }}>Dosage: <strong style={{ color: '#38BDF8' }}>{m.dosage || 'N/A'}</strong></span>
                                 </div>
                               </div>
                             ))
@@ -469,7 +512,7 @@ function MedicalVault({
         {/* Toggle button */}
         <button
           onClick={() => setShowTrends(!showTrends)}
-          className="d-flex align-items-center gap-2 bg-transparent border border-white-10 rounded px-3 py-2 text-theme-accent font-monospace text-uppercase hover-white w-100"
+          className="d-flex align-items-center gap-2 bg-transparent border rounded-3 px-3 py-2 font-monospace text-uppercase hover-white w-100" style={{ fontSize: '0.82rem', letterSpacing: '0.04em', justifyContent: 'space-between', borderColor: 'rgba(14, 165, 233, 0.35)', color: '#38BDF8' }}
           style={{ fontSize: '0.82rem', letterSpacing: '0.04em', justifyContent: 'space-between' }}
         >
           <span className="d-flex align-items-center gap-2">

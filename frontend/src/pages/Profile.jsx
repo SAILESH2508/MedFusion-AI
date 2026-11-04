@@ -681,7 +681,7 @@ function Profile({ user, onUserUpdate }) {
   const tabThemes = {
     identity: 'theme-general',
     overview: 'theme-cancer',
-    vault: 'theme-heart',
+    vault: 'theme-vault',
   };
   const activeTheme = tabThemes[activeTab] || 'theme-general';
 
