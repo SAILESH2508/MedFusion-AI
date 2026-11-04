@@ -36,7 +36,7 @@ const ORGANS = [
   { id: 'kidneys',    label: 'Kidneys',    icon: Droplet,      color: '#FB7185' },
   { id: 'liver',      label: 'Liver',      icon: FlaskConical, color: '#F97316' },
   { id: 'pancreas',   label: 'Pancreas',   icon: Activity,     color: '#EC4899' },
-  { id: 'stomach',    label: 'Stomach',    icon: FlaskConical, color: '#FBBF24' },
+  { id: 'stomach',    label: 'Stomach',    icon: FlaskConical, color: '#F97316' },
   { id: 'intestines', label: 'Intestines', icon: Wind,         color: '#10B981' },
 ];
 
@@ -52,23 +52,23 @@ const TAB_HEADER_CONFIG = {
   garden: {
     icon: Sprout,
     iconColorLight: '#D97706',
-    iconColorDark: '#FBBF24',
+    iconColorDark: '#F97316',
     iconBgLight: 'rgba(245, 158, 11, 0.12)',
-    iconBgDark: 'rgba(245, 158, 11, 0.22)',
+    iconBgDark: 'rgba(249, 115, 22, 0.22)',
     iconBorderLight: 'rgba(245, 158, 11, 0.35)',
-    iconBorderDark: 'rgba(245, 158, 11, 0.45)',
+    iconBorderDark: 'rgba(249, 115, 22, 0.45)',
     subColorLight: '#D97706',
-    subColorDark: '#FBBF24',
+    subColorDark: '#F97316',
     subTitle: (stageIndex) => `Preventative Lifestyle & Adherence Telemetry — Stage ${stageIndex + 1} of 7`,
     titlePrefix: 'Wellness ',
     titleGradientClass: 'text-gradient-garden',
     titleGradientText: 'Habits & Garden',
     description: 'Daily clinical habit adherence, wellness milestones, habit streaks, and restorative health garden progression.',
     bgDark: 'linear-gradient(135deg, #090909 0%, #120d08 35%, #0e0c08 65%, #090909 100%)',
-    borderLight: 'rgba(245, 158, 11, 0.25)',
-    borderDark: 'rgba(245, 158, 11, 0.35)',
-    shadowColor: 'rgba(245, 158, 11, 0.12)',
-    ambientBlob1: 'rgba(245, 158, 11, 0.16)',
+    borderLight: 'rgba(249, 115, 22, 0.25)',
+    borderDark: 'rgba(249, 115, 22, 0.35)',
+    shadowColor: 'rgba(249, 115, 22, 0.12)',
+    ambientBlob1: 'rgba(249, 115, 22, 0.16)',
     ambientBlob2: 'rgba(16, 185, 129, 0.12)',
   },
   organs: {
@@ -356,16 +356,16 @@ export default function DigitalTwin({ user, openAuth }) {
           return (
             <div className="p-3 rounded font-monospace" style={{ border: '1px solid rgba(245, 158, 11, 0.28)', borderLeft: '4px solid #F59E0B', background: 'rgba(15, 23, 42, 0.55)' }}>
               <div className="d-flex align-items-center justify-content-between mb-2">
-                <span className="fw-bold text-uppercase" style={{ fontSize: '0.66rem', color: '#FBBF24', letterSpacing: '0.07em' }}>
+                <span className="fw-bold text-uppercase" style={{ fontSize: '0.66rem', color: '#F97316', letterSpacing: '0.07em' }}>
                   Habit Streak
                 </span>
-                <span className="badge" style={{ background: 'rgba(245, 158, 11, 0.2)', color: '#FBBF24', border: '1px solid rgba(245, 158, 11, 0.4)', fontSize: '0.64rem' }}>
+                <span className="badge" style={{ background: 'rgba(249, 115, 22, 0.2)', color: '#FBBF24', border: '1px solid rgba(249, 115, 22, 0.4)', fontSize: '0.64rem' }}>
                   Stage {stageIdx + 1}/7
                 </span>
               </div>
               <div className="d-flex justify-content-between" style={{ fontSize: '0.74rem', color: '#94A3B8' }}>
                 <span>{stageMeta.name}</span>
-                <strong style={{ color: '#FBBF24' }}>{gardenData.current_streak} days active</strong>
+                <strong style={{ color: '#F97316' }}>{gardenData.current_streak} days active</strong>
               </div>
             </div>
           );

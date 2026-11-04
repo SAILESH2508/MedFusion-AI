@@ -2341,8 +2341,8 @@ button.btn-icon:hover {
 
 .text-gradient-garden,
 .text-gradient-prescription {
-  color: #F59E0B;
-  background: linear-gradient(90deg, #F59E0B 0%, #FBBF24 100%);
+  color: #EA580C;
+  background: linear-gradient(90deg, #EA580C 0%, #F97316 100%);
   -webkit-background-clip: text !important;
   background-clip: text !important;
   -webkit-text-fill-color: transparent !important;
