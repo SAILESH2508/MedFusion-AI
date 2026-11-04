@@ -829,7 +829,7 @@ export default function NearbyMap({
           borderRadius: '20px',
           padding: '28px 32px',
           background: isDark
-            ? 'linear-gradient(135deg, #0d0d0d 0%, #1a0808 40%, #2a0c0c 70%, #0d0d0d 100%)'
+            ? 'linear-gradient(135deg, #090909 0%, #150808 40%, #0f0a0a 70%, #090909 100%)'
             : '#FFFFFF',
           border: isDark
             ? '1px solid rgba(239, 68, 68, 0.35)'

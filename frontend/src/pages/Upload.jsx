@@ -483,8 +483,8 @@ function Upload({ user }) {
           padding: '28px 32px',
           background: isDark
             ? (isPrescription
-                ? 'linear-gradient(135deg, #090909 0%, #170d06 40%, #0d120a 75%, #090909 100%)'
-                : 'linear-gradient(135deg, #090909 0%, #061510 40%, #071216 75%, #090909 100%)')
+                ? 'linear-gradient(135deg, #090909 0%, #120d08 40%, #0c0f0a 75%, #090909 100%)'
+                : 'linear-gradient(135deg, #090909 0%, #08120f 40%, #090f12 75%, #090909 100%)')
             : '#FFFFFF',
           border: isDark
             ? `1px solid ${isPrescription ? 'rgba(249, 115, 22, 0.35)' : 'rgba(16, 185, 129, 0.35)'}`

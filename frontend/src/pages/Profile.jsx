@@ -657,10 +657,10 @@ function Profile({ user, onUserUpdate }) {
           padding: '28px 32px',
           background: isDark
             ? (activeTab === 'overview'
-                ? 'linear-gradient(135deg, #080808 0%, #15081f 35%, #080c18 65%, #080808 100%)'
+                ? 'linear-gradient(135deg, #090909 0%, #0f0a18 35%, #0a0b14 65%, #090909 100%)'
                 : activeTab === 'vault'
-                  ? 'linear-gradient(135deg, #080808 0%, #170808 35%, #130a16 65%, #080808 100%)'
-                  : 'linear-gradient(135deg, #080808 0%, #080c1e 35%, #080a18 65%, #080808 100%)')
+                  ? 'linear-gradient(135deg, #090909 0%, #140808 35%, #0f0909 65%, #090909 100%)'
+                  : 'linear-gradient(135deg, #090909 0%, #090c18 35%, #090a14 65%, #090909 100%)')
             : '#FFFFFF',
           border: isDark
             ? `1px solid ${activeTab === 'overview' ? 'rgba(168, 85, 247, 0.35)' : activeTab === 'vault' ? 'rgba(239, 68, 68, 0.32)' : 'rgba(99, 102, 241, 0.32)'}`
