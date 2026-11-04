@@ -353,7 +353,7 @@ function Profile({ user, onUserUpdate }) {
             <h2 className="fw-bolder fs-6 m-0" style={{ letterSpacing: '-0.02em', fontSize: '1.2rem', color: 'var(--text-on-dark, #E2E8F0)' }}>
               Health <span style={{ color: '#818CF8' }}>Vault Console</span>
             </h2>
-            <p className="m-0 mt-2" style={{ fontSize: '0.84rem', lineHeight: '1.4', color: 'rgba(255, 255, 255, 0.72)' }}>
+            <p className="m-0 mt-2" style={{ fontSize: '0.84rem', lineHeight: '1.4', color: '#C7D2FE' }}>
               Manage clinical profiles, review biomarker history, and manage medical records.
             </p>
           </div>
@@ -366,7 +366,7 @@ function Profile({ user, onUserUpdate }) {
               {[
                 { id: 'identity', label: 'Profile & Vitals', icon: <User size={16} />, theme: 'identity' },
                 { id: 'overview', label: 'Health Overview', icon: <BarChart3 size={16} />, theme: 'twin-tab-overview' },
-                { id: 'vault', label: 'Medical Vault & History', icon: <FileUp size={16} />, theme: 'heart' },
+                { id: 'vault', label: 'Medical Vault & History', icon: <FileUp size={16} />, theme: 'profile-vault' },
               ].map((tab) => {
                 const isSelected = activeTab === tab.id;
                 return (

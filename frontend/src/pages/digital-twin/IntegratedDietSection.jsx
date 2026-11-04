@@ -92,7 +92,7 @@ function MealCard({ meal, dayKey, slotKey, completions, onComplete, onSwap, onFa
             {meal.calories && (
               <>
                 {' · '}
-                <span style={{ color: 'var(--brand-orange)', fontWeight: 600 }}>{meal.calories} kcal</span>
+                <span style={{ color: '#0891B2', fontWeight: 600 }}>{meal.calories} kcal</span>
               </>
             )}
           </span>
@@ -440,7 +440,7 @@ export default function IntegratedDietSection({ user, onActivityLogged }) {
                 className="d-flex align-items-center gap-1.5 px-3 py-1.5 rounded-2 font-monospace transition-all border-0"
                 style={{
                   background: isActive ? 'var(--bg-card)' : 'transparent',
-                  color: isActive ? 'var(--brand-orange)' : 'var(--text-secondary)',
+                  color: isActive ? '#0891B2' : 'var(--text-secondary)',
                   fontSize: '0.74rem',
                   fontWeight: isActive ? 700 : 500,
                   boxShadow: isActive ? 'var(--shadow-sm)' : 'none',
@@ -459,7 +459,8 @@ export default function IntegratedDietSection({ user, onActivityLogged }) {
             <button
               onClick={handleGenerate}
               disabled={generating}
-              className="btn-clinical primary py-1.5 px-3 d-flex align-items-center gap-1.5 font-monospace text-uppercase"
+              className="btn-clinical py-1.5 px-3 d-flex align-items-center gap-1.5 font-monospace text-uppercase"
+              style={{ background: 'linear-gradient(135deg, #0891B2 0%, #06B6D4 100%)', color: '#FFFFFF', border: '1px solid #22D3EE', boxShadow: '0 2px 10px rgba(8,145,178,0.3)', borderRadius: '6px', fontSize: '0.72rem' }}
               style={{ fontSize: '0.72rem', borderRadius: '6px' }}
             >
               <RefreshCw size={13} className={generating ? 'animate-spin' : ''} />
@@ -544,8 +545,8 @@ export default function IntegratedDietSection({ user, onActivityLogged }) {
                 </p>
                 <button
                   onClick={handleGenerate}
-                  className="btn-clinical primary px-4 py-2 font-monospace text-uppercase"
-                  style={{ fontSize: '0.75rem', borderRadius: '6px' }}
+                  className="btn-clinical px-4 py-2 font-monospace text-uppercase"
+                  style={{ fontSize: '0.75rem', borderRadius: '6px', background: 'linear-gradient(135deg, #0891B2 0%, #06B6D4 100%)', color: '#FFFFFF', border: '1px solid #22D3EE', boxShadow: '0 2px 10px rgba(8,145,178,0.3)' }}
                 >
                   Generate Weekly Plan
                 </button>
@@ -555,7 +556,7 @@ export default function IntegratedDietSection({ user, onActivityLogged }) {
                 {/* Day + calorie target row */}
                 <div className="d-flex align-items-center justify-content-between">
                   <h4
-                    className="fw-bolder m-0 text-gradient-heart"
+                    className="fw-bolder m-0 text-gradient-diet"
                     style={{
                       fontSize: '1rem',
                       fontFamily: 'var(--font-main)',

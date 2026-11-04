@@ -380,7 +380,7 @@ function GuestUpload({ openAuth }) {
           <h2 className="fw-bolder fs-6 m-0" style={{ letterSpacing: '-0.02em', fontSize: '1.2rem', color: 'var(--text-on-dark, #E2E8F0)' }}>
             AI Medical <span style={{ color: 'var(--brand-orange)' }}>Scanner</span>
           </h2>
-          <p className="m-0 mt-2" style={{ fontSize: '0.84rem', lineHeight: '1.4', color: 'rgba(255, 255, 255, 0.72)' }}>
+          <p className="m-0 mt-2" style={{ fontSize: '0.84rem', lineHeight: '1.4', color: '#FED7AA' }}>
             {selectedCategory.description}
           </p>
         </div>

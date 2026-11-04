@@ -286,7 +286,7 @@ export default function PersonalHealthOverview({
           >
             <div>
               <div className="d-flex align-items-center justify-content-between mb-2">
-                <span className="badge text-uppercase" style={{ background: 'rgba(245, 158, 11, 0.12)', color: '#f59e0b', border: '1px solid rgba(245, 158, 11, 0.3)', fontSize: '0.68rem', fontWeight: 700 }}>
+                <span className="badge text-uppercase" style={{ background: 'rgba(249, 115, 22, 0.12)', color: '#EA580C', border: '1px solid rgba(249, 115, 22, 0.3)', fontSize: '0.68rem', fontWeight: 700 }}>
                   Habits & Streaks
                 </span>
                 <ChevronRight size={14} className="text-secondary" />
@@ -307,7 +307,7 @@ export default function PersonalHealthOverview({
                 fontSize: '0.74rem',
               }}
             >
-              <span className="d-inline-flex align-items-center gap-1" style={{ color: '#f59e0b', fontWeight: 600, whiteSpace: 'nowrap' }}>
+              <span className="d-inline-flex align-items-center gap-1" style={{ color: '#EA580C', fontWeight: 600, whiteSpace: 'nowrap' }}>
                 <span>Log Action</span>
                 <ChevronRight size={13} />
               </span>

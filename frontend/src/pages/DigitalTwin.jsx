@@ -51,13 +51,13 @@ const TWIN_TABS = [
 const TAB_HEADER_CONFIG = {
   garden: {
     icon: Sprout,
-    iconColorLight: '#D97706',
+    iconColorLight: '#EA580C',
     iconColorDark: '#F97316',
-    iconBgLight: 'rgba(245, 158, 11, 0.12)',
+    iconBgLight: 'rgba(249, 115, 22, 0.12)',
     iconBgDark: 'rgba(249, 115, 22, 0.22)',
-    iconBorderLight: 'rgba(245, 158, 11, 0.35)',
+    iconBorderLight: 'rgba(249, 115, 22, 0.35)',
     iconBorderDark: 'rgba(249, 115, 22, 0.45)',
-    subColorLight: '#D97706',
+    subColorLight: '#EA580C',
     subColorDark: '#F97316',
     subTitle: (stageIndex) => `Preventative Lifestyle & Adherence Telemetry — Stage ${stageIndex + 1} of 7`,
     titlePrefix: 'Wellness ',
@@ -272,9 +272,12 @@ export default function DigitalTwin({ user, openAuth }) {
           <h2 className="fw-bolder fs-6 m-0" style={{ letterSpacing: '-0.02em', fontSize: '1.05rem', color: 'var(--text-on-dark, #E2E8F0)' }}>
             Digital <span style={{ color: '#38BDF8' }}>Twin</span>
           </h2>
+          <p className="m-0 mt-2" style={{ fontSize: '0.82rem', lineHeight: '1.4', color: '#BAE6FD' }}>
+            Biometric telemetry, organ risk models, and preventative lifestyle tracking.
+          </p>
           <div className="d-flex align-items-center justify-content-between mt-2 pt-2" style={{ borderTop: '1px solid rgba(148, 163, 184, 0.15)', fontSize: '0.72rem', color: '#94A3B8', fontFamily: 'var(--font-mono)' }}>
             <span>Active View</span>
-            <span style={{ color: '#38BDF8', fontWeight: 600, textTransform: 'none' }}>
+            <span style={{ color: activeTab === 'garden' ? '#F97316' : activeTab === 'organs' ? '#38BDF8' : '#22D3EE', fontWeight: 600, textTransform: 'none' }}>
               {TWIN_TABS.find(t => t.id === activeTab)?.shortLabel || 'Habits & Garden'}
             </span>
           </div>
@@ -354,12 +357,12 @@ export default function DigitalTwin({ user, openAuth }) {
           const stageIdx = gardenData.stage?.stage ?? 0;
           const stageMeta = GARDEN_STAGES[stageIdx] || GARDEN_STAGES[0];
           return (
-            <div className="p-3 rounded font-monospace" style={{ border: '1px solid rgba(245, 158, 11, 0.28)', borderLeft: '4px solid #F59E0B', background: 'rgba(15, 23, 42, 0.55)' }}>
+            <div className="p-3 rounded font-monospace" style={{ border: '1px solid rgba(249, 115, 22, 0.28)', borderLeft: '4px solid #F97316', background: 'rgba(15, 23, 42, 0.55)' }}>
               <div className="d-flex align-items-center justify-content-between mb-2">
                 <span className="fw-bold text-uppercase" style={{ fontSize: '0.66rem', color: '#F97316', letterSpacing: '0.07em' }}>
                   Habit Streak
                 </span>
-                <span className="badge" style={{ background: 'rgba(249, 115, 22, 0.2)', color: '#FBBF24', border: '1px solid rgba(249, 115, 22, 0.4)', fontSize: '0.64rem' }}>
+                <span className="badge" style={{ background: 'rgba(249, 115, 22, 0.2)', color: '#F97316', border: '1px solid rgba(249, 115, 22, 0.4)', fontSize: '0.64rem' }}>
                   Stage {stageIdx + 1}/7
                 </span>
               </div>
@@ -494,13 +497,13 @@ export default function DigitalTwin({ user, openAuth }) {
             <div
               className="d-flex align-items-center gap-1.5 px-3 py-1.5 rounded-2 font-monospace"
               style={{
-                background: isDark ? 'rgba(245,158,11,0.1)' : 'rgba(245,158,11,0.08)',
-                border: isDark ? '1px solid rgba(245,158,11,0.3)' : '1px solid rgba(245,158,11,0.25)',
+                background: isDark ? 'rgba(249,115,22,0.1)' : 'rgba(249,115,22,0.08)',
+                border: isDark ? '1px solid rgba(249,115,22,0.3)' : '1px solid rgba(249,115,22,0.25)',
                 fontSize: '0.74rem',
               }}
             >
-              <Flame size={13} style={{ color: '#D97706' }} />
-              <strong style={{ color: '#D97706' }}>{gardenData.current_streak}d Streak</strong>
+              <Flame size={13} style={{ color: '#EA580C' }} />
+              <strong style={{ color: '#EA580C' }}>{gardenData.current_streak}d Streak</strong>
             </div>
 
             {!user && (
