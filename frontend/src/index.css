@@ -2339,18 +2339,30 @@ button.btn-icon:hover {
   display: inline-block;
 }
 
+.text-gradient-garden,
 .text-gradient-prescription {
-  color: #F97316;
-  background: linear-gradient(90deg, #F97316 0%, #F59E0B 100%);
+  color: #F59E0B;
+  background: linear-gradient(90deg, #F59E0B 0%, #FBBF24 100%);
   -webkit-background-clip: text !important;
   background-clip: text !important;
   -webkit-text-fill-color: transparent !important;
   display: inline-block;
 }
 
+.text-gradient-organs,
+.text-gradient-sky-blue {
+  color: #0EA5E9;
+  background: linear-gradient(90deg, #0284C7 0%, #38BDF8 100%);
+  -webkit-background-clip: text !important;
+  background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  display: inline-block;
+}
+
+.text-gradient-diet,
 .text-gradient-lab {
   color: #10B981;
-  background: linear-gradient(90deg, #10B981 0%, #06B6D4 100%);
+  background: linear-gradient(90deg, #10B981 0%, #34D399 100%);
   -webkit-background-clip: text !important;
   background-clip: text !important;
   -webkit-text-fill-color: transparent !important;
